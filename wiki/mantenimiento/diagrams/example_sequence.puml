@@ -1,0 +1,14 @@
+@startuml
+!theme crt-green
+
+Client -> Backend: /login: username, password
+
+Backend -> Database: Query username
+Database --> Backend: hashed password
+
+Backend -> Database: Insert sessionToken
+Database --> Backend: dateOfGeneration
+
+Backend --> Client: sessionToken
+
+@enduml

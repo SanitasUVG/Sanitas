@@ -1,0 +1,132 @@
+@startuml
+!theme crt-green
+
+entity Usuario {
+    * username: varchar
+    * password: varchar
+}
+
+entity Sesion {
+    * token: varchar
+    ---
+		* username: varchar
+    * created: timestamp
+}
+
+entity Contacto_Emergencia {
+    * id_contacto: serial
+    ---
+    * nombre: varchar
+    * parentesco: varchar
+    * telefono: varchar
+}
+
+entity Paciente {
+    * carnet: varchar
+    ---
+    * es_estudiante: boolean
+    * nombres: varchar
+    * apellidos: varchar
+    * sexo: char
+    * correo: varchar
+    * telefono: varchar
+    * seguro: varchar
+    * carrera_o_dept: varchar
+    * fecha_nacimiento: date
+    * tipo_sangre: varchar
+    * direccion: varchar
+    * nota_importante: text
+    * contacto_emergencia_1: serial
+    contacto_emergencia_2: serial
+}
+
+entity Antecedente_Paciente {
+    * paciente: serial
+    * antecedente: serial
+    ---
+    * fecha_inicio: date
+}
+
+entity Antecedente {
+    * id_detalle_antecedente: serial
+    ---
+    * descripcion: varchar
+    * tipo: varchar
+}
+
+entity Tratamiento {
+    * id_tratamiento: serial
+    ---
+    * descripcion: varchar
+    detalle_farmacologia: serial
+}
+
+entity Detalle_Farmacologia {
+    * id_detalle_farmacologia: serial
+    ---
+    * dosis: double precision
+    * unidad_dosis: varchar
+    * frecuencia_dosis: integer
+}
+
+entity Tratamiento_Visita {
+    * visita: serial
+    * tratamiento: serial
+}
+
+entity Visita {
+    * id_visita: serial
+    ---
+    * paciente: serial
+    * motivo: varchar
+    * fecha: timestamp
+    * diagnostico: text
+    * referencia: text
+    examen_fisico: serial
+}
+
+entity Examen_Fisico {
+    * id_examen_fisico: serial
+    ---
+    * descripcion: varchar
+    * frecuencia_respiratoria: integer
+    * temperatura: double precision
+    * saturacion_oxigeno: integer
+    * glucometria: integer
+    * frecuencia_cardiaca: integer
+    * presion_arterial: integer
+}
+
+entity Formulario {
+    * id_formulario: serial
+    ---
+    * edicion: varchar
+    * fecha: timestamp
+}
+
+entity Respuesta_Formulario {
+    * formulario: serial
+    * paciente: serial
+}
+
+Usuario ||--o{ Sesion
+
+Paciente ||--o{ Antecedente_Paciente
+Paciente ||--|| Contacto_Emergencia
+Paciente ||--o| Contacto_Emergencia
+
+Paciente ||--o{ Visita
+Visita ||--o| Examen_Fisico
+
+Paciente ||--|{ Respuesta_Formulario
+Formulario ||--|{ Respuesta_Formulario
+
+Antecedente_Paciente }|--|| Antecedente
+Antecedente_Paciente }|--|| Tratamiento
+
+Visita ||--o{ Tratamiento_Visita
+Tratamiento ||--o{ Tratamiento_Visita
+
+Tratamiento ||--o| Detalle_Farmacologia
+
+@enduml
