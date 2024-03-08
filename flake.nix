@@ -32,18 +32,31 @@
           cargoLock.lockFile = ./backend/Cargo.lock;
         };
 
-				dockerImage = pkgs.dockerTools.buildImage {
-					name = "sanitas_backend_img";
-					config = {
-						Cmd = [
-							"${myRustPackage}/bin/sanitas_backend"
-						];
-					};
-				};
+        dockerImage = pkgs.dockerTools.buildImage {
+          name = "sanitas_backend_img";
+          config = {
+            Cmd = [
+              "${myRustPackage}/bin/sanitas_backend"
+            ];
+          };
+        };
+        genWikiImagesApp = pkgs.writeShellApplication {
+          name = "sanitas_puml_to_svg";
+          runtimeInputs = with pkgs; [plantuml];
+          text = ''
+            plantuml -tsvg -o ../imgs wiki/**/diagrams
+          '';
+        };
       in {
         packages = {
           rustPackage = myRustPackage;
-					docker = dockerImage;
+          docker = dockerImage;
+        };
+        apps = {
+          generateWikiImages = {
+            type = "app";
+            program = "${genWikiImagesApp.outPath}/bin/sanitas_puml_to_svg";
+          };
         };
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
@@ -55,7 +68,7 @@
             sqlfluff # SQL linter and formatter
 
             # Backend
-						(rust-bin.stable.latest.default)
+            (rust-bin.stable.latest.default)
 
             # Frontend
             nodejs_20
