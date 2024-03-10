@@ -1,5 +1,6 @@
 @startuml
 !theme crt-green
+skinparam linetype ortho
 
 entity Usuario {
     * username: varchar
@@ -8,14 +9,14 @@ entity Usuario {
 
 entity Sesion {
     * token: varchar
-    ---
+    --
 		* username: varchar
     * created: timestamp
 }
 
 entity Contacto_Emergencia {
-    * id_contacto: serial
-    ---
+    * id_contacto: serial <<generated>>
+    --
     * nombre: varchar
     * parentesco: varchar
     * telefono: varchar
@@ -23,7 +24,7 @@ entity Contacto_Emergencia {
 
 entity Paciente {
     * carnet: varchar
-    ---
+    --
     * es_estudiante: boolean
     * nombres: varchar
     * apellidos: varchar
@@ -36,58 +37,73 @@ entity Paciente {
     * tipo_sangre: varchar
     * direccion: varchar
     * nota_importante: text
-    * contacto_emergencia_1: serial
-    contacto_emergencia_2: serial
+    * contacto_emergencia_1: serial <<FK>>
+    contacto_emergencia_2: serial <<FK>>
 }
 
 entity Antecedente_Paciente {
-    * paciente: serial
-    * antecedente: serial
-    ---
-    * fecha_inicio: date
+	* id_antecedente_paciente: serial <<generated>>
+	* paciente: serial <<FK>>
+	* antecedente: serial <<FK>>
+	--
+	* fecha_inicio: date
 }
 
 entity Antecedente {
-    * id_detalle_antecedente: serial
-    ---
+	* id_antecedente: serial <<generated>>
+	--
+	* tipo: serial <<FK>>
+	* descripcion: varchar
+}
+
+entity Tipo_Antecedente {
+    * id_tipo: serial <<generated>>
+    --
     * descripcion: varchar
-    * tipo: varchar
 }
 
 entity Tratamiento {
-    * id_tratamiento: serial
-    ---
+    * id_tratamiento: serial <<generated>>
+    --
     * descripcion: varchar
-    detalle_farmacologia: serial
+}
+
+entity Tratamiento_Antecedente {
+	* antecedente_paciente: serial <<FK>>
+	* tratamiento: serial <<FK>>
+	--
+	detalle_farmacologia: serial <<FK>>
 }
 
 entity Detalle_Farmacologia {
-    * id_detalle_farmacologia: serial
-    ---
+    * id_detalle_farmacologia: serial <<generated>>
+    --
     * dosis: double precision
     * unidad_dosis: varchar
     * frecuencia_dosis: integer
 }
 
 entity Tratamiento_Visita {
-    * visita: serial
-    * tratamiento: serial
+    * visita: serial <<FK>>
+    * tratamiento: serial <<FK>>
+    --
+    detalle_farmacologia: serial <<FK>>
 }
 
 entity Visita {
-    * id_visita: serial
-    ---
-    * paciente: serial
+    * id_visita: serial <<generated>>
+    --
+    * paciente: serial <<FK>>
     * motivo: varchar
     * fecha: timestamp
     * diagnostico: text
     * referencia: text
-    examen_fisico: serial
+    examen_fisico: serial <<FK>>
 }
 
 entity Examen_Fisico {
-    * id_examen_fisico: serial
-    ---
+    * id_examen_fisico: serial <<generated>>
+    --
     * descripcion: varchar
     * frecuencia_respiratoria: integer
     * temperatura: double precision
@@ -98,15 +114,17 @@ entity Examen_Fisico {
 }
 
 entity Formulario {
-    * id_formulario: serial
-    ---
+    * id_formulario: serial <<generated>>
+    --
     * edicion: varchar
     * fecha: timestamp
 }
 
 entity Respuesta_Formulario {
-    * formulario: serial
-    * paciente: serial
+    * formulario: serial <<FK>>
+    * paciente: serial <<FK>>
+    --
+    * fecha: timestamp
 }
 
 Usuario ||--o{ Sesion
@@ -122,11 +140,21 @@ Paciente ||--|{ Respuesta_Formulario
 Formulario ||--|{ Respuesta_Formulario
 
 Antecedente_Paciente }|--|| Antecedente
-Antecedente_Paciente }|--|| Tratamiento
 
 Visita ||--o{ Tratamiento_Visita
 Tratamiento ||--o{ Tratamiento_Visita
 
-Tratamiento ||--o| Detalle_Farmacologia
+Tratamiento ||--o{ Tratamiento_Antecedente
+Tratamiento_Antecedente }o--|| Antecedente_Paciente
 
+Detalle_Farmacologia |o--|| Tratamiento_Visita
+Detalle_Farmacologia |o--|| Tratamiento_Antecedente
+
+Antecedente }o--||  Tipo_Antecedente
+
+
+note left of Usuario::password
+This field must only 
+contain hashed passwords
+end note
 @enduml
