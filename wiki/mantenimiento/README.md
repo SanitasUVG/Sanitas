@@ -15,5 +15,6 @@ sequenceDiagram
 
     Database -->> Backend: Date of generation
     Backend -->> Client: session token
-
 ```
+
+Si quieres consulta nuestra [Metodología de Desarrollo](./Metodologia_de_desarrollo.md)
