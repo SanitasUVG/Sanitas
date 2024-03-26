@@ -8,8 +8,8 @@ Cada `feature` que agreguemos será desarrollada en su propia rama y únicamente
 Debido a la gran cantidad de PRs que se pueden generar al momento de usar esta metodología y debido a que este es un monorepo se decidió designar encargados según el área de trabajo, estas personas son las únicas con permiso de darle merge a las PRs en cada una de estas áreas:
 
 - Database:
-- Backend: @ElrohirGT
-- Nix env: @ElrohirGT
+- Backend: [@ElrohirGT](https://github.com/ElrohirGT)
+- Nix env: [@ElrohirGT](https://github.com/ElrohirGT)
 - Frontend:
 - Wiki:
 
