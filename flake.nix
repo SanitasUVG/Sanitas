@@ -3,93 +3,100 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-23.11";
-    flake-utils.url = "github:numtide/flake-utils";
+    systems.url = "github:nix-systems/default";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  nixConfig = {
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
   };
 
   outputs = {
+    self,
     nixpkgs,
-    flake-utils,
+    systems,
     rust-overlay,
+    devenv,
     ...
-  }:
-    flake-utils.lib.eachDefaultSystem (
+  } @ inputs: let
+    overlays = [(import rust-overlay)];
+    forEachSystem = nixpkgs.lib.genAttrs (import systems);
+  in {
+    packages = forEachSystem (
       system: let
-        dbPort = "5433";
-        overlays = [(import rust-overlay)];
+        # dbPort = "5433";
         pkgs = import nixpkgs {inherit system overlays;};
         rustVersion = pkgs.rust-bin.stable.latest.default;
-
         rustPlatform = pkgs.makeRustPlatform {
           cargo = rustVersion;
           rustc = rustVersion;
         };
-
-        myRustPackage = rustPlatform.buildRustPackage {
+        sanitasBackendPackage = rustPlatform.buildRustPackage {
           pname = "sanitas_backend";
           version = "0.1.0";
           src = ./backend;
           cargoLock.lockFile = ./backend/Cargo.lock;
         };
+      in {
+        # For setting up devenv
+        devenv-up = self.devShells.${system}.default.config.procfileScript;
 
-        dockerImage = pkgs.dockerTools.buildImage {
+        # Sanitas backend docker image, generate it using:
+        # `nix run .#sanitasBackendDocker`
+        sanitasBackendDocker = pkgs.dockerTools.buildImage {
           name = "sanitas_backend_img";
+          tag = "latest";
+
+          copyToRoot = pkgs.buildEnv {
+            name = "image-root";
+            paths = [sanitasBackendPackage];
+            pathsToLink = ["/"];
+          };
+
           config = {
             Cmd = [
-              "${myRustPackage}/bin/sanitas_backend"
+              "/${sanitasBackendPackage}/bin/sanitas_backend"
             ];
           };
         };
-        genWikiImagesApp = pkgs.writeShellApplication {
-          name = "sanitas_puml_to_svg";
-          runtimeInputs = with pkgs; [plantuml];
-          text = ''
-            plantuml -tsvg -o ../imgs wiki/**/diagrams
-          '';
-        };
-      in {
-        packages = {
-          rustPackage = myRustPackage;
-          docker = dockerImage;
-        };
-        apps = {
-          generateWikiImages = {
-            type = "app";
-            program = "${genWikiImagesApp.outPath}/bin/sanitas_puml_to_svg";
-          };
-        };
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            # Utilities
-            rm-improved
-
-            # Database
-            postgresql
-            sqlfluff # SQL linter and formatter
-
-            # Backend
-            (rust-bin.stable.latest.default)
-
-            # Frontend
-            nodejs_20
-            yarn
-          ];
-          shellHook = ''
-            # General utilities
-            alias rm="rip"
-
-            # Start the service
-            alias dbStart="pg_ctl -D .tmp/data -l dbLogfile -o \"--unix-socket-directories='$PWD' --port=${dbPort} \" start"
-            # Stop the service
-            alias dbStop="pg_ctl -D .tmp/data stop"
-            # Remove everything related to the DB
-            alias dbUnsetup="dbStop; rm .tmp/ dbLogfile"
-            # Setup the postgres DB and start it
-            alias dbSetup="initdb -D .tmp/data \
-            	&& dbStart \
-            	&& createdb -h 127.0.0.1 -p ${dbPort} mydb"
-          '';
-        };
       }
     );
+
+    devShells = forEachSystem (system: let
+      pkgs = import nixpkgs {inherit system overlays;};
+    in {
+      default = devenv.lib.mkShell {
+        inherit pkgs inputs;
+        modules = [
+          {
+            packages = with pkgs; [
+              # Utilities
+              rm-improved
+
+              # Database
+              postgresql
+              sqlfluff # SQL linter and formatter
+
+              # Backend
+              (rust-bin.stable.latest.default)
+
+              # Frontend
+              nodejs_20
+              yarn
+              dprint # Javascript formatter
+              oxlint # Javascript linter
+            ];
+            enterShell = ''
+              alias rm=rip
+            '';
+          }
+        ];
+      };
+    });
+  };
 }
