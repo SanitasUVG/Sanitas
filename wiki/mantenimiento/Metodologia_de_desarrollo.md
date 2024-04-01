@@ -10,7 +10,7 @@ Debido a la gran cantidad de PRs que se pueden generar al momento de usar esta m
 - Database:
 - Backend: [@ElrohirGT](https://github.com/ElrohirGT)
 - Nix env: [@ElrohirGT](https://github.com/ElrohirGT)
-- Frontend:
+- Frontend: [@XavierLopez25](https://github.com/XavierLopez25)
 - Wiki:
 
 El siguiente diagrama ilustra un poco el estado y la relación de las ramas entre sí:
