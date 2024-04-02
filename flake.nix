@@ -115,12 +115,15 @@
                 # Formatters
                 taplo.enable = true;
                 alejandra.enable = true;
+                mdformat = {
+                  enable = true;
+                  name = "mdformat";
+                  description = "A common mark compliant markdown formatter";
+                  files = "\.md$";
+                  entry = "${pkgs.python310Packages.mdformat}/bin/mdformat";
+                };
               };
               settings = {
-                markdownlint = {
-                  default = true;
-                  MD013 = false;
-                };
                 rust = {
                   cargoManifestPath = "backend/Cargo.toml";
                 };
