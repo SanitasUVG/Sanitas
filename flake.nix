@@ -103,15 +103,6 @@
 
             pre-commit = {
               hooks = {
-                # Linters
-                clippy.enable = true;
-                actionlint.enable = true;
-                yamllint.enable = true;
-                cargo-check.enable = true;
-                commitizen.enable = true;
-                markdownlint.enable = true;
-                statix.enable = true;
-
                 # Formatters
                 taplo.enable = true;
                 alejandra.enable = true;
@@ -122,6 +113,15 @@
                   files = "\.md$";
                   entry = "${pkgs.python310Packages.mdformat}/bin/mdformat";
                 };
+
+                # Linters
+                clippy.enable = true;
+                actionlint.enable = true;
+                yamllint.enable = true;
+                cargo-check.enable = true;
+                commitizen.enable = true;
+                markdownlint.enable = true;
+                statix.enable = true;
               };
               settings = {
                 rust = {
