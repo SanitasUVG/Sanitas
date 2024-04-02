@@ -116,11 +116,17 @@
                 taplo.enable = true;
                 alejandra.enable = true;
               };
-              settings.rust = {
-                cargoManifestPath = "backend/Cargo.toml";
-              };
-              settings.clippy = {
-                allFeatures = true;
+              settings = {
+                markdownlint = {
+                  default = true;
+                  MD013 = false;
+                };
+                rust = {
+                  cargoManifestPath = "backend/Cargo.toml";
+                };
+                clippy = {
+                  allFeatures = true;
+                };
               };
             };
           }
