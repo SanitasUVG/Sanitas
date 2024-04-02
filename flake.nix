@@ -103,6 +103,17 @@
 
             pre-commit = {
               hooks = {
+                # Formatters
+                taplo.enable = true;
+                alejandra.enable = true;
+                mdformat = {
+                  enable = true;
+                  name = "mdformat";
+                  description = "A common mark compliant markdown formatter";
+                  files = "\.md$";
+                  entry = "${pkgs.python310Packages.mdformat}/bin/mdformat";
+                };
+
                 # Linters
                 clippy.enable = true;
                 actionlint.enable = true;
@@ -111,16 +122,14 @@
                 commitizen.enable = true;
                 markdownlint.enable = true;
                 statix.enable = true;
-
-                # Formatters
-                taplo.enable = true;
-                alejandra.enable = true;
               };
-              settings.rust = {
-                cargoManifestPath = "backend/Cargo.toml";
-              };
-              settings.clippy = {
-                allFeatures = true;
+              settings = {
+                rust = {
+                  cargoManifestPath = "backend/Cargo.toml";
+                };
+                clippy = {
+                  allFeatures = true;
+                };
               };
             };
           }
