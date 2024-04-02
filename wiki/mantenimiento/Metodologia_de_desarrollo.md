@@ -19,6 +19,7 @@ merge a las PRs en cada una de estas áreas:
 
 - Database:
 - Backend: [@ElrohirGT](https://github.com/ElrohirGT)
+  y [@DanielDubon](https://github.com/DanielDubon)
 - Nix env: [@ElrohirGT](https://github.com/ElrohirGT)
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
