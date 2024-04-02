@@ -9,6 +9,10 @@
       url = "github:cachix/devenv";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -82,9 +86,6 @@
               postgresql
               sqlfluff # SQL linter and formatter
 
-              # Backend
-              (rust-bin.stable.latest.default)
-
               # Frontend
               nodejs_20
               yarn
@@ -94,6 +95,34 @@
             enterShell = ''
               alias rm=rip
             '';
+
+            languages.rust = {
+              enable = true;
+              channel = "stable";
+            };
+
+            pre-commit = {
+              hooks = {
+                # Linters
+                clippy.enable = true;
+                actionlint.enable = true;
+                yamllint.enable = true;
+                cargo-check.enable = true;
+                commitizen.enable = true;
+                markdownlint.enable = true;
+                statix.enable = true;
+
+                # Formatters
+                taplo.enable = true;
+                alejandra.enable = true;
+              };
+              settings.rust = {
+                cargoManifestPath = "backend/Cargo.toml";
+              };
+              settings.clippy = {
+                allFeatures = true;
+              };
+            };
           }
         ];
       };
