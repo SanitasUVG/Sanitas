@@ -73,8 +73,6 @@ gitGraph
 
 Para los commits se utilizará el formato de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-asdflkjlasdifjlkj
-
 ## Formatos de las PRs
 
 Las PRs deben seguir el formato de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),
