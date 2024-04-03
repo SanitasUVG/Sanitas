@@ -24,6 +24,7 @@ review a las PRs en cada una de estas áreas:
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
 - Wiki:
+- CI/CD: [@ElrohirGT](https://github.com/ElrohirGT), [@XavierLopez25](https://github.com/XavierLopez25)
 
 La persona que crea la PR es la responsable de darle merge dentro del repositorio.
 Al momento de mergear una PR por favor seleccionar la opción `squash and merge`.
