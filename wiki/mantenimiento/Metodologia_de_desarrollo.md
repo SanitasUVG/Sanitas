@@ -28,6 +28,8 @@ review a las PRs en cada una de estas áreas:
 La persona que crea la PR es la responsable de darle merge dentro del repositorio.
 Al momento de mergear una PR por favor seleccionar la opción `squash and merge`.
 
+Para contribuir puedes leer nuestra [Guía de Contribución](Guia_de_contribuci%C3%B3n.md)
+
 El siguiente diagrama ilustra un poco el estado
 y la relación de las ramas entre sí:
 
