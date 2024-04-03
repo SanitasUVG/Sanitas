@@ -14,8 +14,8 @@ solo se pueden realizar cambios usando una Pull Request.
 
 Debido a la gran cantidad de PRs que se pueden generar al momento de usar esta
 metodología y debido a que este es un monorepo se decidió designar encargados
-según el área de trabajo, estas personas son las únicas con permiso de darle
-merge a las PRs en cada una de estas áreas:
+según el área de trabajo, estas personas son las únicas con permiso de hacer
+review a las PRs en cada una de estas áreas:
 
 - Database:
 - Backend: [@ElrohirGT](https://github.com/ElrohirGT)
@@ -24,6 +24,9 @@ merge a las PRs en cada una de estas áreas:
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
 - Wiki:
+
+La persona que crea la PR es la responsable de darle merge dentro del repositorio.
+Al momento de mergear una PR por favor seleccionar la opción `squash and merge`.
 
 Para contribuir puedes leer nuestra [Guía de Contribución](Guia_de_contribuci%C3%B3n.md)
 
@@ -75,6 +78,14 @@ gitGraph
 ```
 
 Para los commits se utilizará el formato de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+A continuación se explican la mayoría de tags que se utilizarán:
+
+- fix: Se arregló algo dentro del repositorio.
+- feat: Se agregó algo nuevo dentro del repositorio.
+- chore: Representa una tarea extra, por ejemplo formatear código.
+- refactor: No se agregó ninguna funcionalidad nueva al repositorio ni tampoco
+  se arregló un bug, simplemente se refactorizó algo para hacerlo más mantenible.
 
 ## Formatos de las PRs
 
