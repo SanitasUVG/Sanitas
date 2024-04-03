@@ -24,6 +24,7 @@ merge a las PRs en cada una de estas áreas:
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
 - Wiki:
+- CI/CD:
 
 El siguiente diagrama ilustra un poco el estado
 y la relación de las ramas entre sí:
