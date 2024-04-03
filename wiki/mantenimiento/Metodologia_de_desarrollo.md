@@ -25,6 +25,8 @@ merge a las PRs en cada una de estas áreas:
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
 - Wiki:
 
+Para contribuir puedes leer nuestra [Guía de Contribución](Guia_de_contribuci%C3%B3n.md)
+
 El siguiente diagrama ilustra un poco el estado
 y la relación de las ramas entre sí:
 
