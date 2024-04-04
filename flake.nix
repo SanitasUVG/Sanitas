@@ -73,6 +73,8 @@
 
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system overlays;};
+      strFromDBFile = file: builtins.readFile ./database/${file};
+      dbInitFile = strFromDBFile "init.sql";
     in {
       default = devenv.lib.mkShell {
         inherit pkgs inputs;
@@ -101,6 +103,20 @@
               channel = "stable";
             };
 
+            services.postgres = {
+              enable = true;
+              listen_addresses = "127.0.0.1";
+              port = 5566;
+              initialScript = dbInitFile;
+              settings = {
+                log_connections = true;
+                log_statement = "all";
+                logging_collector = true;
+                log_disconnections = true;
+                log_destination = "stderr";
+              };
+            };
+
             pre-commit = {
               hooks = {
                 # Formatters
@@ -113,6 +129,13 @@
                   files = "\.md$";
                   entry = "${pkgs.python310Packages.mdformat}/bin/mdformat";
                 };
+                sqlFormatter = {
+                  enable = true;
+                  name = "SQLFluff - Formatter";
+                  description = "A multidialect SQL linter and formatter";
+                  files = "\.sql$";
+                  entry = "${pkgs.sqlfluff}/bin/sqlfluff format --dialect postgres";
+                };
 
                 # Linters
                 clippy.enable = true;
@@ -122,6 +145,13 @@
                 commitizen.enable = true;
                 markdownlint.enable = true;
                 statix.enable = true;
+                sqlLinter = {
+                  enable = true;
+                  name = "SQLFluff - Linter";
+                  description = "A multidialect SQL linter and formatter";
+                  files = "\.sql$";
+                  entry = "${pkgs.sqlfluff}/bin/sqlfluff lint --dialect postgres";
+                };
               };
               settings = {
                 rust = {
