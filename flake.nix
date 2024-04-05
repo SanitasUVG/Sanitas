@@ -31,7 +31,7 @@
     overlays = [(import rust-overlay)];
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
     postgresPort = 5566;
-    postgresHost = "127.0.01";
+    postgresHost = "127.0.0.1";
   in {
     packages = forEachSystem (
       system: let
