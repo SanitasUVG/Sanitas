@@ -30,6 +30,8 @@
   } @ inputs: let
     overlays = [(import rust-overlay)];
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
+    postgresPort = 5566;
+    postgresHost = "127.0.0.1";
   in {
     packages = forEachSystem (
       system: let
@@ -68,11 +70,27 @@
             ];
           };
         };
+
+        restartServices = pkgs.writeShellApplication {
+          name = "Sanitas dev server restarter";
+          runtimeInputs = with pkgs; [ansi];
+          text = ''
+            echo -e "$(ansi yellow)"WARNING:"$(ansi reset)" This script must be run on the project root directory!
+
+            echo "Trying to remove old .devenv..."
+            rm ./.devenv/state/postgres || rm -r ./.devenv/state/postgres || true
+
+            echo "Entering devshell..."
+            nix develop --impure . -c devenv up
+          '';
+        };
       }
     );
 
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system overlays;};
+      strFromDBFile = file: builtins.readFile ./database/${file};
+      dbInitFile = strFromDBFile "init.sql";
     in {
       default = devenv.lib.mkShell {
         inherit pkgs inputs;
@@ -101,6 +119,20 @@
               channel = "stable";
             };
 
+            services.postgres = {
+              enable = true;
+              listen_addresses = postgresHost;
+              port = postgresPort;
+              initialScript = dbInitFile;
+              settings = {
+                log_connections = true;
+                log_statement = "all";
+                logging_collector = true;
+                log_disconnections = true;
+                log_destination = "stderr";
+              };
+            };
+
             pre-commit = {
               hooks = {
                 # Formatters
@@ -113,6 +145,13 @@
                   files = "\.md$";
                   entry = "${pkgs.python310Packages.mdformat}/bin/mdformat";
                 };
+                sqlFormatter = {
+                  enable = true;
+                  name = "SQLFluff - Formatter";
+                  description = "A multidialect SQL linter and formatter";
+                  files = "\.sql$";
+                  entry = "${pkgs.sqlfluff}/bin/sqlfluff format --dialect postgres";
+                };
 
                 # Linters
                 clippy.enable = true;
@@ -122,6 +161,13 @@
                 commitizen.enable = true;
                 markdownlint.enable = true;
                 statix.enable = true;
+                sqlLinter = {
+                  enable = true;
+                  name = "SQLFluff - Linter";
+                  description = "A multidialect SQL linter and formatter";
+                  files = "\.sql$";
+                  entry = "${pkgs.sqlfluff}/bin/sqlfluff lint --dialect postgres";
+                };
               };
               settings = {
                 rust = {
