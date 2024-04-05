@@ -1,5 +1,8 @@
 # Base de Datos
-La base de datos para Sanitas es una de tipo relacional programada en postgres, el diagrama ER de esta es el siguiente:
+
+La base de datos para Sanitas es una de tipo relacional programada en postgres,
+el diagrama ER de esta es el siguiente:
+
 ```mermaid
 ---
 title: Sanitas ER Diagram
@@ -101,6 +104,14 @@ erDiagram
         serial      paciente
         timestamp   fecha
     }
+    PRIVILEGE {
+        serial      id_privilege
+        varchar     action_user
+        varchar     username
+    }
+    USUARIO ||--o{ SESION: ""
+    USUARIO ||--|{ PRIVILEGE: ""
+
     USUARIO ||--o{ SESION: ""
 
     PACIENTE ||--o{ ANTECEDENTE_PACIENTE: ""
