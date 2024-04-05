@@ -104,6 +104,14 @@ erDiagram
         serial      paciente
         timestamp   fecha
     }
+    PRIVILEGE {
+        serial      id_privilege
+        varchar     action_user
+        varchar     username
+    }
+    USUARIO ||--o{ SESION: ""
+    USUARIO ||--|{ PRIVILEGE: ""
+
     USUARIO ||--o{ SESION: ""
 
     PACIENTE ||--o{ ANTECEDENTE_PACIENTE: ""
