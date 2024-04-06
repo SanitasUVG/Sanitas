@@ -105,7 +105,7 @@ erDiagram
         timestamp   fecha
     }
     PRIVILEGIO_USUARIO {
-        varchar     privilegio_usuario
+        serial     privilegio_usuario
         varchar     username
     }
     PRIVILEGIO {
