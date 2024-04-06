@@ -24,7 +24,7 @@ erDiagram
         varchar telefono
     }
     PACIENTE {
-        varchar carnet
+        int carnet
         boolean es_estudiante
         varchar nombres
         varchar apellidos
