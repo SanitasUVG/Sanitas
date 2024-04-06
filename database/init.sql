@@ -36,7 +36,7 @@ CREATE TABLE contacto_emergencia (
 
 -- PACIENTE table
 CREATE TABLE paciente (
-    carnet INT PRIMARY KEY,
+    carnet VARCHAR(255) PRIMARY KEY,
     es_estudiante BOOLEAN NOT NULL,
     nombres VARCHAR(255) NOT NULL,
     apellidos VARCHAR(255) NOT NULL,
@@ -69,11 +69,10 @@ CREATE TABLE antecedente (
 -- ANTECEDENTE_PACIENTE table
 CREATE TABLE antecedente_paciente (
     id_antecedente_paciente SERIAL PRIMARY KEY,
-    paciente INT REFERENCES paciente (carnet),
+    paciente VARCHAR(255) REFERENCES paciente (carnet),
     antecedente INT REFERENCES antecedente (id_antecedente),
     fecha_inicio DATE NOT NULL
 );
-
 -- TRATAMIENTO table
 CREATE TABLE tratamiento (
     id_tratamiento SERIAL PRIMARY KEY,
@@ -114,7 +113,7 @@ CREATE TABLE examen_fisico (
 -- VISITA table
 CREATE TABLE visita (
     id_visita SERIAL PRIMARY KEY,
-    paciente INT REFERENCES paciente (carnet),
+    paciente VARCHAR(255) REFERENCES paciente (carnet),
     motivo VARCHAR(5000) NOT NULL,
     fecha TIMESTAMP NOT NULL,
     diagnostico TEXT,
@@ -141,7 +140,7 @@ CREATE TABLE formulario (
 -- RESPUESTA_FORMULARIO table
 CREATE TABLE respuesta_formulario (
     formulario INT REFERENCES formulario (id_formulario),
-    paciente INT REFERENCES paciente (carnet),
+    paciente VARCHAR(255) REFERENCES paciente (carnet),
     fecha TIMESTAMP NOT NULL
 );
 
