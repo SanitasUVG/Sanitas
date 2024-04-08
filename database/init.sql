@@ -15,84 +15,94 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO backend;
 
 -- USUARIO table
 CREATE TABLE usuario (
-    username VARCHAR(255) PRIMARY KEY,
-    password VARCHAR(255) NOT NULL
+    username VARCHAR(16) PRIMARY KEY,
+    password VARCHAR(64) NOT NULL
 );
 
 -- SESION table
 CREATE TABLE sesion (
-    token VARCHAR(600) PRIMARY KEY,
-    username VARCHAR(255) REFERENCES usuario (username),
+    token VARCHAR(128) PRIMARY KEY,
+    username VARCHAR(16) REFERENCES usuario (username) NOT NULL,
     created TIMESTAMP NOT NULL
+);
+
+-- PARENTESCO table
+CREATE TABLE parentesco (
+    id_parentesco SERIAL PRIMARY KEY,
+    nombre VARCHAR(16) NOT NULL
 );
 
 -- CONTACTO_EMERGENCIA table
 CREATE TABLE contacto_emergencia (
     id_contacto SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    parentesco VARCHAR(255) NOT NULL,
-    telefono VARCHAR(255) NOT NULL
+    nombre VARCHAR(64) NOT NULL,
+    parentesco INT REFERENCES parentesco (id_parentesco) NOT NULL,
+    telefono VARCHAR(16) NOT NULL
 );
 
 -- PACIENTE table
+-- Normalizar a 4FN
 CREATE TABLE paciente (
-    carnet VARCHAR(255) PRIMARY KEY,
+    carnet VARCHAR(10) PRIMARY KEY,
     es_estudiante BOOLEAN NOT NULL,
-    nombres VARCHAR(255) NOT NULL,
-    apellidos VARCHAR(255) NOT NULL,
+    nombres VARCHAR(64) NOT NULL,
+    apellidos VARCHAR(64) NOT NULL,
     sexo CHAR NOT NULL,
     correo VARCHAR(255) NOT NULL,
-    telefono VARCHAR(255) NOT NULL,
-    seguro VARCHAR(255) NOT NULL,
+    telefono VARCHAR(16) NOT NULL,
+    seguro VARCHAR(32) NOT NULL,
     carrera_o_dept VARCHAR(255) NOT NULL,
     fecha_nacimiento DATE NOT NULL,
-    tipo_sangre VARCHAR(255) NOT NULL,
-    direccion VARCHAR(255) NOT NULL,
+    tipo_sangre VARCHAR(3) NOT NULL,
+    direccion TEXT NOT NULL,
     nota_importante TEXT,
-    contacto_emergencia_1 INT REFERENCES contacto_emergencia (id_contacto),
+    contacto_emergencia_1 INT REFERENCES contacto_emergencia (
+        id_contacto
+    ) NOT NULL,
     contacto_emergencia_2 INT REFERENCES contacto_emergencia (id_contacto)
 );
 
 -- TIPO_ANTECEDENTE table
 CREATE TABLE tipo_antecedente (
     id_tipo SERIAL PRIMARY KEY,
-    descripcion VARCHAR(1000) NOT NULL
+    nombre VARCHAR(64) NOT NULL
 );
 
 -- ANTECEDENTE table
 CREATE TABLE antecedente (
     id_antecedente SERIAL PRIMARY KEY,
-    tipo INT REFERENCES tipo_antecedente (id_tipo),
-    descripcion VARCHAR(5000) NOT NULL
+    tipo INT REFERENCES tipo_antecedente (id_tipo) NOT NULL,
+    descripcion VARCHAR(128) NOT NULL
 );
 
 -- ANTECEDENTE_PACIENTE table
 CREATE TABLE antecedente_paciente (
     id_antecedente_paciente SERIAL PRIMARY KEY,
-    paciente VARCHAR(255) REFERENCES paciente (carnet),
-    antecedente INT REFERENCES antecedente (id_antecedente),
+    paciente VARCHAR(10) REFERENCES paciente (carnet) NOT NULL,
+    antecedente INT REFERENCES antecedente (id_antecedente) NOT NULL,
     fecha_inicio DATE NOT NULL
 );
+
 -- TRATAMIENTO table
 CREATE TABLE tratamiento (
     id_tratamiento SERIAL PRIMARY KEY,
-    descripcion VARCHAR(5000) NOT NULL
+    nombre VARCHAR(64) NOT NULL
 );
 
 -- DETALLE_FARMACOLOGIA table
 CREATE TABLE detalle_farmacologia (
     id_detalle_farmacologia SERIAL PRIMARY KEY,
     dosis DOUBLE PRECISION NOT NULL,
-    unidad_dosis VARCHAR(255) NOT NULL,
+    unidad_dosis VARCHAR(32) NOT NULL,
     frecuencia_dosis INTEGER NOT NULL
 );
 
 -- TRATAMIENTO_ANTECEDENTE table
-CREATE TABLE tratamiento_antecedente (
-    antecedente_paciente INT PRIMARY KEY REFERENCES antecedente_paciente (
+CREATE TABLE tratamiento_antecedente_paciente (
+    antecedente_paciente INT REFERENCES antecedente_paciente (
         id_antecedente_paciente
-    ),
-    tratamiento INT REFERENCES tratamiento (id_tratamiento),
+    ) NOT NULL,
+    tratamiento INT REFERENCES tratamiento (id_tratamiento) NOT NULL,
     detalle_farmacologia INT REFERENCES detalle_farmacologia (
         id_detalle_farmacologia
     )
@@ -101,22 +111,22 @@ CREATE TABLE tratamiento_antecedente (
 -- EXAMEN_FISICO table
 CREATE TABLE examen_fisico (
     id_examen_fisico SERIAL PRIMARY KEY,
-    descripcion VARCHAR(6000) NOT NULL,
-    frecuencia_respiratoria INTEGER NOT NULL,
-    temperatura DOUBLE PRECISION NOT NULL,
-    saturacion_oxigeno INTEGER NOT NULL,
-    glucometria INTEGER NOT NULL,
-    frecuencia_cardiaca INTEGER NOT NULL,
-    presion_arterial INTEGER NOT NULL
+    descripcion TEXT NOT NULL,
+    frecuencia_respiratoria INTEGER,
+    temperatura DOUBLE PRECISION,
+    saturacion_oxigeno INTEGER,
+    glucometria INTEGER,
+    frecuencia_cardiaca INTEGER,
+    presion_arterial INTEGER
 );
 
 -- VISITA table
 CREATE TABLE visita (
     id_visita SERIAL PRIMARY KEY,
-    paciente VARCHAR(255) REFERENCES paciente (carnet),
-    motivo VARCHAR(5000) NOT NULL,
-    fecha TIMESTAMP NOT NULL,
-    diagnostico TEXT,
+    paciente VARCHAR(10) REFERENCES paciente (carnet),
+    motivo TEXT NOT NULL,
+    fecha TIMESTAMP NOT NULL DEFAULT NOW(),
+    diagnostico TEXT NOT NULL,
     referencia TEXT,
     examen_fisico INT REFERENCES examen_fisico (id_examen_fisico)
 );
@@ -133,15 +143,15 @@ CREATE TABLE tratamiento_visita (
 -- FORMULARIO table
 CREATE TABLE formulario (
     id_formulario SERIAL PRIMARY KEY,
-    edicion VARCHAR(1000) NOT NULL,
+    edicion VARCHAR(16) NOT NULL,
     fecha TIMESTAMP NOT NULL
 );
 
 -- RESPUESTA_FORMULARIO table
 CREATE TABLE respuesta_formulario (
-    formulario INT REFERENCES formulario (id_formulario),
-    paciente VARCHAR(255) REFERENCES paciente (carnet),
-    fecha TIMESTAMP NOT NULL
+    formulario INT REFERENCES formulario (id_formulario) NOT NULL,
+    paciente VARCHAR(10) REFERENCES paciente (carnet) NOT NULL,
+    fecha TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- PRIVILEGIO table
@@ -152,6 +162,6 @@ CREATE TABLE privilegio (
 
 -- PRIVILEGIO_USUARIO table
 CREATE TABLE privilegio_usuario (
-    privilegio_usuario INT REFERENCES privilegio (id_privilegio),
-    username VARCHAR(255) REFERENCES usuario (username)
+    privilegio INT REFERENCES privilegio (id_privilegio) NOT NULL,
+    username VARCHAR(16) REFERENCES usuario (username) NOT NULL
 );
