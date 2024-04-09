@@ -40,6 +40,12 @@ erDiagram
         serial  contacto_emergencia_1
         serial  contacto_emergencia_2
     }
+
+    TIPO_SANGRE{
+        int id_tipo_sangre
+        varchar tipo_sangre
+    }
+
     ANTECEDENTE_PACIENTE {
         serial  id_antecedente_paciente
         serial  paciente
@@ -123,6 +129,7 @@ erDiagram
     PACIENTE ||--o{ ANTECEDENTE_PACIENTE: ""
     PACIENTE ||--|| CONTACTO_EMERGENCIA: ""
     PACIENTE ||--o| CONTACTO_EMERGENCIA: ""
+    TIPO_SANGRE ||--|{ PACIENTE: ""
 
     PACIENTE ||--o{ VISITA: ""
     VISITA ||--o| EXAMEN_FISICO: ""
