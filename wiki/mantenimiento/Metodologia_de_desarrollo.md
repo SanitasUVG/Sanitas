@@ -17,13 +17,13 @@ metodología y debido a que este es un monorepo se decidió designar encargados
 según el área de trabajo, estas personas son las únicas con permiso de hacer
 review a las PRs en cada una de estas áreas:
 
-- Database:
+- Database: [@BiancaCalderon](https://github.com/BiancaCalderon), [@XavierLopez25](https://github.com/XavierLopez25)
 - Backend: [@ElrohirGT](https://github.com/ElrohirGT)
   y [@DanielDubon](https://github.com/DanielDubon)
 - Nix env: [@ElrohirGT](https://github.com/ElrohirGT) y [@DanielDubon](https://github.com/DanielDubon)
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
-- Wiki:
+- Wiki: [@BiancaCalderon](https://github.com/BiancaCalderon)
 - CI/CD: [@ElrohirGT](https://github.com/ElrohirGT), [@XavierLopez25](https://github.com/XavierLopez25)
 
 La persona que crea la PR es la responsable de darle merge dentro del repositorio.
