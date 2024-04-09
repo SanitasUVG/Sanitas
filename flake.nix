@@ -90,7 +90,7 @@
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system overlays;};
       strFromDBFile = file: builtins.readFile ./database/${file};
-      dbInitFile = strFromDBFile "init.sql";
+      dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql")];
     in {
       default = devenv.lib.mkShell {
         inherit pkgs inputs;
