@@ -25,8 +25,13 @@ CREATE TABLE contacto_emergencia (
     telefono VARCHAR(16) NOT NULL
 );
 
--- PACIENTE table
--- Normalizar a 4FN
+-- TIPO_SANGRE table
+CREATE TABLE tipo_sangre (
+    id_tipo_sangre INT PRIMARY KEY,
+    tipo_sangre VARCHAR(3)
+);
+
+-- PACIENTE table 
 CREATE TABLE paciente (
     carnet VARCHAR(10) PRIMARY KEY,
     es_estudiante BOOLEAN NOT NULL,
@@ -38,7 +43,9 @@ CREATE TABLE paciente (
     seguro VARCHAR(32) NOT NULL,
     carrera_o_dept VARCHAR(255) NOT NULL,
     fecha_nacimiento DATE NOT NULL,
-    tipo_sangre VARCHAR(3) NOT NULL,
+    tipo_sangre INT REFERENCES tipo_sangre (
+        id_tipo_sangre
+    ) NOT NULL,
     direccion TEXT NOT NULL,
     nota_importante TEXT,
     contacto_emergencia_1 INT REFERENCES contacto_emergencia (
