@@ -52,3 +52,69 @@ INSERT INTO antecedente_paciente (paciente, antecedente, fecha_inicio) VALUES ('
 INSERT INTO antecedente_paciente (paciente, antecedente, fecha_inicio) VALUES ('3456789012', 3, '2020-03-15');
 INSERT INTO antecedente_paciente (paciente, antecedente, fecha_inicio) VALUES ('3456789012', 4, '2020-04-25');
 INSERT INTO antecedente_paciente (paciente, antecedente, fecha_inicio) VALUES ('3456789012', 5, '2020-05-13');
+
+INSERT INTO tratamiento (nombre) VALUES ('Analgésico');
+INSERT INTO tratamiento (nombre) VALUES ('Antibiótico');
+INSERT INTO tratamiento (nombre) VALUES ('Antihistamínico');
+INSERT INTO tratamiento (nombre) VALUES ('Antiinflamatorio');
+INSERT INTO tratamiento (nombre) VALUES ('Anticoagulante');
+
+
+
+INSERT INTO detalle_farmacologia (dosis, unidad_dosis, frecuencia_dosis) VALUES (500, 'mg', 1);
+INSERT INTO detalle_farmacologia (dosis, unidad_dosis, frecuencia_dosis) VALUES (250, 'mg', 2);
+INSERT INTO detalle_farmacologia (dosis, unidad_dosis, frecuencia_dosis) VALUES (100, 'mg', 3);
+INSERT INTO detalle_farmacologia (dosis, unidad_dosis, frecuencia_dosis) VALUES (50, 'mg', 4);
+INSERT INTO detalle_farmacologia (dosis, unidad_dosis, frecuencia_dosis) VALUES (10, 'mg', 6);
+
+
+INSERT INTO tratamiento_antecedente_paciente (antecedente_paciente, tratamiento, detalle_farmacologia) VALUES (1, 1, 1);
+INSERT INTO tratamiento_antecedente_paciente (antecedente_paciente, tratamiento, detalle_farmacologia) VALUES (2, 2, 2);
+INSERT INTO tratamiento_antecedente_paciente (antecedente_paciente, tratamiento, detalle_farmacologia) VALUES (3, 3, 3);
+INSERT INTO tratamiento_antecedente_paciente (antecedente_paciente, tratamiento, detalle_farmacologia) VALUES (4, 4, 4);
+INSERT INTO tratamiento_antecedente_paciente (antecedente_paciente, tratamiento, detalle_farmacologia) VALUES (5, 5, 5);
+
+
+
+INSERT INTO examen_fisico (descripcion, frecuencia_respiratoria, temperatura, saturacion_oxigeno, glucometria, frecuencia_cardiaca, presion_arterial) VALUES ('Paciente presenta tos seca.', 20, 37.2, 98, 110, 75, 120);
+INSERT INTO examen_fisico (descripcion, frecuencia_respiratoria, temperatura, saturacion_oxigeno, glucometria, frecuencia_cardiaca, presion_arterial) VALUES ('Paciente sin alteraciones.', 18, 36.5, 99, 90, 70, 110);
+INSERT INTO examen_fisico (descripcion, frecuencia_respiratoria, temperatura, saturacion_oxigeno, glucometria, frecuencia_cardiaca, presion_arterial) VALUES ('Paciente con dolor en el pecho.', 22, 38.0, 97, 95, 80, 130);
+INSERT INTO examen_fisico (descripcion, frecuencia_respiratoria, temperatura, saturacion_oxigeno, glucometria, frecuencia_cardiaca, presion_arterial) VALUES ('Paciente presenta dificultad para respirar.', 25, 37.8, 96, 120, 85, 140);
+INSERT INTO examen_fisico (descripcion, frecuencia_respiratoria, temperatura, saturacion_oxigeno, glucometria, frecuencia_cardiaca, presion_arterial) VALUES ('Paciente con mareos y sudoración.', 20, 36.7, 98, 100, 75, 115);
+
+INSERT INTO visita (paciente, motivo, fecha, diagnostico, referencia, examen_fisico) VALUES ('1234567890', 'Consulta por dolor abdominal.', '2024-04-09 10:00:00', 'Gastritis aguda', NULL, 1);
+INSERT INTO visita (paciente, motivo, fecha, diagnostico, referencia, examen_fisico) VALUES ('2345678901', 'Seguimiento por diabetes tipo 2.', '2024-04-09 11:15:00', 'Control de glucosa en sangre', NULL, 2);
+INSERT INTO visita (paciente, motivo, fecha, diagnostico, referencia, examen_fisico) VALUES ('3456789012', 'Dolor en el pecho intenso.', '2024-04-10 09:30:00', 'Infarto de miocardio', 'Referido a servicio de cardiología.', 3);
+INSERT INTO visita (paciente, motivo, fecha, diagnostico, referencia, examen_fisico) VALUES ('4567890123', 'Dificultad respiratoria.', '2024-04-11 14:45:00', 'Neumonía', NULL, 4);
+INSERT INTO visita (paciente, motivo, fecha, diagnostico, referencia, examen_fisico) VALUES ('5678901234', 'Mareos y sudoración.', '2024-04-12 08:00:00', 'Crisis hipertensiva', 'Referido a urgencias.', 5);
+
+INSERT INTO tratamiento_visita (visita, tratamiento, detalle_farmacologia) VALUES (1, 3, 1);
+INSERT INTO tratamiento_visita (visita, tratamiento, detalle_farmacologia) VALUES (2, 2, 2);
+INSERT INTO tratamiento_visita (visita, tratamiento, detalle_farmacologia) VALUES (3, 5, 3);
+INSERT INTO tratamiento_visita (visita, tratamiento, detalle_farmacologia) VALUES (4, 4, 4);
+INSERT INTO tratamiento_visita (visita, tratamiento, detalle_farmacologia) VALUES (5, 1, 5);
+
+INSERT INTO formulario (edicion, fecha) VALUES ('Primera', '2024-04-09 10:00:00');
+INSERT INTO formulario (edicion, fecha) VALUES ('Segunda', '2024-04-09 11:15:00');
+INSERT INTO formulario (edicion, fecha) VALUES ('Tercera', '2024-04-10 09:30:00');
+INSERT INTO formulario (edicion, fecha) VALUES ('Cuarta', '2024-04-11 14:45:00');
+INSERT INTO formulario (edicion, fecha) VALUES ('Quinta', '2024-04-12 08:00:00');
+
+INSERT INTO respuesta_formulario (formulario, paciente, fecha) VALUES (1, '1234567890', '2024-04-09 10:00:00');
+INSERT INTO respuesta_formulario (formulario, paciente, fecha) VALUES (2, '2345678901', '2024-04-09 11:15:00');
+INSERT INTO respuesta_formulario (formulario, paciente, fecha) VALUES (3, '3456789012', '2024-04-10 09:30:00');
+INSERT INTO respuesta_formulario (formulario, paciente, fecha) VALUES (4, '4567890123', '2024-04-11 14:45:00');
+INSERT INTO respuesta_formulario (formulario, paciente, fecha) VALUES (5, '5678901234', '2024-04-12 08:00:00');
+
+INSERT INTO privilegio (privilegio) VALUES ('Administrador');
+INSERT INTO privilegio (privilegio) VALUES ('Supervisor');
+INSERT INTO privilegio (privilegio) VALUES ('Médico');
+INSERT INTO privilegio (privilegio) VALUES ('Enfermero');
+INSERT INTO privilegio (privilegio) VALUES ('Recepcionista');
+
+INSERT INTO privilegio_usuario (privilegio, username) VALUES (1, 'admin');
+INSERT INTO privilegio_usuario (privilegio, username) VALUES (2, 'doctor1');
+INSERT INTO privilegio_usuario (privilegio, username) VALUES (3, 'enfermero1');
+INSERT INTO privilegio_usuario (privilegio, username) VALUES (4, 'gestor');
+INSERT INTO privilegio_usuario (privilegio, username) VALUES (5, 'paciente1');
+
