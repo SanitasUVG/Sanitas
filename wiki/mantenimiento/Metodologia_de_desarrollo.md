@@ -5,17 +5,19 @@ basada en [Github Flow](https://docs.github.com/en/get-started/using-github/gith
 
 Básicamente se tiene una rama `main` en donde se encuentra solamente código en
 producción, luego una rama `develop` en donde se encuentra la versión de
-desarrollo, en cierta forma sería el canal `canary` de Sanitas.
+desarrollo, en cierta forma sería el canal `canary` de Sanitas. Además se tiene
+una rama `staging` principalmente usada para beta testear código antes de darle
+merge a `main`.
 
 Cada `feature` que agreguemos será desarrollada en su propia rama y únicamente
-será unido a `develop` por medio de una Pull Request,
-tanto `develop` como `main` no aceptan cambios por si mismas,
+será unido a `develop` por medio de una Pull Request.
+`develop`, `main` y `staging` no aceptan cambios por si mismas,
 solo se pueden realizar cambios usando una Pull Request.
 
 Debido a la gran cantidad de PRs que se pueden generar al momento de usar esta
 metodología y debido a que este es un monorepo se decidió designar encargados
-según el área de trabajo, estas personas son las únicas con permiso de hacer
-review a las PRs en cada una de estas áreas:
+según el área de trabajo, estas personas son las principales responsables de
+hacer review a las PRs en cada una de estas áreas:
 
 - Database: [@BiancaCalderon](https://github.com/BiancaCalderon), [@XavierLopez25](https://github.com/XavierLopez25)
 - Backend: [@ElrohirGT](https://github.com/ElrohirGT)
@@ -29,6 +31,8 @@ review a las PRs en cada una de estas áreas:
 La persona que crea la PR es la responsable de darle merge dentro del repositorio.
 Al momento de mergear una PR por favor seleccionar la opción `squash and merge`.
 
+Cualquiera del equipo puede contribuir y ayudar a mejorar Sanitas!
+
 Para contribuir puedes leer nuestra [Guía de Contribución](Guia_de_contribuci%C3%B3n.md)
 
 El siguiente diagrama ilustra un poco el estado
@@ -38,8 +42,11 @@ y la relación de las ramas entre sí:
 ---
 title: Sanitas git flow
 ---
-gitGraph
+gitGraph TB:
     commit
+
+    branch staging
+    checkout staging
 
     branch develop
     checkout develop
@@ -52,9 +59,15 @@ gitGraph
     checkout develop
     merge feature-1
 
+    checkout staging
+    merge develop
+
+    checkout main
+    merge staging tag: "v1.0"
+
+    checkout develop
     branch feature-2
     checkout feature-2
-    commit
     commit
     commit
     commit
@@ -63,8 +76,6 @@ gitGraph
     merge feature-2
 
     checkout main
-    merge develop
-
     branch hotfix
     checkout hotfix
     commit
@@ -72,21 +83,26 @@ gitGraph
     commit
 
     checkout main
-    merge hotfix
+    merge hotfix tag: "v1.1"
+
+    checkout staging
+    merge main
 
     checkout develop
-    merge main
+    merge staging
 ```
 
 Para los commits se utilizará el formato de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 A continuación se explican la mayoría de tags que se utilizarán:
 
-- fix: Se arregló algo dentro del repositorio.
-- feat: Se agregó algo nuevo dentro del repositorio.
-- chore: Representa una tarea extra, por ejemplo formatear código.
 - refactor: No se agregó ninguna funcionalidad nueva al repositorio ni tampoco
   se arregló un bug, simplemente se refactorizó algo para hacerlo más mantenible.
+- docs: Se arregló/agregó algo de la wiki o comentarios de documentación.
+- chore: Representa una tarea extra que no añade nada de valor al repo, por
+  ejemplo formatear código.
+- fix: Se arregló algo dentro del proyecto.
+- feat: Se agregó algo nuevo al proyecto.
 
 ## Formatos de las PRs
 
