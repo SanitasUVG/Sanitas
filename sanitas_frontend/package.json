@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "oxlint .",
+    "lint": "oxlint -D restriction -D correctness .",
     "preview": "vite preview"
   },
   "dependencies": {
