@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "oxlint -D restriction -D correctness .",
-    "preview": "vite preview"
+    "lint": "oxlint -D correctness -D restriction .",
+    "format": "dprint fmt"
   },
   "dependencies": {
     "react": "^18.2.0",
