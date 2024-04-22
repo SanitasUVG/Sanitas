@@ -97,9 +97,6 @@
         modules = [
           {
             packages = with pkgs; [
-              # Utilities
-              rm-improved
-
               # Database
               postgresql
               sqlfluff # SQL linter and formatter
@@ -113,11 +110,6 @@
             enterShell = ''
               alias rm=rip
             '';
-
-            languages.rust = {
-              enable = true;
-              channel = "stable";
-            };
 
             services.postgres = {
               enable = true;
@@ -136,8 +128,7 @@
             pre-commit = {
               hooks = {
                 # Formatters
-                taplo.enable = true;
-                alejandra.enable = true;
+                alejandra.enable = true; # Nix
                 mdformat = {
                   enable = true;
                   name = "mdformat";
@@ -152,12 +143,17 @@
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff format --dialect postgres";
                 };
+                jsformat = {
+                  enable = true;
+                  name = "dprint JSFormatter";
+                  description = "Javascript formatter";
+                  files = "\.js$|\.jsx$";
+                  entry = "${pkgs.dprint}/bin/dprint fmt";
+                };
 
                 # Linters
-                clippy.enable = true;
                 actionlint.enable = true;
                 yamllint.enable = true;
-                cargo-check.enable = true;
                 commitizen.enable = true;
                 markdownlint.enable = true;
                 statix.enable = true;
@@ -168,13 +164,12 @@
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff lint --dialect postgres";
                 };
-              };
-              settings = {
-                rust = {
-                  cargoManifestPath = "backend/Cargo.toml";
-                };
-                clippy = {
-                  allFeatures = true;
+                jslinter = {
+                  enable = true;
+                  name = "oxclint JSLinter";
+                  description = "Javascript linter written in rust";
+                  files = "\.js$|\.jsx$";
+                  entry = "${pkgs.oxlint}/bin/oxlint -D correctness -D restriction";
                 };
               };
             };
