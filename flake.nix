@@ -169,7 +169,7 @@
                   name = "oxclint JSLinter";
                   description = "Javascript linter written in rust";
                   files = "\.js$|\.jsx$";
-                  entry = "${pkgs.oxlint}/bin/oxlint -D correctness -D restriction";
+                  entry = "${pkgs.oxlint}/bin/oxlint --max-warnings=0 -D correctness -D restriction";
                 };
               };
             };
