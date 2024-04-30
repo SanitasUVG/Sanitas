@@ -2,7 +2,7 @@
   description = "Sanitas Flake for reproducible builds and environments!";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs";
     systems.url = "github:nix-systems/default";
     devenv = {
       url = "github:cachix/devenv";
