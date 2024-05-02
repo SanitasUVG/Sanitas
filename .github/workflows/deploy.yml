@@ -7,14 +7,19 @@ on:    # yamllint disable-line rule:truthy
       - staging
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     name: build and deploy
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: actions/checkout@v4
+      - uses: release-drafter/release-drafter@v6
       - run: |
           nix develop --impure . --command bash -c \
             "cd sanitas_frontend/ && yarn && yarn build"
