@@ -23,4 +23,4 @@ jobs:
         with:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BRANCH: staging
-          FOLDER: ./dist
+          FOLDER: ./sanitas_frontend/dist
