@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: release-drafter/release-drafter@v6
+      - uses: DeterminateSystems/nix-installer-action@main
       - run: |
           nix develop --impure . --command bash -c \
             "cd sanitas_frontend/ && yarn && yarn build"
