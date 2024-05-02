@@ -1,0 +1,26 @@
+---
+name: Deploy Frontend
+
+on:    # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: build and deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: DeterminateSystems/nix-installer-action@main
+      - run: |
+          nix develop --impure . --command bash -c \
+            "cd sanitas_frontend/ && yarn && yarn build"
+
+      - uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: staging
+          FOLDER: ./dist
