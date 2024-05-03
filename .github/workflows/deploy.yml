@@ -14,18 +14,21 @@ permissions:
 
 jobs:
   deploy:
-    name: build and deploy
+    environment:
+      name: build and deploy
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
+      - uses: actions/configure-pages@v4
       - run: |
           nix develop --impure . --command bash -c \
             "cd sanitas_frontend/ && yarn && yarn build"
-
-      - uses: JamesIves/github-pages-deploy-action@3.7.1
+      - uses: actions/upload-pages-artifact@v3
         with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BRANCH: staging
-          FOLDER: ./sanitas_frontend/dist
+          path: ./sanitas_frontend/dist
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
