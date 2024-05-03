@@ -15,7 +15,7 @@ permissions:
 jobs:
   deploy:
     environment:
-      name: build and deploy
+      name: build
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/configure-pages@v4
       - run: |
           nix develop --impure . --command bash -c \
-            "cd sanitas_frontend/ && yarn && yarn build"
+            "cd sanitas_frontend/ && yarn && yarn build --base=/Sanitas/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./sanitas_frontend/dist
