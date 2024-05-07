@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "xata.js": ["./src/xata.js"]
+      "db-conn": ["./layers/db-conn/db-conn/index.mjs"]
     }
   }
 }

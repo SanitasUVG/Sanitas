@@ -8,14 +8,16 @@ Transform:
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  XataLayer:
+  DBConnectionLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: Xata Layer
-      Description: Xata PostgreSQL database layer
+      LayerName: sanitas-db-connection-layer
+      Description: Layer for connecting to the DB
       CompatibleRuntimes:
         - nodejs20.x
-      ContentUri: src/xata.js
+      ContentUri: layers/db-conn
+    Metadata:
+      BuildMethod: nodejs20.x
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -47,6 +49,8 @@ Resources:
           Properties:
             Path: /
             Method: GET
+      Layers:
+        - !Ref DBConnectionLayer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
