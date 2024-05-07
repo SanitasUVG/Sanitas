@@ -9,7 +9,7 @@ Transform:
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
   XataLayer:
-    type: AWS::Serverless::LayerVersion
+    Type: AWS::Serverless::LayerVersion
     Properties:
       LayerName: Xata Layer
       Description: Xata PostgreSQL database layer
