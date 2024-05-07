@@ -1,3 +1,5 @@
+import { getXataClient } from "xata.js";
+
 // Create clients and set shared const values outside of the handler.
 import pino from "pino";
 import { lambdaRequestTracker, pinoLambdaDestination } from "pino-lambda";
@@ -8,7 +10,7 @@ const logger = pino(
   {
     // typical pino options
   },
-  destination,
+  destination
 );
 const withRequest = lambdaRequestTracker();
 
@@ -29,9 +31,19 @@ export const getAllItemsHandler = async (event, context) => {
   withRequest(event, context);
   if (event.httpMethod !== "GET") {
     throw new Error(
-      `getAllItems only accept GET method, you tried: ${event.httpMethod}`,
+      `getAllItems only accept GET method, you tried: ${event.httpMethod}`
     );
   }
+
+  const pacientes = await getXataClient().db.Paciente.getPaginated({
+    pagination: { size: 5, offset: 0 },
+  });
+  let records = await pacientes.records();
+
+  logger.info(records, "Los primeros 5 pacientes son:");
+
+  const secondPage = await pacientes.nextPage();
+  logger.info(secondPage.records, "La segunda página con 5 pacientes es:");
 
   // get all items from the table (only first 1MB data, you can use `LastEvaluatedKey` to get the rest of data)
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#scan-property
@@ -55,7 +67,7 @@ export const getAllItemsHandler = async (event, context) => {
 
   logger.info(
     { statusCode: response.statusCode, body: response.body },
-    `Response from DBClient on ${event.path}`,
+    `Response from DBClient on ${event.path}`
   );
   return response;
 };

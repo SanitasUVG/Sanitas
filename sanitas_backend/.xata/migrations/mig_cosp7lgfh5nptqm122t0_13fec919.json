@@ -1,0 +1,18 @@
+{
+  "id": "mig_cosp7lgfh5nptqm122t0",
+  "parentID": "mig_cosp4dcc4esmhu0tucqg",
+  "checksum": "1:13fec9192fcb6061249358be97edbe0862b5b9afa408954463c7c7cae08b5b62",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "nombre",
+          "type": "string",
+          "notNull": true,
+          "defaultValue": "\"\""
+        },
+        "table": "Paciente"
+      }
+    }
+  ]
+}

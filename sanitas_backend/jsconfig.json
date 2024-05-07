@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "xata.js": ["./src/xata.js"]
+    }
+  }
+}

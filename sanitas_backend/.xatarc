@@ -1,0 +1,8 @@
+{
+  "databaseURL": "https://ElrohirGT-s-workspace-1mds06.us-east-1.xata.sh/db/Sanitas",
+  "codegen": {
+    "output": "src/xata.js",
+    "moduleType": "esm",
+    "declarations": true
+  }
+}
