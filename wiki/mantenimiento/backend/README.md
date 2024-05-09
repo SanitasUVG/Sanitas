@@ -1,6 +1,6 @@
 # Sanitas Backend
 
-El backend de sanitas se realizó utilizando una arquitectura de microservicios,
+El backend de sanitas es una REST API que utiliza una arquitectura de microservicios,
 se utilizaron varios servicios de Amazon como lo son lambdas, api gateway,
 cognito y demás. La relación entre estos servicios los ilustra el diagrama:
 
@@ -27,6 +27,19 @@ stateDiagram-v2
         Puede ser que se use un servicio externo a AWS.
     end note
 ```
+
+El _lifecycle_ de una request es el siguiente:
+
+1. API Gateway recibe la request y envía los datos a Cognito.
+1. Cognito evalúa si los datos enviados pertenecen a un usuario autenticado o
+   capaz de autenticarse.
+   - En caso el usuario no sea autenticable, API Gateway rechaza la request.
+   - En caso el usuario sí sea autenticable, API Gateway acepta la request y
+     envía la data a la Lambda correspondiente.
+1. Lambda evalúa los datos de la request y ejecuta la lógica de negocio
+   correspondiente.
+1. Lambda envía su resultado a API Gateway.
+1. API Gateway responde según el estatus dado por la Lambda.
 
 Este proyecto utiliza [AWS SAM](https://aws.amazon.com/serverless/sam/), el
 framework oficial de parte de AWS para manejar aplicaciones serverless dentro de
