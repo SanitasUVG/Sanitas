@@ -224,6 +224,7 @@ erDiagram
         varchar usuario
         varchar accion
         varchar tabla
+        varchar id
     }
 
     PACIENTE ||--|| SEGURO: ""
