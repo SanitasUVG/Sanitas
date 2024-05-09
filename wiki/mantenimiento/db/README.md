@@ -35,9 +35,9 @@ erDiagram
         varchar     motivo
         varchar     frecuencia_respiratoria
         double_precision temperatura
-        double precision     saturacion_oxigeno
-        double precision     glucometria
-        double precision     frecuencia_cardiaca
+        double_precision     saturacion_oxigeno
+        double_precision     glucometria
+        double_precision     frecuencia_cardiaca
         integer presion_sistolica
         integer presion_diastolica
         varchar evaluador
