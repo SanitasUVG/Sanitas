@@ -16,7 +16,13 @@ erDiagram
         varchar nombres
         varchar apellidos
         text contacto_1
+        varchar nombre_contacto1
+        varchar parentesco_contacto1
+        varchar telefono_contacto1
         text contacto_2
+        varchar nombre_contacto2
+        varchar parentesco_contacto2
+        varchar telefono_contacto2
         varchar tipo_sangre
         varchar direccion
         varchar id_seguro
@@ -204,14 +210,14 @@ erDiagram
     }
 
     USUARIO {
-        varchar username
-        varchar password
+        varchar email
+        varchar tipo
     }
 
     SESION {
         varchar     token
-        varchar     username
         timestamp   created
+        varchar     email
     }
 
     PRIVILEGIO_USUARIO {
@@ -228,7 +234,7 @@ erDiagram
     PACIENTE ||--|{ CONSULTA: ""
     PACIENTE ||--|{ ESTUDIANTE: ""
     PACIENTE ||--|{ COLABORADOR: ""
-    PACIENTE ||--|{ ANTECEDENTES_FAMILIARES: ""
+    PACIENTE ||--|| ANTECEDENTES_FAMILIARES: ""
     PACIENTE ||--|{ ANTECEDENTES_PERSONALES: ""
     PACIENTE ||--|{ ANTECEDENTES_ALERGICOS: ""
     PACIENTE ||--|{ ANTECEDENTES_QUIRURGICOS: ""
@@ -241,8 +247,6 @@ erDiagram
     CONSULTA ||--|{ MEDICAMENTO: ""
 
     USUARIO ||--o{ SESION: ""
-    USUARIO ||--|{ PRIVILEGIO_USUARIO: ""
     USUARIO ||--o{ SESION: ""
 
-    PRIVILEGIO ||--|{ PRIVILEGIO_USUARIO: ""
 ```
