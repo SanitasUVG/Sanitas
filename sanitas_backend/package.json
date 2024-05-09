@@ -1,6 +1,6 @@
 {
-    "name": "delete-test-01",
-    "description": "delete-test-01-description",
+    "name": "sanitas_backend",
+    "description": "Backend for the Sanitas framework",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
@@ -20,9 +20,7 @@
     },
     "jest": {
         "testMatch": [
-            "**/__tests__/**/*.[jt]s?(x)",
             "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/__tests__/**/*.mjs?(x)",
             "**/?(*.)+(spec|test).mjs?(x)"
         ],
         "moduleFileExtensions": [
