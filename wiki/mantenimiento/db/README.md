@@ -15,11 +15,9 @@ erDiagram
         char    sexo
         varchar nombres
         varchar apellidos
-        text contacto_1
         varchar nombre_contacto1
         varchar parentesco_contacto1
         varchar telefono_contacto1
-        text contacto_2
         varchar nombre_contacto2
         varchar parentesco_contacto2
         varchar telefono_contacto2
@@ -220,28 +218,18 @@ erDiagram
         varchar     email
     }
 
-    PRIVILEGIO_USUARIO {
-        serial     privilegio_usuario
-        varchar     username
-    }
-
-    PRIVILEGIO {
-        serial      id_privilegio
-        varchar     privilegio
-    }
-
     PACIENTE ||--|| SEGURO: ""
     PACIENTE ||--|{ CONSULTA: ""
     PACIENTE ||--|{ ESTUDIANTE: ""
     PACIENTE ||--|{ COLABORADOR: ""
     PACIENTE ||--|| ANTECEDENTES_FAMILIARES: ""
-    PACIENTE ||--|{ ANTECEDENTES_PERSONALES: ""
-    PACIENTE ||--|{ ANTECEDENTES_ALERGICOS: ""
-    PACIENTE ||--|{ ANTECEDENTES_QUIRURGICOS: ""
-    PACIENTE ||--|{ ANTECEDENTES_TRAUMATOLOGICOS: ""
-    PACIENTE ||--|{ ANTECEDENTES_PSIQUIATRICOS: ""
-    PACIENTE ||--|{ ANTECEDENTES_GINECOOBSTETRICOS: ""
-    PACIENTE ||--|{ ANTECEDENTES_NO_PATOLOGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_PERSONALES: ""
+    PACIENTE ||--|| ANTECEDENTES_ALERGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_QUIRURGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_TRAUMATOLOGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_PSIQUIATRICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_GINECOOBSTETRICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_NO_PATOLOGICOS: ""
 
     CONSULTA ||--|{ DIAGNOSTICO: ""
     CONSULTA ||--|{ MEDICAMENTO: ""
