@@ -244,6 +244,4 @@ erDiagram
 
     USUARIO ||--o{ SESION: ""
     USUARIO ||--|{ CONSULTA: ""
-
-
 ```
