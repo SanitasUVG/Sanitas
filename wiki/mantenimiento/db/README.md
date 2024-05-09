@@ -5,148 +5,236 @@ el diagrama ER de esta es el siguiente:
 
 ```mermaid
 ---
-title: Sanitas ER Diagram
+title: Sanitas ER Diagram Updated
 ---
 erDiagram
-    USUARIO {
-        varchar username
-        varchar password
-    }
-    SESION {
-        varchar     token
-        varchar     username
-        timestamp   created
-    }
-    CONTACTO_EMERGENCIA {
-        serial  id_contacto
-        varchar nombre
-        varchar parentesco
-        varchar telefono
-    }
     PACIENTE {
-        varchar carnet
-        boolean es_estudiante
+        serial id
+        varchar cui
+        varchar correo
+        char    sexo
         varchar nombres
         varchar apellidos
-        char    sexo
-        varchar correo
-        varchar telefono
-        varchar seguro
-        varchar carrera_o_dept
-        date    fecha_nacimiento
+        varchar nombre_contacto1
+        varchar parentesco_contacto1
+        varchar telefono_contacto1
+        varchar nombre_contacto2
+        varchar parentesco_contacto2
+        varchar telefono_contacto2
         varchar tipo_sangre
         varchar direccion
-        text    nota_importante
-        serial  contacto_emergencia_1
-        serial  contacto_emergencia_2
+        varchar id_seguro
+        date    fecha_nacimiento
+        varchar telefono
     }
 
-    TIPO_SANGRE{
-        int id_tipo_sangre
-        varchar tipo_sangre
-    }
-
-    ANTECEDENTE_PACIENTE {
-        serial  id_antecedente_paciente
-        serial  paciente
-        serial  antecedente
-        date    fecha_inicio
-    }
-    ANTECEDENTE {
-        serial  id_antecedente
-        serial  tipo
-        varchar descripcion
-    }
-    TIPO_ANTECEDENTE {
-        serial  id_tipo
-        varchar descripcion
-    }
-    TRATAMIENTO {
-        serial  id_tratamiento
-        varchar descripcion
-    }
-    TRATAMIENTO_ANTECEDENTE {
-        serial antecedente_paciente
-        serial tratamiento
-        serial detalle_farmacologia
-    }
-    DETALLE_FARMACOLOGIA {
-        serial  id_detalle_farmacologia
-        double_precision dosis
-        varchar unidad_dosis
-        integer frecuencia_dosis
-    }
-    TRATAMIENTO_VISITA {
-        serial visita
-        serial tratamiento
-        serial detalle_farmacologia
-    }
-    VISITA {
-        serial      id_visita
-        serial      paciente
+    CONSULTA {
+        serial      id
+        integer     id_paciente
+        timestamp   fecha
         varchar     motivo
-        timestamp   fecha
         text        diagnostico
-        text        referencia
-        serial      examen_fisico
+        varchar     frecuencia_respiratoria
+        double_precision temperatura
+        double precision     saturacion_oxigeno
+        double precision     glucometria
+        double precision     frecuencia_cardiaca
+        double precision     presion_arterial
     }
-    EXAMEN_FISICO {
-        serial              id_examen_fisico
-        varchar             descripcion
-        integer             frecuencia_respiratoria
-        double_precision    temperatura
-        integer             saturacion_oxigeno
-        integer             glucometria
-        integer             frecuencia_cardiaca
-        integer             presion_arterial
+
+    DIAGNOSTICO {
+        serial  id
+        serial  id_consulta
+        varchar nombre
+        varchar tratamiento
     }
-    FORMULARIO {
-        serial      id_formulario
-        varchar     edicion
-        timestamp   fecha
+
+    MEDICAMENTO {
+        serial      id
+        varchar     nombre
+        integer     cantidad
+        serial      id_consulta
     }
-    RESPUESTA_FORMULARIO {
-        serial      formulario
-        serial      paciente
-        timestamp   fecha
+
+    SEGURO {
+        serial  id
+        varchar nombre
+        boolean estado_activo
     }
-    PRIVILEGIO_USUARIO {
-        serial     privilegio_usuario
-        varchar     username
+
+    ESTUDIANTE {
+        varchar carnet
+        varchar carrera
+        varchar id_paciente
     }
-    PRIVILEGIO {
-        serial      id_privilegio
-        varchar     privilegio
+
+    COLABORADOR {
+        varchar codigo
+        varchar area
+        varchar id_paciente
     }
+
+    ANTECEDENTES_FAMILIARES {
+        boolean hipertension_arterial
+        json hipertension_arterial_data
+        boolean diabetes_mellitus
+        json diabetes_mellitus_data
+        boolean hipotiroidismo
+        json hipotiroidismo_data
+        boolean asma
+        json asma_data
+        boolean convulsiones
+        json convulsiones_data
+        boolean infarto_agudo_miocardio
+        json infarto_agudo_miocardio_data
+        boolean cancer
+        json cancer_data
+        boolean enfermedades_cardiacas
+        json enfermedades_cardiacas_data
+        boolean enfermedades_renales
+        json enfermedades_renales_data
+        boolean otros
+        json otros_data
+        integer id_paciente
+    }
+
+    ANTECEDENTES_PERSONALES {
+        boolean hipertension_arterial
+        json hipertension_arterial_data
+        boolean diabetes_mellitus
+        json diabetes_mellitus_data
+        boolean hipotiroidismo
+        json hipotiroidismo_data
+        boolean asma
+        json asma_data
+        boolean convulsiones
+        json convulsiones_data
+        boolean infarto_agudo_miocardio
+        json infarto_agudo_miocardio_data
+        boolean cancer
+        json cancer_data
+        boolean enfermedades_cardiacas
+        json enfermedades_cardiacas_data
+        boolean enfermedades_renales
+        json enfermedades_renales_data
+        boolean otros
+        json otros_data
+        integer id_paciente
+    }
+
+    ANTECEDENTES_ALERGICOS {
+        boolean medicamento
+        json medicamento_data
+        boolean comida
+        json comida_data
+        boolean polvo
+        json polvo_data
+        boolean polen
+        json polen_data
+        boolean cambio_de_clima
+        json cambio_de_clima_data
+        boolean animales
+        json animales_data
+        boolean otros
+        json otros_data
+        integer id_paciente
+
+    }
+
+    ANTECEDENTES_QUIRURGICOS {
+        boolean antecedente_quirurgico
+        json antecedente_quirurgico_data
+        integer id_paciente
+
+    }
+
+    ANTECEDENTES_TRAUMATOLOGICOS {
+        boolean antecedente_traumatologico
+        json antecedente_traumatologico_data
+        integer id_paciente
+
+    }
+
+    ANTECEDENTES_PSIQUIATRICOS {
+        boolean depresion
+        json depresion_data
+        boolean ansiedad
+        json ansiedad_data
+        boolean toc
+        json toc_data
+        boolean tdah
+        json tdah_data
+        boolean bipolaridad
+        json bipolaridad_data
+        boolean otro
+        json otro_data
+        integer id_paciente
+
+    }
+
+    ANTECEDENTES_GINECOOBSTETRICOS {
+        integer edad_primera_menstruacion
+        boolean ciclos_regulares
+        boolean menstruacion_dolorosa
+        json menstruacion_dolorosa_data
+        integer num_embarazos
+        integer num_partos
+        integer num_cesareas
+        integer num_abortos
+        boolean histerectomia
+        json complicacion_histerectomia
+        boolean cirujia
+        json complicacion_cirujia
+        boolean quistes_ovaricos
+        json complicacion_quistes
+        boolean reseccion_masas
+        json complicacion_reseccion
+        boolean miomatosis
+        json complicacion_miomatosis
+        boolean endometriosis
+        json complicacion_endometriosis
+        integer id_paciente
+    }
+
+    ANTECEDENTES_NO_PATOLOGICOS {
+        varchar tipo_sangre
+        boolean fuma
+        json fuma_data
+        boolean bebidas_alcoholicas
+        json bebidas_alcoholicas_data
+        boolean drogas
+        json drogas
+        integer id_paciente
+    }
+
+    USUARIO {
+        varchar email
+        varchar tipo
+    }
+
+    SESION {
+        varchar     token
+        timestamp   created
+        varchar     email
+    }
+
+    PACIENTE ||--|| SEGURO: ""
+    PACIENTE ||--|{ CONSULTA: ""
+    PACIENTE ||--|{ ESTUDIANTE: ""
+    PACIENTE ||--|{ COLABORADOR: ""
+    PACIENTE ||--|| ANTECEDENTES_FAMILIARES: ""
+    PACIENTE ||--|| ANTECEDENTES_PERSONALES: ""
+    PACIENTE ||--|| ANTECEDENTES_ALERGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_QUIRURGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_TRAUMATOLOGICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_PSIQUIATRICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_GINECOOBSTETRICOS: ""
+    PACIENTE ||--|| ANTECEDENTES_NO_PATOLOGICOS: ""
+
+    CONSULTA ||--|{ DIAGNOSTICO: ""
+    CONSULTA ||--|{ MEDICAMENTO: ""
 
     USUARIO ||--o{ SESION: ""
-    USUARIO ||--|{ PRIVILEGIO_USUARIO: ""
-
-    PRIVILEGIO ||--|{ PRIVILEGIO_USUARIO: ""
-
     USUARIO ||--o{ SESION: ""
 
-    PACIENTE ||--o{ ANTECEDENTE_PACIENTE: ""
-    PACIENTE ||--|| CONTACTO_EMERGENCIA: ""
-    PACIENTE ||--o| CONTACTO_EMERGENCIA: ""
-    TIPO_SANGRE ||--|{ PACIENTE: ""
-
-    PACIENTE ||--o{ VISITA: ""
-    VISITA ||--o| EXAMEN_FISICO: ""
-
-    PACIENTE ||--|{ RESPUESTA_FORMULARIO: ""
-    FORMULARIO ||--|{ RESPUESTA_FORMULARIO: ""
-
-    ANTECEDENTE_PACIENTE }|--|| ANTECEDENTE: ""
-
-    VISITA ||--o{ TRATAMIENTO_VISITA: ""
-    TRATAMIENTO ||--o{ TRATAMIENTO_VISITA: ""
-
-    TRATAMIENTO ||--o{ TRATAMIENTO_ANTECEDENTE: ""
-    TRATAMIENTO_ANTECEDENTE }o--|| ANTECEDENTE_PACIENTE: ""
-
-    DETALLE_FARMACOLOGIA |o--|| TRATAMIENTO_VISITA: ""
-    DETALLE_FARMACOLOGIA |o--|| TRATAMIENTO_ANTECEDENTE: ""
-
-    ANTECEDENTE }o--||  TIPO_ANTECEDENTE: ""
 ```
