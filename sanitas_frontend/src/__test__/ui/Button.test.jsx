@@ -1,7 +1,8 @@
 import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { describe, expect, test, vi } from "vitest";
-import Button from "../../components/Button.jsx";
+// import Button from "../../components/Button.jsx";
+import Button from "src/components/Button";
 
 describe("Button Component", () => {
   test("Renders Button Correctly", () => {
