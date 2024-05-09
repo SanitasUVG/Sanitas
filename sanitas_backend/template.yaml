@@ -34,15 +34,11 @@ Resources:
       Timeout: 100
       Description: A simple example includes a HTTP get method to get all items
         from a DynamoDB table.
-      Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
-        - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
       Environment:
         Variables:
           # Make table name accessible as environment variable from function
           # code during execution
-          SAMPLE_TABLE: !Ref SampleTable
+          TEST_VAR: 1234
       Events:
         Api:
           Type: Api
