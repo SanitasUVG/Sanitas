@@ -95,6 +95,10 @@
               };
             };
 
+            processes = {
+              frontend.exec = "cd sanitas_frontend/ && yarn dev";
+            };
+
             pre-commit = {
               hooks = {
                 # Formatters
