@@ -12,7 +12,7 @@ erDiagram
         serial id
         varchar cui
         varchar correo
-        char    sexo
+        boolean es_mujer
         varchar nombres
         varchar apellidos
         varchar nombre_contacto1
@@ -33,13 +33,14 @@ erDiagram
         integer     id_paciente
         timestamp   fecha
         varchar     motivo
-        text        diagnostico
         varchar     frecuencia_respiratoria
         double_precision temperatura
         double precision     saturacion_oxigeno
         double precision     glucometria
         double precision     frecuencia_cardiaca
-        double precision     presion_arterial
+        integer presion_sistolica
+        integer presion_diastolica
+        varchar evaluador
     }
 
     DIAGNOSTICO {
@@ -218,6 +219,13 @@ erDiagram
         varchar     email
     }
 
+    BITACORA {
+        timestamp fecha
+        varchar usuario
+        varchar accion
+        varchar tabla
+    }
+
     PACIENTE ||--|| SEGURO: ""
     PACIENTE ||--|{ CONSULTA: ""
     PACIENTE ||--|{ ESTUDIANTE: ""
@@ -235,6 +243,7 @@ erDiagram
     CONSULTA ||--|{ MEDICAMENTO: ""
 
     USUARIO ||--o{ SESION: ""
-    USUARIO ||--o{ SESION: ""
+    USUARIO ||--|{ CONSULTA: ""
+
 
 ```
