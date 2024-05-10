@@ -40,3 +40,7 @@ No se cubrirá:
 - Sistema de calendarización de citas dentro de la clínica.
 
 - Sistema de notificación para los estudiantes que no han llenado el formulario.
+
+## Wireframes
+
+[Link para la visualización de los wireframes del proyecto](https://drive.google.com/drive/folders/1eYrihB0p03t6TEqlChbLL0jm8i3IBFtK?usp=sharing)
