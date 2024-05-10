@@ -41,7 +41,7 @@
 
 ## ESCENARIO
 
-- Llega un colaborador con dolor de estómago (motivo de consulta). La doctora
-  pregunta cómo se llama y le hace preguntas para intentar obtener antecedentes
-  de él y se le realiza un exámen físico. La doctora le deja algunos
-  medicamentos y un plan de educación.
+- Llega un colaborador con dolor de estómago (motivo de consulta).
+- La doctora pregunta cómo se llama y le hace preguntas para intentar obtener
+  antecedentes de él y se le realiza un exámen físico.
+- La doctora le deja algunos medicamentos y un plan de educación.
