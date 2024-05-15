@@ -15,15 +15,25 @@ export const getAllItemsHandler = async (event, context) => {
 
   logger.info(process.env, "Las variables de entorno son:");
 
+  let client;
   try {
-    logger.info("Connecting to DB...");
-    const client = getPgClient(process.env.POSTGRES_URL);
+    const url = process.env.POSTGRES_URL;
+    logger.info(url, "Connecting to DB...");
+    client = getPgClient(url);
+    await client.connect();
 
     logger.info("Querying DB...");
-    const response = await client.query("SELECT 2+2;");
+    const response = await client.query("SELECT 2+2;", []);
     logger.info(response.rows, "The response from the DB is:");
   } catch (error) {
     logger.error(error, "An error has ocurred!");
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify(error),
+    };
+    return response;
+  } finally {
+    await client?.end();
   }
 
   logger.info("Creating response...");
