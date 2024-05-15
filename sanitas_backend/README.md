@@ -52,6 +52,7 @@ ficticia para obtener todos los jamones de la tienda.
    pruebas para los distintos filtros además de una sin filtros para comprobar
    que sí funciona si nada.
 
-1. Implementa tu endpoint hasta que pase todas las integration tests.
+1. Implementa tu endpoint hasta que pase todas las integration tests. Asegúrate
+   de utilizar logging extenso y de usar también JSDoc donde se necesite.
 
 1. Haz la PR.
