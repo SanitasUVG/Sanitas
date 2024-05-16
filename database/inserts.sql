@@ -4,7 +4,8 @@ INSERT INTO SEGURO (NOMBRE, ESTADO_ACTIVO) VALUES
 
 INSERT INTO USUARIO (EMAIL, TIPO) VALUES
 ('admin@example.com', 'Administrador'),
-('doctor1@example.com', 'Doctor');
+('doctor1@example.com', 'Doctor'),
+('doctor2@example.com', 'Doctor');
 
 INSERT INTO SESION (TOKEN, CREATED, EMAIL) VALUES
 ('token1234', NOW(), 'admin@example.com'),
@@ -89,7 +90,7 @@ INSERT INTO CONSULTA (
     70,
     120,
     80,
-    'Dr. Ana Torres'
+    'doctor1@example.com'
 ),
 (
     2,
@@ -102,7 +103,7 @@ INSERT INTO CONSULTA (
     75,
     130,
     85,
-    'Dr. Carlos Jimenez'
+    'doctor2@example.com'
 );
 
 INSERT INTO DIAGNOSTICO (ID_CONSULTA, NOMBRE, TRATAMIENTO) VALUES
