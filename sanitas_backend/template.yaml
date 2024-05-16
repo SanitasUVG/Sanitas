@@ -5,6 +5,33 @@ Description: >-
 Transform:
   - AWS::Serverless-2016-10-31
 
+Parameters:
+  PostgresURL:
+    Type: String
+    Default: "postgresql://backend:backend@172.17.0.1:6969/sanitas"
+    Description: "The Postgres DB URL to connect during lambdas execution"
+    NoEcho: true
+
+# More info about Globals:
+# https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+    # You can add LoggingConfig parameters such as the
+    # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
+    # Learn more here
+    # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: JSON
+    Environment:
+      Variables:
+        POSTGRES_URL: !Ref PostgresURL
+    Layers:
+      - !Ref DBConnectionLayer
+      - !Ref LambdaLoggingLayer
+  Api:
+    TracingEnabled: true
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -16,6 +43,16 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       ContentUri: layers/db-conn
+    Metadata:
+      BuildMethod: nodejs20.x
+  LambdaLoggingLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: sanitas-lambda-logging-layer
+      Description: Layer for configuring the logging output of lambdas
+      CompatibleRuntimes:
+        - nodejs20.x
+      ContentUri: layers/logging
     Metadata:
       BuildMethod: nodejs20.x
   # Each Lambda function is defined by properties:
@@ -45,8 +82,6 @@ Resources:
           Properties:
             Path: /
             Method: GET
-      Layers:
-        - !Ref DBConnectionLayer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -69,16 +104,3 @@ Outputs:
     Value:
       # yamllint disable-line rule:line-length
       !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-# More info about Globals:
-# https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Function:
-    Tracing: Active
-    # You can add LoggingConfig parameters such as the
-    # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
-    # Learn more here
-    # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
-    LoggingConfig:
-      LogFormat: JSON
-  Api:
-    TracingEnabled: true

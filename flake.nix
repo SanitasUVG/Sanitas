@@ -23,7 +23,7 @@
     ...
   } @ inputs: let
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
-    postgresPort = 5566;
+    postgresPort = 6969;
     postgresHost = "127.0.0.1";
   in {
     packages = forEachSystem (
@@ -63,6 +63,7 @@
               # General
               awscli2
               aws-sam-cli
+              jq
 
               # Backend
               nodePackages.serverless
