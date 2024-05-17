@@ -98,7 +98,7 @@
 
             processes = {
               frontend.exec = "cd sanitas_frontend/ && yarn dev";
-              backend.exec = "sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
+              backend.exec = "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
               pg_setup = {
                 exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
                 process-compose = {
