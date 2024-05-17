@@ -24,7 +24,7 @@
   } @ inputs: let
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
     postgresPort = 6969;
-    postgresHost = "127.0.0.1";
+    postgresHost = "0.0.0.0";
   in {
     packages = forEachSystem (
       system: let
