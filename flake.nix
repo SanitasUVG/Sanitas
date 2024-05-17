@@ -24,7 +24,7 @@
   } @ inputs: let
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
     postgresPort = 6969;
-    postgresHost = "127.0.0.1";
+    postgresHost = "0.0.0.0";
   in {
     packages = forEachSystem (
       system: let
@@ -98,6 +98,17 @@
 
             processes = {
               frontend.exec = "cd sanitas_frontend/ && yarn dev";
+              backend.exec = "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
+              pg_setup = {
+                exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
+                process-compose = {
+                  depends_on = {
+                    postgres = {
+                      condition = "process_healthy";
+                    };
+                  };
+                };
+              };
             };
 
             pre-commit = {
