@@ -37,11 +37,20 @@ ficticia para obtener todos los jamones de la tienda.
 
 1. Crea una carpeta con el nombre de tu lambda dentro de src/handlers.
 
-1. La estructura base de una lambda es la siguiente:
+1. La estructura base de una lambda es la siguiente (si algún archivo no es
+   necesario porque la lambda no utiliza ese tipo de estructuras no es necesario
+   crearlo, los que aparecen en negrita son obligatorios):
 
-   - {nombre}.mjs: Contiene el código que implementa el handler que utiliza la lambda.
+   - **{nombre}.mjs**: Contiene el código que implementa el handler que utiliza
+     la lambda.
+   - {nombre}.queries.mjs: Contiene todos los queries que se utilizan en la
+     lambda.
    - {nombre}.unit.test.mjs: Contiene todas las unit test para esta lambda.
-   - {nombre}.integration.test.mjs: Contiene todas las integration tests de la lambda.
+   - **{nombre}.integration.test.mjs**: Contiene todas las integration tests de
+     la lambda.
+   - {nombre}.export.test.mjs: Contiene todas las funciones de utilidad que
+     puede que se utilicen al momento de crear más tests. Deben ir en un archivo
+     por separado pues sino utilizarían las tests se correrían de más.
 
 1. Implementa primero las integration tests y asegurate de que a correr el
    backend de forma local. Estas integration tests tienen como objetivo probar que
@@ -54,5 +63,7 @@ ficticia para obtener todos los jamones de la tienda.
 
 1. Implementa tu endpoint hasta que pase todas las integration tests. Asegúrate
    de utilizar logging extenso y de usar también JSDoc donde se necesite.
+
+1. Añade los exports que creas necesarios para las integration tests.
 
 1. Haz la PR.
