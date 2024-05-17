@@ -10,7 +10,7 @@ Para correr el backend de forma local recuerda ingresar a nix usando
 `cd sanitas_backend`. Para correr el backend de forma local utiliza:
 
 ```bash
-sam build && sam local start-api
+sam build && sam local start-api --add-host=hostpc:{tu ip aquí}
 ```
 
 El comando `sam build` compila todo el proyecto y la imagen de docker mientras
@@ -20,6 +20,24 @@ URL de conexión a la DB puedes usar parámetros:
 ```bash
 sam local start-api --parameter-override {nombre parametro}={valor parametro}
 ```
+
+Por comodidad se automatizó el incio del backend con el comando de services de
+nix por lo que el siguiente comando también corre el backend!
+
+```bash
+nix run .#restartServices
+```
+
+Si obtienes algún error de conexión parecido a:
+
+```text
+FATAL: no pg_hba.conf entry for host "10.100.1.70", user "backend", database
+"sanitas", no encryption
+```
+
+Por favor reinicia el servicio de la base de datos dentro del process-compose,
+para reiniciarlo normalmente basta con ubicarse en la ventana del servicio y
+presionar `CTRL+R`.
 
 Se recomienda seguir estos pasos para desarrollar un endpoint dentro del backend
 de sanitas. En el ejemplo estaremos desarrollando un endpoint de una API
