@@ -5,5 +5,14 @@ export default {
 }
 
 export const Default = {
-	args: {}
+	args: {
+		searchPatientsApiCall: () => {
+			return new Promise(res => {
+				res([{
+					id: 1234,
+					names: "Flavio"
+				}])
+			})
+		}
+	}
 }
