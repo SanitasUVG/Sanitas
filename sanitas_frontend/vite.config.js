@@ -11,6 +11,6 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: "./src/__test__/ui/UITestSetup.js",
+    setupFiles: "UITestSetup.js",
   },
 });
