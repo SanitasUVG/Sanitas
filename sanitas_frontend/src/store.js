@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+// NOTE: Remember, everything you add to the store must be added to the JSDoc type too!
+// If you don't then intellisense will not autocomplete.
 /**
  * @typedef {Object} SanitasStore
  *
@@ -14,23 +16,29 @@ import { create } from "zustand";
  */
 
 /**
- * @typedef {import("zustand").UseBoundStore<import("zustand").StoreApi<SanitasStore>>} Store
+ * Type alias for a zustand store hook.
+ * @typedef {import("zustand").UseBoundStore<import("zustand").StoreApi<SanitasStore>>} UseStoreHook
  */
 
 /**
- * @type {Store}
+ * Creates an empty SanitasStore and returns a hook to access it.
+ * This can be used to run each test with a different store completely,
+ * guaranteeing isolation.
+ * @returns {UseStoreHook} The `useStore` hook
  */
-export const useStore = create((set) => ({
-  searchQuery: {
-    query: "",
-    type: "",
-  },
+export const createEmptyStore = () => {
+  return create((set) => ({
+    searchQuery: {
+      query: "",
+      type: "",
+    },
 
-  setSearchQuery: (query, type) =>
-    set((state) => ({
-      searchQuery: { ...state.searchQuery, query, type },
-    })),
+    setSearchQuery: (query, type) =>
+      set((state) => ({
+        searchQuery: { ...state.searchQuery, query, type },
+      })),
 
-  patients: [],
-  setPatients: (patients) => set({ patients }),
-}));
+    patients: [],
+    setPatients: (patients) => set({ patients }),
+  }));
+};
