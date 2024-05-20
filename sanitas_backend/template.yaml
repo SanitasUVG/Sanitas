@@ -85,6 +85,25 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  checkCuiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/check-cui/check-cui.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Verifies if a CUI exists in the PostgreSQL database.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /check-cui/{cui}
+            Method: GET
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
