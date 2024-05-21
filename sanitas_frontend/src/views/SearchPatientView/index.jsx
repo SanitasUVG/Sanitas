@@ -14,26 +14,26 @@
  * @param {SearchPatientViewProps} props
  */
 export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
-  const { query, type } = useStore(store => store.searchQuery);
-  const setSearchQuery = useStore(store => store.setSearchQuery);
-  const [patients, setPatients] = useStore(store => [store.patients, store.setPatients]);
+  const { query, type } = useStore((store) => store.searchQuery)
+  const setSearchQuery = useStore((store) => store.setSearchQuery)
+  const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients])
 
   const searchBtnClick = async () => {
     if (query.trim().length <= 0) {
       // TODO: Display error because we can't search for an empty query
-      return;
+      return
     }
 
-    const apiPatients = await searchPatientsApiCall();
-    setPatients(apiPatients ?? []);
-  };
+    const apiPatients = await searchPatientsApiCall()
+    setPatients(apiPatients ?? [])
+  }
 
   /**
    * @param {number} id - The ID of the selected patient.
    */
   const genViewBtnClick = (id) => {
     // TODO: Navigate to edit page view
-  };
+  }
 
   return (
     <div>
@@ -52,16 +52,20 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           onChange={(e) => setSearchQuery(e.target.value, type)}
           placeholder="Ingrese su búsqueda..."
         />
-        <button type="button" onClick={searchBtnClick}>Buscar</button>
+        <button type="button" onClick={searchBtnClick}>
+          Buscar
+        </button>
       </div>
       <div>
-        {...patients.map(p => (
+        {...patients.map((p) => (
           <div key={p.id}>
             <p>{p.names}</p>
-            <button type="button" onClick={genViewBtnClick(p.id)}>Ver</button>
+            <button type="button" onClick={genViewBtnClick(p.id)}>
+              Ver
+            </button>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
