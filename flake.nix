@@ -94,7 +94,20 @@
             };
 
             processes = {
-              frontend.exec = "cd sanitas_frontend/ && yarn dev";
+              frontend = {
+                exec = "cd sanitas_frontend/ && yarn dev";
+                # TODO: Uncomment when supported by devenv.
+                # process-compose = {
+                #   ready_log_line = "ready in";
+                # };
+              };
+              storybook = {
+                exec = "cd sanitas_frontend/ && yarn storybook";
+                # TODO: Uncomment when supported by devenv.
+                # process-compose = {
+                #   ready_log_line = "for react-vite started";
+                # };
+              };
               backend.exec = "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
               pg_setup = {
                 exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
