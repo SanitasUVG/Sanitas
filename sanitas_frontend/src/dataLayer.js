@@ -30,6 +30,11 @@ export function searchPatient(query, type) {
   })
 }
 
+/**
+ * Searches for user data based on the provided query (CUI).
+ * @param {string} query - The CUI of the patient to be searched.
+ * @returns {Promise<Object>} A promise that resolves to an object containing the patient's data if found, or an empty object if not found.
+ */
 export function foundUserData(query) {
   return new Promise((resolve) => {
     const dummyPatients = {
