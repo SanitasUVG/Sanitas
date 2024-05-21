@@ -8,18 +8,24 @@ import { AddPatientView } from "./views/AddPatientView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateInfoView/index";
 
+export const NAV_PATHS = {
+  SEARCH_PATIENT: "/",
+  ADD_PATIENT: "/form-patient",
+  UPDATE_PATIENT: "/update-view",
+};
+
 const useStore = createEmptyStore();
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: NAV_PATHS.SEARCH_PATIENT,
     element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
   },
   {
-    path: "/form-patient",
+    path: NAV_PATHS.ADD_PATIENT,
     element: <AddPatientView foundUserData={foundUserData} useStore={useStore} />,
   },
   {
-    path: "/update-view",
+    path: NAV_PATHS.UPDATE_PATIENT,
     element: <UpdateInfoView />,
   },
 ]);

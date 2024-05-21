@@ -5,6 +5,8 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/main";
 
 /**
  * @typedef {Object} SearchPatientViewProps
@@ -19,7 +21,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
+
+  const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const showErrorMessage = (message) => setError(`ERROR: ${message}`);
   const hideErrorMessage = () => setError("");
@@ -50,14 +55,19 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     }
 
     const { result: apiPatients } = result;
+    setQueryReturnedEmpty(apiPatients.length <= 0);
     setPatients(apiPatients);
   };
 
   /**
    * @param {number} id - The ID of the selected patient.
    */
-  const genViewBtnClick = (id) => {
-    // TODO: Navigate to edit page view
+  const genViewPatientBtnClick = (id) => {
+    navigate(NAV_PATHS.UPDATE_PATIENT, { state: { id } });
+  };
+
+  const onAddNewPatientClick = () => {
+    navigate(NAV_PATHS.ADD_PATIENT);
   };
 
   return (
@@ -85,11 +95,19 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         </button>
       </div>
       <p style={{ color: "red" }}>{error}</p>
+      {queryReturnedEmpty
+        ? (
+          <div>
+            <p>Parece que el paciente no existe!</p>
+            <button type="button" onClick={onAddNewPatientClick}>puedes añadir uno nuevo aquí</button>
+          </div>
+        )
+        : null}
       <div>
         {...patients.map((p) => (
           <div key={p.id}>
             <p>{p.names}</p>
-            <button type="button" onClick={genViewBtnClick(p.id)}>
+            <button type="button" onClick={genViewPatientBtnClick(p.id)}>
               Ver
             </button>
           </div>
