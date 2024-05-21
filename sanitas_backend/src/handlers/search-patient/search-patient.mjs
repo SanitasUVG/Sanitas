@@ -2,18 +2,26 @@ import { logger, withRequest } from 'logging';
 import { getPgClient } from 'db-conn';
 
 /**
- * Handles patient search queries based on ID, employee code, or partial names and surnames.
+ * @typedef {Object} RequestParams
+ * @property {string} request_search - The search parameter.
+ * @property {string} search_type - The type of search to be performed.
  */
-export const searchPatientHandler = async (event, context) => {
-  // All log statements are written to CloudWatch
-  withRequest(event, context);
 
+/**
+ * Checks the parameters for the searchPatientHandler.
+ * @param {import('aws-lambda').APIGatewayProxyEvent} event - The event object received by the handler.
+ * @returns {{isValidRequest: true, requestParams: RequestParams} | {isValidRequest: false, errorResponse: import('aws-lambda').APIGatewayProxyResult}}
+ */
+const checkParameters = (event) => {
   if (event.httpMethod !== 'POST') {
     return {
-      statusCode: 405,
-      body: JSON.stringify({
-        error: `searchPatientHandler only accepts POST method, you tried: ${event.httpMethod}`,
-      }),
+      isValidRequest: false,
+      errorResponse: {
+        statusCode: 405,
+        body: JSON.stringify({
+          error: `searchPatientHandler only accepts POST method, you tried: ${event.httpMethod}`,
+        }),
+      },
     };
   }
 
@@ -22,12 +30,48 @@ export const searchPatientHandler = async (event, context) => {
 
   if (!request_search) {
     return {
-      statusCode: 400,
-      body: JSON.stringify({
-        error: 'Search parameter must be provided and cannot be empty',
-      }),
+      isValidRequest: false,
+      errorResponse: {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'Search parameter must be provided and cannot be empty',
+        }),
+      },
     };
   }
+
+  if (!search_type) {
+    return {
+      isValidRequest: false,
+      errorResponse: {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'Search type not provided',
+        }),
+      },
+    };
+  }
+
+  return {
+    isValidRequest: true,
+    requestParams: { request_search, search_type },
+  };
+};
+
+/**
+ * Handles patient search queries based on ID, employee code, or partial names and surnames.
+ */
+export const searchPatientHandler = async (event, context) => {
+  // All log statements are written to CloudWatch
+  withRequest(event, context);
+
+  // Call checkParameters to validate the request parameters
+  const paramCheckResult = checkParameters(event);
+  if (paramCheckResult.isValidRequest === false) {
+    return paramCheckResult.errorResponse;
+  }
+
+  const { request_search, search_type } = paramCheckResult.requestParams;
 
   let client;
   try {
@@ -66,20 +110,17 @@ export const searchPatientHandler = async (event, context) => {
         queryParams.push(`%${request_search_processed}%`);
         logger.info({ sqlQuery, queryParams }, 'Querying by names or surnames');
         break;
-
       default:
-        if (!search_type) {
-          return {
-            statusCode: 400,
-            body: JSON.stringify({
-              error: 'Search type not provided',
-            }),
-          };
-        }
         return {
           statusCode: 400,
           body: JSON.stringify({
-            error: 'Invalid search type received',
+            isValidRequest: false,
+            errorResponse: {
+              statusCode: 400,
+              body: JSON.stringify({
+                error: 'Invalid search type received',
+              }),
+            },
           }),
         };
     }
@@ -90,10 +131,7 @@ export const searchPatientHandler = async (event, context) => {
 
     if (response.rowCount === 0) {
       return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'No patients found matching the search criteria',
-        }),
+        patients: [],
       };
     }
 
