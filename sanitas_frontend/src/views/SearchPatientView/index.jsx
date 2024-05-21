@@ -4,9 +4,11 @@
  * @property {string} names
  */
 
+import { useState } from "react";
+
 /**
  * @typedef {Object} SearchPatientViewProps
- * @property {({query: string, type: string})=>Promise<PatientPreview[]>} searchPatientsApiCall
+ * @property {import("src/dataLayer").SearchPatientApiFunction} searchPatientsApiCall
  * @property {import("src/store").UseStoreHook} useStore
  */
 
@@ -17,15 +19,38 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
+  const [error, setError] = useState("");
+
+  const showErrorMessage = (message) => setError(`ERROR: ${message}`);
+  const hideErrorMessage = () => setError("");
+
+  const emptyQuery = query.trim().length <= 0;
 
   const searchBtnClick = async () => {
-    if (query.trim().length <= 0) {
-      // TODO: Display error because we can't search for an empty query
+    hideErrorMessage();
+    if (emptyQuery) {
+      showErrorMessage("Por favor ingrese algo para buscar!");
       return;
     }
 
-    const apiPatients = await searchPatientsApiCall();
-    setPatients(apiPatients ?? []);
+    const result = await searchPatientsApiCall(query, type);
+    if (result.error) {
+      const { error } = result;
+      if (error.cause) {
+        const { response } = error.cause;
+        if (response?.status < 500) {
+          showErrorMessage("Búsqueda incorrecta, por favor ingresa todos los parámetros!");
+        } else {
+          showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
+        }
+      } else {
+        showErrorMessage("The API has changed!");
+      }
+      return;
+    }
+
+    const { result: apiPatients } = result;
+    setPatients(apiPatients);
   };
 
   /**
@@ -41,10 +66,13 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         <h1>Sanitas</h1>
       </div>
       <div>
+        {
+          // NOTE: The default value is defined in the store.
+        }
         <select value={type} onChange={(e) => setSearchQuery(query, e.target.value)}>
-          <option>Carnet Estudiante</option>
-          <option>Código Colaborador</option>
-          <option>Nombres y Apellidos</option>
+          <option value="Carnet">Carnet Estudiante</option>
+          <option value="CodigoColaborador">Código Colaborador</option>
+          <option value="Nombres">Nombres y Apellidos</option>
         </select>
         <input
           type="text"
@@ -52,10 +80,11 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           onChange={(e) => setSearchQuery(e.target.value, type)}
           placeholder="Ingrese su búsqueda..."
         />
-        <button type="button" onClick={searchBtnClick}>
+        <button type="button" onClick={searchBtnClick} disabled={emptyQuery}>
           Buscar
         </button>
       </div>
+      <p style={{ color: "red" }}>{error}</p>
       <div>
         {...patients.map((p) => (
           <div key={p.id}>

@@ -1,33 +1,70 @@
+import axios from "axios";
+
 // Development
-const BASE_URL = "localhost:3000";
+const BASE_URL = "http://localhost:3000";
 // Production
 // const BASE_URL = "localhost:3000"
 
 /**
- * Dummy fetch data function
+ * @template Res - The result value type
+ * @template Err - The error value type
+ * @typedef {{result: Res}|{error: Err}} Result
  */
-export function fetchData() {
-  return [];
-}
+
+/**
+ * @callback SearchPatientApiFunction
+ * @param {string} query - The query value to search.
+ * @param {string} type - The type of query, one of "Nombres", "Carnet", "CodigoColaborador"
+ * @returns {Promise<Result<import("./views/SearchPatientView").PatientPreview[], Error>>}
+ */
 
 /**
  * Talks to the API to search for patient given the query and type.
- * @param {string} query - The query value to search.
- * @param {string} type - The type of query, one of "names", "carnet", "codigo"
- * @returns {Promise<import("src/views/SearchPatientView").PatientPreview[]>}
+ * @type {SearchPatientApiFunction}
  */
-export function searchPatient(query, type) {
-  // TODO: Refactor to call the API endpoint when it's completed.
+export async function searchPatient(query, type) {
+  try {
+    let response;
+    try {
+      response = await axios.post(
+        BASE_URL + "/search-patien",
+        {
+          request_search: query,
+          search_type: type,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    } catch (error) {
+      throw new Error("API ERROR", { cause: error });
+    }
 
-  return new Promise((res) => {
-    res([
-      { id: 12376, names: "Flavio Galán" },
-      { id: 4323, names: "Xavier López" },
-      { id: 32546, names: "Madeline Nahomy" },
-      { id: 8765, names: "Bianca Calderón" },
-      { id: 90123, names: "Daniel Dubón" },
-    ]);
-  });
+    const result = response.data.map((r) => {
+      if (!r.id) {
+        throw new Error("Received patient has no `id`!");
+      }
+
+      if (!r.nombres) {
+        throw new Error("Received patient has no `names`!");
+      }
+
+      if (!r.apellidos) {
+        throw new Error("Received patient has no `apellidos`!");
+      }
+
+      return {
+        id: r.id,
+        names: `${r.nombres} ${r.apellidos}`,
+      };
+    });
+
+    return { result };
+  } catch (error) {
+    return { error };
+  }
 }
 
 /**
