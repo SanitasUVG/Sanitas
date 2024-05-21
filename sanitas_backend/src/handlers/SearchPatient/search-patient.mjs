@@ -130,8 +130,12 @@ export const searchPatientHandler = async (event, context) => {
     logger.info({ rowCount: response.rowCount }, 'DB query executed successfully');
 
     if (response.rowCount === 0) {
+      logger.info('No patients found, returning empty array.');
       return {
-        patients: [],
+        statusCode: 200,
+        body: JSON.stringify({
+          patients: [],
+        }),
       };
     }
 
