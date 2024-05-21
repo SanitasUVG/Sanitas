@@ -109,7 +109,7 @@ Resources:
   searchPatientFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/search-patient/search-patient.searchPatientHandler
+      Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
