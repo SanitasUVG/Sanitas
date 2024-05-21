@@ -84,15 +84,9 @@ describe('Search Patient Integration Tests', () => {
       request_search: 'A01234567',
       search_type: 'InvalidType',
     };
-    try {
-      await axios.post(LOCAL_API_URL, postData);
-      expect(true).toBe(false); // Force fail if no error is thrown
-    } catch (error) {
-      expect(error.response.status).toBe(400);
-      expect(JSON.parse(error.response.data.errorResponse.body).error).toBe(
-        'Invalid search type received',
-      );
-    }
+    const response = await axios.post(LOCAL_API_URL, postData, { validateStatus: () => true });
+    expect(response.status).toBe(400);
+    expect(JSON.parse(response.data.errorResponse.body).error).toBe('Invalid search type received');
   });
 
   it('should return an empty array if no patients are found, search_type Carnet ', async () => {
