@@ -27,7 +27,7 @@ export async function searchPatient(query, type) {
     let response;
     try {
       response = await axios.post(
-        BASE_URL + "/search-patien",
+        BASE_URL + "/search-patient",
         {
           request_search: query,
           search_type: type,
