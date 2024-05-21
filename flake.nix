@@ -144,7 +144,7 @@
                   name = "dprint JSFormatter";
                   description = "Javascript formatter";
                   files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.dprint}/bin/dprint output-file-paths && ${pkgs.dprint}/bin/dprint fmt";
+                  entry = "${pkgs.dprint}/bin/dprint fmt --allow-no-files";
                 };
 
                 # Linters
