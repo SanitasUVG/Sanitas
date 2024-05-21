@@ -78,9 +78,6 @@
               dprint # Javascript formatter
               oxlint # Javascript linter
             ];
-            enterShell = ''
-              alias rm=rip
-            '';
 
             services.postgres = {
               enable = true;
