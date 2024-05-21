@@ -1,6 +1,5 @@
-// src/tests/CheckCUIAndPatientForm.test.jsx
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
+// import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { AddPatientView, PatientForm } from "./index";
