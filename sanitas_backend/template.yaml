@@ -8,8 +8,8 @@ Transform:
 Parameters:
   PostgresURL:
     Type: String
-    Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
-    Description: 'The Postgres DB URL to connect during lambdas execution'
+    Default: "postgresql://backend:backend@hostpc:6969/sanitas"
+    Description: "The Postgres DB URL to connect during lambdas execution"
     NoEcho: true
 
 # More info about Globals:
@@ -84,10 +84,9 @@ Resources:
             Method: GET
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  createFichaFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
+
+  # This is a Lambda function config associated with the source code:
+  # check-cui.js
   checkCuiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -97,15 +96,6 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 100
-      Description: Function to create a new ficha record
-      Events:
-        Api:
-          Type: Api  # Define el tipo de evento como API Gateway
-          Properties:
-            Path: /ficha  # Ruta del endpoint
-            Method: POST  # Método HTTP del endpoint
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Description: Verifies if a CUI exists in the PostgreSQL database.
       Events:
         Api:
@@ -113,7 +103,7 @@ Resources:
           Properties:
             Path: /check-cui/{cui}
             Method: GET
-  # Each Lambda function is defined by properties:
+# Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   # This is a Lambda function config associated with the source code:
@@ -136,7 +126,27 @@ Resources:
             Path: /search-patient
             Method: POST
   # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction          
+
+  # This is a Lambda function config associated with the source code:
+  # create-ficha.js
+  createFichaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Function to create a new ficha record
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /ficha
+            Method: POST
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -155,4 +165,4 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage
     Value:
       # yamllint disable-line rule:line-length
-      !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+      !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
