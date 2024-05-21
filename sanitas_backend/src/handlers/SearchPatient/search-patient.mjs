@@ -28,6 +28,7 @@ const checkParameters = (event) => {
   const { request_search, search_type } = JSON.parse(event.body);
   logger.info({ request_search, search_type }, "Received search parameters");
 
+  logger.info("Parsing request_search...");
   if (!request_search) {
     return {
       isValidRequest: false,
@@ -40,6 +41,7 @@ const checkParameters = (event) => {
     };
   }
 
+  logger.info("Parsing search_type...");
   if (!search_type) {
     return {
       isValidRequest: false,
@@ -52,6 +54,7 @@ const checkParameters = (event) => {
     };
   }
 
+  logger.info("Parameters are valid!");
   return {
     isValidRequest: true,
     requestParams: { request_search, search_type },
@@ -136,9 +139,7 @@ export const searchPatientHandler = async (event, context) => {
       logger.info("No patients found, returning empty array.");
       return {
         statusCode: 200,
-        body: JSON.stringify({
-          patients: [],
-        }),
+        body: JSON.stringify([]),
       };
     }
 
