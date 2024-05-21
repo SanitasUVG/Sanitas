@@ -143,7 +143,7 @@
                   enable = true;
                   name = "dprint JSFormatter";
                   description = "Javascript formatter";
-                  files = "\.js$|\.jsx$";
+                  files = "\.[mc]?jsx?$";
                   entry = "${pkgs.dprint}/bin/dprint output-file-paths && ${pkgs.dprint}/bin/dprint fmt";
                 };
 
@@ -164,7 +164,7 @@
                   enable = true;
                   name = "oxclint JSLinter";
                   description = "Javascript linter written in rust";
-                  files = "\.js$|\.jsx$";
+                  files = "\.[mc]?jsx?$";
                   entry = "${pkgs.oxlint}/bin/oxlint --max-warnings=0 -D correctness -D restriction";
                 };
               };
