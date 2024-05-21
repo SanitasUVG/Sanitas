@@ -84,7 +84,24 @@ Resources:
             Method: GET
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
+  createFichaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Function to create a new ficha record
+      Events:
+        Api:
+          Type: Api  # Define el tipo de evento como API Gateway
+          Properties:
+            Path: /ficha  # Ruta del endpoint
+            Method: POST  # Método HTTP del endpoint
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
