@@ -18,7 +18,7 @@ describe("Check cui integration tests", () => {
         expect(response.data).toBeDefined();
         expect(response.data.exists).toBeDefined();
         expect(response.data.exists).toBe(true);
-        // Check if data matches inserted data...
+
     });
 
     test("Check if Cui dont exists", async () => {
@@ -29,7 +29,7 @@ describe("Check cui integration tests", () => {
         expect(response.data).toBeDefined();
         expect(response.data.exists).toBeDefined();
         expect(response.data.exists).toBe(false);
-        // Check if data don't matches inserted data...
+
     });
 
 
@@ -41,7 +41,7 @@ describe("Check cui integration tests", () => {
         expect(response).toBeDefined();
         expect(response.status).toBe(403);
 
-        // Check if user sent bad request....
+
     });
 
 });
