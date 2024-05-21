@@ -1,7 +1,8 @@
 import { logger, withRequest } from "logging";
 import { getPgClient } from "db-conn";
 
-export const handler = async (event) => {
+export const handler = async (event, context) => {
+    withRequest(event, context);
     const cui = event.pathParameters.cui;
     logger.info(process.env, "Las variables de entorno son:");
     let client;

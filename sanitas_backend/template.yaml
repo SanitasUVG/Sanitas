@@ -88,7 +88,7 @@ Resources:
   checkCuiFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/check-cui/check-cui.handler
+      Handler: src/handlers/CheckCui/check-cui.handler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
