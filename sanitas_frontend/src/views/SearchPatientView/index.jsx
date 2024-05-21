@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
+
 /**
  * @typedef {Object} PatientPreview
  * @property {string} id
@@ -6,8 +10,8 @@
 
 /**
  * @typedef {Object} SearchPatientViewProps
- * @property {({query: string, type: string})=>Promise<PatientPreview[]>} searchPatientsApiCall
- * @property {import("src/store").UseStoreHook} useStore
+ * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
@@ -18,21 +22,52 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
 
+  const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const showErrorMessage = (message) => setError(`ERROR: ${message}`);
+  const hideErrorMessage = () => setError("");
+
+  const emptyQuery = query.trim().length <= 0;
+
   const searchBtnClick = async () => {
-    if (query.trim().length <= 0) {
-      // TODO: Display error because we can't search for an empty query
+    hideErrorMessage();
+    if (emptyQuery) {
+      showErrorMessage("Por favor ingrese algo para buscar!");
       return;
     }
 
-    const apiPatients = await searchPatientsApiCall();
-    setPatients(apiPatients ?? []);
+    const result = await searchPatientsApiCall(query, type);
+    if (result.error) {
+      const { error } = result;
+      if (error.cause) {
+        const { response } = error.cause;
+        if (response?.status < 500) {
+          showErrorMessage("Búsqueda incorrecta, por favor ingresa todos los parámetros!");
+        } else {
+          showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
+        }
+      } else {
+        showErrorMessage("The API has changed!");
+      }
+      return;
+    }
+
+    const { result: apiPatients } = result;
+    setQueryReturnedEmpty(apiPatients.length <= 0);
+    setPatients(apiPatients);
   };
 
   /**
    * @param {number} id - The ID of the selected patient.
    */
-  const genViewBtnClick = (id) => {
-    // TODO: Navigate to edit page view
+  const genViewPatientBtnClick = (id) => {
+    return () => navigate(NAV_PATHS.UPDATE_PATIENT, { state: { id } });
+  };
+
+  const onAddNewPatientClick = () => {
+    navigate(NAV_PATHS.ADD_PATIENT);
   };
 
   return (
@@ -41,10 +76,13 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         <h1>Sanitas</h1>
       </div>
       <div>
+        {
+          // NOTE: The default value is defined in the store.
+        }
         <select value={type} onChange={(e) => setSearchQuery(query, e.target.value)}>
-          <option>Carnet Estudiante</option>
-          <option>Código Colaborador</option>
-          <option>Nombres y Apellidos</option>
+          <option value="Carnet">Carnet Estudiante</option>
+          <option value="CodigoColaborador">Código Colaborador</option>
+          <option value="Nombres">Nombres y Apellidos</option>
         </select>
         <input
           type="text"
@@ -52,15 +90,24 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           onChange={(e) => setSearchQuery(e.target.value, type)}
           placeholder="Ingrese su búsqueda..."
         />
-        <button type="button" onClick={searchBtnClick}>
+        <button type="button" onClick={searchBtnClick} disabled={emptyQuery}>
           Buscar
         </button>
       </div>
+      <p style={{ color: "red" }}>{error}</p>
+      {queryReturnedEmpty
+        ? (
+          <div>
+            <p>Parece que el paciente no existe!</p>
+            <button type="button" onClick={onAddNewPatientClick}>puedes añadir uno nuevo aquí</button>
+          </div>
+        )
+        : null}
       <div>
         {...patients.map((p) => (
           <div key={p.id}>
             <p>{p.names}</p>
-            <button type="button" onClick={genViewBtnClick(p.id)}>
+            <button type="button" onClick={genViewPatientBtnClick(p.id)}>
               Ver
             </button>
           </div>
