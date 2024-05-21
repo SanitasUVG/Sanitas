@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "yarn install && vite",
+    "build": "yarn install && vite build",
     "lint": "oxlint -D correctness -D restriction .",
     "format": "dprint fmt",
-    "test": "vitest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "yarn install && vitest",
+    "storybook": "yarn install && storybook dev -p 6006 --no-open",
+    "build-storybook": "yarn install && storybook build"
   },
   "dependencies": {
     "@testing-library/dom": "^10.0.0",
