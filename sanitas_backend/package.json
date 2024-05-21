@@ -10,12 +10,15 @@
         "pino-lambda": "^4.4.0"
     },
     "devDependencies": {
+        "@types/aws-lambda": "^8.10.138",
         "aws-sdk-client-mock": "^2.0.0",
         "axios": "^1.6.8",
         "jest": "^29.2.1"
     },
     "scripts": {
-        "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
+        "test": "npm install && node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+				"lint": "oxlint -D correctness -D restriction .",
+				"format": "dprint fmt"
     },
     "jest": {
         "testMatch": [
