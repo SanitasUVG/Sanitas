@@ -85,11 +85,13 @@ describe('Search Patient Integration Tests', () => {
       search_type: 'InvalidType',
     };
     try {
-      const response = await axios.post(LOCAL_API_URL, postData);
-      expect(true).toBe(false);
+      await axios.post(LOCAL_API_URL, postData);
+      expect(true).toBe(false); // Force fail if no error is thrown
     } catch (error) {
       expect(error.response.status).toBe(400);
-      expect(error.response.data.error).toBe('Invalid search type received');
+      expect(JSON.parse(error.response.data.errorResponse.body).error).toBe(
+        'Invalid search type received',
+      );
     }
   });
 
@@ -101,7 +103,7 @@ describe('Search Patient Integration Tests', () => {
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
     expect(response.data).toEqual({
-      message: 'No patients found matching the search criteria',
+      patients: [],
     });
   });
 
@@ -113,7 +115,7 @@ describe('Search Patient Integration Tests', () => {
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
     expect(response.data).toEqual({
-      message: 'No patients found matching the search criteria',
+      patients: [],
     });
   });
 
@@ -125,7 +127,7 @@ describe('Search Patient Integration Tests', () => {
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
     expect(response.data).toEqual({
-      message: 'No patients found matching the search criteria',
+      patients: [],
     });
   });
 });
