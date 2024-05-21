@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import AddPatientView from "./index";
+import { AddPatientView } from "./index";
 
 export default {
   title: "AddPatientView",

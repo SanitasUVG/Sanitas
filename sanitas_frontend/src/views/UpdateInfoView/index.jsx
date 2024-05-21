@@ -1,12 +1,12 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function UpdateInfoView() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   return (
     <div>
@@ -16,5 +16,5 @@ export default function UpdateInfoView() {
         Volver
       </button>
     </div>
-  )
+  );
 }
