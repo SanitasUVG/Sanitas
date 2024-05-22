@@ -3,6 +3,7 @@ import { describe, beforeAll, afterAll, test, expect } from "@jest/globals";
 
 const LOCAL_API_URL = "http://localhost:3000/";
 
+// Función para generar un CUI único
 const generateUniqueCUI = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(Math.random() * 10000);
@@ -19,9 +20,9 @@ describe("Create Ficha integration tests", () => {
   });
 
   test("Normal case: Crear una nueva ficha de paciente", async () => {
-    const uniqueCUI = generateUniqueCUI();
+    const UNIQUECUI = generateUniqueCUI();
     const pacienteData = {
-      CUI: uniqueCUI,
+      CUI: UNIQUECUI,
       NOMBRES: "Juan",
       APELLIDOS: "Pérez",
       SEXO: "M",
@@ -41,17 +42,13 @@ describe("Create Ficha integration tests", () => {
       FECHA_NACIMIENTO: "1990-01-01",
     };
 
-    try {
-      await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
-      throw new Error("Ficha creada sin CUI");
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe("CUI es requerido."); // Asegúrate de que la lambda devuelva este mensaje
-      } else {
-        throw error;
-      }
-    }
+    const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData, {
+      validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
+    });
+
+    // Verificar que el error sea el esperado
+    expect(response.status).toBe(400);
+    expect(response.data.error).toBe("CUI es requerido.");
   });
 
   test("Crear una nueva ficha de paciente con CUI duplicado (debería fallar)", async () => {
@@ -73,16 +70,12 @@ describe("Create Ficha integration tests", () => {
 
     await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData1);
 
-    try {
-      await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData2);
-      throw new Error("Ficha creada con CUI duplicado");
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
-        expect(error.response.status).toBe(409);
-        expect(error.response.data.error).toBe("CUI ya existe.");
-      } else {
-        throw error;
-      }
-    }
+    const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData2, {
+      validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
+    });
+
+    // Verificar que el error sea el esperado
+    expect(response.status).toBe(409);
+    expect(response.data.error).toBe("CUI ya existe.");
   });
 });
