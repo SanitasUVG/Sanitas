@@ -3,9 +3,6 @@ import { describe, beforeAll, afterAll, test, expect } from "@jest/globals";
 
 const LOCAL_API_URL = "http://localhost:3000/";
 
-let UNIQUECUI;
-
-// Función para generar un CUI único
 const generateUniqueCUI = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(Math.random() * 10000);
@@ -22,9 +19,9 @@ describe("Create Ficha integration tests", () => {
   });
 
   test("Normal case: Crear una nueva ficha de paciente", async () => {
-    UNIQUECUI = generateUniqueCUI();
+    const uniqueCUI = generateUniqueCUI();
     const pacienteData = {
-      CUI: UNIQUECUI,
+      CUI: uniqueCUI,
       NOMBRES: "Juan",
       APELLIDOS: "Pérez",
       SEXO: "M",
@@ -32,12 +29,10 @@ describe("Create Ficha integration tests", () => {
     };
     const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
 
-
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
-    
   });
-  
+
   test("Crear una nueva ficha de paciente sin CUI (debería fallar)", async () => {
     const pacienteData = {
       NOMBRES: "Juan",
@@ -47,39 +42,45 @@ describe("Create Ficha integration tests", () => {
     };
 
     try {
-      // Verificar si todos los datos requeridos están presentes
-      if (!pacienteData.CUI || !pacienteData.NOMBRES || !pacienteData.APELLIDOS || !pacienteData.SEXO || !pacienteData.FECHA_NACIMIENTO) {
-        throw new Error("Todos los datos son requeridos");
-      }
-      const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
-      UNIQUECUI = response.data.CUI;
-
+      await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
+      throw new Error("Ficha creada sin CUI");
     } catch (error) {
-      // Manejar el error
+      if (error.response && error.response.status === 400) {
+        expect(error.response.status).toBe(400);
+        expect(error.response.data.error).toBe("CUI es requerido."); // Asegúrate de que la lambda devuelva este mensaje
+      } else {
+        throw error;
+      }
     }
   });
 
   test("Crear una nueva ficha de paciente con CUI duplicado (debería fallar)", async () => {
-    const pacienteData = {
-      CUI: UNIQUECUI,
+    const uniqueCUI = generateUniqueCUI();
+    const pacienteData1 = {
+      CUI: uniqueCUI,
       NOMBRES: "Juan",
       APELLIDOS: "Pérez",
       SEXO: "M",
       FECHA_NACIMIENTO: "1990-01-01",
     };
+    const pacienteData2 = {
+      CUI: uniqueCUI,
+      NOMBRES: "Carlos",
+      APELLIDOS: "González",
+      SEXO: "M",
+      FECHA_NACIMIENTO: "1985-05-05",
+    };
+
+    await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData1);
+
     try {
-      // Intentar crear otra ficha con el mismo CUI
-      await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
-      // Si no se lanza un error, significa que se creó una ficha con CUI duplicado
-      // Por lo tanto, el test debería fallar
+      await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData2);
       throw new Error("Ficha creada con CUI duplicado");
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // Si el estado es 409, esperamos un error de "Conflict"
         expect(error.response.status).toBe(409);
         expect(error.response.data.error).toBe("CUI ya existe.");
       } else {
-        // Si el estado no es 409, lanzar el error
         throw error;
       }
     }
