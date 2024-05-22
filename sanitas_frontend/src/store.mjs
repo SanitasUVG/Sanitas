@@ -30,7 +30,8 @@ export const createEmptyStore = () => {
   return create((set) => ({
     searchQuery: {
       query: "",
-      type: "",
+      // NOTE: This is the default search term
+      type: "Carnet",
     },
 
     setSearchQuery: (query, type) =>
