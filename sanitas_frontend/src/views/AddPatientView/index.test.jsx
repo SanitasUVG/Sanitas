@@ -1,103 +1,102 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-// import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import { AddPatientView, PatientForm } from "./index";
+import { AddPatientView } from "./index";
 
-describe("AddPatientView Component", () => {
-  const foundUserDataMock = vi.fn((cui) =>
-    cui === "1234567890123"
-      ? Promise.resolve({
-        names: "Juan",
-        surnames: "Pérez",
-        sex: "Masculino",
-        birthDate: "1990-01-01",
-      })
-      : Promise.resolve({})
-  );
+// Mock the `useNavigate` hook used by the component
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
+}));
 
-  it("should display an error message if CUI is not 13 digits", () => {
-    window.alert = vi.fn();
-    render(
-      <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
-      </MemoryRouter>,
-    );
-
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "123" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
-
-    expect(window.alert).toHaveBeenCalledWith("El CUI debe contener exactamente 13 dígitos.");
+describe("AddPatientView", () => {
+  it("should render the input and button", () => {
+    render(<AddPatientView />);
+    expect(screen.getByPlaceholderText("Ingrese el CUI")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ver paciente/i })).toBeInTheDocument(); // Correct the button text to match component
   });
 
-  it("should display patient information if CUI is found", async () => {
-    render(
-      <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
-      </MemoryRouter>,
-    );
-
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "1234567890123" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
-
-    expect(await screen.findByText("¡Información del paciente encontrada!")).toBeInTheDocument();
+  it("should display an error message if CUI is less than 13 digits and button is clicked", () => {
+    render(<AddPatientView />);
+    // Using a spy to mock and check if alert is called
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+    fireEvent.click(screen.getByRole("button", { name: /ver paciente/i }));
+    expect(alertSpy).toHaveBeenCalledWith("El CUI debe contener exactamente 13 dígitos.");
+    alertSpy.mockRestore(); // Restore the original implementation
   });
 
-  it("should display a registration message if CUI is not found", async () => {
-    render(
-      <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
-      </MemoryRouter>,
-    );
+  it("should handle CUI check correctly", async () => {
+    // Mock fetch to simulate API response
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ exists: true }),
+    });
 
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "9876543210987" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
+    render(<AddPatientView />);
+    fireEvent.change(screen.getByPlaceholderText("Ingrese el CUI"), {
+      target: { value: "1234567891012" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /ver paciente/i }));
 
+    // Wait for the expected message to appear in the document
+    await screen.findByText("¡Información del paciente encontrada!");
+    expect(screen.getByText("¡Información del paciente encontrada!")).toBeInTheDocument();
+    global.fetch.mockRestore(); // Restore fetch to its original state
+  });
+
+  it("should handle non-existent CUI correctly", async () => {
+    // Mock the fetch function to simulate API response for non-existent CUI
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ exists: false }),
+    });
+
+    render(<AddPatientView />);
+    fireEvent.change(screen.getByPlaceholderText("Ingrese el CUI"), {
+      target: { value: "1234567890123" }, // Assumed length is correct but CUI does not exist
+    });
+    fireEvent.click(screen.getByRole("button", { name: /ver paciente/i }));
+
+    // Wait for the message about non-existent CUI to appear
+    await screen.findByText("No se encontró información. Por favor, registre al paciente.");
     expect(
-      await screen.findByText("No se encontró información. Por favor, registre al paciente."),
+      screen.getByText("No se encontró información. Por favor, registre al paciente."),
     ).toBeInTheDocument();
+
+    // Cleanup the mock to avoid interference with other tests
+    global.fetch.mockRestore();
   });
-});
+  it("should allow entering information for a new patient when CUI does not exist", async () => {
+    // Mock the fetch to simulate a non-existent CUI response
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ exists: false }),
+    });
 
-describe("PatientForm Component", () => {
-  const patientDataMock = {
-    names: "Juan",
-    surnames: "Pérez",
-    sex: "Masculino",
-    birthDate: "1990-01-01",
-    isNew: true,
-  };
+    render(<AddPatientView />);
+    fireEvent.change(screen.getByPlaceholderText("Ingrese el CUI"), {
+      target: { value: "1234567890123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /ver paciente/i }));
 
-  const setPatientDataMock = vi.fn();
+    // Expect to render the form for new patient registration
+    await waitFor(() => {
+      expect(
+        screen.getByText("No se encontró información. Por favor, registre al paciente."),
+      ).toBeInTheDocument();
+    });
 
-  it("should display input fields with correct initial values", () => {
-    render(
-      <MemoryRouter>
-        <PatientForm patientData={patientDataMock} setPatientData={setPatientDataMock} />
-      </MemoryRouter>,
-    );
+    // Assuming that the form is conditionally rendered based on `patientData.isNew`
+    const namesInput = screen.getByPlaceholderText("Nombres");
+    const surnamesInput = screen.getByPlaceholderText("Apellidos");
 
-    expect(screen.getByPlaceholderText("Nombres").value).toBe("Juan");
-    expect(screen.getByPlaceholderText("Apellidos").value).toBe("Pérez");
-    expect(screen.getByPlaceholderText("Fecha de nacimiento").value).toBe("1990-01-01");
-  });
+    // Simulate entering new patient data
+    fireEvent.change(namesInput, { target: { value: "Nuevo" } });
+    fireEvent.change(surnamesInput, { target: { value: "Paciente" } });
 
-  it("should update patient data on input change", () => {
-    render(
-      <MemoryRouter>
-        <PatientForm patientData={patientDataMock} setPatientData={setPatientDataMock} />
-      </MemoryRouter>,
-    );
+    // Check if the inputs reflect the values entered
+    expect(namesInput.value).toBe("Nuevo");
+    expect(surnamesInput.value).toBe("Paciente");
 
-    fireEvent.change(screen.getByPlaceholderText("Nombres"), { target: { value: "Carlos" } });
-    fireEvent.change(screen.getByPlaceholderText("Apellidos"), { target: { value: "Sánchez" } });
-
-    expect(setPatientDataMock).toHaveBeenCalledWith(expect.objectContaining({ names: "Carlos" }));
-    expect(setPatientDataMock).toHaveBeenCalledWith(
-      expect.objectContaining({ surnames: "Sánchez" }),
-    );
+    // Cleanup the mock
+    global.fetch.mockRestore();
   });
 });
