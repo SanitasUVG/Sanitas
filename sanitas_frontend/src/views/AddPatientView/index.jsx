@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
 
 /**
  * @typedef {Object} PatientData
@@ -72,7 +73,7 @@ export function AddPatientView({ checkCui, submitPatientData }) {
         />
       )}
       {patientData && !patientData.isNew && (
-        <button type="button" onClick={() => navigate("/update-view")}>
+        <button type="button" onClick={() => navigate(NAV_PATHS.UPDATE_PATIENT)}>
           Ir a Actualizar Datos
         </button>
       )}
@@ -132,7 +133,7 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
       try {
         await submitPatientData(patientData);
         alert("Información registrada con éxito");
-        navigate("/update-view");
+        navigate(NAV_PATHS.UPDATE_PATIENT);
       } catch (error) {
         alert(`Error al enviar datos: ${error.message}`);
       }

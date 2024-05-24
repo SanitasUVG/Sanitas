@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
 
 export default function UpdateInfoView() {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/");
+    navigate(NAV_PATHS.SEARCH_PATIENT);
   };
 
   return (
