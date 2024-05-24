@@ -1,5 +1,5 @@
 ---
-name: Deploy Frontend
+name: Deploy Sanitas
 
 on:    # yamllint disable-line rule:truthy
   push:
@@ -13,20 +13,42 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
-    environment:
-      name: build
-      url: ${{ steps.deployment.outputs.page_url }}
+  backend-deploy:
+    name: Backend Deployment
+
     runs-on: ubuntu-latest
+    outputs:
+      backend_url: ${{ steps.get_url_step.outputs.url }}
 
     steps:
       - uses: actions/checkout@v4
         with:
           ref: staging
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Deploying Backend
+        # yamllint disable-line rule:line-length
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build && sam deploy --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
+      - name: Saving Backend URL
+        id: get_url_step
+        # yamllint disable-line rule:line-length
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && echo url=$(sam list stack-outputs --stack-name sanitas-backend --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e 's/\"$//') >> $GITHUB_OUTPUT"
+
+  frontend-deploy:
+    name: Frontend Deployment
+    needs: backend-deploy
+    environment:
+      name: build
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: DeterminateSystems/nix-installer-action@main
       - uses: actions/configure-pages@v4
-      # yamllint disable-line rule:line-length
-      - run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && BACKEND_URL=${{ secrets.BackendURL }} yarn build --base=/Sanitas/"
+      - name: Building frontend
+        # yamllint disable-line rule:line-length
+        run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && ${{ needs.backend-deploy.outputs.backend_url }} yarn build --base=/Sanitas/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./sanitas_frontend/dist
