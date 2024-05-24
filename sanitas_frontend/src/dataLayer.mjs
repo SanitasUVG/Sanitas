@@ -1,10 +1,10 @@
-import axios from "axios";
+import axios from 'axios'
 
 // Development
 // const BASE_URL = "http://localhost:3000";
 // Production
 // const BASE_URL = "https://jenr1d4tlh.execute-api.us-east-2.amazonaws.com/Prod/"
-const BASE_URL = process.env.BACKEND_URL;
+const BASE_URL = process.env.BACKEND_URL
 
 /**
  * @template Res - The result value type
@@ -25,46 +25,46 @@ const BASE_URL = process.env.BACKEND_URL;
  */
 export async function searchPatient(query, type) {
   try {
-    let response;
+    let response
     try {
       response = await axios.post(
-        BASE_URL + "/search-patient",
+        BASE_URL + '/search-patient',
         {
           request_search: query,
           search_type: type,
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         },
-      );
+      )
     } catch (error) {
-      throw new Error("API ERROR", { cause: error });
+      throw new Error('API ERROR', { cause: error })
     }
 
     const result = response.data.map((r) => {
       if (!r.id) {
-        throw new Error("Received patient has no `id`!");
+        throw new Error('Received patient has no `id`!')
       }
 
       if (!r.nombres) {
-        throw new Error("Received patient has no `names`!");
+        throw new Error('Received patient has no `names`!')
       }
 
       if (!r.apellidos) {
-        throw new Error("Received patient has no `apellidos`!");
+        throw new Error('Received patient has no `apellidos`!')
       }
 
       return {
         id: r.id,
         names: `${r.nombres} ${r.apellidos}`,
-      };
-    });
+      }
+    })
 
-    return { result };
+    return { result }
   } catch (error) {
-    return { error };
+    return { error }
   }
 }
 
@@ -77,16 +77,16 @@ export async function searchPatient(query, type) {
  */
 export const checkCui = async (cui) => {
   try {
-    const response = await fetch(`http://localhost:3000/check-cui/${cui}`);
+    const response = await fetch(`${BASE_URL}/check-cui/${cui}`)
     if (!response.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error('Failed to fetch data')
     }
-    const data = await response.json();
-    return { exists: data.exists, cui: cui };
+    const data = await response.json()
+    return { exists: data.exists, cui: cui }
   } catch (error) {
-    throw new Error("Error fetching CUI:", error);
+    throw new Error('Error fetching CUI:', error)
   }
-};
+}
 
 /**
  * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
@@ -101,22 +101,22 @@ export const checkCui = async (cui) => {
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
-  const response = await fetch("http://localhost:3000/ficha", {
-    method: "POST",
+  const response = await fetch(`${BASE_URL}/submit-patient`, {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       CUI: patientData.cui,
       NOMBRES: patientData.names,
       APELLIDOS: patientData.surnames,
-      SEXO: patientData.sex ? "F" : "M",
+      SEXO: patientData.sex ? 'F' : 'M',
       FECHA_NACIMIENTO: patientData.birthDate,
     }),
-  });
-  const data = await response.json();
+  })
+  const data = await response.json()
   if (!response.ok) {
-    throw new Error(data.error || "Error registering information");
+    throw new Error(data.error || 'Error registering information')
   }
-  return data;
-};
+  return data
+}
