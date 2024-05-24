@@ -4,7 +4,7 @@
   "description": "Sanitas logging logic on one place only.",
   "author": "ElrohirGT",
   "license": "MIT",
-	"dependencies": {
-		"logging": "file:logging"
-	}
+  "dependencies": {
+    "logging": "file:logging"
+  }
 }

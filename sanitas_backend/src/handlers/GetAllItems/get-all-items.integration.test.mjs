@@ -1,5 +1,5 @@
+import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { describe, beforeAll, afterAll, test, expect } from "@jest/globals";
 
 const LOCAL_API_URL = "http://localhost:3000/";
 

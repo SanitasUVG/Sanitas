@@ -1,5 +1,5 @@
-import { logger, withRequest } from "logging";
 import { getPgClient } from "db-conn";
+import { logger, withRequest } from "logging";
 
 /**
  * A simple example includes a HTTP get method.
@@ -39,6 +39,11 @@ export const getAllItemsHandler = async (event, context) => {
   logger.info("Creating response...");
   const response = {
     statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Origin": "*", // Allow from anywhere
+      "Access-Control-Allow-Methods": "GET", // Allow only GET request
+    },
     body: JSON.stringify([]),
   };
 

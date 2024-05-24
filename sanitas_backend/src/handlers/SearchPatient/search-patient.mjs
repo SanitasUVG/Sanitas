@@ -1,5 +1,5 @@
-import { logger, withRequest } from "logging";
 import { getPgClient } from "db-conn";
+import { logger, withRequest } from "logging";
 
 /**
  * @typedef {Object} RequestParams
@@ -139,12 +139,22 @@ export const searchPatientHandler = async (event, context) => {
       logger.info("No patients found, returning empty array.");
       return {
         statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*", // Allow from anywhere
+          "Access-Control-Allow-Methods": "POST", // Allow only GET request
+        },
         body: JSON.stringify([]),
       };
     }
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "POST", // Allow only GET request
+      },
       body: JSON.stringify(response.rows),
     };
   } catch (error) {

@@ -1,9 +1,10 @@
 import axios from "axios";
 
 // Development
-const BASE_URL = "http://localhost:3000";
+// const BASE_URL = "http://localhost:3000";
 // Production
-// const BASE_URL = "localhost:3000"
+// const BASE_URL = "https://jenr1d4tlh.execute-api.us-east-2.amazonaws.com/Prod/"
+const BASE_URL = process.env.BACKEND_URL;
 
 /**
  * @template Res - The result value type

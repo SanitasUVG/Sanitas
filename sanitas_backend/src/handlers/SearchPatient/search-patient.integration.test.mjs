@@ -1,5 +1,5 @@
+import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
-import { describe, it, expect } from "@jest/globals";
 
 const LOCAL_API_URL = "http://localhost:3000/search-patient";
 

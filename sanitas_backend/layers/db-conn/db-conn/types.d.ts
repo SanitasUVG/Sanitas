@@ -1,8 +1,4 @@
-import type {
-  BaseClientOptions,
-  SchemaInference,
-  XataRecord,
-} from "@xata.io/client";
+import type { BaseClientOptions, SchemaInference, XataRecord } from "@xata.io/client";
 declare const tables: readonly [
   {
     readonly name: "Paciente";
@@ -11,10 +7,10 @@ declare const tables: readonly [
         readonly name: "nombre";
         readonly type: "string";
         readonly notNull: true;
-        readonly defaultValue: '""';
-      }
+        readonly defaultValue: "\"\"";
+      },
     ];
-  }
+  },
 ];
 export type SchemaTables = typeof tables;
 export type InferredTypes = SchemaInference<SchemaTables>;

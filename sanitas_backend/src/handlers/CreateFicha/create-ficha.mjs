@@ -1,11 +1,13 @@
-import { logger, withRequest } from "logging";
 import { getPgClient } from "db-conn";
+import { logger, withRequest } from "logging";
 
 export const createFichaHandler = async (event, context) => {
   withRequest(event, context);
 
   if (event.httpMethod !== "POST") {
-    throw new Error(`createFichaHandler solo acepta el método POST, intentaste: ${event.httpMethod}`);
+    throw new Error(
+      `createFichaHandler solo acepta el método POST, intentaste: ${event.httpMethod}`,
+    );
   }
 
   const pacienteData = JSON.parse(event.body);
@@ -46,7 +48,7 @@ export const createFichaHandler = async (event, context) => {
       pacienteData.CUI,
       pacienteData.NOMBRES,
       pacienteData.APELLIDOS,
-      pacienteData.SEXO === "F", 
+      pacienteData.SEXO === "F",
       new Date(pacienteData.FECHA_NACIMIENTO),
     ];
     await client.query(query, values);
@@ -83,6 +85,11 @@ export const createFichaHandler = async (event, context) => {
 
   const response = {
     statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Origin": "*", // Allow from anywhere
+      "Access-Control-Allow-Methods": "POST", // Allow only GET request
+    },
     body: JSON.stringify({ message: "Ficha creada exitosamente." }),
   };
 

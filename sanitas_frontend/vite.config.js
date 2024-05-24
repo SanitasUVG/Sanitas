@@ -9,6 +9,9 @@ export default defineConfig({
       src: "/src",
     },
   },
+  define: {
+    "process.env": process.env,
+  },
   test: {
     environment: "jsdom",
     setupFiles: "UITestSetup.js",
