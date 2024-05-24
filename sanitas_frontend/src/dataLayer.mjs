@@ -68,43 +68,54 @@ export async function searchPatient(query, type) {
 }
 
 /**
- * @typedef {Object} UserData
- * @property {string} cui - The CUI of the patient.
- * @property {string} names - The names of the patient.
- * @property {string} surnames - The surnames of the patient.
- * @property {string} sex - The sex of the patient.
- * @property {string} birthDate - The birth date of the patient.
+ * Asynchronously checks if a CUI (Unique Identity Code) exists in the system by making a GET request to the server.
+ *
+ * @param {string} cui - The CUI to be checked.
+ * @returns {Promise<Object>} A promise that resolves to an object containing a boolean `exists` indicating if the CUI is found, and the `cui` itself.
+ * @throws {Error} Throws an error if the request fails or if the server response is not OK.
  */
+export const checkCui = async (cui) => {
+  try {
+    const response = await fetch(`http://localhost:3000/check-cui/${cui}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+    const data = await response.json();
+    return { exists: data.exists, cui: cui };
+  } catch (error) {
+    throw new Error("Error fetching CUI:", error);
+  }
+};
 
 /**
- * Searches for user data based on the provided query (CUI).
- * @param {string} query - The CUI of the patient to be searched.
- * @returns {Promise<UserData>} A promise that resolves to an object containing the patient's data if found, or an empty object if not found.
+ * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
+ *
+ * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
+ * @param {string} patientData.cui - The unique identifier for the patient.
+ * @param {string} patientData.names - The first and middle names of the patient.
+ * @param {string} patientData.surnames - The last names of the patient.
+ * @param {string} patientData.sex - The sex of the patient, expected to be 'F' for female or 'M' for male based on a boolean condition.
+ * @param {string} patientData.birthDate - The birth date of the patient.
+ * @returns {Promise<Object>} A promise that resolves to the response data from the server.
+ * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
-export function foundUserData(query) {
-  return new Promise((resolve) => {
-    /** @type {Record<string, UserData>} */
-    const dummyPatients = {
-      1234567891011: {
-        cui: "1234567891011",
-        names: "Juan",
-        surnames: "Pérez",
-        sex: "Masculino",
-        birthDate: "1990-01-01",
-      },
-      1098765432109: {
-        cui: "1098765432109",
-        names: "Ana",
-        surnames: "Lopez",
-        sex: "Femenino",
-        birthDate: "1992-02-02",
-      },
-    };
-
-    if (dummyPatients[query]) {
-      resolve(dummyPatients[query]);
-    } else {
-      resolve(/** @type {UserData} */ ({}));
-    }
+export const submitPatientData = async (patientData) => {
+  const response = await fetch("http://localhost:3000/ficha", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      CUI: patientData.cui,
+      NOMBRES: patientData.names,
+      APELLIDOS: patientData.surnames,
+      SEXO: patientData.sex ? "F" : "M",
+      FECHA_NACIMIENTO: patientData.birthDate,
+    }),
   });
-}
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Error registering information");
+  }
+  return data;
+};

@@ -1,103 +1,97 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-// import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
-import { AddPatientView, PatientForm } from "./index";
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
+import { AddPatientView } from '../AddPatientView/index'
 
-describe("AddPatientView Component", () => {
-  const foundUserDataMock = vi.fn((cui) =>
-    cui === "1234567890123"
-      ? Promise.resolve({
-        names: "Juan",
-        surnames: "Pérez",
-        sex: "Masculino",
-        birthDate: "1990-01-01",
-      })
-      : Promise.resolve({})
-  );
-
-  it("should display an error message if CUI is not 13 digits", () => {
-    window.alert = vi.fn();
+describe('AddPatientView tests', () => {
+  test('Check CUI with invalid length shows alert', () => {
+    window.alert = vi.fn()
+    const checkCui = vi.fn()
     render(
       <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
+        <AddPatientView checkCui={checkCui} submitPatientData={() => {}} />
       </MemoryRouter>,
-    );
+    )
 
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "123" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
+    const input = screen.getByPlaceholderText('Ingrese el CUI')
+    fireEvent.change(input, { target: { value: '123' } })
+    const button = screen.getByText('Ver paciente')
+    fireEvent.click(button)
 
-    expect(window.alert).toHaveBeenCalledWith("El CUI debe contener exactamente 13 dígitos.");
-  });
+    expect(window.alert).toHaveBeenCalledWith('El CUI debe contener exactamente 13 dígitos.')
+    expect(checkCui).not.toHaveBeenCalled()
+  })
 
-  it("should display patient information if CUI is found", async () => {
+  test('Valid CUI triggers checkCui function', async () => {
+    const checkCui = vi.fn().mockResolvedValue({ exists: true })
+    const submitPatientData = vi.fn()
     render(
       <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
+        <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} />
       </MemoryRouter>,
-    );
+    )
 
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "1234567890123" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
+    const input = screen.getByPlaceholderText('Ingrese el CUI')
+    fireEvent.change(input, { target: { value: '1234567890123' } })
+    const button = screen.getByText('Ver paciente')
+    fireEvent.click(button)
 
-    expect(await screen.findByText("¡Información del paciente encontrada!")).toBeInTheDocument();
-  });
+    await vi.waitFor(() => expect(checkCui).toHaveBeenCalledWith('1234567890123'))
 
-  it("should display a registration message if CUI is not found", async () => {
+    await waitFor(() => {
+      expect(screen.getByText('¡Información del paciente encontrada!')).toBeVisible()
+    })
+  })
+
+  test('Displays error message when CUI check fails', async () => {
+    const errorMessage = 'Error de conexión'
+    const checkCui = vi.fn().mockRejectedValue(new Error(errorMessage))
     render(
       <MemoryRouter>
-        <AddPatientView foundUserData={foundUserDataMock} useStore={() => {}} />
+        <AddPatientView checkCui={checkCui} submitPatientData={() => {}} />
       </MemoryRouter>,
-    );
+    )
 
-    const input = screen.getByPlaceholderText("Ingrese el CUI");
-    fireEvent.change(input, { target: { value: "9876543210987" } });
-    fireEvent.click(screen.getByText("Ver paciente"));
+    const input = screen.getByPlaceholderText('Ingrese el CUI')
+    fireEvent.change(input, { target: { value: '1234567890123' } })
+    const button = screen.getByText('Ver paciente')
+    fireEvent.click(button)
 
-    expect(
-      await screen.findByText("No se encontró información. Por favor, registre al paciente."),
-    ).toBeInTheDocument();
-  });
-});
+    await waitFor(() => {
+      expect(screen.getByText(`Error al verificar el CUI. ${errorMessage}`)).toBeVisible()
+    })
+  })
 
-describe("PatientForm Component", () => {
-  const patientDataMock = {
-    names: "Juan",
-    surnames: "Pérez",
-    sex: "Masculino",
-    birthDate: "1990-01-01",
-    isNew: true,
-  };
-
-  const setPatientDataMock = vi.fn();
-
-  it("should display input fields with correct initial values", () => {
+  test('CUI input only allows numeric characters and limits to 13 digits', () => {
     render(
       <MemoryRouter>
-        <PatientForm patientData={patientDataMock} setPatientData={setPatientDataMock} />
+        <AddPatientView checkCui={() => {}} submitPatientData={() => {}} />
       </MemoryRouter>,
-    );
+    )
 
-    expect(screen.getByPlaceholderText("Nombres").value).toBe("Juan");
-    expect(screen.getByPlaceholderText("Apellidos").value).toBe("Pérez");
-    expect(screen.getByPlaceholderText("Fecha de nacimiento").value).toBe("1990-01-01");
-  });
+    const input = screen.getByPlaceholderText('Ingrese el CUI')
+    fireEvent.change(input, { target: { value: 'abc1234567890123456' } })
+    expect(input.value).toBe('1234567890123')
+  })
 
-  it("should update patient data on input change", () => {
+  test('Shows new patient form when CUI does not exist', async () => {
+    const checkCui = vi.fn().mockResolvedValue({ exists: false })
     render(
       <MemoryRouter>
-        <PatientForm patientData={patientDataMock} setPatientData={setPatientDataMock} />
+        <AddPatientView checkCui={checkCui} submitPatientData={() => {}} />
       </MemoryRouter>,
-    );
+    )
 
-    fireEvent.change(screen.getByPlaceholderText("Nombres"), { target: { value: "Carlos" } });
-    fireEvent.change(screen.getByPlaceholderText("Apellidos"), { target: { value: "Sánchez" } });
+    const input = screen.getByPlaceholderText('Ingrese el CUI')
+    fireEvent.change(input, { target: { value: '1234567890123' } })
+    const button = screen.getByText('Ver paciente')
+    fireEvent.click(button)
 
-    expect(setPatientDataMock).toHaveBeenCalledWith(expect.objectContaining({ names: "Carlos" }));
-    expect(setPatientDataMock).toHaveBeenCalledWith(
-      expect.objectContaining({ surnames: "Sánchez" }),
-    );
-  });
-});
+    await waitFor(() => {
+      expect(screen.getByText('Registrar información')).toBeVisible()
+      expect(
+        screen.getByText('No se encontró información. Por favor, registre al paciente.'),
+      ).toBeVisible()
+    })
+  })
+})

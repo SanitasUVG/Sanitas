@@ -1,4 +1,4 @@
-import { foundUserData, searchPatient } from "./dataLayer.mjs";
+import { checkCui, searchPatient, submitPatientData } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -15,16 +15,11 @@ export const NAV_PATHS = {
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
-    element: (
-      <SearchPatientView
-        searchPatientsApiCall={searchPatient}
-        useStore={useStore}
-      />
-    ),
+    element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
-    element: <AddPatientView foundUserData={foundUserData} useStore={useStore} />,
+    element: <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} />,
   },
   {
     path: NAV_PATHS.UPDATE_PATIENT,
