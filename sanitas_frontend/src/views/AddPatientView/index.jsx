@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /**
  * @typedef {Object} PatientData
@@ -18,10 +18,10 @@ import { useNavigate } from 'react-router-dom'
  */
 
 export function AddPatientView({ checkCui, submitPatientData }) {
-  const [cui, setCui] = useState('')
-  const [patientData, setPatientData] = useState(null)
-  const [message, setMessage] = useState('')
-  const navigate = useNavigate()
+  const [cui, setCui] = useState("");
+  const [patientData, setPatientData] = useState(null);
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   /**
    * Checks if the patient's CUI exists in the system.
@@ -30,21 +30,21 @@ export function AddPatientView({ checkCui, submitPatientData }) {
   const handleCheckCui = async () => {
     if (cui.length === 13) {
       try {
-        const data = await checkCui(cui)
+        const data = await checkCui(cui);
         if (data.exists) {
-          setMessage('¡Información del paciente encontrada!')
-          setPatientData({ cui, isNew: false })
+          setMessage("¡Información del paciente encontrada!");
+          setPatientData({ cui, isNew: false });
         } else {
-          setPatientData({ cui, names: '', surnames: '', sex: '', birthDate: '', isNew: true })
-          setMessage('No se encontró información. Por favor, registre al paciente.')
+          setPatientData({ cui, names: "", surnames: "", sex: "", birthDate: "", isNew: true });
+          setMessage("No se encontró información. Por favor, registre al paciente.");
         }
       } catch (error) {
-        setMessage('Error al verificar el CUI. ' + error.message)
+        setMessage("Error al verificar el CUI. " + error.message);
       }
     } else {
-      alert('El CUI debe contener exactamente 13 dígitos.')
+      alert("El CUI debe contener exactamente 13 dígitos.");
     }
-  }
+  };
 
   /**
    * Handles changes to the CUI input field.
@@ -52,10 +52,10 @@ export function AddPatientView({ checkCui, submitPatientData }) {
    * @param {React.ChangeEvent<HTMLInputElement>} e - The event emitted by the input field.
    */
   const handleCuiInput = (e) => {
-    const input = e.target.value
-    const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 13)
-    setCui(filteredInput)
-  }
+    const input = e.target.value;
+    const filteredInput = input.replace(/[^0-9]/g, "").slice(0, 13);
+    setCui(filteredInput);
+  };
   return (
     <div>
       <h1>Sanitas</h1>
@@ -72,12 +72,12 @@ export function AddPatientView({ checkCui, submitPatientData }) {
         />
       )}
       {patientData && !patientData.isNew && (
-        <button type="button" onClick={() => navigate('/update-view')}>
+        <button type="button" onClick={() => navigate("/update-view")}>
           Ir a Actualizar Datos
         </button>
       )}
     </div>
-  )
+  );
 }
 
 /**
@@ -89,9 +89,9 @@ export function AddPatientView({ checkCui, submitPatientData }) {
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
  */
 export function PatientForm({ patientData, setPatientData, submitPatientData }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  if (!patientData) return null
+  if (!patientData) return null;
 
   /**
    * Handles changes to the input fields for patient data and updates the state.
@@ -100,13 +100,13 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
    * @param {string} value - The new value of the field.
    */
   const handleChange = (field, value) => {
-    if (field === 'names' || field === 'surnames') {
-      const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')
-      setPatientData({ ...patientData, [field]: filteredValue })
+    if (field === "names" || field === "surnames") {
+      const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+      setPatientData({ ...patientData, [field]: filteredValue });
     } else {
-      setPatientData({ ...patientData, [field]: value })
+      setPatientData({ ...patientData, [field]: value });
     }
-  }
+  };
 
   /**
    * Validates the patient data form before submission.
@@ -114,15 +114,15 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
    * @returns {boolean} True if the form is valid, false otherwise.
    */
   const validateFormData = () => {
-    const fields = ['names', 'surnames', 'sex', 'birthDate']
+    const fields = ["names", "surnames", "sex", "birthDate"];
     for (let field of fields) {
       if (!patientData[field]) {
-        alert(`El campo ${field} es obligatorio y no puede estar vacío.`)
-        return false
+        alert(`El campo ${field} es obligatorio y no puede estar vacío.`);
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   /**
    * Submits the patient data to the server.
@@ -130,14 +130,14 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
   const handleSubmit = async () => {
     if (validateFormData()) {
       try {
-        await submitPatientData(patientData)
-        alert('Información registrada con éxito')
-        navigate('/update-view')
+        await submitPatientData(patientData);
+        alert("Información registrada con éxito");
+        navigate("/update-view");
       } catch (error) {
-        alert(`Error al enviar datos: ${error.message}`)
+        alert(`Error al enviar datos: ${error.message}`);
       }
     }
-  }
+  };
 
   /**
    * Handles changes to the gender radio buttons.
@@ -145,21 +145,21 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
    * @param {string} gender - The selected gender.
    */
   const handleGenderChange = (gender) => {
-    setPatientData({ ...patientData, sex: gender })
-  }
+    setPatientData({ ...patientData, sex: gender });
+  };
 
   return (
     <div>
       <input
         type="text"
         value={patientData.names}
-        onChange={(e) => handleChange('names', e.target.value)}
+        onChange={(e) => handleChange("names", e.target.value)}
         placeholder="Nombres"
       />
       <input
         type="text"
         value={patientData.surnames}
-        onChange={(e) => handleChange('surnames', e.target.value)}
+        onChange={(e) => handleChange("surnames", e.target.value)}
         placeholder="Apellidos"
       />
       <div>
@@ -167,8 +167,8 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
           <input
             type="radio"
             name="gender"
-            checked={patientData.sex === 'F'}
-            onChange={() => handleGenderChange('F')}
+            checked={patientData.sex === "F"}
+            onChange={() => handleGenderChange("F")}
           />
           Femenino
         </label>
@@ -176,8 +176,8 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
           <input
             type="radio"
             name="gender"
-            checked={patientData.sex === 'M'}
-            onChange={() => handleGenderChange('M')}
+            checked={patientData.sex === "M"}
+            onChange={() => handleGenderChange("M")}
           />
           Masculino
         </label>
@@ -185,12 +185,12 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
       <input
         type="date"
         value={patientData.birthDate}
-        onChange={(e) => handleChange('birthDate', e.target.value)}
+        onChange={(e) => handleChange("birthDate", e.target.value)}
         placeholder="Fecha de nacimiento"
       />
       <button type="button" onClick={handleSubmit}>
         Registrar información
       </button>
     </div>
-  )
+  );
 }
