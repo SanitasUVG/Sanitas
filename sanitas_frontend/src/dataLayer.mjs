@@ -77,7 +77,7 @@ export async function searchPatient(query, type) {
  */
 export const checkCui = async (cui) => {
   try {
-    const response = await fetch(`http://localhost:3000/check-cui/${cui}`);
+    const response = await fetch(`${BASE_URL}/check-cui/${cui}`);
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
@@ -101,7 +101,7 @@ export const checkCui = async (cui) => {
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
-  const response = await fetch("http://localhost:3000/ficha", {
+  const response = await fetch(`${BASE_URL}/submit-patient`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
