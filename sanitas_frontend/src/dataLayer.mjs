@@ -101,7 +101,7 @@ export const checkCui = async (cui) => {
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
-  const response = await fetch(`${BASE_URL}/submit-patient`, {
+  const response = await fetch(`${BASE_URL}/ficha`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
