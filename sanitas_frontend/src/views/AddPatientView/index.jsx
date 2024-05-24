@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { checkCui, submitPatientData } from "src/dataLayer.mjs";
-
 /**
- * Defines the structure for patient data.
  * @typedef {Object} PatientData
  * @property {string} cui - Unique identifier for the patient.
  * @property {string} names - First and middle names of the patient.
@@ -15,10 +12,12 @@ import { checkCui, submitPatientData } from "src/dataLayer.mjs";
  */
 
 /**
- * Component to check and fetch patient data by their CUI (Unique Identity Code).
- * This component allows users to input a CUI, check its existence, and either fetch existing data or register new data.
+ * @typedef {Object} AddPatientViewProps
+ * @property {function(string): Promise<Object>} checkCui - Function to check existence of a CUI.
+ * @property {function(PatientData): Promise<void>} submitPatientData - Function to submit patient data.
  */
-export function AddPatientView() {
+
+export function AddPatientView({ checkCui, submitPatientData }) {
   const [cui, setCui] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [message, setMessage] = useState("");
@@ -31,8 +30,9 @@ export function AddPatientView() {
   const handleCheckCui = async () => {
     if (cui.length === 13) {
       try {
-        const data = await checkCui(cui);
-        if (data.exists) {
+        const response = await checkCui(cui);
+        const data = await response.json();
+        if (response.ok && data && data.exists) {
           setMessage("¡Información del paciente encontrada!");
           setPatientData({ cui, isNew: false });
         } else {
@@ -40,7 +40,7 @@ export function AddPatientView() {
           setMessage("No se encontró información. Por favor, registre al paciente.");
         }
       } catch (error) {
-        setMessage("Error al verificar el CUI. " + error.message);
+        setMessage("Error al verificar el CUI. " + (error.message || "Unknown error"));
       }
     } else {
       alert("El CUI debe contener exactamente 13 dígitos.");
@@ -65,7 +65,13 @@ export function AddPatientView() {
         Ver paciente
       </button>
       {message && <div>{message}</div>}
-      {patientData && patientData.isNew && <PatientForm patientData={patientData} setPatientData={setPatientData} />}
+      {patientData && patientData.isNew && (
+        <PatientForm
+          patientData={patientData}
+          setPatientData={setPatientData}
+          submitPatientData={submitPatientData}
+        />
+      )}
       {patientData && !patientData.isNew && (
         <button type="button" onClick={() => navigate("/update-view")}>
           Ir a Actualizar Datos
@@ -76,13 +82,14 @@ export function AddPatientView() {
 }
 
 /**
- * Component to display and edit patient data form.
- * This component provides input fields for each piece of patient data and handles data validation and submission.
+ * Form component to display and manage input for patient data.
+ * Handles data validation and submission to server for registration or updates.
  * @param {Object} props - Component props.
- * @param {PatientData} props.patientData - Patient data to be displayed and edited.
- * @param {(data: PatientData) => void} props.setPatientData - Function to update the patient data state.
+ * @param {PatientData} props.patientData - Data for a single patient.
+ * @param {function(PatientData): void} props.setPatientData - Function to update the patient data state.
+ * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
  */
-export function PatientForm({ patientData, setPatientData }) {
+export function PatientForm({ patientData, setPatientData, submitPatientData }) {
   const navigate = useNavigate();
 
   if (!patientData) return null;
