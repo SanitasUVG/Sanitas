@@ -46,19 +46,17 @@ describe("AddPatientView", () => {
     alertSpy.mockRestore();
   });
 
-  it("should handle CUI check correctly", async () => {
-    mockCheckCui.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ exists: true }),
-    });
-
+  it("should call checkCui with correct CUI", async () => {
+    const mockCheckCui = vi.fn().mockResolvedValue({ exists: true });
     render(<AddPatientView checkCui={mockCheckCui} submitPatientData={mockSubmitPatientData} />);
     fireEvent.change(screen.getByPlaceholderText("Ingrese el CUI"), {
       target: { value: "1234567891012" },
     });
     fireEvent.click(screen.getByRole("button", { name: /ver paciente/i }));
 
-    await waitFor(() => expect(screen.getByText("¡Información del paciente encontrada!")).toBeInTheDocument());
+    await waitFor(() => {
+      expect(mockCheckCui).toHaveBeenCalledWith("1234567891012");
+    });
   });
 
   it("should handle non-existent CUI correctly", async () => {

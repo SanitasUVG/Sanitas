@@ -30,9 +30,8 @@ export function AddPatientView({ checkCui, submitPatientData }) {
   const handleCheckCui = async () => {
     if (cui.length === 13) {
       try {
-        const response = await checkCui(cui);
-        const data = await response.json();
-        if (response.ok && data && data.exists) {
+        const data = await checkCui(cui);
+        if (data.exists) {
           setMessage("¡Información del paciente encontrada!");
           setPatientData({ cui, isNew: false });
         } else {
@@ -40,7 +39,7 @@ export function AddPatientView({ checkCui, submitPatientData }) {
           setMessage("No se encontró información. Por favor, registre al paciente.");
         }
       } catch (error) {
-        setMessage("Error al verificar el CUI. " + (error.message || "Unknown error"));
+        setMessage("Error al verificar el CUI. " + error.message);
       }
     } else {
       alert("El CUI debe contener exactamente 13 dígitos.");
