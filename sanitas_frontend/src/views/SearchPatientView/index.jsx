@@ -81,7 +81,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         }
         <select value={type} onChange={(e) => setSearchQuery(query, e.target.value)}>
           <option value="Carnet">Carnet Estudiante</option>
-          <option value="CodigoColaborador">Código Colaborador</option>
+          <option value="NumeroColaborador">Código Colaborador</option>
           <option value="Nombres">Nombres y Apellidos</option>
         </select>
         <input
