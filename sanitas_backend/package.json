@@ -1,0 +1,37 @@
+{
+  "name": "sanitas_backend",
+  "description": "Backend for the Sanitas framework",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.398.0",
+    "@aws-sdk/lib-dynamodb": "^3.398.0",
+    "pino": "^9.0.0",
+    "pino-lambda": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.138",
+    "aws-sdk-client-mock": "^2.0.0",
+    "axios": "^1.6.8",
+    "jest": "^29.2.1"
+  },
+  "scripts": {
+    "test": "npm install && node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "lint": "oxlint -D correctness -D restriction .",
+    "format": "dprint fmt"
+  },
+  "jest": {
+    "testMatch": [
+      "**/src/**/*.test.[jt]s?(x)",
+      "**/src/**/*.test.mjs?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/.aws-sam/"
+    ],
+    "moduleFileExtensions": [
+      "mjs",
+      "js"
+    ]
+  }
+}

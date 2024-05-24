@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "db-conn": ["./layers/db-conn/db-conn/index.mjs"],
+      "logging": ["./layers/logging/logging/index.mjs"]
+    }
+  }
+}

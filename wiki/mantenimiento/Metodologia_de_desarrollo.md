@@ -25,7 +25,7 @@ hacer review a las PRs en cada una de estas áreas:
 - Nix env: [@ElrohirGT](https://github.com/ElrohirGT) y [@DanielDubon](https://github.com/DanielDubon)
 - Frontend: Visual & UI/UX Review por [@lemoonchild](https://github.com/lemoonchild)
   , Code Structure Review por [@XavierLopez25](https://github.com/XavierLopez25)
-- Wiki: [@BiancaCalderon](https://github.com/BiancaCalderon)
+- Wiki: [@BiancaCalderon](https://github.com/BiancaCalderon) y [@lemoonchild](https://github.com/lemoonchild)
 - CI/CD: [@ElrohirGT](https://github.com/ElrohirGT), [@XavierLopez25](https://github.com/XavierLopez25)
 
 La persona que crea la PR es la responsable de darle merge dentro del repositorio.

@@ -1,16 +1,11 @@
 {
-  description = "A very basic flake";
+  description = "Sanitas Flake for reproducible builds and environments!";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
-    rust-overlay.url = "github:oxalica/rust-overlay";
     devenv = {
       url = "github:cachix/devenv";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    fenix = {
-      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -24,52 +19,20 @@
     self,
     nixpkgs,
     systems,
-    rust-overlay,
     devenv,
     ...
   } @ inputs: let
-    overlays = [(import rust-overlay)];
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
-    postgresPort = 5566;
-    postgresHost = "127.0.0.1";
+    postgresPort = 6969;
+    postgresHost = "0.0.0.0";
   in {
     packages = forEachSystem (
       system: let
         # dbPort = "5433";
-        pkgs = import nixpkgs {inherit system overlays;};
-        rustVersion = pkgs.rust-bin.stable.latest.default;
-        rustPlatform = pkgs.makeRustPlatform {
-          cargo = rustVersion;
-          rustc = rustVersion;
-        };
-        sanitasBackendPackage = rustPlatform.buildRustPackage {
-          pname = "sanitas_backend";
-          version = "0.1.0";
-          src = ./backend;
-          cargoLock.lockFile = ./backend/Cargo.lock;
-        };
+        pkgs = import nixpkgs {inherit system;};
       in {
         # For setting up devenv
         devenv-up = self.devShells.${system}.default.config.procfileScript;
-
-        # Sanitas backend docker image, generate it using:
-        # `nix run .#sanitasBackendDocker`
-        sanitasBackendDocker = pkgs.dockerTools.buildImage {
-          name = "sanitas_backend_img";
-          tag = "latest";
-
-          copyToRoot = pkgs.buildEnv {
-            name = "image-root";
-            paths = [sanitasBackendPackage];
-            pathsToLink = ["/"];
-          };
-
-          config = {
-            Cmd = [
-              "/${sanitasBackendPackage}/bin/sanitas_backend"
-            ];
-          };
-        };
 
         restartServices = pkgs.writeShellApplication {
           name = "Sanitas dev server restarter";
@@ -88,7 +51,7 @@
     );
 
     devShells = forEachSystem (system: let
-      pkgs = import nixpkgs {inherit system overlays;};
+      pkgs = import nixpkgs {inherit system;};
       strFromDBFile = file: builtins.readFile ./database/${file};
       dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
     in {
@@ -97,19 +60,24 @@
         modules = [
           {
             packages = with pkgs; [
+              # General
+              awscli2
+              aws-sam-cli
+              jq
+
+              # Backend
+              nodePackages.serverless
+
               # Database
               postgresql
               sqlfluff # SQL linter and formatter
 
               # Frontend
               nodejs_20
-              yarn
+              yarn-berry
               dprint # Javascript formatter
               oxlint # Javascript linter
             ];
-            enterShell = ''
-              alias rm=rip
-            '';
 
             services.postgres = {
               enable = true;
@@ -122,6 +90,34 @@
                 logging_collector = true;
                 log_disconnections = true;
                 log_destination = "stderr";
+              };
+            };
+
+            processes = {
+              frontend = {
+                exec = "cd sanitas_frontend/ && yarn dev";
+                # TODO: Uncomment when supported by devenv.
+                # process-compose = {
+                #   ready_log_line = "ready in";
+                # };
+              };
+              storybook = {
+                exec = "cd sanitas_frontend/ && yarn storybook";
+                # TODO: Uncomment when supported by devenv.
+                # process-compose = {
+                #   ready_log_line = "for react-vite started";
+                # };
+              };
+              backend.exec = "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
+              pg_setup = {
+                exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
+                process-compose = {
+                  depends_on = {
+                    postgres = {
+                      condition = "process_healthy";
+                    };
+                  };
+                };
               };
             };
 

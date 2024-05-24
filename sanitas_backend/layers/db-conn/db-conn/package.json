@@ -1,0 +1,12 @@
+{
+  "name": "db-conn",
+  "version": "1.0.0",
+  "description": "Package in charge of connecting to the DB.",
+  "type": "module",
+  "main": "index.mjs",
+  "author": "ElrohirGT",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.11.5"
+  }
+}
