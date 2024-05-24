@@ -26,7 +26,7 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: actions/configure-pages@v4
       # yamllint disable-line rule:line-length
-      - run: nix develop --impure . --command bash -c "BACKEND_URL=${{ secrets.BackendURL }} cd sanitas_frontend/ && yarn &&  yarn build --base=/Sanitas/"
+      - run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && BACKEND_URL=${{ secrets.BackendURL }} yarn build --base=/Sanitas/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./sanitas_frontend/dist
