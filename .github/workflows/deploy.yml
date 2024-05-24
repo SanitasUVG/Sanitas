@@ -15,7 +15,6 @@ permissions:
 jobs:
   backend-deploy:
     name: Backend Deployment
-
     runs-on: ubuntu-latest
     outputs:
       backend_url: ${{ steps.get_url_step.outputs.url }}
