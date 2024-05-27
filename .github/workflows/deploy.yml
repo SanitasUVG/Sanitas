@@ -24,9 +24,14 @@ jobs:
         with:
           ref: staging
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Configure AWS Credentials Action for GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+      - name: Building Backend
+        # yamllint disable-line rule:line-length
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build"
       - name: Deploying Backend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build && sam deploy --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && yes | sam deploy --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
       - name: Saving Backend URL
         id: get_url_step
         # yamllint disable-line rule:line-length
@@ -47,7 +52,7 @@ jobs:
       - uses: actions/configure-pages@v4
       - name: Building frontend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && ${{ needs.backend-deploy.outputs.backend_url }} yarn build --base=/Sanitas/"
+        run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url }} yarn build --base=/Sanitas/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./sanitas_frontend/dist
