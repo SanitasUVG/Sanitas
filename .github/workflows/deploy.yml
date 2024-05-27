@@ -26,6 +26,10 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Configure AWS Credentials Action for GitHub Actions
         uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          audience: sts.amazonaws.com
+          region: us-east-2
+          role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
       - name: Building Backend
         # yamllint disable-line rule:line-length
         run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build"
