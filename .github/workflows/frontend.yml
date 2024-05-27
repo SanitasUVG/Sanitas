@@ -9,22 +9,17 @@ on:     # yamllint disable-line rule:truthy
       - synchronize
 
 jobs:
-  lint:
+  testAndLinting:
     name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: DeterminateSystems/nix-installer-action@main
-      - run: |
+      - name: Linting
+        run: |
             nix develop --impure . --command bash -c \
              "cd sanitas_frontend/ && yarn && yarn run lint"
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
-      - run: |
+      - name: Testing
+        run: |
             nix develop --impure . --command bash -c \
             "cd sanitas_frontend/ && yarn && yarn test"
