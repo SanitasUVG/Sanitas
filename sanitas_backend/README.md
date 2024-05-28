@@ -85,3 +85,122 @@ ficticia para obtener todos los jamones de la tienda.
 1. Añade los exports que creas necesarios para las integration tests.
 
 1. Haz la PR.
+
+## Conventions
+
+El lenguaje del código es en inglés, por lo que todos los nombres deben ir en inglés.
+
+Recuerda formatear tu código y darle lint con los comandos:
+
+```bash
+npm run lint
+```
+
+```bash
+npm run format
+```
+
+### Endpoints
+
+Para los endpoints de la API del backend la convención es:
+
+- Usar el método [HTTP adecuado](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
+- Todos los `body` en las cualquier tipo de request siguen el formato [camelCase](https://es.wikipedia.org/wiki/Camel_case)
+- Las responses de los endpoints siguen el formato [camelCase](https://es.wikipedia.org/wiki/Camel_case)
+  para sus propiedades. Recuerda simplificar lo más que se pueda la response.
+
+```bash
+# Incorrecto
+{
+   esValido: true
+}
+```
+
+```bash
+# Correcto
+true
+```
+
+- Las responses de los endpoints deben ser consistentes en caso de ser exitosa.
+  Es decir, si retorna un estatus de éxito (200-299), siempre debe tener la misma
+  estructura.
+
+```bash
+# Incorrecto
+
+# El endpoint puede responder con cualquiera de estas dos estructuras
+# Para el mismo status.
+# En su lugar debería de responder siempre con la misma para el rango de estatus.
+Status: 200
+{
+   items: []
+}
+Status: 200
+{
+   objects: []
+}
+```
+
+- Todos los endpoints tiene un recurso asociado, entonces:
+
+Por ejemplo si se diseña un endpoint para añadir un paciente:
+
+```bash
+# Incorrecto
+POST
+/add-paciente
+{
+   CUI: "3333333333333",
+   Nombres: "Flavio Galán",
+   es_mujer: true
+}
+```
+
+```bash
+# Correcto
+POST
+/patient
+{
+   cui: "3333333333333",
+   nombres: "Flavio Galán",
+   esMujer: false
+}
+```
+
+O si se diseña un endpoint para obtener información específica de algún paciente
+en específico:
+
+```bash
+# Incorrecto
+GET
+/get-paciente-data?ID=3
+```
+
+```bash
+# Correcto
+GET
+/patient/{id}/details
+```
+
+```bash
+# Correct UPDATE request
+UPDATE
+/patient/{id}
+{
+   cui: "3333333333333",
+   nombres: "Flavio Galán",
+   esMujer: false
+}
+```
+
+```bash
+# Correct
+GET
+/check-cui
+```
+
+```bash
+# Correct
+GET
+/patient/cui/check
+```
