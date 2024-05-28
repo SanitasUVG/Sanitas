@@ -53,59 +53,6 @@ components/
 │   └── index.jsx
 ```
 
-Para poder realizar pruebas de interfaz con nuestros componentes es importante
-escribirlos de forma que todo su comportamiento dependa de los props que se
-les pasen. Por ejemplo, si queremos tener un componente que haga fetch a
-la API por medio de un `useEffect` estaríamos tentados a escribirlo de
-la siguiente forma:
-
-```javascript=
-export default function Button({ text, onClick }) => {
-  const [data, setData] = useState()
-  useEffect(() => {
-    (async () => {
-      const a = await fetchData()
-        setData(a)
-    })()
-  }, [])
-
-  return (
-    <button onClick={onClick}>
-      {text}
-    </button>
-  );
-}`
-```
-
-El componente botón de arriba es muy difícil de testear, principalmente debido
-a que la función `fetchData()` no se encuentra como una dependencia del
-componente en sus props, por lo que al momento de simular el componente en un
-ambiente de testing, no puedo simplemente reemplazarla por algo más que no
-llame a la API para traer la data. Para arreglar esto podemos reescribir el
-componente de la siguiente manera:
-
-```javascript=
-export default function Button({ text, onClick, fetchData }) => {
-  const [data, setData] = useState()
-  useEffect(() => {
-    (async () => {
-      const a = await fetchData()
-      setData(a)
-    })()
-  }, [])
-
-  return (
-    <button onClick={onClick}>
-      {text}
-    </button>
-  );
-};
-```
-
-Este componente tiene su lógica de obtener data de la API extraída en una
-función que podemos hacerle mock cuando estemos realizando las pruebas de
-interfaz sobre él. Esto lo hace mucho más fácil de testear.
-
 ### views/
 
 Este directorio contrendrá las vistas principales (páginas) del frontend. La
@@ -141,7 +88,7 @@ reutilizables dentro del proyecto para poder ahorrar líneas de código.
 
 Un ejemplo de una función que iría en utils sería:
 
-```javascript=
+```javascript
 /**
  * A useState react hook that uses internally localStorage to save its state.
  * @param {string} key - The key to save this object into
@@ -167,61 +114,3 @@ export const useLocalStorage = (key, defaultValue = undefined) => {
 
 Esta función es un hook custom que utiliza el LocalStorage para
 guardar u obtener datos.
-
-______________________________________________________________________
-
-## Extra guidelines
-
-### JSDoc
-
-Este proyecto no utiliza typescript para su manejo de tipos sino que
-[JSDoc](https://jsdoc.app/). Es **requerido** que todos los componentes de la
-aplicación tengan asociado unos comentarios de JSDoc que documenten el tipo de
-sus props. Por ejemplo el componente botón que explicamos anteriormente
-realmente debería de tener documentación de la siguiente forma como mínimo:
-
-```javascript=
-/**
- * @typedef {Object} ButtonProps
- * @property {string} text
- * @property {()=>void onClick
- * @property {()=>void} fetchData
- */
-
-/**
- * @param {ButtonProps} props
- */
-export default function Button({ text, onClick, fetchData }) => {
-  const [data, setData] = useState()
-  useEffect(() => {
-    (async () => {
-      const a = await fetchData()
-      setData(a)
-    })()
-  }, [])
-
-  return (
-    <button onClick={onClick}>
-      {text}
-    </button>
-  );
-};
-```
-
-### Preferir alias src
-
-Además se configuró un alias para la importación de componentes, preferir usar
-el alias `src` antes de la ruta relativa para todos los imports que no sean estilos.
-
-Una violación a esta guideline se miraría de la siguiente forma:
-
-```javascript=
-import { logError } from "../../utils/general";
-```
-
-En realidad este import debe utilizar el alias `src` para simplificar el import,
-además de que permite mover el componente de lugar sin afectar sus imports:
-
-```javascript=
-import { logError } from "src/utils/general";
-```
