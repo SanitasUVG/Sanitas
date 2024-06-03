@@ -32,7 +32,7 @@ INSERT INTO PACIENTE (
 (
     '1234567890123',
     'juan.perez@example.com',
-    TRUE,
+    FALSE,
     'Juan',
     'Pérez',
     'Maria Pérez',
@@ -50,7 +50,7 @@ INSERT INTO PACIENTE (
 (
     '2345678901234',
     'maria.lopez@example.com',
-    FALSE,
+    TRUE,
     'María',
     'López',
     'Ana López',
@@ -115,9 +115,7 @@ INSERT INTO MEDICAMENTO (NOMBRE, CANTIDAD, ID_CONSULTA) VALUES
 ('Lisinopril', 30, 1);
 
 INSERT INTO ESTUDIANTE (CARNET, CARRERA, ID_PACIENTE) VALUES
-('A01234567', 'Ingeniería', 1),
-('B07654321', 'Medicina', 2);
+('A01234567', 'Ingeniería en CC y TI', 1);
 
 INSERT INTO COLABORADOR (CODIGO, AREA, ID_PACIENTE) VALUES
-('C001', 'Administración', 1),
-('C002', 'Soporte técnico', 2);
+('C001', 'Administración', 2);
