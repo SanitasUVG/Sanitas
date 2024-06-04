@@ -15,6 +15,11 @@ describe("Health Check Integration Test", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
     expect(response.data).toBeDefined();
-    expect(response.data.status).toBe("UP");
+    const statuses = response.data;
+    expect(statuses).toBeInstanceOf(Array);
+
+    const dbStatus = statuses.find(status => status.name === "DB");
+    expect(dbStatus).toBeDefined();
+    expect(dbStatus.status).toBe("UP");
   });
 });
