@@ -5,9 +5,7 @@ export const createFichaHandler = async (event, context) => {
   withRequest(event, context);
 
   if (event.httpMethod !== "POST") {
-    throw new Error(
-      `createFichaHandler solo acepta el método POST, intentaste: ${event.httpMethod}`,
-    );
+    throw new Error(`createFichaHandler solo acepta el método POST, intentaste: ${event.httpMethod}`);
   }
 
   const pacienteData = JSON.parse(event.body);
@@ -24,19 +22,19 @@ export const createFichaHandler = async (event, context) => {
     logger.info(pacienteData, "Insertando nueva ficha en la base de datos...");
 
     // Validar que todos los campos requeridos estén presentes
-    if (!pacienteData.CUI) {
+    if (!pacienteData.cui) {
       throw new Error("CUI es requerido.");
     }
-    if (!pacienteData.NOMBRES) {
+    if (!pacienteData.nombres) {
       throw new Error("NOMBRES es requerido.");
     }
-    if (!pacienteData.APELLIDOS) {
+    if (!pacienteData.apellidos) {
       throw new Error("APELLIDOS es requerido.");
     }
-    if (!pacienteData.SEXO) {
-      throw new Error("SEXO es requerido.");
+    if (pacienteData.esMujer === undefined) {
+      throw new Error("esMujer es requerido.");
     }
-    if (!pacienteData.FECHA_NACIMIENTO) {
+    if (!pacienteData.fechaNacimiento) {
       throw new Error("FECHA_NACIMIENTO es requerido.");
     }
 
@@ -45,11 +43,11 @@ export const createFichaHandler = async (event, context) => {
       VALUES ($1, $2, $3, $4, $5)
     `;
     const values = [
-      pacienteData.CUI,
-      pacienteData.NOMBRES,
-      pacienteData.APELLIDOS,
-      pacienteData.SEXO === "F",
-      new Date(pacienteData.FECHA_NACIMIENTO),
+      pacienteData.cui,
+      pacienteData.nombres,
+      pacienteData.apellidos,
+      pacienteData.esMujer,
+      new Date(pacienteData.fechaNacimiento),
     ];
     await client.query(query, values);
     logger.info("Ficha creada exitosamente.");
@@ -65,8 +63,8 @@ export const createFichaHandler = async (event, context) => {
       errorMessage = "NOMBRES es requerido.";
     } else if (error.message === "APELLIDOS es requerido.") {
       errorMessage = "APELLIDOS es requerido.";
-    } else if (error.message === "SEXO es requerido.") {
-      errorMessage = "SEXO es requerido.";
+    } else if (error.message === "esMujer es requerido.") {
+      errorMessage = "esMujer es requerido.";
     } else if (error.message === "FECHA_NACIMIENTO es requerido.") {
       errorMessage = "FECHA_NACIMIENTO es requerido.";
     } else if (error.message.includes("violates unique constraint")) {
@@ -88,7 +86,7 @@ export const createFichaHandler = async (event, context) => {
     headers: {
       "Access-Control-Allow-Headers": "Content-Type",
       "Access-Control-Allow-Origin": "*", // Allow from anywhere
-      "Access-Control-Allow-Methods": "POST", // Allow only GET request
+      "Access-Control-Allow-Methods": "POST", // Allow only POST request
     },
     body: JSON.stringify({ message: "Ficha creada exitosamente." }),
   };

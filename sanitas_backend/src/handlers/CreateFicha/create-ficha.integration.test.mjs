@@ -22,13 +22,13 @@ describe("Create Ficha integration tests", () => {
   test("Normal case: Crear una nueva ficha de paciente", async () => {
     const UNIQUECUI = generateUniqueCUI();
     const pacienteData = {
-      CUI: UNIQUECUI,
-      NOMBRES: "Juan",
-      APELLIDOS: "Pérez",
-      SEXO: "M",
-      FECHA_NACIMIENTO: "1990-01-01",
+      cui: UNIQUECUI,
+      nombres: "Juan",
+      apellidos: "Pérez",
+      esMujer: false,
+      fechaNacimiento: "1990-01-01",
     };
-    const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData);
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData);
 
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
@@ -36,13 +36,13 @@ describe("Create Ficha integration tests", () => {
 
   test("Crear una nueva ficha de paciente sin CUI (debería fallar)", async () => {
     const pacienteData = {
-      NOMBRES: "Juan",
-      APELLIDOS: "Pérez",
-      SEXO: "M",
-      FECHA_NACIMIENTO: "1990-01-01",
+      nombres: "Juan",
+      apellidos: "Pérez",
+      esMujer: false,
+      fechaNacimiento: "1990-01-01",
     };
 
-    const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData, {
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData, {
       validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
     });
 
@@ -54,23 +54,23 @@ describe("Create Ficha integration tests", () => {
   test("Crear una nueva ficha de paciente con CUI duplicado (debería fallar)", async () => {
     const uniqueCUI = generateUniqueCUI();
     const pacienteData1 = {
-      CUI: uniqueCUI,
-      NOMBRES: "Juan",
-      APELLIDOS: "Pérez",
-      SEXO: "M",
-      FECHA_NACIMIENTO: "1990-01-01",
+      cui: uniqueCUI,
+      nombres: "Juan",
+      apellidos: "Pérez",
+      esMujer: false,
+      fechaNacimiento: "1990-01-01",
     };
     const pacienteData2 = {
-      CUI: uniqueCUI,
-      NOMBRES: "Carlos",
-      APELLIDOS: "González",
-      SEXO: "M",
-      FECHA_NACIMIENTO: "1985-05-05",
+      cui: uniqueCUI,
+      nombres: "Carlos",
+      apellidos: "González",
+      esMujer: false,
+      fechaNacimiento: "1985-05-05",
     };
 
-    await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData1);
+    await axios.post(`${LOCAL_API_URL}/patient`, pacienteData1);
 
-    const response = await axios.post(`${LOCAL_API_URL}/ficha`, pacienteData2, {
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData2, {
       validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
     });
 
