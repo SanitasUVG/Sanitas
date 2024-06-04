@@ -30,10 +30,10 @@ export const handler = async (event, context) => {
         "Access-Control-Allow-Origin": "*", // Allow from anywhere
         "Access-Control-Allow-Methods": "GET", // Allow only GET request
       },
-      body: JSON.stringify({
+      body: JSON.stringify([{
         name: "DB",
         status: "UP",
-      }),
+      }]),
     };
   } catch (error) {
     logger.error(error, "Error querying database:");
