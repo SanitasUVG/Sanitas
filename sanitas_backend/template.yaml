@@ -152,6 +152,25 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # update-patient.mjs
+  updatePatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/UpdatePatient/update-patient.updatePatientHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Function to update patient data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/update
+            Method: POST
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
