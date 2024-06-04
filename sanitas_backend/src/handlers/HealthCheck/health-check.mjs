@@ -44,7 +44,7 @@ export const handler = async (event, context) => {
         "Access-Control-Allow-Origin": "*", // Allow from anywhere
         "Access-Control-Allow-Methods": "GET", // Allow only GET request
       },
-      body: JSON.stringify({ name: "DB", status: "DOWN", error: error.message }),
+      body: JSON.stringify([{ name: "DB", status: "DOWN", error: error.message }]),
     };
   }
 };
