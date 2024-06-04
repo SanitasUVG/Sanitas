@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Button({ text, onClick }) {
   return (
-    <button onClick={onClick} type="button">
+    <button type="button" onClick={onClick}>
       {text}
     </button>
   );
