@@ -1,5 +1,5 @@
-import React from "react";
+import DateInput from "./date.jsx";
+import DefaultInput from "./default.jsx";
+import RadioInput from "./radio.jsx";
 
-export default function Input({ type, value, onChange, placeholder }) {
-  return <input type={type} value={value} onChange={onChange} placeholder={placeholder} />;
-}
+export { DateInput, DefaultInput, RadioInput };
