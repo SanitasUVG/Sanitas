@@ -154,7 +154,7 @@
                   enable = true;
                   name = "yamlfmt";
                   description = "Google Yaml formatter";
-                  files = "\.{yaml|yml}$";
+                  files = "\.ya?ml$";
                   entry = "${pkgs.yamlfmt}/bin/yamlfmt";
                 };
 
