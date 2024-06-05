@@ -155,7 +155,7 @@
                   name = "yamlfmt";
                   description = "Google Yaml formatter";
                   files = "\.ya?ml$";
-                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=80";
+                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=75,include_document_start=true";
                 };
 
                 # Linters
