@@ -61,13 +61,12 @@
           {
             packages = with pkgs; [
               # General
-              dprint # Javascript formatter
-              oxlint # Javascript linter
+              awscli2
+              aws-sam-cli
               jq
 
               # Backend
-              awscli2
-              aws-sam-cli
+              nodePackages.serverless
 
               # Database
               postgresql
@@ -76,6 +75,8 @@
               # Frontend
               nodejs_20
               yarn-berry
+              dprint # Javascript formatter
+              oxlint # Javascript linter
             ];
 
             services.postgres = {
@@ -107,12 +108,7 @@
                 #   ready_log_line = "for react-vite started";
                 # };
               };
-              backend.exec = let
-                ipCommand =
-                  if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
-                  then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
-                  else "ip route get 1.2.3.4 | awk '{print $7}'";
-              in "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(${ipCommand})";
+              backend.exec = "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(ip route get 1.2.3.4 | awk '{print $7}')";
               pg_setup = {
                 exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
                 process-compose = {
@@ -145,17 +141,10 @@
                 };
                 jsformat = {
                   enable = true;
-                  name = "dprint";
+                  name = "dprint JSFormatter";
                   description = "Javascript formatter";
                   files = "\.[mc]?jsx?$";
                   entry = "${pkgs.dprint}/bin/dprint fmt --allow-no-files";
-                };
-                yamlFormatter = {
-                  enable = true;
-                  name = "yamlfmt";
-                  description = "Google Yaml formatter";
-                  files = "\.ya?ml$";
-                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=75,include_document_start=true";
                 };
 
                 # Linters
