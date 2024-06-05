@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
 
-const LOCAL_API_URL = "http://localhost:3000/search-patient";
+const LOCAL_API_URL = "http://localhost:3000/patient/search";
 
 describe("Search Patient Integration Tests", () => {
   beforeAll(() => {
@@ -13,8 +13,8 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return patients by carnet", async () => {
     const postData = {
-      request_search: "A01234567",
-      search_type: "Carnet",
+      requestSearch: "A01234567",
+      searchType: "Carnet",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
@@ -23,8 +23,8 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return patients by employee code", async () => {
     const postData = {
-      request_search: "C001",
-      search_type: "NumeroColaborador",
+      requestSearch: "C001",
+      searchType: "NumeroColaborador",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
@@ -33,8 +33,8 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return patients by name or surname, with diacritic", async () => {
     const postData = {
-      request_search: "Pérez",
-      search_type: "Nombres",
+      requestSearch: "Pérez",
+      searchType: "Nombres",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
@@ -43,8 +43,8 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return patients by name or surname, no diacritic", async () => {
     const postData = {
-      request_search: "Maria",
-      search_type: "Nombres",
+      requestSearch: "Maria",
+      searchType: "Nombres",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
@@ -53,7 +53,7 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return an error if search parameter is not provided", async () => {
     const postData = {
-      search_type: "Carnet",
+      searchType: "Carnet",
     };
     const response = await axios.post(LOCAL_API_URL, postData, {
       validateStatus: () => true,
@@ -66,7 +66,7 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return an error if search type is not provided", async () => {
     const postData = {
-      request_search: "A01234567",
+      requestSearch: "A01234567",
     };
     const response = await axios.post(LOCAL_API_URL, postData, {
       validateStatus: () => true,
@@ -77,8 +77,8 @@ describe("Search Patient Integration Tests", () => {
 
   it("should return an error if invalid search type is received", async () => {
     const postData = {
-      request_search: "A01234567",
-      search_type: "InvalidType",
+      requestSearch: "A01234567",
+      searchType: "InvalidType",
     };
     const response = await axios.post(LOCAL_API_URL, postData, {
       validateStatus: () => true,
@@ -89,30 +89,30 @@ describe("Search Patient Integration Tests", () => {
     );
   });
 
-  it("should return an empty array if no patients are found, search_type Carnet ", async () => {
+  it("should return an empty array if no patients are found, searchType Carnet ", async () => {
     const postData = {
-      request_search: "NonExistentPatient",
-      search_type: "Carnet",
+      requestSearch: "NonExistentPatient",
+      searchType: "Carnet",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
     expect(response.data).toEqual([]);
   });
 
-  it("should return an empty array if no patients are found, search_type NumeroColaborador ", async () => {
+  it("should return an empty array if no patients are found, searchType NumeroColaborador ", async () => {
     const postData = {
-      request_search: "NonExistentPatient",
-      search_type: "NumeroColaborador",
+      requestSearch: "NonExistentPatient",
+      searchType: "NumeroColaborador",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
     expect(response.data).toEqual([]);
   });
 
-  it("should return an empty array if no patients are found, search_type Nombres ", async () => {
+  it("should return an empty array if no patients are found, searchType Nombres ", async () => {
     const postData = {
-      request_search: "NonExistentPatient",
-      search_type: "Nombres",
+      requestSearch: "NonExistentPatient",
+      searchType: "Nombres",
     };
     const response = await axios.post(LOCAL_API_URL, postData);
     expect(response.status).toBe(200);
