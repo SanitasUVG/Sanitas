@@ -6,7 +6,7 @@ import React from "react";
  * @param {Object} props - The props object.
  * @param {string} props.name - The name attribute for the radio input; used to group radio buttons.
  * @param {boolean} props.checked - Whether the radio input is currently selected.
- * @param {Function} props.onChange - Handler for changes to the radio input's state.
+ * @param {(event: React.ChangeEvent<HTMLInputElement>) => void} props.onChange - Handler for changes to the radio input's state.
  * @param {string} props.label - The label text displayed next to the radio button.
  * @returns {React.Element} A labeled radio button element.
  */
