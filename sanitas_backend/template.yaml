@@ -16,6 +16,12 @@ Parameters:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
+    Properties:
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
     Tracing: Active
     # You can add LoggingConfig parameters such as the
     # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
@@ -94,11 +100,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CheckCui/check-cui.handler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Verifies if a CUI exists in the PostgreSQL database.
       Events:
         Api:
@@ -115,11 +116,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Searches for a patient in the database with Carnet, Código
         de Trabajador, or Nombre-Apellido.
       Events:
@@ -137,11 +133,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Function to create a new ficha record
       Events:
         Api:
@@ -158,11 +149,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/HealthCheck/health-check.handler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Health check endpoint to verify the service status
       Events:
         Api:
@@ -170,8 +156,21 @@ Resources:
           Properties:
             Path: /health-check
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # health-check.mjs
+  getPatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetGeneralPatientInfo/get-general-patient-info.handler
+      Description: Gets the general information regarding a patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/general/{id}
+            Method: GET
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
