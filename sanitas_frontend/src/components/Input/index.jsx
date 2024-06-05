@@ -1,5 +1,5 @@
+import BaseInput from "./base.jsx";
 import DateInput from "./date.jsx";
-import DefaultInput from "./default.jsx";
 import RadioInput from "./radio.jsx";
 
-export { DateInput, DefaultInput, RadioInput };
+export { BaseInput, DateInput, RadioInput };
