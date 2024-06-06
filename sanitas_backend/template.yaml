@@ -4,28 +4,26 @@ Description: >-
   sanitas_backend
 Transform:
   - AWS::Serverless-2016-10-31
-
 Parameters:
   PostgresURL:
     Type: String
     Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
     Description: 'The Postgres DB URL to connect during lambdas execution'
     NoEcho: true
-
 # More info about Globals:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
+    Runtime: nodejs20.x
+    Architectures:
+      - x86_64
+    MemorySize: 128
+    Timeout: 100
     Tracing: Active
     # You can add LoggingConfig parameters such as the
     # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
     # Learn more here
     # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
-    Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
     LoggingConfig:
       LogFormat: JSON
     Environment:
@@ -40,8 +38,6 @@ Globals:
       AllowMethods: "'OPTIONS,POST,GET'"
       AllowHeaders: "'*'"
       AllowOrigin: "'*'"
-
-
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -74,8 +70,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/GetAllItems/get-all-items.getAllItemsHandler
-      Description: A simple example includes a HTTP get method to get all items
-        from a DynamoDB table.
+      Description: A simple example includes a HTTP get method.
       Environment:
         Variables:
           # Make table name accessible as environment variable from function
@@ -110,8 +105,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
-      Description: Searches for a patient in the database with Carnet, Código
-        de Trabajador, or Nombre-Apellido.
+      Description: >
+        Searches for a patient in the database by Carnet, Código de Trabajador,
+        Nombre-Apellido or CUI.
+
       Events:
         Api:
           Type: Api
@@ -150,9 +147,6 @@ Resources:
           Properties:
             Path: /health-check
             Method: GET
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
   # This is a Lambda function config associated with the source code:
   # health-check.mjs
   getPatientFunction:
@@ -167,7 +161,7 @@ Resources:
           Properties:
             Path: /patient/general/{id}
             Method: GET
-
+            
   # This is a Lambda function config associated with the source code:
   # update-patient.mjs
   updatePatientFunction:
@@ -200,6 +194,5 @@ Resources:
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage
-    Value:
-      # yamllint disable-line rule:line-length
-      !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    # yamllint disable-line rule:line-length
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
