@@ -69,7 +69,7 @@ Resources:
       Description: Layer for sharing common utilities accross AWS lambdas
       CompatibleRuntimes:
         - nodejs20.x
-      ContentUri: layers/logging
+      ContentUri: layers/utils/
     Metadata:
       BuildMethod: nodejs20.x
   # Each Lambda function is defined by properties:

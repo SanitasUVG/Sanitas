@@ -98,3 +98,66 @@ export function mapToAPIPatient(dbPatient) {
     phone,
   };
 }
+
+/**
+ * @callback AddCORSHeadersCallback
+ * @param {string} [allowMethods="GET"] The methods allowed by this HTTP request. By default accepts only GET requests.
+ * @param {string} [allowOrigin="*"] The origin allowed by this HTTP request. By default accepts all.
+ * @param {string} [allowHeaders="Content-Type"] The allowed headers for the HTTP request. By default only Content-Type is allowed.
+ * @returns {ResponseBuilder} The response builder.
+ */
+
+/**
+ * @typedef {Object} ResponseBuilder
+ * @property {(status: number)=>ResponseBuilder} setStatusCode - Sets the response status code.
+ * @property {(bodyObj: object)=> ResponseBuilder} setBody - Sets the response body. You don't need to stringify the body, this function will take care of that for you.
+ * @property {(header: string, value: string)=>ResponseBuilder} addHeader - Adds a header to the response.
+ * @property {AddCORSHeadersCallback}  addCORSHeaders - Adds some headers wanted by CORS.
+ * @property {()=> import('aws-lambda').APIGatewayProxyResult} build - Build the Response.
+ */
+
+/**
+ * The starting method to create an HTTP response.
+ *
+ * Use the method provided by this API to build a response.
+ * @returns {ResponseBuilder}
+ */
+export function createResponse() {
+  /** @type ResponseBuilder */
+  const builder = {
+    status: 500,
+    headers: {},
+    body: "",
+
+    setStatusCode: (status) => {
+      builder.status = status;
+      return builder;
+    },
+
+    setBody: (bodyObj) => {
+      builder.body = JSON.stringify(bodyObj);
+      return builder;
+    },
+
+    addHeader: (header, value) => {
+      builder.headers[header] = value;
+      return builder;
+    },
+
+    addCORSHeaders: (allowMethods = "GET", allowOrigin = "*", allowHeaders = "Content-Type") => {
+      builder.addHeader("Access-Control-Allow-Headers", allowHeaders);
+      builder.addHeader("Access-Control-Allow-Origin", allowOrigin);
+      builder.addHeader("Access-Control-Allow-Methods", allowMethods);
+
+      return builder;
+    },
+
+    build: () => ({
+      statusCode: builder.status,
+      headers: builder.headers,
+      body: builder.body,
+    }),
+  };
+
+  return builder;
+}
