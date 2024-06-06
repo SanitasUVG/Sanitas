@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 /**
  * Renders a button with customizable text, onClick event handler, and hover effect.
@@ -19,11 +20,29 @@ export default function Button({ text, onClick }) {
     border: "none",
     cursor: "pointer",
     fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background-color 0.3s",
+    overflow: "hidden",
+    minWidth: "100px",
   };
 
-  const hoverStyle = {
-    ...defaultStyle,
-    backgroundColor: "#137B4A",
+  const textStyle = {
+    opacity: isHovered ? 0 : 1,
+    position: "relative",
+    visibility: isHovered ? "hidden" : "visible",
+    transition: "opacity 0.3s, visibility 0.3s",
+  };
+
+  const iconStyle = {
+    opacity: isHovered ? 1 : 0,
+    transform: isHovered ? "scale(1)" : "scale(0)",
+    transition: "opacity 0.3s, transform 0.3s",
+    position: "absolute",
+    fontSize: "24px",
+    transformOrigin: "center",
+    visibility: isHovered ? "visible" : "hidden",
   };
 
   return (
@@ -32,9 +51,10 @@ export default function Button({ text, onClick }) {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={isHovered ? hoverStyle : defaultStyle}
+      style={defaultStyle}
     >
-      {text}
+      <span style={textStyle}>{text}</span>
+      <FaLongArrowAltRight style={iconStyle} />
     </button>
   );
 }
