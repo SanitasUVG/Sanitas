@@ -25,10 +25,20 @@ const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
  * @property {string|null} phone
  */
 
-export default function UpdateInfoView() {
+/**
+ * @typedef {Object} UpdatePatientViewProps
+ * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
+ * @property {import("src/dataLayer.mjs").updateGeneralPatientInformation} updateGeneralPatientInformation
+ */
+
+/**
+ * @param {UpdatePatientViewProps} props
+ */
+export default function UpdateInfoView({ getGeneralPatientInformation, updateGeneralPatientInformation }) {
   const navigate = useNavigate();
-  // const location = useLocation();
-  const id = 1; // Obtener el ID del paciente desde el estado de la navegación
+  const { state } = useLocation();
+  const { id } = state || {};
+
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState("");
 
@@ -38,17 +48,16 @@ export default function UpdateInfoView() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/patient/general/1`);
-      const result = response.data;
-
+      const response = await getGeneralPatientInformation(id);
+      const result = response;
       setPatientData({
         id: result.id,
         nombres: result.names,
@@ -81,7 +90,7 @@ export default function UpdateInfoView() {
   }, [id]);
 
   return (
-    <div>
+    <div value={error}>
       <h1>Actualizar información del paciente</h1>
       {error && <div style={{ color: "red" }}>{error}</div>}
       {patientData

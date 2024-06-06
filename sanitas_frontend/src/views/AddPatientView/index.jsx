@@ -132,9 +132,9 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
   const handleSubmit = async () => {
     if (validateFormData()) {
       try {
-        await submitPatientData(patientData);
+        const id = await submitPatientData(patientData);
         alert("Información registrada con éxito");
-        navigate(NAV_PATHS.UPDATE_PATIENT);
+        navigate(NAV_PATHS.UPDATE_PATIENT, { state: { id } });
       } catch (error) {
         alert(`Error al enviar datos: ${error.message}`);
       }

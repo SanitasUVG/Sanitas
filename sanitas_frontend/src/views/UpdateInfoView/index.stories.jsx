@@ -1,19 +1,24 @@
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import UpdateInfoView from "./index";
 
 export default {
   component: UpdateInfoView,
   decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
+    (Story, context) => {
+      const { id } = context.args.location.state;
+      return (
+        <MemoryRouter initialEntries={[{ pathname: "/", state: { id } }]}>
+          <Routes>
+            <Route path="/" element={<Story />} />
+          </Routes>
+        </MemoryRouter>
+      );
+    },
   ],
 };
 
 const examplePatientData = {
-  id: 1,
+  id: 6969,
   nombres: "John",
   apellidos: "Doe",
   isWoman: false,
@@ -31,34 +36,25 @@ const examplePatientData = {
   phone: "555-1234",
 };
 
-export const Default = {
-  args: {
-    location: { state: { id: examplePatientData.id } },
-  },
+const mockGetGeneralPatientInformation = async (id) => {
+  if (id === examplePatientData.id) {
+    return examplePatientData;
+  } else {
+    throw new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.");
+  }
 };
 
 export const WithPatientData = {
   args: {
+    getGeneralPatientInformation: mockGetGeneralPatientInformation,
     location: { state: { id: examplePatientData.id } },
   },
-  loaders: [
-    async () => {
-      // Simulate fetching patient data
-      return {
-        data: examplePatientData,
-      };
-    },
-  ],
 };
 
 export const ErrorState = {
   args: {
-    location: { state: { id: 9999 } }, // ID that will cause an error
-  },
-  loaders: [
-    async () => {
-      // Simulate an error fetching patient data
-      throw new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.");
+    getGeneralPatientInformation: async (id) => {
     },
-  ],
+    location: { state: { id: 9999 } }, // ID que causará un error
+  },
 };
