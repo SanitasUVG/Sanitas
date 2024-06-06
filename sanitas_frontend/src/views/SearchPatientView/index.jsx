@@ -27,6 +27,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
 
   const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
   const [error, setError] = useState("");
+  const [searchTypeWasCUI, setSearchTypeWasCUI] = useState(false);
   const navigate = useNavigate();
 
   const showErrorMessage = (message) => setError(`ERROR: ${message}`);
@@ -38,7 +39,22 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     { value: "Carnet", label: "Carnet Estudiante" },
     { value: "NumeroColaborador", label: "Código Colaborador" },
     { value: "Nombres", label: "Nombres y Apellidos" },
+    { value: "CUI", label: "CUI" },
   ];
+
+  const handleInputChange = (e) => {
+    let value = e.target.value;
+    if (type === "Nombres") {
+      value = value.replace(/\d/g, "");
+    } else if (type != "Nombres") {
+      value = value.replace(/\D/g, "");
+    }
+
+    if (type === "CUI") {
+      value = value.slice(0, 13);
+    }
+    setSearchQuery(value, type);
+  };
 
   const searchBtnClick = async () => {
     hideErrorMessage();
@@ -48,6 +64,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     }
 
     const result = await searchPatientsApiCall(query, type);
+    setSearchTypeWasCUI(type === "CUI");
     if (result.error) {
       const { error } = result;
       if (error.cause) {
@@ -96,20 +113,26 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         <BaseInput
           type="text"
           value={query}
-          onChange={(e) => setSearchQuery(e.target.value, type)}
+          onChange={handleInputChange}
           placeholder="Ingrese su búsqueda..."
         />
         <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
       </div>
       <p style={{ color: "red" }}>{error}</p>
       {queryReturnedEmpty
-        ? (
-          <div>
-            <p>Parece que el paciente no existe!</p>
-            <Button text="Puedes añadir uno nuevo aquí" onClick={onAddNewPatientClick} />
-          </div>
-        )
-        : null}
+        && (!searchTypeWasCUI
+          ? (
+            <div>
+              <p>¡Parece que el paciente no existe!</p>
+              <p>Prueba buscarlo por CUI.</p>
+            </div>
+          )
+          : (
+            <div>
+              <p>Ingresa la información del paciente aquí.</p>
+              <Button text="Puedes añadir uno nuevo aquí." onClick={onAddNewPatientClick} />
+            </div>
+          ))}
       <div>
         {...patients.map((p) => (
           <div key={p.id}>
