@@ -3,79 +3,79 @@ import axios from "axios";
 
 const LOCAL_API_URL = "http://localhost:3000/";
 
-// Función para generar un CUI único
+// Function to generate a unique CUI
 const generateUniqueCUI = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(Math.random() * 10000);
   return `${timestamp}${randomNum}`;
 };
 
-describe("Create Ficha integration tests", () => {
+describe("Create Patient Record Integration Tests", () => {
   beforeAll(() => {
-    // Preparar el entorno de prueba si es necesario, como insertar datos en la base de datos.
+    // Insert data into DB.
   });
 
   afterAll(() => {
-    // Limpiar el entorno de prueba si es necesario, como eliminar los datos insertados en la base de datos.
+    // Delete data into DB.
   });
 
-  test("Normal case: Crear una nueva ficha de paciente", async () => {
-    const UNIQUECUI = generateUniqueCUI();
-    const pacienteData = {
-      cui: UNIQUECUI,
-      nombres: "Juan",
-      apellidos: "Pérez",
-      esMujer: false,
-      fechaNacimiento: "1990-01-01",
+  test("Normal case: Create a new patient record", async () => {
+    const uniqueCUI = generateUniqueCUI();
+    const patientData = {
+      cui: uniqueCUI,
+      names: "Juan",
+      lastNames: "Pérez",
+      isWoman: false,
+      birthdate: "1990-01-01",
     };
-    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData);
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
 
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
   });
 
-  test("Crear una nueva ficha de paciente sin CUI (debería fallar)", async () => {
-    const pacienteData = {
-      nombres: "Juan",
-      apellidos: "Pérez",
-      esMujer: false,
-      fechaNacimiento: "1990-01-01",
+  test("Create a new patient record without CUI (should fail)", async () => {
+    const patientData = {
+      names: "Juan",
+      lastNames: "Pérez",
+      isWoman: false,
+      birthdate: "1990-01-01",
     };
 
-    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData, {
-      validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData, {
+      validateStatus: () => true, // So axios doesn't throw an error for status >= 400
     });
 
-    // Verificar que el error sea el esperado
+    // Verify the error is as expected
     expect(response.status).toBe(400);
-    expect(response.data.error).toBe("CUI es requerido.");
+    expect(response.data.error).toBe("CUI is required.");
   });
 
-  test("Crear una nueva ficha de paciente con CUI duplicado (debería fallar)", async () => {
+  test("Create a new patient record with duplicate CUI (should fail)", async () => {
     const uniqueCUI = generateUniqueCUI();
-    const pacienteData1 = {
+    const patientData1 = {
       cui: uniqueCUI,
-      nombres: "Juan",
-      apellidos: "Pérez",
-      esMujer: false,
-      fechaNacimiento: "1990-01-01",
+      names: "Juan",
+      lastNames: "Pérez",
+      isWoman: false,
+      birthdate: "1990-01-01",
     };
-    const pacienteData2 = {
+    const patientData2 = {
       cui: uniqueCUI,
-      nombres: "Carlos",
-      apellidos: "González",
-      esMujer: false,
-      fechaNacimiento: "1985-05-05",
+      names: "Carlos",
+      lastNames: "González",
+      isWoman: false,
+      birthdate: "1985-05-05",
     };
 
-    await axios.post(`${LOCAL_API_URL}/patient`, pacienteData1);
+    await axios.post(`${LOCAL_API_URL}/patient`, patientData1);
 
-    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData2, {
-      validateStatus: () => true, // Para que axios no lance un error en caso de status >= 400
+    const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData2, {
+      validateStatus: () => true, // So axios doesn't throw an error for status >= 400
     });
 
-    // Verificar que el error sea el esperado
+    // Verify the error is as expected
     expect(response.status).toBe(409);
-    expect(response.data.error).toBe("CUI ya existe.");
+    expect(response.data.error).toBe("CUI already exists.");
   });
 });

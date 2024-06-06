@@ -5,37 +5,37 @@ export const createFichaHandler = async (event, context) => {
   withRequest(event, context);
 
   if (event.httpMethod !== "POST") {
-    throw new Error(`createFichaHandler solo acepta el método POST, intentaste: ${event.httpMethod}`);
+    throw new Error(`createFichaHandler only accepts POST method, attempted: ${event.httpMethod}`);
   }
 
-  const pacienteData = JSON.parse(event.body);
+  const patientData = JSON.parse(event.body);
 
-  logger.info(process.env, "Las variables de entorno son:");
+  logger.info(process.env, "Environment variables are:");
 
   let client;
   try {
     const url = process.env.POSTGRES_URL;
-    logger.info(url, "Conectando a la base de datos...");
+    logger.info(url, "Connecting to the database...");
     client = getPgClient(url);
     await client.connect();
 
-    logger.info(pacienteData, "Insertando nueva ficha en la base de datos...");
+    logger.info(patientData, "Inserting new patient record into the database...");
 
-    // Validar que todos los campos requeridos estén presentes
-    if (!pacienteData.cui) {
-      throw new Error("CUI es requerido.");
+    // Validating that all required fields are present
+    if (!patientData.cui) {
+      throw new Error("CUI is required.");
     }
-    if (!pacienteData.nombres) {
-      throw new Error("NOMBRES es requerido.");
+    if (!patientData.names) {
+      throw new Error("NAMES is required.");
     }
-    if (!pacienteData.apellidos) {
-      throw new Error("APELLIDOS es requerido.");
+    if (!patientData.lastNames) {
+      throw new Error("LASTNAMES is required.");
     }
-    if (pacienteData.esMujer === undefined) {
-      throw new Error("esMujer es requerido.");
+    if (patientData.isWoman === undefined) {
+      throw new Error("isWoman is required.");
     }
-    if (!pacienteData.fechaNacimiento) {
-      throw new Error("FECHA_NACIMIENTO es requerido.");
+    if (!patientData.birthdate) {
+      throw new Error("BIRTHDATE is required.");
     }
 
     const query = `
@@ -43,33 +43,33 @@ export const createFichaHandler = async (event, context) => {
       VALUES ($1, $2, $3, $4, $5)
     `;
     const values = [
-      pacienteData.cui,
-      pacienteData.nombres,
-      pacienteData.apellidos,
-      pacienteData.esMujer,
-      new Date(pacienteData.fechaNacimiento),
+      patientData.cui,
+      patientData.names,
+      patientData.lastNames,
+      patientData.isWoman,
+      new Date(patientData.birthdate),
     ];
     await client.query(query, values);
-    logger.info("Ficha creada exitosamente.");
+    logger.info("Patient record created successfully.");
   } catch (error) {
-    logger.error(error, "¡Se produjo un error al crear la ficha!");
+    logger.error(error, "An error occurred while creating the patient record.");
 
     let statusCode = 400;
-    let errorMessage = "Se produjo un error al crear la ficha.";
+    let errorMessage = "An error occurred while creating the patient record.";
 
-    if (error.message === "CUI es requerido.") {
-      errorMessage = "CUI es requerido.";
-    } else if (error.message === "NOMBRES es requerido.") {
-      errorMessage = "NOMBRES es requerido.";
-    } else if (error.message === "APELLIDOS es requerido.") {
-      errorMessage = "APELLIDOS es requerido.";
-    } else if (error.message === "esMujer es requerido.") {
-      errorMessage = "esMujer es requerido.";
-    } else if (error.message === "FECHA_NACIMIENTO es requerido.") {
-      errorMessage = "FECHA_NACIMIENTO es requerido.";
+    if (error.message === "CUI is required.") {
+      errorMessage = "CUI is required.";
+    } else if (error.message === "NAMES is required.") {
+      errorMessage = "NAMES is required.";
+    } else if (error.message === "LASTNAMES is required.") {
+      errorMessage = "LASTNAMES is required.";
+    } else if (error.message === "isWoman is required.") {
+      errorMessage = "isWoman is required.";
+    } else if (error.message === "BIRTHDATE is required.") {
+      errorMessage = "BIRTHDATE is required.";
     } else if (error.message.includes("violates unique constraint")) {
       statusCode = 409;
-      errorMessage = "CUI ya existe.";
+      errorMessage = "CUI already exists.";
     }
 
     const response = {
@@ -88,9 +88,9 @@ export const createFichaHandler = async (event, context) => {
       "Access-Control-Allow-Origin": "*", // Allow from anywhere
       "Access-Control-Allow-Methods": "POST", // Allow only POST request
     },
-    body: JSON.stringify({ message: "Ficha creada exitosamente." }),
+    body: JSON.stringify({ message: "Patient record created successfully." }),
   };
 
-  logger.info(response, "Respondiendo con:");
+  logger.info(response, "Responding with:");
   return response;
 };
