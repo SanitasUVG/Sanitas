@@ -21,6 +21,11 @@ Globals:
     # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
     # Learn more here
     # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
     LoggingConfig:
       LogFormat: JSON
     Environment:
@@ -69,11 +74,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/GetAllItems/get-all-items.getAllItemsHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: A simple example includes a HTTP get method to get all items
         from a DynamoDB table.
       Environment:
@@ -94,11 +94,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CheckCui/check-cui.handler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Verifies if a CUI exists in the PostgreSQL database.
       Events:
         Api:
@@ -115,11 +110,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Searches for a patient in the database with Carnet, Código
         de Trabajador, or Nombre-Apellido.
       Events:
@@ -137,11 +127,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Function to create a new ficha record
       Events:
         Api:
@@ -158,11 +143,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/HealthCheck/health-check.handler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Health check endpoint to verify the service status
       Events:
         Api:
