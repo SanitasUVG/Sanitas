@@ -90,7 +90,7 @@ export const checkCui = async (cui) => {
  * @param {string} patientData.surnames - The last names of the patient.
  * @param {string} patientData.sex - The sex of the patient, expected to be 'F' for female or 'M' for male based on a boolean condition.
  * @param {string} patientData.birthDate - The birth date of the patient.
- * @returns {Promise<Object>} A promise that resolves to the response data from the server.
+ * @returns {Promise<number>} A promise that resolves to the response data from the server.
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
@@ -121,4 +121,131 @@ export const submitPatientData = async (patientData) => {
       throw new Error("Error setting up request");
     }
   }
+};
+
+/**
+ * @typedef {Object} APIPatient
+ * @property {number} id
+ * @property {string} cui
+ * @property {boolean} isWoman
+ * @property {string|null} email
+ * @property {string} names
+ * @property {string} lastNames
+ *
+ * @property {string|null} contactName1
+ * @property {string|null} contactKinship1
+ * @property {string|null} contactPhone1
+ *
+ * @property {string|null} contactName1
+ * @property {string|null} contactKinship1
+ * @property {string|null} contactPhone1
+ *
+ * @property {string|null} bloodType
+ * @property {string|null} address
+ * @property {number | undefined} insuranceId
+ * @property {string} birthdate
+ * @property {string|null} phone
+ */
+
+/**
+ * Calls the API to retrieve the general information of a given patient.
+ *
+ * @callback GetGeneralPatientInformationAPICall
+ * @param {number} id - The Id of the patient.
+ * @returns {Promise<Result<APIPatient, Error>>}
+ */
+
+/**
+ * @type {GetGeneralPatientInformationAPICall}
+ */
+
+export const getGeneralPatientInformation = async (id) => {
+  const url = `${BASE_URL}/patient/general/${id}`;
+
+  try {
+    const response = await axios.get(url);
+    const r = response.data;
+
+    if (!r.id) {
+      throw new Error("Received patient has no `id`!");
+    }
+
+    if (!r.names) {
+      throw new Error("Received patient has no `names`!");
+    }
+
+    if (!r.lastNames) {
+      throw new Error("Received patient has no `lastNames`!");
+    }
+
+    if (r.isWoman === undefined) {
+      throw new Error("Received patient has no `isWoman`!");
+    }
+
+    if (r.email === undefined) {
+      throw new Error("Received patient has no `email`!");
+    }
+
+    if (r.contactName1 === undefined) {
+      throw new Error("Received patient has no `contactName1`!");
+    }
+
+    if (r.contactKinship1 === undefined) {
+      throw new Error("Received patient has no `contactKinship1`!");
+    }
+
+    if (r.contactPhone1 === undefined) {
+      throw new Error("Received patient has no `contactPhone1`!");
+    }
+
+    if (r.contactName2 === undefined) {
+      throw new Error("Received patient has no `contactName2`!");
+    }
+
+    if (r.contactKinship2 === undefined) {
+      throw new Error("Received patient has no `contactKinship2`!");
+    }
+
+    if (r.contactPhone2 === undefined) {
+      throw new Error("Received patient has no `contactPhone2`!");
+    }
+
+    if (r.bloodType === undefined) {
+      throw new Error("Received patient has no `bloodType`!");
+    }
+
+    if (r.address === undefined) {
+      throw new Error("Received patient has no `address`!");
+    }
+
+    if (r.insuranceId === undefined) {
+      throw new Error("Received patient has no `insuranceId`!");
+    }
+
+    if (!r.birthdate) {
+      throw new Error("Received patient has no `birthdate`!");
+    }
+
+    if (r.phone === undefined) {
+      throw new Error("Received patient has no `phone`!");
+    }
+    return r;
+  } catch (error) {
+    return { error };
+  }
+};
+
+/**
+ * Calls the API to update the general information of a given patient.
+ *
+ * @callback UpdateGeneralPatientInformationAPICall
+ * @param {APIPatient} APIPatient - The data of the patient.
+ * @returns {Promise<Result<boolean, Error>>}
+ */
+
+/**
+ * @type {UpdateGeneralPatientInformationAPICall}
+ */
+export const updateGeneralPatientInformation = async (APIPatient) => {
+  const url = `${BASE_URL}/patient/general/${id}`;
 };
