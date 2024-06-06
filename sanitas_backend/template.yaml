@@ -172,6 +172,23 @@ Resources:
           Properties:
             Path: /patient/general/{id}
             Method: GET
+            
+  # This is a Lambda function config associated with the source code:
+  # update-patient.mjs
+  updatePatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/UpdatePatient/update-patient.updatePatientHandler
+      Description: Function to update patient data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/general
+            Method: PUT
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
