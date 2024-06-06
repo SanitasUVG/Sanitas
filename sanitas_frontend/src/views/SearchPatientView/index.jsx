@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "src/components/Button";
+import DropdownMenu from "src/components/DropdownMenu";
+import { BaseInput, DateInput, RadioInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
 
 /**
@@ -30,6 +33,12 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const hideErrorMessage = () => setError("");
 
   const emptyQuery = query.trim().length <= 0;
+
+  const dropdownOptions = [
+    { value: "Carnet", label: "Carnet Estudiante" },
+    { value: "NumeroColaborador", label: "Código Colaborador" },
+    { value: "Nombres", label: "Nombres y Apellidos" },
+  ];
 
   const searchBtnClick = async () => {
     hideErrorMessage();
@@ -79,27 +88,25 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         {
           // NOTE: The default value is defined in the store.
         }
-        <select value={type} onChange={(e) => setSearchQuery(query, e.target.value)}>
-          <option value="Carnet">Carnet Estudiante</option>
-          <option value="NumeroColaborador">Código Colaborador</option>
-          <option value="Nombres">Nombres y Apellidos</option>
-        </select>
-        <input
+        <DropdownMenu
+          value={type}
+          onChange={(e) => setSearchQuery(query, e.target.value)}
+          options={dropdownOptions}
+        />
+        <BaseInput
           type="text"
           value={query}
           onChange={(e) => setSearchQuery(e.target.value, type)}
           placeholder="Ingrese su búsqueda..."
         />
-        <button type="button" onClick={searchBtnClick} disabled={emptyQuery}>
-          Buscar
-        </button>
+        <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
       </div>
       <p style={{ color: "red" }}>{error}</p>
       {queryReturnedEmpty
         ? (
           <div>
             <p>Parece que el paciente no existe!</p>
-            <button type="button" onClick={onAddNewPatientClick}>puedes añadir uno nuevo aquí</button>
+            <Button text="Puedes añadir uno nuevo aquí" onClick={onAddNewPatientClick} />
           </div>
         )
         : null}
@@ -107,9 +114,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         {...patients.map((p) => (
           <div key={p.id}>
             <p>{p.names}</p>
-            <button type="button" onClick={genViewPatientBtnClick(p.id)}>
-              Ver
-            </button>
+            <Button text="Ver" onClick={genViewPatientBtnClick(p.id)} />
           </div>
         ))}
       </div>

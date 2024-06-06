@@ -25,10 +25,10 @@ export async function searchPatient(query, type) {
     let response;
     try {
       response = await axios.post(
-        BASE_URL + "/search-patient",
+        BASE_URL + "/patient/search",
         {
-          request_search: query,
-          search_type: type,
+          requestSearch: query,
+          searchType: type,
         },
         {
           headers: {
@@ -74,12 +74,8 @@ export async function searchPatient(query, type) {
  */
 export const checkCui = async (cui) => {
   try {
-    const response = await fetch(`${BASE_URL}/check-cui/${cui}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
-    const data = await response.json();
-    return { exists: data.exists, cui: cui };
+    const response = await axios.get(`${BASE_URL}/check-cui/${cui}`);
+    return { exists: response.data.exists, cui: cui };
   } catch (error) {
     throw new Error("Error fetching CUI:", error);
   }
@@ -98,22 +94,31 @@ export const checkCui = async (cui) => {
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
-  const response = await fetch(`${BASE_URL}/ficha`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      CUI: patientData.cui,
-      NOMBRES: patientData.names,
-      APELLIDOS: patientData.surnames,
-      SEXO: patientData.sex ? "F" : "M",
-      FECHA_NACIMIENTO: patientData.birthDate,
-    }),
-  });
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Error registering information");
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/patient`,
+      {
+        cui: patientData.cui,
+        nombres: patientData.names,
+        apellidos: patientData.surnames,
+        esMujer: patientData.sex ? "F" : "M",
+        fechaNacimiento: patientData.birthDate,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.error || "Error registering information");
+    } else if (error.request) {
+      throw new Error("No response was received");
+    } else {
+      throw new Error("Error setting up request");
+    }
   }
-  return data;
 };
