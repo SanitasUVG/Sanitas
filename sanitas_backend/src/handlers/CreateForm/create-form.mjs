@@ -1,11 +1,11 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 
-export const createFichaHandler = async (event, context) => {
+export const createFormHandler = async (event, context) => {
   withRequest(event, context);
 
   if (event.httpMethod !== "POST") {
-    throw new Error(`createFichaHandler only accepts POST method, attempted: ${event.httpMethod}`);
+    throw new Error(`createFormHandler only accepts POST method, attempted: ${event.httpMethod}`);
   }
 
   const patientData = JSON.parse(event.body);
