@@ -4,21 +4,18 @@ Description: >-
   sanitas_backend
 Transform:
   - AWS::Serverless-2016-10-31
+
 Parameters:
   PostgresURL:
     Type: String
     Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
     Description: 'The Postgres DB URL to connect during lambdas execution'
     NoEcho: true
+
 # More info about Globals:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Runtime: nodejs20.x
-    Architectures:
-      - x86_64
-    MemorySize: 128
-    Timeout: 100
     Tracing: Active
     # You can add LoggingConfig parameters such as the
     # Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel.
@@ -38,6 +35,8 @@ Globals:
       AllowMethods: "'OPTIONS,POST,GET'"
       AllowHeaders: "'*'"
       AllowOrigin: "'*'"
+
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -70,7 +69,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/GetAllItems/get-all-items.getAllItemsHandler
-      Description: A simple example includes a HTTP get method.
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get all items
+        from a DynamoDB table.
       Environment:
         Variables:
           # Make table name accessible as environment variable from function
@@ -89,6 +94,11 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CheckCui/check-cui.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
       Description: Verifies if a CUI exists in the PostgreSQL database.
       Events:
         Api:
@@ -105,15 +115,18 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
-      Description: >
-        Searches for a patient in the database by Carnet, Código de Trabajador,
-        Nombre-Apellido or CUI.
-
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Searches for a patient in the database with Carnet, Código
+        de Trabajador, or Nombre-Apellido.
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /patient/search
+            Path: /search-patient
             Method: POST
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -124,6 +137,11 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CreateFicha/create-ficha.createFichaHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
       Description: Function to create a new ficha record
       Events:
         Api:
@@ -140,6 +158,11 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/HealthCheck/health-check.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
       Description: Health check endpoint to verify the service status
       Events:
         Api:
@@ -147,7 +170,9 @@ Resources:
           Properties:
             Path: /health-check
             Method: GET
-            
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   # This is a Lambda function config associated with the source code:
   # get-general-patient-info.mjs
   getPatientFunction:
@@ -169,11 +194,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/UpdatePatient/update-patient.updatePatientHandler
-      Runtime: nodejs20.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
       Description: Function to update patient data
       Events:
         Api:
@@ -182,8 +202,8 @@ Resources:
             Path: /patient/general
             Method: PUT
   # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction        
-  
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -200,5 +220,6 @@ Resources:
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage
-    # yamllint disable-line rule:line-length
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Value:
+      # yamllint disable-line rule:line-length
+      !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
