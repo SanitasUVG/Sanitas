@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "src/components/Button/index";
+import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 
 /**
@@ -60,10 +62,8 @@ export function AddPatientView({ checkCui, submitPatientData }) {
   return (
     <div>
       <h1>Sanitas</h1>
-      <input type="text" value={cui} onChange={handleCuiInput} placeholder="Ingrese el CUI" />
-      <button type="button" onClick={handleCheckCui}>
-        Ver paciente
-      </button>
+      <BaseInput type="text" value={cui} onChange={handleCuiInput} placeholder="Ingrese el CUI" />
+      <Button text="Ver paciente" onClick={handleCheckCui} />
       {message && <div>{message}</div>}
       {patientData && patientData.isNew && (
         <PatientForm
@@ -73,9 +73,10 @@ export function AddPatientView({ checkCui, submitPatientData }) {
         />
       )}
       {patientData && !patientData.isNew && (
-        <button type="button" onClick={() => navigate(NAV_PATHS.UPDATE_PATIENT)}>
-          Ir a Actualizar Datos
-        </button>
+        <Button
+          text="Ir a Actualizar Datos"
+          onClick={() => navigate(NAV_PATHS.UPDATE_PATIENT)}
+        />
       )}
     </div>
   );
@@ -151,47 +152,38 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
 
   return (
     <div>
-      <input
+      <BaseInput
         type="text"
         value={patientData.names}
         onChange={(e) => handleChange("names", e.target.value)}
         placeholder="Nombres"
       />
-      <input
+      <BaseInput
         type="text"
         value={patientData.surnames}
         onChange={(e) => handleChange("surnames", e.target.value)}
         placeholder="Apellidos"
       />
       <div>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            checked={patientData.sex === "F"}
-            onChange={() => handleGenderChange("F")}
-          />
-          Femenino
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gender"
-            checked={patientData.sex === "M"}
-            onChange={() => handleGenderChange("M")}
-          />
-          Masculino
-        </label>
+        <RadioInput
+          name="gender"
+          checked={patientData.sex === "F"}
+          onChange={() => handleGenderChange("F")}
+          label="Femenino"
+        />
+        <RadioInput
+          name="gender"
+          checked={patientData.sex === "M"}
+          onChange={() => handleGenderChange("M")}
+          label="Masculino"
+        />
       </div>
-      <input
-        type="date"
+      <DateInput
         value={patientData.birthDate}
         onChange={(e) => handleChange("birthDate", e.target.value)}
         placeholder="Fecha de nacimiento"
       />
-      <button type="button" onClick={handleSubmit}>
-        Registrar información
-      </button>
+      <Button text="Registrar información" onClick={handleSubmit} />
     </div>
   );
 }
