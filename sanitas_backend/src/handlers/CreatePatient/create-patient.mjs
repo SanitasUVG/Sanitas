@@ -41,6 +41,7 @@ export const createPatientHandler = async (event, context) => {
     const query = `
       INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
       VALUES ($1, $2, $3, $4, $5)
+      returning *
     `;
     const values = [
       patientData.cui,
@@ -50,7 +51,20 @@ export const createPatientHandler = async (event, context) => {
       new Date(patientData.birthdate),
     ];
     await client.query(query, values);
+    const dbresponse = await client.query(query, values);
     logger.info("Patient record created successfully.");
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "POST", // Allow only POST request
+      },
+      body: JSON.stringify(dbresponse.rows[0].id),
+    };
+
+    logger.info(response, "Responding with:");
+    return response;
   } catch (error) {
     logger.error(error, "An error occurred while creating the patient record.");
 
@@ -80,17 +94,4 @@ export const createPatientHandler = async (event, context) => {
   } finally {
     await client?.end();
   }
-
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Origin": "*", // Allow from anywhere
-      "Access-Control-Allow-Methods": "POST", // Allow only POST request
-    },
-    body: JSON.stringify({ message: "Patient record created successfully." }),
-  };
-
-  logger.info(response, "Responding with:");
-  return response;
 };
