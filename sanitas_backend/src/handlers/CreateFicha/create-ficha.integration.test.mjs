@@ -1,14 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-
-const LOCAL_API_URL = "http://localhost:3000/";
-
-// Función para generar un CUI único
-const generateUniqueCUI = () => {
-  const timestamp = Date.now();
-  const randomNum = Math.floor(Math.random() * 10000);
-  return `${timestamp}${randomNum}`;
-};
+import { createTestPatient, generateUniqueCUI, LOCAL_API_URL } from "../testHelpers.mjs";
 
 describe("Create Ficha integration tests", () => {
   beforeAll(() => {
@@ -19,20 +11,7 @@ describe("Create Ficha integration tests", () => {
     // Limpiar el entorno de prueba si es necesario, como eliminar los datos insertados en la base de datos.
   });
 
-  test("Normal case: Crear una nueva ficha de paciente", async () => {
-    const UNIQUECUI = generateUniqueCUI();
-    const pacienteData = {
-      cui: UNIQUECUI,
-      nombres: "Juan",
-      apellidos: "Pérez",
-      esMujer: false,
-      fechaNacimiento: "1990-01-01",
-    };
-    const response = await axios.post(`${LOCAL_API_URL}/patient`, pacienteData);
-
-    expect(response).toBeDefined();
-    expect(response.status).toBe(200);
-  });
+  test("Normal case: Crear una nueva ficha de paciente", createTestPatient);
 
   test("Crear una nueva ficha de paciente sin CUI (debería fallar)", async () => {
     const pacienteData = {
