@@ -1,38 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-
-const LOCAL_API_URL = "http://localhost:3000/";
-
-// Function to generate a unique CUI
-const generateUniqueCUI = () => {
-  const timestamp = Date.now();
-  const randomNum = Math.floor(Math.random() * 10000);
-  return `${timestamp}${randomNum}`;
-};
+import { createTestPatient, generateUniqueCUI, LOCAL_API_URL } from "../testHelpers.mjs";
 
 describe("Create Patient Record Integration Tests", () => {
-  beforeAll(() => {
-    // Insert data into DB.
-  });
-
-  afterAll(() => {
-    // Delete data into DB.
-  });
-
-  test("Normal case: Create a new patient record", async () => {
-    const uniqueCUI = generateUniqueCUI();
-    const patientData = {
-      cui: uniqueCUI,
-      names: "Juan",
-      lastNames: "Pérez",
-      isWoman: false,
-      birthdate: "1990-01-01",
-    };
-    const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
-
-    expect(response).toBeDefined();
-    expect(response.status).toBe(200);
-  });
+  test("Normal case: Create a new patient record", createTestPatient);
 
   test("Create a new patient record without CUI (should fail)", async () => {
     const patientData = {
