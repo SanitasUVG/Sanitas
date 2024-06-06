@@ -50,7 +50,6 @@ export const createPatientHandler = async (event, context) => {
       patientData.isWoman,
       new Date(patientData.birthdate),
     ];
-    await client.query(query, values);
     const dbresponse = await client.query(query, values);
     logger.info("Patient record created successfully.");
     const response = {
