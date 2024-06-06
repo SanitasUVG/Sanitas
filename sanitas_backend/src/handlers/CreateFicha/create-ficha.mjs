@@ -41,6 +41,7 @@ export const createFichaHandler = async (event, context) => {
     const query = `
       INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
       VALUES ($1, $2, $3, $4, $5)
+      RETURNING * 
     `;
     const values = [
       pacienteData.cui,
@@ -49,8 +50,22 @@ export const createFichaHandler = async (event, context) => {
       pacienteData.esMujer,
       new Date(pacienteData.fechaNacimiento),
     ];
-    await client.query(query, values);
+    const query_response = await client.query(query, values);
+    const id = query_response.rows[0].id;
     logger.info("Ficha creada exitosamente.");
+
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "POST", // Allow only POST request
+      },
+      body: JSON.stringify(id),
+    };
+
+    logger.info(response, "Respondiendo con:");
+    return response;
   } catch (error) {
     logger.error(error, "¡Se produjo un error al crear la ficha!");
 
@@ -80,17 +95,4 @@ export const createFichaHandler = async (event, context) => {
   } finally {
     await client?.end();
   }
-
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Origin": "*", // Allow from anywhere
-      "Access-Control-Allow-Methods": "POST", // Allow only POST request
-    },
-    body: JSON.stringify({ message: "Ficha creada exitosamente." }),
-  };
-
-  logger.info(response, "Respondiendo con:");
-  return response;
 };

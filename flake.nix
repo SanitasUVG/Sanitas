@@ -64,6 +64,7 @@
               dprint # Javascript formatter
               oxlint # Javascript linter
               jq
+              nodePackages.jsdoc
 
               # Backend
               awscli2
