@@ -28,9 +28,37 @@ export default function SearchInput({ type, placeholder }) {
     }
   };
 
+  const styles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      border: "1px solid #5B6670",
+      padding: "5px",
+      borderRadius: "4px",
+      maxWidth: "500px",
+      minWidth: "400px",
+    },
+    input: {
+      flexGrow: 1,
+      border: "none",
+      outline: "none",
+      color: "#1B1B1B",
+    },
+    icon: {
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      padding: "0 8px",
+      color: "#5B6670",
+    },
+    placeholder: {
+      color: "#5B6670",
+    },
+  };
+
   return (
-    <div className="search-input-container">
-      <span>
+    <div style={styles.container}>
+      <span style={styles.icon}>
         <FaMagnifyingGlass />
       </span>
       <input
@@ -39,9 +67,10 @@ export default function SearchInput({ type, placeholder }) {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder={placeholder}
+        style={styles.input}
       />
       {inputValue && (
-        <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown}>
+        <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown} style={styles.icon}>
           <TiDeleteOutline />
         </span>
       )}

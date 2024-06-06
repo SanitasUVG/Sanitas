@@ -11,5 +11,20 @@ import React from "react";
  * @returns {React.Element} The React Input element.
  */
 export default function BaseInput({ type, value, onChange, placeholder }) {
-  return <input type={type} value={value} onChange={onChange} placeholder={placeholder} />;
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={{
+        backgroundColor: "#FFFFFF",
+        color: "#000000",
+        border: "1px solid #5B6670",
+        padding: "6px 10px",
+        outline: "none",
+        borderRadius: "5px",
+      }}
+    />
+  );
 }

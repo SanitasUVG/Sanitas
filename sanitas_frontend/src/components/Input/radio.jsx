@@ -11,9 +11,45 @@ import React from "react";
  * @returns {React.Element} A labeled radio button element.
  */
 export default function RadioInput({ name, checked, onChange, label }) {
+  const styles = {
+    label: {
+      position: "relative",
+      paddingLeft: "25px",
+      cursor: "pointer",
+      display: "inline-block",
+    },
+    input: {
+      position: "absolute",
+      opacity: 0,
+      cursor: "pointer",
+    },
+    outerSpan: {
+      position: "absolute",
+      top: "0",
+      left: "0",
+      height: "20px",
+      width: "20px",
+      backgroundColor: "#FFFFFF",
+      borderRadius: "50%",
+      border: "1px solid #5B6670",
+      display: "inline-block",
+      padding: "3px",
+    },
+    innerSpan: {
+      display: checked ? "block" : "none",
+      width: "100%",
+      height: "100%",
+      backgroundColor: "#0F6838",
+      borderRadius: "50%",
+    },
+  };
+
   return (
-    <label>
-      <input type="radio" name={name} checked={checked} onChange={onChange} />
+    <label style={styles.label}>
+      <input type="radio" name={name} checked={checked} onChange={onChange} style={styles.input} />
+      <span style={styles.outerSpan}>
+        <span style={styles.innerSpan}></span>
+      </span>
       {label}
     </label>
   );
