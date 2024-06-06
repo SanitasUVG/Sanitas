@@ -107,13 +107,13 @@ Resources:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
       Description: >
         Searches for a patient in the database by Carnet, Código de Trabajador,
-        or Nombre-Apellido.
+        Nombre-Apellido or CUI.
 
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /search-patient
+            Path: /patient/search
             Method: POST
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
