@@ -61,12 +61,13 @@
           {
             packages = with pkgs; [
               # General
-              awscli2
-              aws-sam-cli
+              dprint # Javascript formatter
+              oxlint # Javascript linter
               jq
 
               # Backend
-              nodePackages.serverless
+              awscli2
+              aws-sam-cli
 
               # Database
               postgresql
@@ -75,8 +76,6 @@
               # Frontend
               nodejs_20
               yarn-berry
-              dprint # Javascript formatter
-              oxlint # Javascript linter
             ];
 
             services.postgres = {
@@ -146,10 +145,17 @@
                 };
                 jsformat = {
                   enable = true;
-                  name = "dprint JSFormatter";
+                  name = "dprint";
                   description = "Javascript formatter";
                   files = "\.[mc]?jsx?$";
                   entry = "${pkgs.dprint}/bin/dprint fmt --allow-no-files";
+                };
+                yamlFormatter = {
+                  enable = true;
+                  name = "yamlfmt";
+                  description = "Google Yaml formatter";
+                  files = "\.ya?ml$";
+                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=75,include_document_start=true";
                 };
 
                 # Linters

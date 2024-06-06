@@ -3,8 +3,8 @@ import { logger, withRequest } from "logging";
 
 /**
  * @typedef {Object} RequestParams
- * @property {string} request_search - The search parameter.
- * @property {string} search_type - The type of search to be performed.
+ * @property {string} requestSearch - The search parameter.
+ * @property {string} searchType - The type of search to be performed.
  */
 
 /**
@@ -25,11 +25,11 @@ const checkParameters = (event) => {
     };
   }
 
-  const { request_search, search_type } = JSON.parse(event.body);
-  logger.info({ request_search, search_type }, "Received search parameters");
+  const { requestSearch, searchType } = JSON.parse(event.body);
+  logger.info({ requestSearch, searchType }, "Received search parameters!");
 
-  logger.info("Parsing request_search...");
-  if (!request_search) {
+  logger.info("Parsing requestSearch...");
+  if (!requestSearch) {
     return {
       isValidRequest: false,
       errorResponse: {
@@ -41,8 +41,8 @@ const checkParameters = (event) => {
     };
   }
 
-  logger.info("Parsing search_type...");
-  if (!search_type) {
+  logger.info("Parsing searchType...");
+  if (!searchType) {
     return {
       isValidRequest: false,
       errorResponse: {
@@ -57,7 +57,7 @@ const checkParameters = (event) => {
   logger.info("Parameters are valid!");
   return {
     isValidRequest: true,
-    requestParams: { request_search, search_type },
+    requestParams: { requestSearch, searchType },
   };
 };
 
@@ -74,7 +74,7 @@ export const searchPatientHandler = async (event, context) => {
     return paramCheckResult.errorResponse;
   }
 
-  const { request_search, search_type } = paramCheckResult.requestParams;
+  const { requestSearch, searchType } = paramCheckResult.requestParams;
 
   let client;
   try {
@@ -86,21 +86,26 @@ export const searchPatientHandler = async (event, context) => {
     let sqlQuery = "";
     let queryParams = [];
 
-    switch (search_type) {
+    switch (searchType) {
       case "Carnet":
         sqlQuery =
           "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
-        queryParams.push(request_search);
+        queryParams.push(requestSearch);
         logger.info({ sqlQuery, queryParams }, "Querying by student ID");
         break;
       case "NumeroColaborador":
         sqlQuery =
           "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
-        queryParams.push(request_search);
+        queryParams.push(requestSearch);
         logger.info({ sqlQuery, queryParams }, "Querying by employee code");
         break;
+      case "CUI":
+        sqlQuery = "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE WHERE CUI = $1";
+        queryParams.push(requestSearch);
+        logger.info({ sqlQuery, queryParams }, "Querying by CUI");
+        break;
       case "Nombres":
-        let request_search_processed = request_search
+        let request_search_processed = requestSearch
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase();
