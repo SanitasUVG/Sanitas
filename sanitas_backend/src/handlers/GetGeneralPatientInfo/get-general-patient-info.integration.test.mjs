@@ -30,7 +30,7 @@ describe("Get patient integration tests", () => {
     expect(user.bloodType).toBe("O+");
     expect(user.address).toBe("Calle Falsa 123, Ciudad");
     expect(user.birthdate).toBe("1990-01-01T00:00:00.000Z");
-    expect(user.phone).toBe("5556789");
+    expect(user.phone).toBe("1234567890");
     expect(user.insuranceId).toBe(1);
   });
 
