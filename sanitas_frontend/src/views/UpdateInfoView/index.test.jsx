@@ -24,15 +24,15 @@ const examplePatientData = {
 
 const mockGetGeneralPatientInformation = async (id) => {
   if (id === examplePatientData.id) {
-    return examplePatientData;
+    return { result: examplePatientData };
   } else {
-    throw new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.");
+    return { error: new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.") };
   }
 };
 
 describe("UpdateInfoView tests", () => {
   test("Displays patient information correctly", async () => {
-    const getGeneralPatientInformation = vi.fn().mockResolvedValue(examplePatientData);
+    const getGeneralPatientInformation = vi.fn().mockResolvedValue({ result: examplePatientData });
 
     render(
       <MemoryRouter initialEntries={[{ pathname: "/", state: { id: examplePatientData.id } }]}>
