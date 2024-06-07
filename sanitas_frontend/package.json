@@ -13,6 +13,7 @@
     "build-storybook": "yarn install && storybook build"
   },
   "dependencies": {
+    "@storybook/addon-actions": "^8.1.6",
     "@testing-library/dom": "^10.0.0",
     "axios": "^1.7.2",
     "react": "^18.2.0",
