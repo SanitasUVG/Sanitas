@@ -40,10 +40,11 @@ export default function SearchInput({ type, placeholder }) {
         onChange={(e) => setInputValue(e.target.value)}
         placeholder={placeholder}
       />
-      {inputValue && <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown}></span>}
-      <span>
-        <img src={deleteSearch} />
-      </span>
+      {inputValue && (
+        <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown}>
+          <img src={deleteSearch} />
+        </span>
+      )}
     </div>
   );
 }
