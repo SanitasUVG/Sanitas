@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { createResponse } from "utils";
 
 export const handler = async (event, context) => {
   withRequest(event, context);
@@ -28,21 +29,11 @@ export const handler = async (event, context) => {
 
     await client.end();
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*", // Allow from anywhere
-        "Access-Control-Allow-Methods": "GET", // Allow only GET request
-      },
-      body: JSON.stringify({ exists }),
-    };
+    return createResponse().setStatusCode(200).addCORSHeaders().setBody({ exists }).build();
   } catch (error) {
     logger.error(error, "Error querying database:");
-    await client.end();
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Internal Server Error" }),
-    };
+    await client?.end();
+
+    return createResponse().setStatusCode(500).addCORSHeaders().setBody({ error: "Internal Server Error" }).build();
   }
 };

@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "db-conn": ["./layers/db-conn/db-conn/index.mjs"],
-      "logging": ["./layers/logging/logging/index.mjs"]
+      "logging": ["./layers/logging/logging/index.mjs"],
+      "utils": ["./layers/utils/utils/index.mjs"]
     }
   }
 }

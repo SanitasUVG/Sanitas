@@ -47,6 +47,18 @@
             nix develop --impure . -c devenv up
           '';
         };
+
+        buildJSDoc = pkgs.writeShellApplication {
+          name = "Sanitas JSdoc builder";
+          runtimeInputs = with pkgs; [nodePackages.jsdoc ansi];
+          text = ''
+            echo -e "$(ansi yellow)"WARNING:"$(ansi reset)" We need sudo to copy the font from the nix store!
+            sudo echo "Sudo thanks! ;-)"
+
+            echo -e "$(ansi yellow)"WARNING:"$(ansi reset)" This script must be run on the project root directory!
+            sudo jsdoc -c conf.json --recurse .
+          '';
+        };
       }
     );
 
