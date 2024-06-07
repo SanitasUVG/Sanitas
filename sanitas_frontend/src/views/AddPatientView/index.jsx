@@ -118,7 +118,11 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
    * Handles changes to the gender radio buttons.
    * Updates the patient's gender in the state based on the selected option.
 <<<<<<< HEAD
+<<<<<<< HEAD
    * @param {string} isFemale - The selected gender.
+=======
+   * @param {boolean} isFemale - The selected gender.
+>>>>>>> beb366c (fix: change page to only fill the form)
 =======
    * @param {boolean} isFemale - The selected gender.
 >>>>>>> beb366c (fix: change page to only fill the form)
