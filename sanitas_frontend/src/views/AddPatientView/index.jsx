@@ -137,7 +137,7 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
       <BaseInput
         type="text"
         value={patientData.cui}
-        onChange={(e) => handleChange("cui", e.target.value)}
+        onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
         placeholder="CUI"
         style={{ borderColor: patientData.cui.length === 13 ? "green" : "red" }}
       />
