@@ -99,10 +99,10 @@ export const submitPatientData = async (patientData) => {
       `${BASE_URL}/patient`,
       {
         cui: patientData.cui,
-        nombres: patientData.names,
-        apellidos: patientData.surnames,
-        esMujer: patientData.sex ? "F" : "M",
-        fechaNacimiento: patientData.birthDate,
+        names: patientData.names,
+        lastNames: patientData.surnames,
+        isWoman: patientData.isWoman,
+        birthdate: patientData.birthDate,
       },
       {
         headers: {
