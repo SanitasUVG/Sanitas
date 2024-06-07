@@ -36,7 +36,7 @@ Globals:
   Api:
     TracingEnabled: true
     Cors:
-      AllowMethods: "'OPTIONS,POST,GET'"
+      AllowMethods: "'OPTIONS,POST,GET,PUT'"
       AllowHeaders: "'*'"
       AllowOrigin: "'*'"
 # Resources declares the AWS resources that you want to include in the stack
