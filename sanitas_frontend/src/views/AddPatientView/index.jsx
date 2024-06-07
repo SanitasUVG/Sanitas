@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button/index";
-import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
+import { BaseInput, DateInput, RadioInput, SearchInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 
 /**
@@ -62,7 +62,7 @@ export function AddPatientView({ checkCui, submitPatientData }) {
   return (
     <div>
       <h1>Sanitas</h1>
-      <BaseInput type="text" value={cui} onChange={handleCuiInput} placeholder="Ingrese el CUI" />
+      <SearchInput type="text" value={cui} onChange={handleCuiInput} placeholder="Ingrese el CUI" />
       <Button text="Ver paciente" onClick={handleCheckCui} />
       {message && <div>{message}</div>}
       {patientData && patientData.isNew && (

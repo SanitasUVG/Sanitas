@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
 import DropdownMenu from "src/components/DropdownMenu";
-import { BaseInput, DateInput, RadioInput } from "src/components/Input";
+import { SearchInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
 
 /**
@@ -110,7 +110,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           onChange={(e) => setSearchQuery(query, e.target.value)}
           options={dropdownOptions}
         />
-        <BaseInput
+        <SearchInput
           type="text"
           value={query}
           onChange={handleInputChange}
