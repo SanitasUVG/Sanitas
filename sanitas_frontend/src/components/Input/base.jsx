@@ -10,6 +10,8 @@ import React from "react";
  * @param {string} [props.placeholder] - A placeholder text shown in the input.
  * @returns {React.Element} The React Input element.
  */
-export default function BaseInput({ type, value, onChange, placeholder }) {
+function BaseInput({ type, value, onChange, placeholder }) {
   return <input type={type} value={value} onChange={onChange} placeholder={placeholder} />;
 }
+
+export default BaseInput;

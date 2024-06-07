@@ -21,7 +21,7 @@ describe("Search Patient view ui tests", () => {
     expect(apiCall).toHaveBeenCalledTimes(0);
   });
 
-  test("On search calls function", async () => {
+  test("On search calls function", () => {
     const apiCall = vi.fn(() => ({
       result: [],
     }));
@@ -36,12 +36,10 @@ describe("Search Patient view ui tests", () => {
     const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
     const searchBtn = dom.getByText("Buscar");
 
-    fireEvent.change(searchElem, { target: { value: "3284834428" } });
+    fireEvent.change(searchElem, { target: { value: "asdflkjlk" } });
     fireEvent.click(searchBtn);
 
-    await waitFor(() => {
-      expect(apiCall).toHaveBeenCalledOnce();
-    });
+    expect(apiCall).toHaveBeenCalledOnce();
   });
 
   test("Display a button to see patient", async () => {
@@ -64,19 +62,16 @@ describe("Search Patient view ui tests", () => {
     const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
     const searchBtn = dom.getByText("Buscar");
 
-    fireEvent.change(searchElem, { target: { value: "2348234890" } });
+    fireEvent.change(searchElem, { target: { value: "asdflkj" } });
     fireEvent.click(searchBtn);
 
     expect(apiCall).toHaveBeenCalledOnce();
 
     // The function below throws if 0 or 2+ elements are found.
-    await waitFor(
-      () => {
-        expect(dom.getByText("Ver")).toBeVisible();
-      },
-      {
-        timeout: 500,
-      },
-    );
+    await waitFor(() => {
+      expect(dom.getByText("Ver")).toBeVisible();
+    }, {
+      timeout: 500,
+    });
   });
 });
