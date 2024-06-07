@@ -9,6 +9,8 @@ import React from "react";
  * @param {string} [props.placeholder] - A placeholder text shown in the date input.
  * @returns {React.Element} The React Date Input element.
  */
-export default function DateInput({ value, onChange, placeholder }) {
+function DateInput({ value, onChange, placeholder }) {
   return <input type="date" value={value} onChange={onChange} placeholder={placeholder} />;
 }
+
+export default DateInput;

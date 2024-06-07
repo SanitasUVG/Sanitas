@@ -10,7 +10,7 @@ import React from "react";
  * @param {string} props.label - The label text displayed next to the radio button.
  * @returns {React.Element} A labeled radio button element.
  */
-export default function RadioInput({ name, checked, onChange, label }) {
+function RadioInput({ name, checked, onChange, label }) {
   return (
     <label>
       <input type="radio" name={name} checked={checked} onChange={onChange} />
@@ -18,3 +18,5 @@ export default function RadioInput({ name, checked, onChange, label }) {
     </label>
   );
 }
+
+export default RadioInput;
