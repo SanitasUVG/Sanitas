@@ -32,6 +32,7 @@ Globals:
     Layers:
       - !Ref DBConnectionLayer
       - !Ref LambdaLoggingLayer
+      - !Ref UtilsLayer
   Api:
     TracingEnabled: true
     Cors:
@@ -59,6 +60,16 @@ Resources:
       CompatibleRuntimes:
         - nodejs20.x
       ContentUri: layers/logging
+    Metadata:
+      BuildMethod: nodejs20.x
+  UtilsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: sanitas-lambda-utils-layer
+      Description: Layer for sharing common utilities accross AWS lambdas
+      CompatibleRuntimes:
+        - nodejs20.x
+      ContentUri: layers/utils/
     Metadata:
       BuildMethod: nodejs20.x
   # Each Lambda function is defined by properties:
