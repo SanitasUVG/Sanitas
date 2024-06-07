@@ -13,6 +13,7 @@
     "build-storybook": "yarn install && storybook build"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.5.0",
     "@testing-library/dom": "^10.0.0",
     "axios": "^1.7.2",
     "react": "^18.2.0",
@@ -36,7 +37,6 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
-    "eslint-plugin-storybook": "^0.8.0",
     "jsdom": "^24.0.0",
     "prop-types": "^15.8.1",
     "storybook": "^8.1.1",
