@@ -3,15 +3,16 @@ import deleteSearch from "@tabler/icons/outline/x.svg";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Renders a search input field with integrated search and clear icons. This component
- * allows users to type search queries, clear them with one click, and supports submission
- * via the Enter key.
+ * Renders a SearchInput component that includes search and clear icons.
+ * This component allows users to type search queries, clear them with one click,
+ * and supports submission via the Enter key.
  *
- * @param {Object} props - The props object.
- * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input
- *    to render, controlling the allowed types of text inputs.
+ * @param {Object} props - Properties of the component.
+ * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input to render, controlling the allowed types of text inputs.
+ * @param {string} props.value - Current value of the input field.
+ * @param {Function} props.onChange - Function to be executed when the input value changes.
  * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
- * @returns {React.Element} The rendered search input component with magnifying glass and clear icons.
+ * @returns {JSX.Element} JSX element of the SearchInput component.
  */
 export default function SearchInput({ type, value = "", onChange, placeholder }) {
   const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
