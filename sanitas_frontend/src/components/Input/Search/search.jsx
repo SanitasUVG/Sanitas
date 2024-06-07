@@ -37,9 +37,38 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
     }
   };
 
+  const styles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      border: "1px solid #5B6670",
+      padding: "5px",
+      borderRadius: "4px",
+      maxWidth: "500px",
+      minWidth: "400px",
+    },
+    input: {
+      flexGrow: 1,
+      border: "none",
+      outline: "none",
+      color: "#1B1B1B",
+    },
+    img: {
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      padding: "0 8px",
+      filter: "invert(38%) sepia(11%) saturate(0%) hue-rotate(196deg) brightness(95%) contrast(85%)",
+      height: "16px",
+    },
+    placeholder: {
+      color: "#5B6670",
+    },
+  };
+
   return (
-    <div className="search-input-container">
-      <span>
+    <div style={styles.container}>
+      <span style={styles.img}>
         <img src={userSearch} />
       </span>
       <input
@@ -49,9 +78,10 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
         onChange={onChange}
         placeholder={placeholder}
         name="searchInput"
+        style={styles.input}
       />
       {isNotEmpty && (
-        <span onClick={clearInput} tabIndex="0" onKeyDown={handleIconKeyDown}>
+        <span onClick={clearInput} tabIndex="0" onKeyDown={handleIconKeyDown} style={styles.img}>
           <img src={deleteSearch} />
         </span>
       )}
