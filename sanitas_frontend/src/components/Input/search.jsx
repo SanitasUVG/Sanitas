@@ -2,6 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { TiDeleteOutline } from "react-icons/ti";
 
+/**
+ * Renders a SearchInput component that includes search and clear icons.
+ * This component allows users to type search queries, clear them with one click,
+ * and supports submission via the Enter key.
+ *
+ * @param {Object} props - Properties of the component.
+ * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input to render, controlling the allowed types of text inputs.
+ * @param {string} props.value - Current value of the input field.
+ * @param {Function} props.onChange - Function to be executed when the input value changes.
+ * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
+ * @returns {JSX.Element} JSX element of the SearchInput component.
+ */
 export default function SearchInput({ type, value = "", onChange, placeholder }) {
   const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
   const inputRef = useRef(null);
@@ -16,6 +28,10 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
     inputRef.current.focus();
   };
 
+  /**
+   * Handles the Enter key press on the clear icon.
+   * @param {React.KeyboardEvent} e - Keyboard event.
+   */
   const handleIconKeyDown = (e) => {
     if (e.key === "Enter") {
       clearInput();
