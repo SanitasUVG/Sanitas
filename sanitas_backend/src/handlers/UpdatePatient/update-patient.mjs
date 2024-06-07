@@ -175,6 +175,11 @@ export const updatePatientHandler = async (event, context) => {
 
     const response = {
       statusCode: statusCode,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
+      },
       body: JSON.stringify({ error: errorMessage }),
     };
     return response;

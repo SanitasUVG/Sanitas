@@ -1,9 +1,6 @@
-import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
-const DEV_URL = "http://localhost:3000";
-const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
 
 /**
  * @typedef {Object} PatientInfo
@@ -56,25 +53,25 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
 
   const handleSearch = async () => {
     try {
-      const response = await getGeneralPatientInformation(id);
-      const result = response;
+      const { result: response } = await getGeneralPatientInformation(id);
       setPatientData({
-        id: result.id,
-        nombres: result.names,
-        apellidos: result.lastNames,
-        isWoman: result.isWoman,
-        email: result.email,
-        contactName1: result.contactName1,
-        contactKinship1: result.contactKinship1,
-        contactPhone1: result.contactPhone1,
-        contactName2: result.contactName2,
-        contactKinship2: result.contactKinship2,
-        contactPhone2: result.contactPhone2,
-        bloodType: result.bloodType,
-        address: result.address,
-        insuranceId: result.insuranceId,
-        birthdate: formatDate(result.birthdate),
-        phone: result.phone,
+        id: response.id,
+        cui: response.cui,
+        nombres: response.names,
+        apellidos: response.lastNames,
+        isWoman: response.isWoman,
+        email: response.email,
+        contactName1: response.contactName1,
+        contactKinship1: response.contactKinship1,
+        contactPhone1: response.contactPhone1,
+        contactName2: response.contactName2,
+        contactKinship2: response.contactKinship2,
+        contactPhone2: response.contactPhone2,
+        bloodType: response.bloodType,
+        address: response.address,
+        insuranceId: response.insuranceId,
+        birthdate: formatDate(response.birthdate),
+        phone: response.phone,
       });
       setError("");
     } catch (error) {
@@ -82,8 +79,17 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
     }
   };
 
+  const handleUpdatePatient = async () => {
+    try {
+      await updateGeneralPatientInformation(patientData);
+      setError("");
+    } catch (error) {
+      setError("Error al actualizar el paciente. Asegúrese de ingresar datos válidos." + error);
+    }
+  };
+
   // Ejecutar la búsqueda si el ID está presente al montar el componente
-  useState(() => {
+  useEffect(() => {
     if (id) {
       handleSearch();
     }
@@ -272,7 +278,7 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
                 />
               </label>
             </div>
-            <button type="button">
+            <button type="button" onClick={handleUpdatePatient}>
               Actualizar
             </button>
           </form>

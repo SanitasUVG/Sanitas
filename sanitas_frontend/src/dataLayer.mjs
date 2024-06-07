@@ -229,7 +229,7 @@ export const getGeneralPatientInformation = async (id) => {
     if (r.phone === undefined) {
       throw new Error("Received patient has no `phone`!");
     }
-    return r;
+    return { result: r };
   } catch (error) {
     return { error };
   }
@@ -247,5 +247,11 @@ export const getGeneralPatientInformation = async (id) => {
  * @type {UpdateGeneralPatientInformationAPICall}
  */
 export const updateGeneralPatientInformation = async (APIPatient) => {
-  const url = `${BASE_URL}/patient/general/${id}`;
+  const url = `${BASE_URL}/patient/general`;
+  try {
+    await axios.put(url, APIPatient);
+    return true;
+  } catch (error) {
+    return { error };
+  }
 };
