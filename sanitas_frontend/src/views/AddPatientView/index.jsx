@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Button from "src/components/Button/index";
@@ -22,7 +22,6 @@ import { NAV_PATHS } from "src/router";
  * @param {AddPatientViewProps} props - Component properties.
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
  */
-
 export function AddPatientView({ submitPatientData }) {
   const location = useLocation();
   const [patientData, setPatientData] = useState({
@@ -99,9 +98,6 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
     return true;
   };
 
-  /**
-   * Submits the patient data to the server.
-   */
   const handleSubmit = async () => {
     if (validateFormData()) {
       try {
@@ -155,14 +151,14 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
       <div>
         <RadioInput
           name="gender"
-          checked={patientData.sex === "F"}
-          onChange={() => handleGenderChange("F")}
+          checked={patientData.isWoman === true}
+          onChange={() => handleGenderChange(true)}
           label="Femenino"
         />
         <RadioInput
           name="gender"
-          checked={patientData.sex === "M"}
-          onChange={() => handleGenderChange("M")}
+          checked={patientData.isWoman === false}
+          onChange={() => handleGenderChange(false)}
           label="Masculino"
         />
       </div>
