@@ -38,13 +38,13 @@ Para levantar estos servicios se utiliza en primera instancia
 (no es 100% requerido):
 
 ```bash
-  nix develop --impure
+nix develop --impure
 ```
 
 Una vez dentro del `devenv` ahora utiliza el comando:
 
 ```bash
-  nix run .#restarServices
+nix run .#restarServices
 ```
 
 Una vez dentro de la consola de servicios recuerda siempre reiniciar el
@@ -160,7 +160,6 @@ export default function ExampleComponent({ text, onClick, fetchData }) => {
   }
   return <div style={styles}></div>
 }
-
 ```
 
 ### JSDoc
