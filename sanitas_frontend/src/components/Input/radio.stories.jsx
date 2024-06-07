@@ -3,7 +3,7 @@ import React from "react";
 import { RadioInput } from ".";
 
 export default {
-  title: "Componentes/RadioInput",
+  title: "Components/RadioInput",
   component: RadioInput,
 };
 

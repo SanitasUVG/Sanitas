@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AddPatientView } from "./index";
 
 export default {
-  title: "AddPatientView",
+  title: "Views/AddPatientView",
   component: AddPatientView,
   argTypes: {
     foundUserData: { action: "foundUserData" },

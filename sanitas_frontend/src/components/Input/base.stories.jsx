@@ -3,7 +3,7 @@ import React from "react";
 import { BaseInput } from ".";
 
 export default {
-  title: "Componentes/BaseInput",
+  title: "Components/BaseInput",
   component: BaseInput,
   argTypes: {
     type: {
