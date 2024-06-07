@@ -1,28 +1,22 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { TiDeleteOutline } from "react-icons/ti";
 
-/**
- * Renders a search input field with integrated search and clear icons. This component
- * allows users to type search queries, clear them with one click, and supports submission
- * via the Enter key.
- *
- * @param {Object} props - The props object.
- * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input
- *    to render, controlling the allowed types of text inputs.
- * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
- * @returns {React.Element} The rendered search input component with magnifying glass and clear icons.
- */
-export default function SearchInput({ type, placeholder }) {
-  const [inputValue, setInputValue] = useState("");
+export default function SearchInput({ type, value = "", onChange, placeholder }) {
+  const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    setIsNotEmpty(value && value.length > 0);
+  }, [value]);
+
   const clearInput = () => {
-    setInputValue("");
+    const event = { target: { value: "", name: inputRef.current.name } };
+    onChange(event);
     inputRef.current.focus();
   };
 
-  const handleKeyDown = (e) => {
+  const handleIconKeyDown = (e) => {
     if (e.key === "Enter") {
       clearInput();
     }
@@ -35,8 +29,8 @@ export default function SearchInput({ type, placeholder }) {
       border: "1px solid #5B6670",
       padding: "5px",
       borderRadius: "4px",
-      maxWidth: "500px",
-      minWidth: "400px",
+      maxWidth: "400px",
+      minWidth: "300px",
     },
     input: {
       flexGrow: 1,
@@ -51,9 +45,6 @@ export default function SearchInput({ type, placeholder }) {
       padding: "0 8px",
       color: "#5B6670",
     },
-    placeholder: {
-      color: "#5B6670",
-    },
   };
 
   return (
@@ -64,13 +55,14 @@ export default function SearchInput({ type, placeholder }) {
       <input
         ref={inputRef}
         type={type}
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
+        name="searchInput"
         style={styles.input}
       />
-      {inputValue && (
-        <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown} style={styles.icon}>
+      {isNotEmpty && (
+        <span onClick={clearInput} tabIndex="0" onKeyDown={handleIconKeyDown} style={styles.icon}>
           <TiDeleteOutline />
         </span>
       )}
