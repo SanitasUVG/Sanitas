@@ -59,7 +59,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const searchBtnClick = async () => {
     hideErrorMessage();
     if (emptyQuery) {
-      showErrorMessage("Por favor ingrese algo para buscar!");
+      showErrorMessage("¡Por favor ingrese algo para buscar!");
       return;
     }
 
@@ -70,7 +70,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
       if (error.cause) {
         const { response } = error.cause;
         if (response?.status < 500) {
-          showErrorMessage("Búsqueda incorrecta, por favor ingresa todos los parámetros!");
+          showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
         } else {
           showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
         }
@@ -130,7 +130,11 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           : (
             <div>
               <p>Ingresa la información del paciente aquí.</p>
-              <Button text="Puedes añadir uno nuevo aquí." onClick={onAddNewPatientClick} />
+              <Button
+                text="Ingresar la información del paciente."
+                onClick={onAddNewPatientClick}
+              />
+              {" "}
             </div>
           ))}
       <div>

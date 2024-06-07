@@ -44,8 +44,8 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
       border: "1px solid #5B6670",
       padding: "5px",
       borderRadius: "4px",
-      maxWidth: "500px",
-      minWidth: "400px",
+      maxWidth: "400px",
+      minWidth: "300px",
     },
     input: {
       flexGrow: 1,
