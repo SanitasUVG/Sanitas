@@ -23,25 +23,25 @@ export const generateUniqueCUI = () => {
  *
  * @memberof Backend
  * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
- * @param {string} [nombres="Flabio André"] - The names of the patient.
- * @param {string}  [apellidos="Galán Dona"] - The last names of the patient.
- * @param {boolean} [esMujer=false] - Whether or not the patient is a woman.
- * @param {boolean} [fechaNacimiento="1987-07-07"] - The birthdate of the patient.
+ * @param {string} [names="Flabio André"] - The names of the patient.
+ * @param {string}  [lastNames="Galán Dona"] - The last names of the patient.
+ * @param {boolean} [isWoman=false] - Whether or not the patient is a woman.
+ * @param {boolean} [birthdate="1987-07-07"] - The birthdate of the patient.
  * @returns {number} The id of the inserted patient.
  */
 export async function createTestPatient(
   cui = generateUniqueCUI(),
-  nombres = "Flabio André",
-  apellidos = "Galán Dona",
-  esMujer = false,
-  fechaNacimiento = "1987-07-07",
+  names = "Flabio André",
+  lastNames = "Galán Dona",
+  isWoman = false,
+  birthdate = "1987-07-07",
 ) {
   const patientData = {
     cui,
-    nombres,
-    apellidos,
-    esMujer,
-    fechaNacimiento,
+    names,
+    lastNames,
+    isWoman,
+    birthdate,
   };
   const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
 
