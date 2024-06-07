@@ -57,8 +57,8 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
       setPatientData({
         id: response.id,
         cui: response.cui,
-        nombres: response.names,
-        apellidos: response.lastNames,
+        names: response.names,
+        lastNames: response.lastNames,
         isWoman: response.isWoman,
         email: response.email,
         contactName1: response.contactName1,
@@ -104,11 +104,21 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
           <form>
             <div>
               <label>
+                CUI:
+                <input
+                  type="text"
+                  value={patientData.cui}
+                  onChange={(e) => setPatientData({ ...patientData, cui: e.target.value })}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
                 Nombres:
                 <input
                   type="text"
-                  value={patientData.nombres}
-                  onChange={(e) => setPatientData({ ...patientData, nombres: e.target.value })}
+                  value={patientData.names}
+                  onChange={(e) => setPatientData({ ...patientData, names: e.target.value })}
                 />
               </label>
             </div>
@@ -117,14 +127,14 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
                 Apellidos:
                 <input
                   type="text"
-                  value={patientData.apellidos}
-                  onChange={(e) => setPatientData({ ...patientData, apellidos: e.target.value })}
+                  value={patientData.lastNames}
+                  onChange={(e) => setPatientData({ ...patientData, lastNames: e.target.value })}
                 />
               </label>
             </div>
             <div>
               <label>
-                Género:
+                Sexo:
                 <div>
                   <label>
                     <input

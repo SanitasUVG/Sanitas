@@ -1,60 +1,14 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 
-// Funciones de mapeo
-function mapToAPIPatient(dbPatient) {
-  const {
-    id,
-    cui,
-    es_mujer: isWoman,
-    correo: email,
-    nombres: firstName,
-    apellidos: lastName,
-
-    nombre_contacto1: contactName1,
-    parentesco_contacto1: contactKinship1,
-    telefono_contacto1: contactPhone1,
-
-    nombre_contacto2: contactName2,
-    parentesco_contacto2: contactKinship2,
-    telefono_contacto2: contactPhone2,
-
-    tipo_sangre: bloodType,
-    direccion: address,
-    id_seguro: insuranceId,
-    fecha_nacimiento: birthDate,
-    telefono: phone,
-  } = dbPatient;
-
-  return {
-    id,
-    cui,
-    isWoman,
-    email,
-    firstName,
-    lastName,
-    contactName1,
-    contactKinship1,
-    contactPhone1,
-    contactName2,
-    contactKinship2,
-    contactPhone2,
-    bloodType,
-    address,
-    insuranceId,
-    birthDate,
-    phone,
-  };
-}
-
 function mapToDbPatient(apiPatient) {
   const {
     id,
     cui,
     isWoman: es_mujer,
     email: correo,
-    firstName: nombres,
-    lastName: apellidos,
+    names: nombres,
+    lastNames: apellidos,
 
     contactName1: nombre_contacto1,
     contactKinship1: parentesco_contacto1,
@@ -67,7 +21,7 @@ function mapToDbPatient(apiPatient) {
     bloodType: tipo_sangre,
     address: direccion,
     insuranceId: id_seguro,
-    birthDate: fecha_nacimiento,
+    birthdate: fecha_nacimiento,
     phone: telefono,
   } = apiPatient;
 
@@ -113,8 +67,8 @@ export const updatePatientHandler = async (event, context) => {
 
     logger.info(patientData, "Actualizando datos del paciente en la base de datos...");
 
-    if (!patientData.cui) {
-      throw new Error("CUI es requerido.");
+    if (!patientData.id) {
+      throw new Error("ID es requerido.");
     }
 
     const query = `
@@ -132,11 +86,14 @@ export const updatePatientHandler = async (event, context) => {
         direccion = COALESCE($11, direccion),
         id_seguro = COALESCE($12, id_seguro),
         fecha_nacimiento = COALESCE($13, fecha_nacimiento),
-        telefono = COALESCE($14, telefono)
-      WHERE cui = $1
+        telefono = COALESCE($14, telefono),
+        cui = COALESCE($15, cui),
+        correo = COALESCE($16, correo),
+        es_mujer = COALESCE($17, es_mujer)
+      WHERE id = $1
     `;
     const values = [
-      patientData.cui,
+      patientData.id,
       patientData.nombres || null,
       patientData.apellidos || null,
       patientData.nombre_contacto1 || null,
@@ -150,6 +107,9 @@ export const updatePatientHandler = async (event, context) => {
       patientData.id_seguro || null,
       patientData.fecha_nacimiento ? new Date(patientData.fecha_nacimiento) : null,
       patientData.telefono || null,
+      patientData.cui || null,
+      patientData.correo || null,
+      patientData.es_mujer || null,
     ];
 
     logger.info({ query, values }, "Consulta SQL y valores:");
@@ -157,7 +117,7 @@ export const updatePatientHandler = async (event, context) => {
     const result = await client.query(query, values);
 
     if (result.rowCount === 0) {
-      throw new Error("No se encontraron registros con el CUI proporcionado.");
+      throw new Error("No se encontraron registros con el ID proporcionado.");
     }
 
     logger.info("Datos del paciente actualizados exitosamente.");
@@ -167,10 +127,10 @@ export const updatePatientHandler = async (event, context) => {
     let statusCode = 400;
     let errorMessage = "Se produjo un error al actualizar los datos del paciente.";
 
-    if (error.message === "CUI es requerido.") {
-      errorMessage = "CUI es requerido.";
-    } else if (error.message === "No se encontraron registros con el CUI proporcionado.") {
-      errorMessage = "No se encontraron registros con el CUI proporcionado.";
+    if (error.message === "ID es requerido.") {
+      errorMessage = "ID es requerido.";
+    } else if (error.message === "No se encontraron registros con el ID proporcionado.") {
+      errorMessage = "No se encontraron registros con el ID proporcionado.";
     }
 
     const response = {
