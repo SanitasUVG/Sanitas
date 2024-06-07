@@ -93,7 +93,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   };
 
   const onAddNewPatientClick = () => {
-    navigate(NAV_PATHS.ADD_PATIENT);
+    navigate(NAV_PATHS.ADD_PATIENT, { state: { cui: query } });
   };
 
   return (
