@@ -9,8 +9,8 @@ export default {
 
 const Template = (args) => <Button {...args} />;
 
-export const Primary = Template.bind({});
-Primary.args = {
+export const Default = Template.bind({});
+Default.args = {
   text: "Buscar paciente",
   onClick: action("clicked"),
 };
