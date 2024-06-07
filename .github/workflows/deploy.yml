@@ -32,10 +32,10 @@ jobs:
           role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
       - name: Building Backend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build"
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build --use-container"
       - name: Deploying Backend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && yes | sam deploy --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
+        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
       - name: Saving Backend URL
         id: get_url_step
         # yamllint disable-line rule:line-length
