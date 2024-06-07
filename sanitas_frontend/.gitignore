@@ -1,4 +1,7 @@
+# Yarn berry
 .yarn
+.pnp.cjs
+.pnp.loader.mjs
 
 # Logs
 logs
