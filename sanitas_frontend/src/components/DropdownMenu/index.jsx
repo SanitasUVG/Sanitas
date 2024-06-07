@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
+
 /**
  * @typedef {Object} DropdownMenuProps
  * @property {string} value - The currently selected value of the dropdown.
@@ -30,55 +31,57 @@ export default function DropdownMenu({ value, onChange, options }) {
     }
   };
 
+  const styles = {
+    container: {
+      position: "relative",
+      width: "190px",
+    },
+    select: {
+      width: "100%",
+      backgroundColor: "#FFFFFF",
+      color: "#0F6838",
+      borderRadius: "5px",
+      padding: "10px 30px 10px 10px",
+      border: "2px solid #0F6838",
+      cursor: "pointer",
+      fontSize: "14px",
+      appearance: "none",
+      outline: "none",
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+    },
+    option: {
+      backgroundColor: "#FFFFFF",
+      color: "#0F6838",
+    },
+    indicator: {
+      position: "absolute",
+      top: "50%",
+      right: "5%",
+      transform: `translateY(-50%) rotate(${isOpen ? "180deg" : "0deg"})`,
+      transition: "transform 0.3s",
+      pointerEvents: "none",
+      color: "#0F6838",
+      fontSize: "12px",
+    },
+  };
+
   return (
-    <div style={{ position: "relative", width: "190px" }}>
+    <div style={styles.container}>
       <select
         value={value}
         onChange={handleDropdownChange}
         onMouseDown={toggleDropdown}
         onBlur={handleDropdownBlur}
-        style={{
-          width: "100%",
-          backgroundColor: "#FFFFFF",
-          color: "#0F6838",
-          borderRadius: "5px",
-          padding: "10px 30px 10px 10px",
-          border: "2px solid #0F6838",
-          cursor: "pointer",
-          fontSize: "14px",
-          appearance: "none",
-          outline: "none",
-          WebkitAppearance: "none",
-          MozAppearance: "none",
-        }}
+        style={styles.select}
       >
         {options.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            style={{
-              backgroundColor: "#FFFFFF",
-              color: "#0F6838",
-            }}
-          >
+          <option key={option.value} value={option.value} style={styles.option}>
             {option.label}
           </option>
         ))}
       </select>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          right: "5%",
-          transform: `translateY(-50%) rotate(${isOpen ? "180deg" : "0deg"})`,
-          transition: "transform 0.3s",
-          pointerEvents: "none",
-          color: "#0F6838",
-          fontSize: "12px",
-        }}
-      >
-        ▼
-      </div>
+      <div style={styles.indicator}>▼</div>
     </div>
   );
 }
