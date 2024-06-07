@@ -1,6 +1,6 @@
 import userSearch from "@tabler/icons/outline/user-search.svg";
 import deleteSearch from "@tabler/icons/outline/x.svg";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Renders a search input field with integrated search and clear icons. This component
@@ -13,16 +13,25 @@ import { useRef, useState } from "react";
  * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
  * @returns {React.Element} The rendered search input component with magnifying glass and clear icons.
  */
-export default function SearchInput({ type, placeholder }) {
-  const [inputValue, setInputValue] = useState("");
+export default function SearchInput({ type, value = "", onChange, placeholder }) {
+  const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    setIsNotEmpty(value && value.length > 0);
+  }, [value]);
+
   const clearInput = () => {
-    setInputValue("");
+    const event = { target: { value: "", name: inputRef.current.name } };
+    onChange(event);
     inputRef.current.focus();
   };
 
-  const handleKeyDown = (e) => {
+  /**
+   * Handles the Enter key press on the clear icon.
+   * @param {React.KeyboardEvent} e - Keyboard event.
+   */
+  const handleIconKeyDown = (e) => {
     if (e.key === "Enter") {
       clearInput();
     }
@@ -36,12 +45,13 @@ export default function SearchInput({ type, placeholder }) {
       <input
         ref={inputRef}
         type={type}
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
+        name="searchInput"
       />
-      {inputValue && (
-        <span onClick={clearInput} tabIndex="0" onKeyDown={handleKeyDown}>
+      {isNotEmpty && (
+        <span onClick={clearInput} tabIndex="0" onKeyDown={handleIconKeyDown}>
           <img src={deleteSearch} />
         </span>
       )}
