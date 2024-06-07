@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 /**
  * @typedef {Object} DropdownMenuProps
@@ -14,13 +14,74 @@ import React from "react";
  * @returns {React.Element} The React Select element with options.
  */
 export default function DropdownMenu({ value, onChange, options }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleDropdownChange = (e) => {
+    onChange(e);
+    setIsOpen(false);
+  };
+
+  const handleDropdownBlur = () => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  };
+
+  const styles = {
+    container: {
+      position: "relative",
+      width: "190px",
+    },
+    select: {
+      width: "100%",
+      backgroundColor: "#FFFFFF",
+      color: "#0F6838",
+      borderRadius: "5px",
+      padding: "10px 30px 10px 10px",
+      border: "2px solid #0F6838",
+      cursor: "pointer",
+      fontSize: "14px",
+      appearance: "none",
+      outline: "none",
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+    },
+    option: {
+      backgroundColor: "#FFFFFF",
+      color: "#0F6838",
+    },
+    indicator: {
+      position: "absolute",
+      top: "50%",
+      right: "5%",
+      transform: `translateY(-50%) rotate(${isOpen ? "180deg" : "0deg"})`,
+      transition: "transform 0.3s",
+      pointerEvents: "none",
+      color: "#0F6838",
+      fontSize: "12px",
+    },
+  };
+
   return (
-    <select value={value} onChange={onChange}>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <div style={styles.container}>
+      <select
+        value={value}
+        onChange={handleDropdownChange}
+        onMouseDown={toggleDropdown}
+        onBlur={handleDropdownBlur}
+        style={styles.select}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value} style={styles.option}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <div style={styles.indicator}>▼</div>
+    </div>
   );
 }
