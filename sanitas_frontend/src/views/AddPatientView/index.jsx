@@ -15,9 +15,11 @@ import { NAV_PATHS } from "src/router";
  */
 
 /**
- * @typedef {Object} AddPatientViewProps
- * @property {function(string): Promise<Object>} checkCui - Function to check existence of a CUI.
- * @property {function(PatientData): Promise<void>} submitPatientData - Function to submit patient data.
+ * Component for adding new patients.
+ * Uses navigation state to pre-fill the CUI if available.
+ *
+ * @param {AddPatientViewProps} props - Component properties.
+ * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
  */
 
 export function AddPatientView({ checkCui, submitPatientData }) {
@@ -83,11 +85,12 @@ export function AddPatientView({ checkCui, submitPatientData }) {
 }
 
 /**
- * Form component to display and manage input for patient data.
- * Handles data validation and submission to server for registration or updates.
- * @param {Object} props - Component props.
- * @param {PatientData} props.patientData - Data for a single patient.
- * @param {function(PatientData): void} props.setPatientData - Function to update the patient data state.
+ * Form component for displaying and managing input for patient data.
+ * Handles data validation and submission to the server for registration or updates.
+ *
+ * @param {Object} props - Component properties.
+ * @param {PatientData} props.patientData - Current data for a single patient.
+ * @param {function(PatientData): void} props.setPatientData - Function to update the state with patient data.
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
  */
 export function PatientForm({ patientData, setPatientData, submitPatientData }) {
@@ -99,7 +102,7 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
    * Handles changes to the input fields for patient data and updates the state.
    * Filters input based on the field type to ensure data integrity.
    * @param {string} field - The field name to update.
-   * @param {string} value - The new value of the field.
+   * @param {string} value - The new value for the field.
    */
   const handleChange = (field, value) => {
     if (field === "names" || field === "surnames") {
@@ -144,7 +147,7 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
   /**
    * Handles changes to the gender radio buttons.
    * Updates the patient's gender in the state based on the selected option.
-   * @param {string} gender - The selected gender.
+   * @param {string} isFemale - The selected gender.
    */
   const handleGenderChange = (gender) => {
     setPatientData({ ...patientData, sex: gender });
