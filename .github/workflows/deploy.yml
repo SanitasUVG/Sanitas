@@ -67,8 +67,9 @@ jobs:
         # yamllint disable-line rule:line-length
         run: yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url
           }} yarn build --base=/Sanitas/
-      - uses: actions/upload-pages-artifact@v3
+      - name: Uploading to Github pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./sanitas_frontend/dist
       - uses: actions/deploy-pages@v4
         id: deployment
