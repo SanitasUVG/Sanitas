@@ -11,6 +11,8 @@ permissions:
   id-token: write
 jobs:
   backend-deploy:
+    environment:
+      name: build
     name: Backend Deployment
     runs-on: ubuntu-latest
     outputs:
@@ -43,6 +45,7 @@ jobs:
         run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
           --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e
           's/\"$//') >> $GITHUB_OUTPUT
+
   frontend-deploy:
     name: Frontend Deployment
     needs: backend-deploy
@@ -66,6 +69,6 @@ jobs:
           }} yarn build --base=/Sanitas/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ./dist
       - uses: actions/deploy-pages@v4
         id: deployment
