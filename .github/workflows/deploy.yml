@@ -1,24 +1,24 @@
 ---
 name: Deploy Sanitas
-
-on:    # yamllint disable-line rule:truthy
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - staging
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 jobs:
   backend-deploy:
     name: Backend Deployment
     runs-on: ubuntu-latest
     outputs:
       backend_url: ${{ steps.get_url_step.outputs.url }}
-
+    defaults:
+      run:
+        shell: nix develop .#cicdBackend --command bash {0}
+        working-directory: sanitas_backend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,15 +32,17 @@ jobs:
           role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
       - name: Building Backend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam build --use-container"
+        run: sam build --use-container
       - name: Deploying Backend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides PostgresURL=${{ secrets.DB_URL }}"
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+          --parameter-overrides PostgresURL=${{ secrets.DB_URL }}
       - name: Saving Backend URL
         id: get_url_step
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_backend/ && echo url=$(sam list stack-outputs --stack-name sanitas-backend --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e 's/\"$//') >> $GITHUB_OUTPUT"
-
+        run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
+          --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e
+          's/\"$//') >> $GITHUB_OUTPUT
   frontend-deploy:
     name: Frontend Deployment
     needs: backend-deploy
@@ -48,6 +50,10 @@ jobs:
       name: build
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop .#cicdFrontend --command bash {0}
+        working-directory: sanitas_frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,10 +62,10 @@ jobs:
       - uses: actions/configure-pages@v4
       - name: Building frontend
         # yamllint disable-line rule:line-length
-        run: nix develop --impure . --command bash -c "cd sanitas_frontend/ && yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url }} yarn build --base=/Sanitas/"
+        run: yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url
+          }} yarn build --base=/Sanitas/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./sanitas_frontend/dist
-
+          path: dist
       - uses: actions/deploy-pages@v4
         id: deployment

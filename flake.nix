@@ -64,32 +64,45 @@
 
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system;};
+      requiredPkgs = with pkgs; [
+        dprint
+        oxlint
+        jq
+      ];
+      frontendRequiredPkgs = with pkgs; [
+        nodejs_20
+        yarn-berry
+      ];
+      backendRequiredPkgs = with pkgs; [
+        awscli2
+        aws-sam-cli
+      ];
       strFromDBFile = file: builtins.readFile ./database/${file};
       dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
     in {
+      cicdFrontend = pkgs.mkShell {
+        packages = requiredPkgs ++ frontendRequiredPkgs;
+      };
+      cicdBackend = pkgs.mkShell {
+        packages = requiredPkgs ++ backendRequiredPkgs;
+      };
+
       default = devenv.lib.mkShell {
         inherit pkgs inputs;
         modules = [
           {
-            packages = with pkgs; [
-              # General
-              dprint # Javascript formatter
-              oxlint # Javascript linter
-              jq
-              nodePackages.jsdoc
+            packages = with pkgs;
+              [
+                # General
+                nodePackages.jsdoc
 
-              # Backend
-              awscli2
-              aws-sam-cli
-
-              # Database
-              postgresql
-              sqlfluff # SQL linter and formatter
-
-              # Frontend
-              nodejs_20
-              yarn-berry
-            ];
+                # Database
+                postgresql
+                sqlfluff # SQL linter and formatter
+              ]
+              ++ requiredPkgs
+              ++ frontendRequiredPkgs
+              ++ backendRequiredPkgs;
 
             services.postgres = {
               enable = true;
@@ -168,7 +181,7 @@
                   name = "yamlfmt";
                   description = "Google Yaml formatter";
                   files = "\.ya?ml$";
-                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=75,include_document_start=true";
+                  entry = "${pkgs.yamlfmt}/bin/yamlfmt -formatter type=basic,max_line_length=65,include_document_start=true,retain_line_breaks_single=true,pad_line_comments=2";
                 };
 
                 # Linters
