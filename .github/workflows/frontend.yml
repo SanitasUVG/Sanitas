@@ -1,25 +1,23 @@
 ---
 name: Frontend Lint and Tests
-
-on:     # yamllint disable-line rule:truthy
+on:  # yamllint disable-line rule:truthy
   pull_request_target:
     types:
       - opened
       - edited
       - synchronize
-
 jobs:
   testAndLinting:
     name: Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop .#cicdFrontend --command bash {0}
+        working-directory: sanitas_frontend
     steps:
       - uses: actions/checkout@v3
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Linting
-        run: |
-            nix develop --impure . --command bash -c \
-             "cd sanitas_frontend/ && yarn && yarn run lint"
+        run: yarn && yarn run lint
       - name: Testing
-        run: |
-            nix develop --impure . --command bash -c \
-            "cd sanitas_frontend/ && yarn && yarn test"
+        run: yarn && yarn test
