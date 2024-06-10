@@ -27,7 +27,7 @@ export const generateUniqueCUI = () => {
  * @param {string}  [lastNames="Galán Dona"] - The last names of the patient.
  * @param {boolean} [isWoman=false] - Whether or not the patient is a woman.
  * @param {boolean} [birthdate="1987-07-07"] - The birthdate of the patient.
- * @returns {number} The id of the inserted patient.
+ * @returns {Promise<number>} The id of the inserted patient.
  */
 export async function createTestPatient(
   cui = generateUniqueCUI(),
