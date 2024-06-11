@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { createResponse } from "utils";
 
 // Funciones de mapeo
 function mapToAPICollaborator(dbCollaborator) {
@@ -30,7 +31,7 @@ function mapToDbCollaborator(apiCollaborator) {
   };
 }
 
-export const CollaboratorHandler = async (event, context) => {
+export const updateCollaboratorHandler = async (event, context) => {
   withRequest(event, context);
 
   logger.info({ event }, "Event received:");
@@ -90,42 +91,19 @@ export const CollaboratorHandler = async (event, context) => {
 
     logger.info("Datos del colaborador actualizados exitosamente.");
 
-    const response = {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*", // Allow from anywhere
-        "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
-      },
-      body: JSON.stringify({
-        message: "Datos del colaborador actualizados exitosamente.",
-        collaborator: apiUpdatedCollaborator,
-      }),
-    };
-
-    logger.info(response, "Respondiendo con:");
-    return response;
+    return createResponse()
+      .setStatusCode(200)
+      .addCORSHeaders()
+      .setBody(apiUpdatedCollaborator)
+      .build();
   } catch (error) {
-    logger.error(error, "¡Se produjo un error al actualizar los datos del colaborador!");
-
-    let statusCode = 400;
-    let errorMessage = "Se produjo un error al actualizar los datos del colaborador.";
-
-    if (error.message === "Código es requerido.") {
-      errorMessage = "Código es requerido.";
-    } else if (error.message === "No se encontraron registros con el código proporcionado.") {
-      errorMessage = "No se encontraron registros con el código proporcionado.";
-    } else {
-      // Log any unexpected errors for debugging
-      logger.error(error, "Unexpected error occurred:");
-    }
-
-    const response = {
-      statusCode: statusCode,
-      body: JSON.stringify({ error: errorMessage }),
-    };
-    return response;
-  } finally {
+    logger.error(error, "Error querying database:");
     await client?.end();
+
+    return createResponse()
+      .setStatusCode(500)
+      .addCORSHeaders()
+      .setBody({ error: "Internal Server Error" })
+      .build();
   }
 };

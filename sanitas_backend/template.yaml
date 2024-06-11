@@ -200,7 +200,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /collaborator
+            Path: /patient/collaborator
             Method: PUT
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
