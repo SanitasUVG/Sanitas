@@ -23,7 +23,7 @@ describe("Update patient student data integration tests", () => {
 
   test("Normal case: Actualizar datos de un paciente existente", async () => {
     const payload = {
-      id: patientId,
+      patientId,
       carnet: "22386",
       career: "Lic. Computación",
     };
@@ -36,7 +36,7 @@ describe("Update patient student data integration tests", () => {
 
   test("Actualizar solamente carnet", async () => {
     const payload = {
-      id: patientId,
+      patientId,
       carnet: "22386",
     };
 
@@ -51,7 +51,7 @@ describe("Update patient student data integration tests", () => {
 
   test("Actualizar solamente carrera", async () => {
     const payload = {
-      id: patientId,
+      patientId,
       career: "Lic. Química",
     };
 
@@ -60,13 +60,13 @@ describe("Update patient student data integration tests", () => {
     expect(response.status).toBe(200);
 
     const { data: received } = response;
-    expect(received.career).toBe(payload.carnet);
+    expect(received.career).toBe(payload.career);
     expect(received.carnet).toBeNull();
   });
 
   test("Falla al no encontrar la ID", async () => {
     const payload = {
-      patientId: -1,
+      patientId: 99999999,
       carnet: "22386",
       career: "22386",
     };
@@ -74,6 +74,6 @@ describe("Update patient student data integration tests", () => {
     const response = await axios.put(LOCAL_API_URL, payload, { validateStatus: () => true });
 
     expect(response.status).toBe(400);
-    expect(response.data).toBe("No patient with the given ID found!");
+    expect(response.data.error).toBe("No patient with the given ID found!");
   });
 });
