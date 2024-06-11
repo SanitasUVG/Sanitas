@@ -27,7 +27,7 @@ export const generateUniqueCUI = () => {
  * @param {string}  [lastNames="Galán Dona"] - The last names of the patient.
  * @param {boolean} [isWoman=false] - Whether or not the patient is a woman.
  * @param {boolean} [birthdate="1987-07-07"] - The birthdate of the patient.
- * @returns {number} The id of the inserted patient.
+ * @returns {Promise<number>} The id of the inserted patient.
  */
 export async function createTestPatient(
   cui = generateUniqueCUI(),
@@ -48,5 +48,34 @@ export async function createTestPatient(
   expect(response).toBeDefined();
   expect(response.status).toBe(200);
 
+  return response.data;
+}
+
+/**
+ * @typedef {Object} StudentInfo
+ * @property {string} carnet
+ * @property {string} career
+ */
+
+/**
+ * Updates the student information of a given patient.
+ * @param {number} id - The ID of the patient to update
+ * @param {string} [carnet="22386"] - The student carnet.
+ * @param {string} [career="22386"] - The career of the student.
+ * @returns {Promise<StudentInfo>} The updated student info
+ */
+export async function updateStudentInfo(
+  id,
+  carnet = "22386",
+  career = "Lic. Computación",
+) {
+  const payload = {
+    patientId: id,
+    carnet,
+    career,
+  };
+  const response = await axios.put(`${LOCAL_API_URL}/patient/student`, payload);
+
+  expect(response.status).toBe(200);
   return response.data;
 }

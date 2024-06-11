@@ -161,3 +161,32 @@ export function createResponse() {
 
   return builder;
 }
+
+/**
+ * @typedef {Object} DBStudentInfo
+ * @property {string} id
+ * @property {string} carnet
+ * @property {string} carrera
+ */
+
+/**
+ * @typedef {Object} APIStudentInfo
+ * @property {string} patientId
+ * @property {string} carnet
+ * @property {string} career
+ */
+
+/**
+ * Maps a DB Student info into an API student info.
+ * @param {DBStudentInfo} dbStudentInfo - The DB student information.
+ * @returns {APIStudentInfo} The API formatted student information.
+ */
+export function mapToAPIStudentInfo(dbStudentInfo) {
+  const { id: patientId, carnet, carrera: career } = dbStudentInfo;
+
+  return {
+    patientId,
+    carnet,
+    career,
+  };
+}
