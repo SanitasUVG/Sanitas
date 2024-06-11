@@ -117,8 +117,8 @@ Resources:
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
       Description: >
-        Searches for a patient in the database by Carnet, Código de Trabajador,
-        Nombre-Apellido or CUI.
+        Searches for a patient in the database by Carnet, Código de
+        Trabajador, Nombre-Apellido or CUI.
 
       Events:
         Api:
@@ -184,6 +184,23 @@ Resources:
           Type: Api
           Properties:
             Path: /patient/general
+            Method: PUT
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # update-patient.mjs
+  updateCollaboratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateCollaborator/update-collaborator.updateCollaboratorHandler
+      Description: Function to update collaborator data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /collaborator
             Method: PUT
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
