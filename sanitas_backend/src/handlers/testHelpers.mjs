@@ -50,3 +50,32 @@ export async function createTestPatient(
 
   return response.data;
 }
+
+/**
+ * @typedef {Object} StudentInfo
+ * @property {string} carnet
+ * @property {string} career
+ */
+
+/**
+ * Updates the student information of a given patient.
+ * @param {number} id - The ID of the patient to update
+ * @param {string} [carnet="22386"] - The student carnet.
+ * @param {string} [career="22386"] - The career of the student.
+ * @returns {Promise<StudentInfo>} The updated student info
+ */
+export async function updateStudentInfo(
+  id,
+  carnet = "22386",
+  career = "Lic. Computación",
+) {
+  const payload = {
+    id,
+    carnet,
+    career,
+  };
+  const response = await axios.put(`${LOCAL_API_URL}/patient/student`, payload);
+
+  expect(response.status).toBe(200);
+  return response.data;
+}

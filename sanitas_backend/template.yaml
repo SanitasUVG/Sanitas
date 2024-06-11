@@ -117,8 +117,8 @@ Resources:
     Properties:
       Handler: src/handlers/SearchPatient/search-patient.searchPatientHandler
       Description: >
-        Searches for a patient in the database by Carnet, Código de Trabajador,
-        Nombre-Apellido or CUI.
+        Searches for a patient in the database by Carnet, Código de
+        Trabajador, Nombre-Apellido or CUI.
 
       Events:
         Api:
@@ -185,8 +185,18 @@ Resources:
           Properties:
             Path: /patient/general
             Method: PUT
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  updateStudentInfoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/handlers/UpdateStudentData/update-student-data.handler
+      Description: Function to update student patient data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student
+            Method: PUT
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
