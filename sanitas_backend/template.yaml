@@ -185,8 +185,18 @@ Resources:
           Properties:
             Path: /patient/general
             Method: PUT
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  updateStudentInfoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/handlers/UpdateStudentData/update-student-data.handler
+      Description: Function to update student patient data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student
+            Method: PUT
 
   # This is a Lambda function config associated with the source code:
   # update-patient.mjs

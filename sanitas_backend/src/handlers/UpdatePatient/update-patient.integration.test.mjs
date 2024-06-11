@@ -1,11 +1,15 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
+import { createTestPatient } from "../testHelpers.mjs";
 
 const LOCAL_API_URL = "http://localhost:3000/";
 
 describe("Update Patient integration tests", () => {
-  beforeAll(() => {
-    // Insert data into DB.
+  /** @type {number} */
+  let patientId;
+
+  beforeAll(async () => {
+    patientId = await createTestPatient();
   });
 
   afterAll(() => {
@@ -14,7 +18,7 @@ describe("Update Patient integration tests", () => {
 
   test("Normal case: Actualizar datos de un paciente existente", async () => {
     const patientData = {
-      cui: "1234567890123",
+      id: patientId,
       names: "Juan Actualizado",
       lastNames: "Pérez Actualizado",
       phone: "5556789",
@@ -29,7 +33,7 @@ describe("Update Patient integration tests", () => {
 
   test("Actualizar datos de un paciente sin proporcionar ningún campo para actualizar", async () => {
     const patientData = {
-      cui: "1234567890123",
+      id: patientId,
     };
 
     const response = await axios.put(`${LOCAL_API_URL}/patient/general`, patientData);
@@ -39,9 +43,9 @@ describe("Update Patient integration tests", () => {
     expect(response.data.message).toBe("Datos del paciente actualizados exitosamente.");
   });
 
-  test("Actualizar datos de un paciente con CUI inexistente (debería fallar)", async () => {
+  test("Actualizar datos de un paciente con una ID inexistente (debería fallar)", async () => {
     const patientData = {
-      cui: "9876543210987",
+      id: -1,
       names: "Nombre Nuevo",
     };
 
@@ -51,6 +55,6 @@ describe("Update Patient integration tests", () => {
 
     // Verificar que el error sea el esperado
     expect(response.status).toBe(400);
-    expect(response.data.error).toBe("No se encontraron registros con el CUI proporcionado.");
+    expect(response.data.error).toBe("No se encontraron registros con el ID proporcionado.");
   });
 });
