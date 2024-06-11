@@ -17,7 +17,8 @@ describe("Update patient student data integration tests", () => {
       lastNames: "OWO",
       isWoman: true,
     };
-    patientId = await createTestPatient(...insertedPatientData);
+    const { cui, names, lastNames, isWoman } = insertedPatientData;
+    patientId = await createTestPatient(cui, names, lastNames, isWoman);
   });
 
   test("Normal case: Actualizar datos de un paciente existente", async () => {
