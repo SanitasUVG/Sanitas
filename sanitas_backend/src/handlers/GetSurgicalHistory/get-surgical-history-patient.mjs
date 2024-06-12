@@ -48,7 +48,7 @@ function mapToAPISurgicalHistory(dbData) {
  */
 export const getSurgicalHistoryHandler = async (event, context) => {
   withRequest(event, context);
-  const responseBuilder = createResponse();
+  const responseBuilder = createResponse().addCORSHeaders("GET");
 
   if (event.httpMethod !== "GET") {
     return responseBuilder.setStatusCode(405).setBody({ error: "Method Not Allowed" }).build();
@@ -79,6 +79,12 @@ export const getSurgicalHistoryHandler = async (event, context) => {
       return responseBuilder
         .setStatusCode(404)
         .setBody({ message: "No surgical history found for the provided ID." })
+        .build();
+    }
+    if (!dbResponse.rows[0].antecedente_quirurgico) {
+      return responseBuilder
+        .setStatusCode(200)
+        .setBody({ message: "The patient has no surgical history registered." })
         .build();
     }
 

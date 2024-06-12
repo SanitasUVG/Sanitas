@@ -80,7 +80,12 @@ export async function updateStudentInfo(id, carnet = "22386", career = "Lic. Com
  * Updates the surgical history of an existing patient in the database.
  *
  * @param {number} patientId - The ID of the patient.
- * @param {Object} surgicalData - The surgical event data to update for the patient.
+ * @typedef {Object} surgicalData
+ * @property {boolean} hasSurgicalEvent - Whether the patient has a surgical event.
+ * @property {Array<Object>} surgicalEventData - The array of surgical event data.
+ * @property {string} surgicalEventData[].surgeryType - The type of surgery.
+ * @property {string} surgicalEventData[].surgeryYear - The year of the surgery.
+ * @property {string} surgicalEventData[].complications - Any complications from the surgery.
  * @returns {Promise<void>}
  */
 export async function updatePatientSurgicalHistory(patientId, surgicalData) {
