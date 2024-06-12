@@ -30,6 +30,7 @@ describe("Update patient student data integration tests", () => {
 
     const received = await updateStudentInfo(patientId);
 
+    expect(received.patientId).toBe(patientId);
     expect(received.carnet).toBe(payload.carnet);
     expect(received.career).toBe(payload.career);
   });

@@ -164,7 +164,7 @@ export function createResponse() {
 
 /**
  * @typedef {Object} DBStudentInfo
- * @property {string} id
+ * @property {string} id_paciente
  * @property {string} carnet
  * @property {string} carrera
  */
@@ -182,7 +182,7 @@ export function createResponse() {
  * @returns {APIStudentInfo} The API formatted student information.
  */
 export function mapToAPIStudentInfo(dbStudentInfo) {
-  const { id: patientId, carnet, carrera: career } = dbStudentInfo;
+  const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
 
   return {
     patientId,
