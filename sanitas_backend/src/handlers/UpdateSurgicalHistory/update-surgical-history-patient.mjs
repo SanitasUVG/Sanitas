@@ -10,40 +10,34 @@ import { createResponse } from "utils";
 function formatSurgicalHistoryResponse(dbData) {
   let surgicalEventData;
   try {
-    // Check if dbData.antecedente_quirurgico_data is already an object or a string
     if (typeof dbData.antecedente_quirurgico_data === "string") {
       surgicalEventData = JSON.parse(dbData.antecedente_quirurgico_data);
     } else {
       surgicalEventData = dbData.antecedente_quirurgico_data;
     }
-
-    // Ensure surgicalEventData is always an array
     if (!Array.isArray(surgicalEventData)) {
-      surgicalEventData = [surgicalEventData]; // Wrap non-array data in an array
+      surgicalEventData = [surgicalEventData];
     }
   } catch (error) {
-    surgicalEventData = []; // Set a default or handle appropriately
+    surgicalEventData = [];
   }
 
   return {
     patientId: dbData.id_paciente,
-    surgicalEvent: dbData.antecedente_quirurgico,
-    surgicalEventData: surgicalEventData,
+    hasSurgicalEvent: dbData.antecedente_quirurgico,
+    surgicalEventData,
   };
 }
 
 /**
  * Handles the HTTP PUT request to update or create surgical history for a specific patient.
- * This function checks for valid input, connects to the database, performs an upsert operation,
- * and returns the updated or new surgical history record.
- *
- * @param {Object} event - The API Gateway event object containing all the information about the request.
- * @param {Object} context - The context in which the Lambda function is running.
- * @returns {Promise<Object>} The API response object with status code and body.
+ * @param {import('aws-lambda').APIGatewayProxyEvent} event
+ * @param {import('aws-lambda').APIGatewayProxyResult} context
+ * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
  */
 export const updateSurgicalHistoryHandler = async (event, context) => {
   withRequest(event, context);
-  const responseBuilder = createResponse();
+  const responseBuilder = createResponse().addCORSHeaders("PUT");
 
   if (event.httpMethod !== "PUT") {
     return responseBuilder.setStatusCode(405).setBody({ error: "Method Not Allowed" }).build();
@@ -56,41 +50,30 @@ export const updateSurgicalHistoryHandler = async (event, context) => {
     client = getPgClient(url);
     await client.connect();
 
-    const { id } = event.pathParameters;
     const body = JSON.parse(event.body);
+    const { id, hasSurgicalEvent, surgicalEventData } = body;
 
-    // Check if the required fields are present and not empty
-    if (
-      !id
-      || !body.surgicalEvent
-      || !body.surgicalEventData
-      || (Array.isArray(body.surgicalEventData) && body.surgicalEventData.length === 0)
-    ) {
-      logger.error("Validation Failed", { id, body });
+    if (!id) {
       return responseBuilder
         .setStatusCode(400)
         .setBody({ error: "Invalid input: Missing or empty required fields." })
         .build();
     }
 
-    const { surgicalEvent, surgicalEventData } = body;
-
-    // Ensuring the surgicalEventData is a JSON string
     const surgicalEventDataJSON = JSON.stringify(surgicalEventData);
 
     const upsertQuery = `
-            INSERT INTO antecedentes_quirurgicos (id_paciente, antecedente_quirurgico, antecedente_quirurgico_data)
-            VALUES ($1, $2, $3)
-            ON CONFLICT (id_paciente) DO UPDATE
-            SET antecedente_quirurgico = EXCLUDED.antecedente_quirurgico, 
-                antecedente_quirurgico_data = EXCLUDED.antecedente_quirurgico_data
-            RETURNING *;
-        `;
-    const values = [id, surgicalEvent, surgicalEventDataJSON];
+        INSERT INTO antecedentes_quirurgicos (id_paciente, antecedente_quirurgico, antecedente_quirurgico_data)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (id_paciente) DO UPDATE
+        SET antecedente_quirurgico = COALESCE(EXCLUDED.antecedente_quirurgico, antecedentes_quirurgicos.antecedente_quirurgico),
+            antecedente_quirurgico_data = COALESCE(EXCLUDED.antecedente_quirurgico_data, antecedentes_quirurgicos.antecedente_quirurgico_data)
+        RETURNING *;
+    `;
+    const values = [id, hasSurgicalEvent, surgicalEventDataJSON];
     const result = await client.query(upsertQuery, values);
 
     if (result.rowCount === 0) {
-      logger.error("No record found or updated!");
       return responseBuilder
         .setStatusCode(404)
         .setBody({ message: "Failed to insert or update surgical history." })
@@ -108,7 +91,6 @@ export const updateSurgicalHistoryHandler = async (event, context) => {
     });
 
     if (error.code === "23503") {
-      // PostgreSQL error code for foreign key violation
       return responseBuilder
         .setStatusCode(404)
         .setBody({ error: "Patient not found with the provided ID." })

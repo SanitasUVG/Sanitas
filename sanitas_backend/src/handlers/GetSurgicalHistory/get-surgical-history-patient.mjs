@@ -31,7 +31,7 @@ function mapToAPISurgicalHistory(dbData) {
 
   return {
     patientId: dbData.id_paciente,
-    surgicalEvent: dbData.antecedente_quirurgico,
+    hasSurgicalEvent: dbData.antecedente_quirurgico,
     surgicalEventData,
   };
 }
@@ -42,10 +42,9 @@ function mapToAPISurgicalHistory(dbData) {
  * It ensures the request is valid, connects to the database, queries for the surgical history,
  * and handles various potential error states, returning appropriate responses.
  *
- * @param {Object} event - The API Gateway event object containing all the information about the request,
- * including path parameters and the HTTP method.
- * @param {Object} context - The context in which the Lambda function is running.
- * @returns {Promise<Object>} The API response object with status code and body, formatted for the client.
+ * @param {import('aws-lambda').APIGatewayProxyEvent} event
+ * @param {import('aws-lambda').APIGatewayProxyResult} context
+ * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
  */
 export const getSurgicalHistoryHandler = async (event, context) => {
   withRequest(event, context);

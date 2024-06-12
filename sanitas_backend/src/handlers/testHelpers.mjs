@@ -77,38 +77,17 @@ export async function updateStudentInfo(id, carnet = "22386", career = "Lic. Com
 }
 
 /**
- * Inserts a test patient into the DB and adds surgical history.
+ * Updates the surgical history of an existing patient in the database.
  *
- * @memberof Backend
- * @param {Object} surgicalData - The surgical event data to add for the patient.
- * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
- * @param {string} [names="Flabio André"] - The names of the patient.
- * @param {string} [lastNames="Galán Dona"] - The last names of the patient.
- * @param {boolean} [isWoman=false] - Whether or not the patient is a woman.
- * @param {string} [birthdate="1987-07-07"] - The birthdate of the patient.
- * @returns {Promise<number>} The id of the inserted patient.
+ * @param {number} patientId - The ID of the patient.
+ * @param {Object} surgicalData - The surgical event data to update for the patient.
+ * @returns {Promise<void>}
  */
-export async function createTestPatientWithSurgery(
-  surgicalData,
-  cui = generateUniqueCUI(),
-  names = "Flabio André",
-  lastNames = "Galán Dona",
-  isWoman = false,
-  birthdate = "1987-07-07",
-) {
-  // First, insert the patient using the existing function
-  const patientId = await createTestPatient(cui, names, lastNames, isWoman, birthdate);
+export async function updatePatientSurgicalHistory(patientId, surgicalData) {
+  surgicalData.id = patientId;
 
-  // Send the request to add surgical history
-  const response = await axios.put(
-    `${LOCAL_API_URL}patient/surgical-history/${patientId}`,
-    surgicalData,
-  );
+  const response = await axios.put(`${LOCAL_API_URL}patient/surgical-history`, surgicalData);
 
   // Validate the response
-  expect(response).toBeDefined();
   expect(response.status).toBe(200);
-
-  // Return the patient ID for use in tests
-  return patientId;
 }

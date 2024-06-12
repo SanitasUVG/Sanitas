@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import { createTestPatient, LOCAL_API_URL } from "../testHelpers.mjs";
 
-const API_URL = `${LOCAL_API_URL}patient/surgical-history/`;
+const API_URL = `${LOCAL_API_URL}patient/surgical-history`;
 
 describe("Update Surgical History integration tests", () => {
   let patientId;
@@ -13,7 +13,8 @@ describe("Update Surgical History integration tests", () => {
 
   test("Update existing surgical history", async () => {
     const surgicalHistoryData = {
-      surgicalEvent: true,
+      id: patientId,
+      hasSurgicalEvent: true,
       surgicalEventData: [
         {
           surgeryType: "Appendectomy",
@@ -23,19 +24,20 @@ describe("Update Surgical History integration tests", () => {
       ],
     };
 
-    const response = await axios.put(API_URL + patientId, surgicalHistoryData);
+    const response = await axios.put(API_URL, surgicalHistoryData);
 
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
     expect(response.data.patientId).toBe(patientId);
-    expect(response.data.surgicalEvent).toBeTruthy();
+    expect(response.data.hasSurgicalEvent).toBeTruthy();
     expect(response.data.surgicalEventData.length).toBeGreaterThan(0);
     expect(response.data.surgicalEventData[0].surgeryType).toBe("Appendectomy");
   });
 
   test("Fail to update surgical history with invalid ID", async () => {
     const surgicalHistoryData = {
-      surgicalEvent: true,
+      id: "999999", // Assuming this ID does not exist
+      hasSurgicalEvent: true,
       surgicalEventData: [
         {
           surgeryType: "Gallbladder Removal",
@@ -45,8 +47,7 @@ describe("Update Surgical History integration tests", () => {
       ],
     };
 
-    const invalidId = "999999"; // Assuming this ID does not exist
-    const response = await axios.put(API_URL + invalidId, surgicalHistoryData, {
+    const response = await axios.put(API_URL, surgicalHistoryData, {
       validateStatus: () => true, // Ensures axios does not throw an error for non-2xx status
     });
 
@@ -57,11 +58,17 @@ describe("Update Surgical History integration tests", () => {
 
   test("Fail to update surgical history due to missing required fields", async () => {
     const incompleteData = {
-      surgicalEvent: true,
-      // Missing surgicalEventData
+      hasSurgicalEvent: true,
+      surgicalEventData: [
+        {
+          surgeryType: "Gallbladder Removal",
+          surgeryYear: "2021",
+          complications: "Minor infection",
+        },
+      ],
     };
 
-    const response = await axios.put(API_URL + patientId, incompleteData, {
+    const response = await axios.put(API_URL, incompleteData, {
       validateStatus: () => true,
     });
 
