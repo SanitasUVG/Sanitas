@@ -49,7 +49,7 @@ export const handler = async (event, context) => {
     logger.info({ sql, params }, "Updating/inserting data on DB...");
     const { rows } = await client.query(sql, params);
     const studentData = rows[0];
-    logger.info({ sql, params }, "Data updated!");
+    logger.info(studentData, "Data updated!");
 
     return responseBuilder.setStatusCode(200).setBody(mapToAPIStudentInfo(studentData)).build();
   } catch (error) {
