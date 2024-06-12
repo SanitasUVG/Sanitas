@@ -245,7 +245,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /patient/surgical-history/{id}
+            Path: /patient/surgical-history
             Method: PUT
 
   ApplicationResourceGroup:
