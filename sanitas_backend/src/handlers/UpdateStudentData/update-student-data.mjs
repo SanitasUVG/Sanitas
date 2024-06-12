@@ -15,12 +15,15 @@ export const handler = async (event, context) => {
     ).build();
   }
 
+  const responseBuilder = createResponse().addCORSHeaders("PUT");
+
   logger.info({ body: event.body }, "Parsing request...");
   const { patientId, carnet, career } = JSON.parse(event.body);
+  logger.info("Request body parsed!");
 
   if (!patientId) {
     logger.error("No patient ID provided!");
-    return createResponse().addCORSHeaders().setStatusCode(400).setBody({ error: "No patientId was given!" }).build();
+    return responseBuilder.setStatusCode(400).setBody({ error: "No patientId was given!" }).build();
   }
 
   let client;
@@ -32,66 +35,35 @@ export const handler = async (event, context) => {
     await client.connect();
     logger.info("Connected to DB!");
 
-    logger.info("Starting transaction...");
-    await client.query("BEGIN");
+    const sql = `
+		INSERT INTO estudiante (carnet, carrera, id_paciente)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (id_paciente) DO
+		UPDATE SET
+			carnet = COALESCE(EXCLUDED.carnet, estudiante.carnet),
+			carrera = COALESCE(EXCLUDED.carrera, estudiante.carrera)
+		RETURNING *;
+		`;
+    const params = [carnet, career, patientId];
 
-    let sql = "SELECT id FROM paciente WHERE id = $1";
-    let params = [patientId];
+    logger.info({ sql, params }, "Updating/inserting data on DB...");
+    const { rows } = await client.query(sql, params);
+    const studentData = rows[0];
+    logger.info({ sql, params }, "Data updated!");
 
-    logger.info({ sql, params }, "Checking if patient exists...");
-    let { rowCount } = await client.query(sql, params);
-
-    if (rowCount <= 0) {
-      logger.error("No patient with the given ID found!");
-      await client.query("COMMIT");
-      return createResponse().setStatusCode(400).addCORSHeaders().setBody({
-        error: "No patient with the given ID found!",
-      }).build();
-    }
-
-    sql = "SELECT id_paciente FROM estudiante WHERE id_paciente = $1";
-    params = [patientId];
-    logger.info({ sql, params }, "Checking if already has data in...");
-    rowCount = (await client.query(sql, [patientId])).rowCount;
-
-    let studentData;
-    if (rowCount <= 0) {
-      logger.info(patientId, "No student info found for the given ID!");
-
-      sql = "INSERT INTO estudiante (carnet, carrera, id_paciente) VALUES ($1, $2, $3) RETURNING *;";
-      params = [carnet, career, patientId];
-
-      logger.info({ sql, params }, "Creating record for information...");
-      const response = await client.query(sql, [carnet, career, patientId]);
-
-      studentData = response.rows[0];
-      logger.info(studentData, "Record created!");
-    } else {
-      sql = `UPDATE estudiante SET
-			carnet = COALESCE($1, carnet),
-			carrera = COALESCE($2, carrera)
-			WHERE id_paciente = $3
-			RETURNING *;`;
-      params = [carnet, career, patientId];
-
-      logger.info({ sql, params }, "Student info found! Updating...");
-      const response = await client.query(sql, [carnet, career, patientId]);
-
-      studentData = response.rows[0];
-      logger.info(studentData, "Studen info updated!");
-    }
-
-    logger.info("Comitting transaction...");
-    await client.query("COMMIT");
-    logger.info("Transaction comitted!");
-
-    return createResponse().setStatusCode(200).addCORSHeaders().setBody(mapToAPIStudentInfo(studentData)).build();
+    return responseBuilder.setStatusCode(200).setBody(mapToAPIStudentInfo(studentData)).build();
   } catch (error) {
-    logger.warn("Rolling back transaction!");
-    await client?.query("ROLLBACK");
+    const invalidIdRegex = /Key \(.*\)=\(.*\) is not present in table ".*"\./;
+    const isInvalidIdError = invalidIdRegex.test(error.detail);
+    logger.error({ error, isInvalidIdError }, "Checking error type...");
+
+    if (isInvalidIdError) {
+      logger.error("A patient with the given ID doesn't exists!");
+      return responseBuilder.setStatusCode(400).setBody({ error: "No patient with the given ID found!" }).build();
+    }
 
     logger.error(error, "An error occurred!");
-    return createResponse().setStatusCode(500).addCORSHeaders().setBody("An internal error ocurred").build();
+    return responseBuilder.setStatusCode(500).setBody({ error: "An internal error ocurred" }).build();
   } finally {
     await client?.end();
     logger.info("Database connection closed!");
