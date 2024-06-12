@@ -54,8 +54,8 @@ describe("Get Surgical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(404);
 
-    const { message } = response.data;
-    expect(message).toBe("No surgical history found for the provided ID.");
+    const { error } = response.data;
+    expect(error).toBe("No surgical history found for the provided ID.");
   });
 
   test("Invalid ID provided", async () => {
@@ -65,18 +65,14 @@ describe("Get Surgical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(404);
 
-    const { message } = response.data;
-    expect(message).toBe("No surgical history found for the provided ID.");
+    const { error } = response.data;
+    expect(error).toBe("No surgical history found for the provided ID.");
   });
 
   test("Patient with hasSurgicalEvent false is not returning info.", async () => {
     patientId = await createPatient(false);
     const response = await axios.get(`${API_URL}${patientId}`, { validateStatus: () => true });
-
     expect(response).toBeDefined();
-    expect(response.status).toBe(200);
-
-    const { message } = response.data;
-    expect(message).toBe("The patient has no surgical history registered.");
+    expect(response.data.surgicalEventData).toEqual([]);
   }, 10000);
 });

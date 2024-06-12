@@ -66,7 +66,7 @@ export const getSurgicalHistoryHandler = async (event, context) => {
       logger.error("No ID received!");
       return responseBuilder
         .setStatusCode(400)
-        .setBody({ message: "Invalid request: No patientId supplied!" })
+        .setBody({ error: "Invalid request: No patientId supplied!" })
         .build();
     }
 
@@ -78,13 +78,15 @@ export const getSurgicalHistoryHandler = async (event, context) => {
       logger.error("No surgical history found!");
       return responseBuilder
         .setStatusCode(404)
-        .setBody({ message: "No surgical history found for the provided ID." })
+        .setBody({ error: "No surgical history found for the provided ID." })
         .build();
     }
+
     if (!dbResponse.rows[0].antecedente_quirurgico) {
+      dbResponse.rows[0].antecedente_quirurgico_data = [];
       return responseBuilder
         .setStatusCode(200)
-        .setBody({ message: "The patient has no surgical history registered." })
+        .setBody(mapToAPISurgicalHistory(dbResponse.rows[0]))
         .build();
     }
 
