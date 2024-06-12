@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { createResponse, mapToAPIStudentInfo } from "utils";
 
 /**
  * Get the student information endpoint handler.
@@ -40,7 +41,7 @@ export const handler = async (event, context) => {
 
     logger.info("Querying DB...");
     const dbResponse = await client.query("SELECT * FROM estudiante WHERE ID_PACIENTE = $1 LIMIT 1;", [id]);
-    logger.info("Query done!");
+    logger.info(dbResponse, "Query done!");
 
     if (dbResponse.rowCount === 0) {
       logger.error("No record found!");
@@ -65,7 +66,7 @@ export const handler = async (event, context) => {
         "Access-Control-Allow-Origin": "*", // Allow from anywhere
         "Access-Control-Allow-Methods": "GET", // Allow only GET request
       },
-      body: JSON.stringify(dbResponse.rows[0]),
+      body: JSON.stringify(mapToAPIStudentInfo(dbResponse.rows[0])),
     };
 
     logger.info(response, "Responding with:");
