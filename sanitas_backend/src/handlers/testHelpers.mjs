@@ -64,11 +64,7 @@ export async function createTestPatient(
  * @param {string} [career="22386"] - The career of the student.
  * @returns {Promise<StudentInfo>} The updated student info
  */
-export async function updateStudentInfo(
-  id,
-  carnet = "22386",
-  career = "Lic. Computación",
-) {
+export async function updateStudentInfo(id, carnet = "22386", career = "Lic. Computación") {
   const payload = {
     patientId: id,
     carnet,
@@ -78,4 +74,25 @@ export async function updateStudentInfo(
 
   expect(response.status).toBe(200);
   return response.data;
+}
+
+/**
+ * Updates the surgical history of an existing patient in the database.
+ *
+ * @param {number} patientId - The ID of the patient.
+ * @typedef {Object} surgicalData
+ * @property {boolean} hasSurgicalEvent - Whether the patient has a surgical event.
+ * @property {Array<Object>} surgicalEventData - The array of surgical event data.
+ * @property {string} surgicalEventData[].surgeryType - The type of surgery.
+ * @property {string} surgicalEventData[].surgeryYear - The year of the surgery.
+ * @property {string} surgicalEventData[].complications - Any complications from the surgery.
+ * @returns {Promise<void>}
+ */
+export async function updatePatientSurgicalHistory(patientId, surgicalData) {
+  surgicalData.id = patientId;
+
+  const response = await axios.put(`${LOCAL_API_URL}patient/surgical-history`, surgicalData);
+
+  // Validate the response
+  expect(response.status).toBe(200);
 }
