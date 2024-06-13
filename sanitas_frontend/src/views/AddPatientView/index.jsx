@@ -20,10 +20,12 @@ import { NAV_PATHS } from "src/router";
  * Uses navigation state to pre-fill the CUI if available.
  *
  * @param {AddPatientViewProps} props - Component properties.
+ * @param {import("src/store.mjs").UseStoreHook} props.useStore
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
  */
+export function AddPatientView({ submitPatientData, useStore }) {
+  const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 
-export function AddPatientView({ submitPatientData }) {
   const location = useLocation();
   const [patientData, setPatientData] = useState({
     cui: location.state?.cui ?? "",
@@ -41,6 +43,7 @@ export function AddPatientView({ submitPatientData }) {
         patientData={patientData}
         setPatientData={setPatientData}
         submitPatientData={submitPatientData}
+        setSelectedPatientId={setSelectedPatientId}
       />
     </div>
   );
@@ -54,8 +57,9 @@ export function AddPatientView({ submitPatientData }) {
  * @param {PatientData} props.patientData - Current data for a single patient.
  * @param {function(PatientData): void} props.setPatientData - Function to update the state with patient data.
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
+ * @param {function(newId): void} props.setSelectedPatientId - Function to set a new ID in the store.
  */
-export function PatientForm({ patientData, setPatientData, submitPatientData }) {
+export function PatientForm({ patientData, setPatientData, submitPatientData, setSelectedPatientId }) {
   const navigate = useNavigate();
 
   if (!patientData) return null;
@@ -107,7 +111,8 @@ export function PatientForm({ patientData, setPatientData, submitPatientData }) 
       try {
         const id = await submitPatientData(patientData);
         alert("¡Información registrada con éxito!");
-        navigate(NAV_PATHS.UPDATE_PATIENT, { state: { id } });
+        setSelectedPatientId(id);
+        navigate(NAV_PATHS.UPDATE_PATIENT, { replace: true });
       } catch (error) {
         alert(`Error al enviar datos: ${error.message}`);
       }
