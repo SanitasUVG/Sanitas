@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import { createTestPatient, generateUniqueCUI, LOCAL_API_URL } from "../testHelpers.mjs";
 
-const API_URL = `${LOCAL_API_URL}student/general/`;
+const API_URL = `${LOCAL_API_URL}/patient/student/`;
 
 describe("Student Handler", () => {
   let studentId = 1;
