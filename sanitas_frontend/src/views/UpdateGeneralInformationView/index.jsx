@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import DashboardSidebar from "src/components/DashboardSidebar";
 import { NAV_PATHS } from "src/router";
 
 /**
@@ -26,15 +27,18 @@ import { NAV_PATHS } from "src/router";
  * @typedef {Object} UpdatePatientViewProps
  * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
  * @property {import("src/dataLayer.mjs").updateGeneralPatientInformation} updateGeneralPatientInformation
+ * @property {import("src/components/DashboardSidebar").DashboardSidebarProps} sidebarConfig - The config for the view sidebar
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
  * @param {UpdatePatientViewProps} props
  */
-export default function UpdateInfoView({ getGeneralPatientInformation, updateGeneralPatientInformation }) {
+export default function UpdateInfoView(
+  { getGeneralPatientInformation, updateGeneralPatientInformation, sidebarConfig, useStore },
+) {
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { id } = state || {};
+  const id = useStore((s) => s.selectedPatientId);
 
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState("");
@@ -97,6 +101,7 @@ export default function UpdateInfoView({ getGeneralPatientInformation, updateGen
 
   return (
     <div value={error}>
+      <DashboardSidebar {...sidebarConfig} />
       <h1>Actualizar información del paciente</h1>
       {error && <div style={{ color: "red" }}>{error}</div>}
       {patientData

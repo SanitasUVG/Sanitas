@@ -48,6 +48,12 @@ export const WithPatientData = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
     location: { state: { id: examplePatientData.id } },
+    sidebarConfig: {
+      userInformation: {
+        displayName: "Jennifer Bustamante",
+        title: "Doctora UVG",
+      },
+    },
   },
 };
 
@@ -56,5 +62,11 @@ export const ErrorState = {
     getGeneralPatientInformation: async (id) => {
     },
     location: { state: { id: 9999 } }, // ID que causará un error
+    sidebarConfig: {
+      userInformation: {
+        displayName: "Jennifer Bustamante",
+        title: "Doctora UVG",
+      },
+    },
   },
 };

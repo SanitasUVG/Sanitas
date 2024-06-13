@@ -13,6 +13,9 @@ import { create } from "zustand";
  *
  * @property {import("./views/SearchPatientView").PatientPreview[]} patients
  * @property {(newPatients: import("./views/SearchPatientView").PatientPreview[])=>void} setPatients
+ *
+ * @property {number} selectedPatientId
+ * @property {(newId: number) => void} setSelectedPatientId
  */
 
 /**
@@ -41,5 +44,8 @@ export const createEmptyStore = () => {
 
     patients: [],
     setPatients: (patients) => set({ patients }),
+
+    selectedPatientId: 0,
+    setSelectedPatientId: (newId) => set({ selectedPatientId: newId }),
   }));
 };
