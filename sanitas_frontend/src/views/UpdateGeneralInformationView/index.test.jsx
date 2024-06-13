@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import UpdateInfoView from "./index";
 
@@ -22,6 +23,12 @@ const examplePatientData = {
   phone: "555-1234",
 };
 
+/** @type {import("src/components/DashboardSidebar").UserInformation} */
+const exampleUserInformation = {
+  displayName: "Jennifer Bustamante",
+  title: "Doctora UVG",
+};
+
 const mockGetGeneralPatientInformation = async (id) => {
   if (id === examplePatientData.id) {
     return { result: examplePatientData };
@@ -33,9 +40,10 @@ const mockGetGeneralPatientInformation = async (id) => {
 describe("UpdateInfoView tests", () => {
   test("Displays patient information correctly", async () => {
     const getGeneralPatientInformation = vi.fn().mockResolvedValue({ result: examplePatientData });
+    const useStore = createEmptyStore();
 
     render(
-      <MemoryRouter initialEntries={[{ pathname: "/", state: { id: examplePatientData.id } }]}>
+      <MemoryRouter>
         <Routes>
           <Route
             path="/"
@@ -43,6 +51,8 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 updateGeneralPatientInformation={() => {}}
+                useStore={useStore}
+                sidebarConfig={{ userInformation: exampleUserInformation }}
               />
             }
           />
@@ -63,15 +73,16 @@ describe("UpdateInfoView tests", () => {
       expect(screen.getByDisplayValue("12345")).toBeVisible();
       expect(screen.getByDisplayValue("1980-01-02")).toBeVisible();
       expect(screen.getByDisplayValue("555-1234")).toBeVisible();
-    });
+    }, { timeout: 500 });
   });
 
   test("Shows error message when patient information cannot be fetched", async () => {
     const errorMessage = "Error al buscar el paciente. Asegúrese de que el ID es correcto.";
     const getGeneralPatientInformation = vi.fn().mockRejectedValue(new Error("error"));
+    const useStore = createEmptyStore();
 
     render(
-      <MemoryRouter initialEntries={[{ pathname: "/", state: { id: 9999 } }]}>
+      <MemoryRouter>
         <Routes>
           <Route
             path="/"
@@ -79,6 +90,8 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 updateGeneralPatientInformation={() => {}}
+                useStore={useStore}
+                sidebarConfig={{ userInformation: exampleUserInformation }}
               />
             }
           />
@@ -87,15 +100,16 @@ describe("UpdateInfoView tests", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText((content, element) => content.includes("Error al buscar el paciente."))).toBeVisible();
-    });
+      expect(screen.getByText((content, element) => content.includes(errorMessage))).toBeVisible();
+    }, { timeout: 500 });
   });
 
   test("Shows loading message when fetching patient information", () => {
     const getGeneralPatientInformation = vi.fn().mockResolvedValue(new Promise(() => {}));
+    const useStore = createEmptyStore();
 
     render(
-      <MemoryRouter initialEntries={[{ pathname: "/", state: { id: examplePatientData.id } }]}>
+      <MemoryRouter>
         <Routes>
           <Route
             path="/"
@@ -103,6 +117,8 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 updateGeneralPatientInformation={() => {}}
+                useStore={useStore}
+                sidebarConfig={{ userInformation: exampleUserInformation }}
               />
             }
           />
