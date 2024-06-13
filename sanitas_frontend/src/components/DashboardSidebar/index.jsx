@@ -6,20 +6,26 @@
 
 import { useNavigate } from "react-router-dom";
 
+/**
+ * @callback SidebarNavigationHandler
+ * @param {import("react-router-dom").NavigateFunction} navigate - The navigate returned from `useNavigate()`
+ * @param {import("react").MouseEvent} e - The `MouseEvent` that triggered this handler.
+ */
+
 // NOTE: Remember to update the function signature when implementing the navigation to your view!
 /**
  * @typedef {Object} DashboardSidebarProps
- * @property {Function} navigateToGeneral - Handles navigation to the update general patient information view.
- * @property {Function} navigateToAppointments - Handles navigation to the appointments view.
- * @property {Function} navigateToPersonal - Handles navigation to the update personal information view.
- * @property {Function} navigateToFamiliar - Handles navigation to the update familiar information view.
- * @property {Function} navigateToAllergies - Handles navigation to the update allergies view.
- * @property {Function} navigateToObstetrics - Handles navigation to the update obstetrics gynecologists view.
- * @property {Function} navigateToNonPathological - Handles navigation to the update non pathological view.
- * @property {Function} navigateToPsiquiatric - Handles navigation to the update psiquiatric view.
- * @property {Function} navigateToSurgical - Handles navigation to the update surgical view.
- * @property {Function} navigateToTraumatological - Handles navigation to the update traumatological view.
- * @property {Function} onGoBack - Function that fires when the Back button is pressed.
+ * @property {SidebarNavigationHandler} navigateToGeneral - Handles navigation to the update general patient information view.
+ * @property {SidebarNavigationHandler} navigateToAppointments - Handles navigation to the appointments view.
+ * @property {SidebarNavigationHandler} navigateToPersonal - Handles navigation to the update personal information view.
+ * @property {SidebarNavigationHandler} navigateToFamiliar - Handles navigation to the update familiar information view.
+ * @property {SidebarNavigationHandler} navigateToAllergies - Handles navigation to the update allergies view.
+ * @property {SidebarNavigationHandler} navigateToObstetrics - Handles navigation to the update obstetrics gynecologists view.
+ * @property {SidebarNavigationHandler} navigateToNonPathological - Handles navigation to the update non pathological view.
+ * @property {SidebarNavigationHandler} navigateToPsiquiatric - Handles navigation to the update psiquiatric view.
+ * @property {SidebarNavigationHandler} navigateToSurgical - Handles navigation to the update surgical view.
+ * @property {SidebarNavigationHandler} navigateToTraumatological - Handles navigation to the update traumatological view.
+ * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
  * @property {UserInformation} userInformation - Contains some information to display about a user.
  */
 
@@ -44,6 +50,9 @@ export default function DashboardSidebar(
 ) {
   const navigate = useNavigate();
   const wrapWithNavigate = (func) => {
+    /**
+     * @type {import("react").MouseEventHandler}
+     */
     return (e) => {
       func(navigate, e);
     };

@@ -28,17 +28,17 @@ import { NAV_PATHS } from "src/router";
  * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
  * @property {import("src/dataLayer.mjs").updateGeneralPatientInformation} updateGeneralPatientInformation
  * @property {import("src/components/DashboardSidebar").DashboardSidebarProps} sidebarConfig - The config for the view sidebar
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
  * @param {UpdatePatientViewProps} props
  */
 export default function UpdateInfoView(
-  { getGeneralPatientInformation, updateGeneralPatientInformation, sidebarConfig },
+  { getGeneralPatientInformation, updateGeneralPatientInformation, sidebarConfig, useStore },
 ) {
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { id } = state || {};
+  const id = useStore((s) => s.selectedPatientId);
 
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState("");

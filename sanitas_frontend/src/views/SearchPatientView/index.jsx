@@ -24,6 +24,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
+  const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 
   const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
   const [error, setError] = useState("");
@@ -89,7 +90,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
    * @param {number} id - The ID of the selected patient.
    */
   const genViewPatientBtnClick = (id) => {
-    return () => navigate(NAV_PATHS.UPDATE_PATIENT, { state: { id } });
+    return () => {
+      navigate(NAV_PATHS.UPDATE_PATIENT);
+      setSelectedPatientId(id);
+    };
   };
 
   const onAddNewPatientClick = () => {

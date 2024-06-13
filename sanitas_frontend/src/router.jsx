@@ -25,7 +25,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
-export const DEFAULT_DASHBOARD_CONFIG = {
+export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   userInformation: {
     displayName: "Pedrito Pérez",
     title: "Test username",
@@ -39,6 +39,15 @@ export const DEFAULT_DASHBOARD_CONFIG = {
   // TODO: Add other Navigation routes...
 };
 
+const updateInfoView = (
+  <UpdateInfoView
+    getGeneralPatientInformation={getGeneralPatientInformation}
+    updateGeneralPatientInformation={updateGeneralPatientInformation}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
@@ -46,28 +55,16 @@ export const ROUTES = [
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
-    element: <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} />,
+    element: <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} useStore={useStore} />,
   },
   {
     path: NAV_PATHS.UPDATE_PATIENT,
     // The default page is the update general information view.
-    element: (
-      <UpdateInfoView
-        getGeneralPatientInformation={getGeneralPatientInformation}
-        updateGeneralPatientInformation={updateGeneralPatientInformation}
-        sidebarConfig={DEFAULT_DASHBOARD_CONFIG}
-      />
-    ),
+    element: updateInfoView,
     children: [
       {
         path: UPDATE_PATIENT_NAV_PATHS.GENERAL_INFORMATION,
-        element: (
-          <UpdateInfoView
-            getGeneralPatientInformation={getGeneralPatientInformation}
-            updateGeneralPatientInformation={updateGeneralPatientInformation}
-            sidebarConfig={DEFAULT_DASHBOARD_CONFIG}
-          />
-        ),
+        element: updateInfoView,
       },
     ],
   },
