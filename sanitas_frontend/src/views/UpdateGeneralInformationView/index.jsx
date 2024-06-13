@@ -94,7 +94,7 @@ export default function UpdateInfoView(
 
   // Ejecutar la búsqueda si el ID está presente al montar el componente
   useEffect(() => {
-    if (id) {
+    if (typeof id === "number") {
       handleSearch();
     }
   }, [id]);
