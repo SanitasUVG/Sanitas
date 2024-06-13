@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import { AddPatientView } from "../AddPatientView";
 
@@ -7,9 +8,10 @@ describe("AddPatientView tests", () => {
   test("Check CUI with invalid length shows alert", () => {
     window.alert = vi.fn();
     const submitPatientData = vi.fn();
+    const useStore = createEmptyStore();
     render(
       <MemoryRouter>
-        <AddPatientView submitPatientData={submitPatientData} />
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
       </MemoryRouter>,
     );
 
@@ -24,9 +26,11 @@ describe("AddPatientView tests", () => {
 
   test("Valid CUI triggers submitPatientData function", async () => {
     const submitPatientData = vi.fn().mockResolvedValue({ id: "test-id" });
+    const useStore = createEmptyStore();
+
     render(
       <MemoryRouter>
-        <AddPatientView submitPatientData={submitPatientData} />
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
       </MemoryRouter>,
     );
 
@@ -58,11 +62,13 @@ describe("AddPatientView tests", () => {
 
   test("Displays error message when submitPatientData fails", async () => {
     const errorMessage = "Error de conexión";
+    const useStore = createEmptyStore();
+
     const submitPatientData = vi.fn().mockRejectedValue(new Error(errorMessage));
     window.alert = vi.fn();
     render(
       <MemoryRouter>
-        <AddPatientView submitPatientData={submitPatientData} />
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
       </MemoryRouter>,
     );
 
@@ -85,9 +91,10 @@ describe("AddPatientView tests", () => {
   });
 
   test("CUI input only allows numeric characters and limits to 13 digits", () => {
+    const useStore = createEmptyStore();
     render(
       <MemoryRouter>
-        <AddPatientView submitPatientData={() => {}} />
+        <AddPatientView submitPatientData={() => {}} useStore={useStore} />
       </MemoryRouter>,
     );
 
@@ -108,9 +115,11 @@ describe("AddPatientView tests", () => {
 
   test("Shows new patient form when CUI does not exist", async () => {
     const submitPatientData = vi.fn().mockResolvedValue({ id: "new-patient-id" });
+    const useStore = createEmptyStore();
+
     render(
       <MemoryRouter>
-        <AddPatientView submitPatientData={submitPatientData} />
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
       </MemoryRouter>,
     );
 
