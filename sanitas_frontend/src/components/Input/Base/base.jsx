@@ -10,21 +10,25 @@ import React from "react";
  * @param {string} [props.placeholder] - A placeholder text shown in the input.
  * @returns {React.Element} The React Input element.
  */
-export default function BaseInput({ type, value, onChange, placeholder }) {
+export default function BaseInput({ type, value, onChange, placeholder, style }) {
+  const defaultStyles = {
+    backgroundColor: "#FFFFFF",
+    color: "#000000",
+    border: "1px solid #5B6670",
+    padding: "6px 10px",
+    outline: "none",
+    borderRadius: "5px",
+  };
+
+  const combinedStyles = { ...defaultStyles, ...style };
+
   return (
     <input
       type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      style={{
-        backgroundColor: "#FFFFFF",
-        color: "#000000",
-        border: "1px solid #5B6670",
-        padding: "6px 10px",
-        outline: "none",
-        borderRadius: "5px",
-      }}
+      style={combinedStyles}
     />
   );
 }
