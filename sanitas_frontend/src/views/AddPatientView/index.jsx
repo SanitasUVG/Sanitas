@@ -36,15 +36,70 @@ export function AddPatientView({ submitPatientData, useStore }) {
   });
 
   return (
-    <div>
-      <h1>Información del paciente</h1>
-      <h3>Por favor, registre al paciente</h3>
-      <PatientForm
-        patientData={patientData}
-        setPatientData={setPatientData}
-        submitPatientData={submitPatientData}
-        setSelectedPatientId={setSelectedPatientId}
-      />
+    <div
+      style={{
+        backgroundColor: "#0F6838",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#FFFFFF",
+          padding: "50px",
+          width: "95%",
+          height: "95%",
+          textAlign: "left",
+        }}
+      >
+        <img
+          style={{
+            width: "9.06rem",
+            height: "4.375rem",
+            margin: "auto",
+          }}
+          src="src/assets/images/logoSanitas.png"
+          alt="Logo Sanitas"
+        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "right",
+            marginLeft: "120px",
+          }}
+        >
+          <h1
+            style={{
+              color: "#3E8B43",
+              fontSize: "2rem",
+              marginBottom: "0.625rem",
+              marginTop: "1.25rem",
+            }}
+          >
+            Información del paciente
+          </h1>
+          <h3
+            style={{
+              fontFamily: "Lora, serif",
+              fontWeight: "normal",
+              fontSize: "1.25rem",
+              marginBottom: "2.307rem",
+            }}
+          >
+            Por favor, registre al paciente
+          </h3>
+          <PatientForm
+            patientData={patientData}
+            setPatientData={setPatientData}
+            submitPatientData={submitPatientData}
+            setSelectedPatientId={setSelectedPatientId}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -59,7 +114,12 @@ export function AddPatientView({ submitPatientData, useStore }) {
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
  * @param {function(newId): void} props.setSelectedPatientId - Function to set a new ID in the store.
  */
-export function PatientForm({ patientData, setPatientData, submitPatientData, setSelectedPatientId }) {
+export function PatientForm({
+  patientData,
+  setPatientData,
+  submitPatientData,
+  setSelectedPatientId,
+}) {
   const navigate = useNavigate();
 
   if (!patientData) return null;
@@ -130,55 +190,125 @@ export function PatientForm({ patientData, setPatientData, submitPatientData, se
 
   return (
     <div>
-      <p>CUI del paciente:</p>
-      <BaseInput
-        type="text"
-        value={patientData.cui}
-        onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
-        placeholder="CUI"
-        style={{ borderColor: patientData.cui.length === 13 ? "green" : "red" }}
-      />
-      {patientData.cui.length !== 13 && (
-        <div style={{ color: "red", fontSize: "0.8rem" }}>
-          El CUI debe contener exactamente 13 caracteres.
-        </div>
-      )}
-
-      <p>Ingrese el nombre del paciente:</p>
-      <BaseInput
-        type="text"
-        value={patientData.names}
-        onChange={(e) => handleChange("names", e.target.value)}
-        placeholder="Nombres"
-      />
-      <BaseInput
-        type="text"
-        value={patientData.surnames}
-        onChange={(e) => handleChange("surnames", e.target.value)}
-        placeholder="Apellidos"
-      />
-      <div>
-        <RadioInput
-          name="gender"
-          checked={patientData.sex === "F"}
-          onChange={() => handleGenderChange("F")}
-          label="Femenino"
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "right",
+          alignItems: "right",
+          width: "45%",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "Lora, serif",
+            fontSize: "1.125rem",
+            marginBottom: "0.625rem",
+          }}
+        >
+          CUI del paciente:
+        </p>
+        <BaseInput
+          type="text"
+          value={patientData.cui}
+          onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
+          placeholder="CUI"
+          style={{
+            borderColor: patientData.cui.length === 13 ? "#9BBE43" : "red",
+          }}
         />
-        <RadioInput
-          name="gender"
-          checked={patientData.sex === "M"}
-          onChange={() => handleGenderChange("M")}
-          label="Masculino"
+        {patientData.cui.length !== 13 && (
+          <div style={{ color: "red", fontSize: "0.8rem" }}>
+            El CUI debe contener exactamente 13 caracteres.
+          </div>
+        )}
+
+        <p
+          style={{
+            fontFamily: "Lora, serif",
+            fontSize: "1.125rem",
+            marginBottom: "0.625rem",
+            marginTop: "1.25rem",
+          }}
+        >
+          Ingrese el nombre del paciente:
+        </p>
+
+        <div style={{ display: "flex" }}>
+          <BaseInput
+            type="text"
+            value={patientData.names}
+            onChange={(e) => handleChange("names", e.target.value)}
+            placeholder="Nombres"
+            style={{ flex: 1, marginRight: "0.3125rem" }}
+          />
+          <BaseInput
+            type="text"
+            value={patientData.surnames}
+            onChange={(e) => handleChange("surnames", e.target.value)}
+            placeholder="Apellidos"
+            style={{ flex: 1, marginLeft: "0.3125rem" }}
+          />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "left",
+            alignItems: "left",
+            paddingTop: "1.25rem",
+            marginBottom: "1.25rem",
+          }}
+        >
+          <div style={{ marginRight: "1.25rem" }}>
+            <RadioInput
+              name="gender"
+              checked={patientData.sex === "F"}
+              onChange={() => handleGenderChange("F")}
+              label="Femenino"
+              style={{
+                fontFamily: "Lora, serif",
+              }}
+            />
+          </div>
+          <div>
+            <RadioInput
+              name="gender"
+              checked={patientData.sex === "M"}
+              onChange={() => handleGenderChange("M")}
+              label="Masculino"
+            />
+          </div>
+        </div>
+
+        <p
+          style={{
+            fontFamily: "Lora, serif",
+            fontSize: "1.125rem",
+            marginBottom: "0.625rem",
+          }}
+        >
+          Ingrese la fecha de nacimiento del paciente:
+        </p>
+        <DateInput
+          value={patientData.birthDate}
+          onChange={(e) => handleChange("birthDate", e.target.value)}
+          placeholder="Fecha de nacimiento"
         />
       </div>
 
-      <p>Ingrese la fecha de nacimiento del paciente:</p>
-      <DateInput
-        value={patientData.birthDate}
-        onChange={(e) => handleChange("birthDate", e.target.value)}
-        placeholder="Fecha de nacimiento"
-      />
-      <Button text="Registrar información" onClick={handleSubmit} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          marginTop: "6.25rem",
+        }}
+      >
+        <Button text="Registrar información" onClick={handleSubmit} />
+      </div>
     </div>
   );
 }
