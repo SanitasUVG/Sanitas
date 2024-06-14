@@ -1,5 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { createEmptyStore } from "src/store.mjs";
 import { AddPatientView } from ".";
 
 export default {
@@ -15,6 +16,7 @@ export default {
 };
 
 const Template = (args) => <AddPatientView {...args} />;
+const useStore = createEmptyStore();
 
 export const Default = Template.bind({});
 Default.args = {
@@ -22,4 +24,5 @@ Default.args = {
     alert("Submitting data: " + JSON.stringify(patientData));
     return Promise.resolve();
   },
+  useStore: useStore,
 };

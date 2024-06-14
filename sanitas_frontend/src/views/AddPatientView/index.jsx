@@ -43,6 +43,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        padding: "2rem",
       }}
     >
       <div
