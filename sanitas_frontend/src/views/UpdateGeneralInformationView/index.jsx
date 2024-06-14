@@ -70,17 +70,23 @@ function UpdateColaboratorInformationSection() {
  * @param {UpdateGeneralInformationSectionProps} props
  */
 function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
-  const getData2 = async () => {
-    await delay(3000);
-    return await getData(patientId);
-  };
-  // const generalInformationResource = WrapPromise(getData(patientId))
-  const generalInformationResource = WrapPromise(getData2());
+  // const getData2 = async () => {
+  //   await delay(3000);
+  //   return await getData(patientId);
+  // };
+  const generalInformationResource = WrapPromise(getData(patientId));
+  // const generalInformationResource = WrapPromise(getData2());
 
   const Hijo = () => {
     const response = generalInformationResource.read();
     if (response.error) {
       // FIXME: Manejar el error al obtener la data!
+      return (
+        <div>
+          <h1>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
+          <p>{response.error.toString()}</p>
+        </div>
+      );
     }
 
     const [patientData, setPatientData] = useState({
