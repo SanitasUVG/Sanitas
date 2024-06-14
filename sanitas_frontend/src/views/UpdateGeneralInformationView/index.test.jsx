@@ -78,7 +78,7 @@ describe("UpdateInfoView tests", () => {
 
   test("Shows error message when patient information cannot be fetched", async () => {
     const errorMessage = "Error al buscar el paciente. Asegúrese de que el ID es correcto.";
-    const getGeneralPatientInformation = vi.fn().mockRejectedValue(new Error("error"));
+    const getGeneralPatientInformation = vi.fn().mockResolvedValue({ error: new Error("error") });
     const useStore = createEmptyStore();
 
     render(

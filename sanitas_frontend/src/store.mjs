@@ -27,9 +27,10 @@ import { create } from "zustand";
  * Creates an empty SanitasStore and returns a hook to access it.
  * This can be used to run each test with a different store completely,
  * guaranteeing isolation.
+ * @param {SanitasStore} defaultStoreValues - Allows for overriding the store values.
  * @returns {UseStoreHook} The `useStore` hook
  */
-export const createEmptyStore = () => {
+export const createEmptyStore = (defaultStoreValues) => {
   return create((set) => ({
     searchQuery: {
       query: "",
@@ -46,6 +47,10 @@ export const createEmptyStore = () => {
     setPatients: (patients) => set({ patients }),
 
     selectedPatientId: 0,
-    setSelectedPatientId: (newId) => set({ selectedPatientId: newId }),
+    setSelectedPatientId: (newId) => {
+      set({ selectedPatientId: newId });
+    },
+
+    ...defaultStoreValues,
   }));
 };
