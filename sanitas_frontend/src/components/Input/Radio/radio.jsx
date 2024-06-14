@@ -17,6 +17,8 @@ export default function RadioInput({ name, checked, onChange, label }) {
       paddingLeft: "25px",
       cursor: "pointer",
       display: "inline-block",
+      fontFamily: "Lora, serif",
+      fontSize: "17px",
     },
     input: {
       position: "absolute",
