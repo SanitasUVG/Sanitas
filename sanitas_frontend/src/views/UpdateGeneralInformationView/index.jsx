@@ -43,15 +43,22 @@ export default function UpdateInfoView(
   const id = useStore((s) => s.selectedPatientId);
 
   return (
-    <div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "20% 80%",
+      }}
+    >
       <DashboardSidebar {...sidebarConfig} />
-      <UpdateGeneralInformationSection
-        patientId={id}
-        getData={getGeneralPatientInformation}
-        updateData={updateGeneralPatientInformation}
-      />
-      <UpdateColaboratorInformationSection patientId={id} />
-      <UpdateStudentInformationSection patientId={id} />
+      <div>
+        <UpdateGeneralInformationSection
+          patientId={id}
+          getData={getGeneralPatientInformation}
+          updateData={updateGeneralPatientInformation}
+        />
+        <UpdateColaboratorInformationSection patientId={id} />
+        <UpdateStudentInformationSection patientId={id} />
+      </div>
     </div>
   );
 }
