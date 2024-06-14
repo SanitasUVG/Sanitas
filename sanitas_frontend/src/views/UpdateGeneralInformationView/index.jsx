@@ -94,14 +94,13 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
       birthdate: formatDate(response.result.birthdate),
     });
     const handleUpdatePatient = async () => {
-      try {
-        await updateGeneralPatientInformation(patientData);
-        setError("");
-      } catch (error) {
+      const updateInformationResource = WrapPromise(updateData(patientData));
+      const response = updateInformationResource.read();
+      if (response.error) {
         // FIXME: Manejar el error al actualizar datos!
-        //
-        // setError("Error al actualizar el paciente. Asegúrese de ingresar datos válidos." + error);
       }
+
+      // NOTE: Los datos fueron actualizados!
     };
 
     return (
