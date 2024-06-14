@@ -1,13 +1,13 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
 
 export default {
   component: UpdateInfoView,
   decorators: [
-    (Story, context) => {
-      const { id } = context.args.location.state;
+    (Story) => {
       return (
-        <MemoryRouter initialEntries={[{ pathname: "/", state: { id } }]}>
+        <MemoryRouter>
           <Routes>
             <Route path="/" element={<Story />} />
           </Routes>
@@ -38,16 +38,20 @@ const examplePatientData = {
 
 const mockGetGeneralPatientInformation = async (id) => {
   if (id === examplePatientData.id) {
-    return examplePatientData;
+    return { result: examplePatientData };
   } else {
-    throw new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.");
+    return { error: new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.") };
   }
 };
+
+const correctStore = createEmptyStore({
+  selectedPatientId: examplePatientData.id,
+});
 
 export const WithPatientData = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
-    location: { state: { id: examplePatientData.id } },
+    useStore: correctStore,
     sidebarConfig: {
       userInformation: {
         displayName: "Jennifer Bustamante",
@@ -57,11 +61,13 @@ export const WithPatientData = {
   },
 };
 
+const incorrectStore = createEmptyStore({
+  selectedPatientId: 999, // ID que causará un error
+});
 export const ErrorState = {
   args: {
-    getGeneralPatientInformation: async (id) => {
-    },
-    location: { state: { id: 9999 } }, // ID que causará un error
+    getGeneralPatientInformation: mockGetGeneralPatientInformation,
+    useStore: incorrectStore,
     sidebarConfig: {
       userInformation: {
         displayName: "Jennifer Bustamante",

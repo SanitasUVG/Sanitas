@@ -91,8 +91,8 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
    */
   const genViewPatientBtnClick = (id) => {
     return () => {
-      navigate(NAV_PATHS.UPDATE_PATIENT);
       setSelectedPatientId(id);
+      navigate(NAV_PATHS.UPDATE_PATIENT);
     };
   };
 
