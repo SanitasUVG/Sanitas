@@ -46,6 +46,8 @@ export const createEmptyStore = () => {
     setPatients: (patients) => set({ patients }),
 
     selectedPatientId: 0,
-    setSelectedPatientId: (newId) => set({ selectedPatientId: newId }),
+    setSelectedPatientId: (newId) => {
+      set({ selectedPatientId: newId });
+    },
   }));
 };
