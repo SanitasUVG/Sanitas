@@ -9,7 +9,7 @@ import React, { useState } from "react";
  * @param {Function} props.onClick - The callback function to be executed when the button is clicked.
  * @returns {React.Element} The React Button element.
  */
-export default function Button({ text, onClick, style = {}, children }) {
+export default function Button({ text, onClick, style = {} }) {
   const [isHovered, setIsHovered] = useState(false);
 
   const defaultStyle = {
@@ -55,7 +55,7 @@ export default function Button({ text, onClick, style = {}, children }) {
       onMouseLeave={() => setIsHovered(false)}
       style={defaultStyle}
     >
-      {children ? children : <span style={textStyle}>{text}</span>}
+      <span style={textStyle}>{text}</span>
       <img src={arrowRight} style={iconStyle} />
     </button>
   );
