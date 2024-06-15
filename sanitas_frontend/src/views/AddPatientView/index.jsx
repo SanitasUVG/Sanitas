@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import Button from "src/components/Button/index";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
+import { colors, fonts, fontSize } from "src/theme.mjs";
 
 /**
  * @typedef {Object} PatientData
@@ -38,7 +39,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
   return (
     <div
       style={{
-        backgroundColor: "#0F6838",
+        backgroundColor: colors.primaryBackground,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -48,7 +49,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
     >
       <div
         style={{
-          backgroundColor: "#FFFFFF",
+          backgroundColor: colors.secondaryBackground,
           padding: "3.125rem",
           width: "95%",
           height: "95%",
@@ -75,7 +76,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
           <h1
             style={{
               color: "#3E8B43",
-              fontSize: "2rem",
+              fontSize: fontSize.titleSize,
               paddingBottom: "0.625rem",
               paddingTop: "1.25rem",
             }}
@@ -84,9 +85,9 @@ export function AddPatientView({ submitPatientData, useStore }) {
           </h1>
           <h3
             style={{
-              fontFamily: "Lora, serif",
+              fontFamily: fonts.textFont,
               fontWeight: "normal",
-              fontSize: "1.25rem",
+              fontSize: fontSize.subtitleSize,
               paddingBottom: "2.307rem",
             }}
           >
@@ -201,8 +202,8 @@ export function PatientForm({
       >
         <p
           style={{
-            fontFamily: "Lora, serif",
-            fontSize: "1.125rem",
+            fontFamily: fonts.textFont,
+            fontSize: fontSize.textSize,
             paddingBottom: "0.625rem",
           }}
         >
@@ -214,19 +215,19 @@ export function PatientForm({
           onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
           placeholder="CUI"
           style={{
-            borderColor: patientData.cui.length === 13 ? "#9BBE43" : "red",
+            borderColor: patientData.cui.length === 13 ? colors.statusApproved : colors.statusDenied,
           }}
         />
         {patientData.cui.length !== 13 && (
-          <div style={{ color: "red", fontSize: "0.8rem" }}>
+          <div style={{ color: colors.statusDenied, fontSize: "0.8rem" }}>
             El CUI debe contener exactamente 13 caracteres.
           </div>
         )}
 
         <p
           style={{
-            fontFamily: "Lora, serif",
-            fontSize: "1.125rem",
+            fontFamily: fonts.textFont,
+            fontSize: fontSize.textSize,
             paddingBottom: "0.625rem",
             paddingTop: "1.25rem",
           }}
@@ -268,7 +269,7 @@ export function PatientForm({
               onChange={() => handleGenderChange("F")}
               label="Femenino"
               style={{
-                fontFamily: "Lora, serif",
+                fontFamily: fonts.textFont,
               }}
             />
           </div>
@@ -284,8 +285,8 @@ export function PatientForm({
 
         <p
           style={{
-            fontFamily: "Lora, serif",
-            fontSize: "1.125rem",
+            fontFamily: fonts.textFont,
+            fontSize: fontSize.textSize,
             paddingBottom: "0.625rem",
           }}
         >
