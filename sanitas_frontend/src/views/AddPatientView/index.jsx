@@ -299,12 +299,6 @@ export function PatientForm({
           placeholder="Fecha de nacimiento"
         />
       </div>
-      <p>Ingrese la fecha de nacimiento del paciente:</p>
-      <DateInput
-        value={patientData.birthDate}
-        onChange={(e) => handleChange("birthDate", e.target.value)}
-        placeholder="Fecha de nacimiento"
-      />
       <div
         style={{
           display: "flex",
@@ -314,7 +308,7 @@ export function PatientForm({
           paddingTop: "4.5rem",
         }}
       >
-        <Button text="Registrar información" onClick={handleSubmit} />
+        <BaseButton text="Registrar información" onClick={handleSubmit} />
       </div>
     </div>
   );
