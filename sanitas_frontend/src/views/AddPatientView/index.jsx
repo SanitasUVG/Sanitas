@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import Button from "src/components/Button/index";
+import BaseButton from "src/components/Button/Base/index";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 
@@ -59,7 +59,12 @@ export function AddPatientView({ submitPatientData, useStore }) {
  * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
  * @param {function(newId): void} props.setSelectedPatientId - Function to set a new ID in the store.
  */
-export function PatientForm({ patientData, setPatientData, submitPatientData, setSelectedPatientId }) {
+export function PatientForm({
+  patientData,
+  setPatientData,
+  submitPatientData,
+  setSelectedPatientId,
+}) {
   const navigate = useNavigate();
 
   if (!patientData) return null;
@@ -178,7 +183,7 @@ export function PatientForm({ patientData, setPatientData, submitPatientData, se
         onChange={(e) => handleChange("birthDate", e.target.value)}
         placeholder="Fecha de nacimiento"
       />
-      <Button text="Registrar información" onClick={handleSubmit} />
+      <BaseButton text="Registrar información" onClick={handleSubmit} />
     </div>
   );
 }
