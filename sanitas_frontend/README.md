@@ -162,6 +162,16 @@ export default function ExampleComponent({ text, onClick, fetchData }) => {
 }
 ```
 
+Algunas convenciones que se utilizan dentro del CSS son:
+
+1. Queda prohibido el uso de margin. Usa padding junto con `gap` en flexbox y grid.
+1. Intenta usar primero medidas dinámicas como lo son: `rem`, `%`, `vw`, `vh`
+   en lugar de medidas estáticas como lo son `px`, `pc`, `in`, etc.
+1. Minimiza el uso de `position: absolute` y `position: relative` a menos que
+   sea estrictamente necesario (es decir, no se puede lograr lo que se desea
+   usando grid o flexbox). Aún si se usan recuerda utilizar medidas dinámicas.
+1. Prueba siempre tu pantalla en varias dimensiones usando las herramientas de desarrollador.
+
 ### JSDoc
 
 Este proyecto no utiliza typescript para su manejo de tipos sino que
