@@ -1,15 +1,17 @@
 import React from "react";
 
 /**
- * Renders a radio button input with a label.
+ * Renders a radio button input with a label and customizable styles.
  *
- * @param {Object} props - The props object.
- * @param {string} props.name - The name attribute for the radio input; used to group radio buttons.
- * @param {boolean} props.checked - Whether the radio input is currently selected.
- * @param {(event: React.ChangeEvent<HTMLInputElement>) => void} props.onChange - Handler for changes to the radio input's state.
- * @param {string} props.label - The label text displayed next to the radio button.
- * @returns {React.Element} A labeled radio button element.
+ * @typedef {Object} RadioInputProps
+ * @property {string} name - The name attribute for the radio input; used to group radio buttons.
+ * @property {boolean} checked - Whether the radio input is currently selected.
+ * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Handler for changes to the radio input's state.
+ * @property {string} label - The label text displayed next to the radio button.
+ * @property {React.CSSProperties} [style={}] - Optional custom styles to apply to the radio button and its components. Includes style objects for label, input, outerSpan, and innerSpan.
+ * @returns {JSX.Element} A labeled radio button element with customizable styles.
  */
+
 export default function RadioInput({ name, checked, onChange, label, style = {} }) {
   const defaultStyles = {
     label: {

@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Renders a SearchInput component that includes search and clear icons.
  * This component allows users to type search queries, clear them with one click,
- * and supports submission via the Enter key.
+ * and supports submission via the Enter key. It also supports custom styles for various sub-components.
  *
- * @param {Object} props - Properties of the component.
- * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input to render, controlling the allowed types of text inputs.
- * @param {string} props.value - Current value of the input field.
- * @param {Function} props.onChange - Function to be executed when the input value changes.
- * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
+ * @typedef {Object} SearchInputProps
+ * @property {'text' | 'number' | 'date' | 'email' | 'password'} type - Specifies the type of input to render, controlling the allowed types of text inputs.
+ * @property {string} value - Current value of the input field.
+ * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Function to be executed when the input value changes.
+ * @property {string} [placeholder] - Placeholder text to display in the input field when it is empty.
+ * @property {React.CSSProperties} [style={}] - Optional custom styles to apply to the input element, container, and icons.
  * @returns {JSX.Element} JSX element of the SearchInput component.
  */
 export default function SearchInput({ type, value = "", onChange, placeholder, style = {} }) {
