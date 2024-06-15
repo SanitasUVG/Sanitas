@@ -3,14 +3,14 @@ import React, { useState } from "react";
 /**
  * @typedef {Object} DropdownMenuProps
  * @property {string} value - The currently selected value of the dropdown.
- * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The callback function to be executed when the selected option is changed. It receives a React event object which provides the new value of the select element.
+ * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The callback function to be executed when the selected option is changed.
  * @property {Option[]} options - An array of objects representing the options available in the dropdown. Each option should have a `value` and a `label`.
- * @property {React.CSSProperties} [style] - Optional custom styles to apply to the dropdown components such as container, select, option, and indicator.
+ * @property {React.CSSProperties} [style] - Custom styles: `style.container` for the dropdown container, `style.select` for the select element, `style.option` for each option, and `style.indicator` for the dropdown indicator. Styles affect layout, appearance, and interactions.
  */
 
 /**
  * Renders a dropdown menu with configurable options and selected value. The dropdown
- * includes a toggleable list that can be opened or closed with a click.
+ * includes a toggleable list that can be opened or closed with a click. The component allows for extensive customization of its appearance and interaction model.
  *
  * @param {DropdownMenuProps} props - The props object for the DropdownMenu component.
  * @returns {JSX.Element} The React Select element with options, wrapped in a styled container.

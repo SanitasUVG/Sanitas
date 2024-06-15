@@ -2,12 +2,16 @@ import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
 import React, { useState } from "react";
 
 /**
+ * @typedef {Object} BaseButtonProps
+ * @property {string} text - The text to be displayed inside the button.
+ * @property {Function} onClick - The callback function to be executed when the button is clicked.
+ * @property {React.CSSProperties} [style={}] - Optional custom styles to be applied to the button.
+ */
+
+/**
  * Renders a button with customizable text and an onClick event handler. The button includes
  * a hover effect where the text fades out and an arrow icon fades in.
- *
- * @param {string} text - The text to be displayed inside the button.
- * @param {Function} onClick - The callback function to be executed when the button is clicked.
- * @param {React.CSSProperties} [style={}] - Optional custom styles to be applied to the button.
+ * @param {BaseButtonProps} props
  * @returns {JSX.Element} The React Button element.
  */
 export default function BaseButton({ text, onClick, style = {} }) {

@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 
 /**
+ * @typedef {Object} IconButtonProps
+ * @property {string} icon - The source URL of the icon to be displayed inside the button.
+ * @property {Function} onClick - The callback function to be executed when the button is clicked.
+ * @property {React.CSSProperties} [style] - Optional custom styles to be applied to the button.
+ */
+
+/**
  * Renders an icon button with a hover effect that slightly scales up the icon.
- * The component allows custom styles to be passed to customize its appearance.
+ * This component allows custom styles to be passed to customize its appearance.
  *
- * @param {string} icon - The source URL of the icon to be displayed.
- * @param {Function} onClick - The function to be called when the button is clicked.
- * @param {React.CSSProperties} [style] - Optional custom styles to apply to the button.
- * @returns {JSX.Element} A button element containing an image styled as an icon.
+ * @param {IconButtonProps} props - The properties passed to the icon button component.
+ * @returns {JSX.Element} A button element containing an image styled as an icon with interactive hover effects.
  */
 const IconButton = ({ icon, onClick, style }) => {
   const [isHovered, setIsHovered] = useState(false);
