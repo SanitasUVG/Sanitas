@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import SearchInput from "./search.jsx";
 
 export default {
-  title: "Componentes/SearchInput",
+  title: "Components/SearchInput",
   component: SearchInput,
 };
 

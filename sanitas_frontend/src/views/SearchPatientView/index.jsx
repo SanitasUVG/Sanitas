@@ -2,7 +2,7 @@ import logoutIcon from "@tabler/icons/outline/logout.svg";
 import settingsIcon from "@tabler/icons/outline/settings.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "src/components/Button";
+import BaseButton from "src/components/Button/Base/index";
 import DropdownMenu from "src/components/DropdownMenu";
 import { SearchInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
@@ -185,7 +185,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               onChange={handleInputChange}
               placeholder="Ingrese su búsqueda..."
             />
-            <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
+            <BaseButton text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
           </div>
           <p style={{ color: "red" }}>{error}</p>
           {queryReturnedEmpty
@@ -209,7 +209,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
             {...patients.map((p) => (
               <div key={p.id}>
                 <p>{p.names}</p>
-                <Button text="Ver" onClick={genViewPatientBtnClick(p.id)} />
+                <BaseButton text="Ver" onClick={genViewPatientBtnClick(p.id)} />
               </div>
             ))}
           </div>
@@ -234,7 +234,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               padding: "1rem 1.5rem 1rem 2rem",
             }}
           >
-            <Button text="" onClick={doNothing}>
+            <BaseButton text="" onClick={doNothing}>
               <img
                 src={settingsIcon}
                 alt="Settings"
@@ -244,14 +244,14 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   filter: "invert(100%)",
                 }}
               />
-            </Button>
-            <Button text="" onClick={doNothing}>
+            </BaseButton>
+            <BaseButton text="" onClick={doNothing}>
               <img
                 src={logoutIcon}
                 alt="Logout"
                 style={{ width: "24px", height: "24px", filter: "invert(100%)" }}
               />
-            </Button>
+            </BaseButton>
           </div>
           <img
             style={{
