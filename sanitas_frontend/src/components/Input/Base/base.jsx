@@ -16,6 +16,7 @@ import React from "react";
  * @param {BaseInputProps} props - The properties passed to the input component.
  * @returns {JSX.Element} The React Input element styled according to specified or default styles.
  */
+
 export default function BaseInput({ type, value, onChange, placeholder, style = {} }) {
   const defaultStyle = {
     backgroundColor: "#FFFFFF",
@@ -24,6 +25,7 @@ export default function BaseInput({ type, value, onChange, placeholder, style = 
     padding: "6px 10px",
     outline: "none",
     borderRadius: "5px",
+
     ...style,
   };
 
