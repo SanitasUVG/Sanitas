@@ -305,7 +305,7 @@ export function PatientForm({
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          paddingTop: "6.25rem",
+          paddingTop: "4.5rem",
         }}
       >
         <Button text="Registrar información" onClick={handleSubmit} />
