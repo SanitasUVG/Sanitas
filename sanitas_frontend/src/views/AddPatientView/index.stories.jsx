@@ -27,6 +27,9 @@ export const Default = Template.bind({});
 Default.args = {
   submitPatientData: async (patientData) => {
     action("Submitting patient data")(patientData);
-    return Promise.resolve("123"); // Simula el ID retornado por la función de submit
+    return Promise.resolve({
+      message: "Patient data submitted successfully",
+      patientId: "new_patient_id_123",
+    });
   },
 };
