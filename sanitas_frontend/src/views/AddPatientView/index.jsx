@@ -43,13 +43,13 @@ export function AddPatientView({ submitPatientData, useStore }) {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        padding: "2rem",
+        padding: "1rem",
       }}
     >
       <div
         style={{
           backgroundColor: "#FFFFFF",
-          padding: "50px",
+          padding: "3.125rem",
           width: "95%",
           height: "95%",
           textAlign: "left",
@@ -59,7 +59,6 @@ export function AddPatientView({ submitPatientData, useStore }) {
           style={{
             width: "9.06rem",
             height: "4.375rem",
-            margin: "auto",
           }}
           src="src/assets/images/logoSanitas.png"
           alt="Logo Sanitas"
@@ -70,15 +69,15 @@ export function AddPatientView({ submitPatientData, useStore }) {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "right",
-            marginLeft: "120px",
+            paddingLeft: "7.5rem",
           }}
         >
           <h1
             style={{
               color: "#3E8B43",
               fontSize: "2rem",
-              marginBottom: "0.625rem",
-              marginTop: "1.25rem",
+              paddingBottom: "0.625rem",
+              paddingTop: "1.25rem",
             }}
           >
             Información del paciente
@@ -88,7 +87,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
               fontFamily: "Lora, serif",
               fontWeight: "normal",
               fontSize: "1.25rem",
-              marginBottom: "2.307rem",
+              paddingBottom: "2.307rem",
             }}
           >
             Por favor, registre al paciente
@@ -204,7 +203,7 @@ export function PatientForm({
           style={{
             fontFamily: "Lora, serif",
             fontSize: "1.125rem",
-            marginBottom: "0.625rem",
+            paddingBottom: "0.625rem",
           }}
         >
           CUI del paciente:
@@ -228,27 +227,27 @@ export function PatientForm({
           style={{
             fontFamily: "Lora, serif",
             fontSize: "1.125rem",
-            marginBottom: "0.625rem",
-            marginTop: "1.25rem",
+            paddingBottom: "0.625rem",
+            paddingTop: "1.25rem",
           }}
         >
           Ingrese el nombre del paciente:
         </p>
 
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", gap: "1rem" }}>
           <BaseInput
             type="text"
             value={patientData.names}
             onChange={(e) => handleChange("names", e.target.value)}
             placeholder="Nombres"
-            style={{ flex: 1, marginRight: "0.3125rem" }}
+            style={{ flex: 1 }}
           />
           <BaseInput
             type="text"
             value={patientData.surnames}
             onChange={(e) => handleChange("surnames", e.target.value)}
             placeholder="Apellidos"
-            style={{ flex: 1, marginLeft: "0.3125rem" }}
+            style={{ flex: 1 }}
           />
         </div>
 
@@ -259,10 +258,10 @@ export function PatientForm({
             justifyContent: "left",
             alignItems: "left",
             paddingTop: "1.25rem",
-            marginBottom: "1.25rem",
+            paddingBottom: "1.25rem",
           }}
         >
-          <div style={{ marginRight: "1.25rem" }}>
+          <div style={{ paddingRight: "1.25rem" }}>
             <RadioInput
               name="gender"
               checked={patientData.sex === "F"}
@@ -287,7 +286,7 @@ export function PatientForm({
           style={{
             fontFamily: "Lora, serif",
             fontSize: "1.125rem",
-            marginBottom: "0.625rem",
+            paddingBottom: "0.625rem",
           }}
         >
           Ingrese la fecha de nacimiento del paciente:
@@ -305,7 +304,7 @@ export function PatientForm({
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          marginTop: "6.25rem",
+          paddingTop: "6.25rem",
         }}
       >
         <Button text="Registrar información" onClick={handleSubmit} />
