@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { createEmptyStore } from "src/store.mjs";
 import { AddPatientView } from ".";
 
 export default {
@@ -8,28 +8,24 @@ export default {
   component: AddPatientView,
   decorators: [
     (Story) => (
-      <MemoryRouter
-        initialEntries={[{ pathname: "/add-patient", state: { cui: "1234567890123" } }]}
-      >
+      <MemoryRouter>
         <Story />
       </MemoryRouter>
     ),
   ],
 };
 
-const mockUseStore = () => ({
-  setSelectedPatientId: action("Set Selected Patient ID"),
-});
+const defaultUseStore = createEmptyStore();
 
-const Template = (args) => <AddPatientView {...args} useStore={mockUseStore} />;
-
-export const Default = Template.bind({});
-Default.args = {
-  submitPatientData: async (patientData) => {
-    action("Submitting patient data")(patientData);
-    return Promise.resolve({
-      message: "Patient data submitted successfully",
-      patientId: "new_patient_id_123",
-    });
+export const Default = {
+  args: {
+    submitPatientData: async (patientData) => {
+      action("Submitting patient data")(patientData);
+      return Promise.resolve({
+        message: "Patient data submitted successfully",
+        patientId: "new_patient_id_123",
+      });
+    },
+    useStore: defaultUseStore,
   },
 };
