@@ -1,3 +1,5 @@
+import logoutIcon from "@tabler/icons/outline/logout.svg";
+import settingsIcon from "@tabler/icons/outline/settings.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
@@ -100,54 +102,169 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     navigate(NAV_PATHS.ADD_PATIENT, { state: { cui: query } });
   };
 
+  const doNothing = () => {
+    // This function does nothing
+  };
+
   return (
-    <div>
-      <div>
-        <h1>Sanitas</h1>
-      </div>
-      <div>
-        {
-          // NOTE: The default value is defined in the store.
-        }
-        <DropdownMenu
-          value={type}
-          onChange={(e) => setSearchQuery(query, e.target.value)}
-          options={dropdownOptions}
-        />
-        <SearchInput
-          type="text"
-          value={query}
-          onChange={handleInputChange}
-          placeholder="Ingrese su búsqueda..."
-        />
-        <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
-      </div>
-      <p style={{ color: "red" }}>{error}</p>
-      {queryReturnedEmpty
-        && (!searchTypeWasCUI
-          ? (
-            <div>
-              <p>¡Parece que el paciente no existe!</p>
-              <p>Prueba buscarlo por CUI.</p>
-            </div>
-          )
-          : (
-            <div>
-              <p>Ingresa la información del paciente aquí.</p>
-              <Button
-                text="Ingresar la información del paciente."
-                onClick={onAddNewPatientClick}
-              />
-              {" "}
-            </div>
-          ))}
-      <div>
-        {...patients.map((p) => (
-          <div key={p.id}>
-            <p>{p.names}</p>
-            <Button text="Ver" onClick={genViewPatientBtnClick(p.id)} />
+    <div
+      style={{
+        backgroundColor: "#0F6838",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#FFFFFF",
+          display: "flex",
+          flexDirection: "row",
+          width: "95%",
+          height: "95%",
+          textAlign: "left",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            transform: "translate(-0.06rem, -0.7rem)",
+          }}
+        >
+          <img
+            style={{
+              width: "25.43rem",
+              height: "20.75rem",
+            }}
+            src="/BorderDecoUpper.png"
+            alt="Logo Sanitas"
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <img
+            style={{
+              width: "16rem",
+              height: "auto",
+            }}
+            src="/Sanitas.png"
+            alt="Logo Sanitas"
+          />
+          <h1 style={{ fontSize: "3rem", paddingBottom: "1rem" }}>Búsqueda de Pacientes</h1>
+          <h3
+            style={{
+              fontSize: "1.75rem",
+              fontFamily: "Lora, serif",
+              fontWeight: "normal",
+              paddingBottom: "2rem",
+            }}
+          >
+            Ingrese carnet, código de trabajador, nombres o CUI del paciente
+          </h3>
+
+          <div>
+            <DropdownMenu
+              value={type}
+              onChange={(e) => setSearchQuery(query, e.target.value)}
+              options={dropdownOptions}
+            />
+            <SearchInput
+              type="text"
+              value={query}
+              onChange={handleInputChange}
+              placeholder="Ingrese su búsqueda..."
+            />
+            <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
           </div>
-        ))}
+          <p style={{ color: "red" }}>{error}</p>
+          {queryReturnedEmpty
+            && (!searchTypeWasCUI
+              ? (
+                <div>
+                  <p>¡Parece que el paciente no existe!</p>
+                  <p>Prueba buscarlo por CUI.</p>
+                </div>
+              )
+              : (
+                <div>
+                  <p>Ingresa la información del paciente aquí.</p>
+                  <Button
+                    text="Ingresar la información del paciente."
+                    onClick={onAddNewPatientClick}
+                  />
+                </div>
+              ))}
+          <div>
+            {...patients.map((p) => (
+              <div key={p.id}>
+                <p>{p.names}</p>
+                <Button text="Ver" onClick={genViewPatientBtnClick(p.id)} />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1rem 7rem 8rem",
+            gridTemplateRows: "4.5rem 9rem 18rem 23.8rem",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              gridColumnStart: 4,
+              gridRowStart: 2,
+              flexDirection: "column",
+              gap: "3rem",
+              padding: "1rem 1.5rem 1rem 2rem",
+            }}
+          >
+            <Button text="" onClick={doNothing}>
+              <img
+                src={settingsIcon}
+                alt="Settings"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  filter: "invert(100%)",
+                }}
+              />
+            </Button>
+            <Button text="" onClick={doNothing}>
+              <img
+                src={logoutIcon}
+                alt="Logout"
+                style={{ width: "24px", height: "24px", filter: "invert(100%)" }}
+              />
+            </Button>
+          </div>
+          <img
+            style={{
+              width: "25rem",
+              height: "20rem",
+              gridRowStart: 4,
+              gridColumnStart: 2,
+              gridColumnEnd: 5,
+            }}
+            src="/BorderDecoLower.png"
+            alt="Logo Sanitas"
+          />
+        </div>
       </div>
     </div>
   );
