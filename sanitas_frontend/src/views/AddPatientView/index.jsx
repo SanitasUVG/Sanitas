@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
-import Button from "src/components/Button/index";
+import BaseButton from "src/components/Button/Base/index";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
@@ -299,7 +299,12 @@ export function PatientForm({
           placeholder="Fecha de nacimiento"
         />
       </div>
-
+      <p>Ingrese la fecha de nacimiento del paciente:</p>
+      <DateInput
+        value={patientData.birthDate}
+        onChange={(e) => handleChange("birthDate", e.target.value)}
+        placeholder="Fecha de nacimiento"
+      />
       <div
         style={{
           display: "flex",

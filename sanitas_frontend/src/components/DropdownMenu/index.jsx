@@ -3,17 +3,22 @@ import React, { useState } from "react";
 /**
  * @typedef {Object} DropdownMenuProps
  * @property {string} value - The currently selected value of the dropdown.
- * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The callback function to be executed when the selected option is changed. It receives a React event object which provides the new value of the select element.
- * @property {Array<{value: string, label: string}>} options - An array of objects representing the options available in the dropdown. Each option should have a `value` and a `label`.
- */
+ * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The callback function to be executed when the selected option is changed.
+ * @property {Option[]} options - An array of objects representing the options available in the dropdown. Each option should have a `value` and a `label`.
+ * @property { {container: React.CSSProperties, select: React.CSSProperties, option: React.CSSProperties, indicator: React.CSSProperties} } [style] - Custom styles for sub-components:
+ *        - `style.container`: Styles for the dropdown container affecting layout and borders.
+ *        - `style.select`: Styles for the select element, controlling appearance and interactions.
+ *        - `style.option`: Styles for each option, affecting text color and background.
+ *        - `style.indicator`: Styles for the dropdown indicator, includes transformations and visibility. */
 
 /**
- * Renders a dropdown menu with configurable options and selected value.
+ * Renders a dropdown menu with configurable options and selected value. The dropdown
+ * includes a toggleable list that can be opened or closed with a click. The component allows for extensive customization of its appearance and interaction model.
  *
  * @param {DropdownMenuProps} props - The props object for the DropdownMenu component.
- * @returns {React.Element} The React Select element with options.
+ * @returns {JSX.Element} The React Select element with options, wrapped in a styled container.
  */
-export default function DropdownMenu({ value, onChange, options }) {
+export default function DropdownMenu({ value, onChange, options, style = {} }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -30,11 +35,11 @@ export default function DropdownMenu({ value, onChange, options }) {
       setIsOpen(false);
     }
   };
-
-  const styles = {
+  const defaultStyles = {
     container: {
       position: "relative",
       width: "190px",
+      ...style.container,
     },
     select: {
       width: "100%",
@@ -49,10 +54,12 @@ export default function DropdownMenu({ value, onChange, options }) {
       outline: "none",
       WebkitAppearance: "none",
       MozAppearance: "none",
+      ...style.select,
     },
     option: {
       backgroundColor: "#FFFFFF",
       color: "#0F6838",
+      ...style.option,
     },
     indicator: {
       position: "absolute",
@@ -63,25 +70,26 @@ export default function DropdownMenu({ value, onChange, options }) {
       pointerEvents: "none",
       color: "#0F6838",
       fontSize: "12px",
+      ...style.indicator,
     },
   };
 
   return (
-    <div style={styles.container}>
+    <div style={defaultStyles.container}>
       <select
         value={value}
         onChange={handleDropdownChange}
         onMouseDown={toggleDropdown}
         onBlur={handleDropdownBlur}
-        style={styles.select}
+        style={defaultStyles.select}
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value} style={styles.option}>
+          <option key={option.value} value={option.value} style={defaultStyles.option}>
             {option.label}
           </option>
         ))}
       </select>
-      <div style={styles.indicator}>▼</div>
+      <div style={defaultStyles.indicator}>▼</div>
     </div>
   );
 }

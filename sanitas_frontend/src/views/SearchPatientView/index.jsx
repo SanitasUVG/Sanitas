@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "src/components/Button";
+import BaseButton from "src/components/Button/Base/index";
 import DropdownMenu from "src/components/DropdownMenu";
 import { SearchInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
@@ -120,7 +120,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           onChange={handleInputChange}
           placeholder="Ingrese su búsqueda..."
         />
-        <Button text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
+        <BaseButton text="Buscar" onClick={searchBtnClick} disabled={emptyQuery} />
       </div>
       <p style={{ color: "red" }}>{error}</p>
       {queryReturnedEmpty
@@ -134,7 +134,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           : (
             <div>
               <p>Ingresa la información del paciente aquí.</p>
-              <Button
+              <BaseButton
                 text="Ingresar la información del paciente."
                 onClick={onAddNewPatientClick}
               />
@@ -145,7 +145,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
         {...patients.map((p) => (
           <div key={p.id}>
             <p>{p.names}</p>
-            <Button text="Ver" onClick={genViewPatientBtnClick(p.id)} />
+            <BaseButton text="Ver" onClick={genViewPatientBtnClick(p.id)} />
           </div>
         ))}
       </div>
