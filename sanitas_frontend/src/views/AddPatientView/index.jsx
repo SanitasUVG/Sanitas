@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import SanitasLogo from "src/assets/images/logoSanitas.png";
 import Button from "src/components/Button/index";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
@@ -61,7 +62,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
             width: "9.06rem",
             height: "4.375rem",
           }}
-          src="src/assets/images/logoSanitas.png"
+          src={SanitasLogo}
           alt="Logo Sanitas"
         />
         <div
@@ -75,7 +76,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
         >
           <h1
             style={{
-              color: "#3E8B43",
+              color: colors.titleText,
               fontSize: fontSize.titleSize,
               paddingBottom: "0.625rem",
               paddingTop: "1.25rem",
