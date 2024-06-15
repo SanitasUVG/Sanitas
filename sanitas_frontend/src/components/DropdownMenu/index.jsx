@@ -13,7 +13,7 @@ import React, { useState } from "react";
  * @param {DropdownMenuProps} props - The props object for the DropdownMenu component.
  * @returns {React.Element} The React Select element with options.
  */
-export default function DropdownMenu({ value, onChange, options }) {
+export default function DropdownMenu({ value, onChange, options, style = {} }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -31,10 +31,12 @@ export default function DropdownMenu({ value, onChange, options }) {
     }
   };
 
-  const styles = {
+  // Define los estilos predeterminados
+  const defaultStyles = {
     container: {
       position: "relative",
       width: "190px",
+      ...style.container,
     },
     select: {
       width: "100%",
@@ -49,10 +51,12 @@ export default function DropdownMenu({ value, onChange, options }) {
       outline: "none",
       WebkitAppearance: "none",
       MozAppearance: "none",
+      ...style.select,
     },
     option: {
       backgroundColor: "#FFFFFF",
       color: "#0F6838",
+      ...style.option,
     },
     indicator: {
       position: "absolute",
@@ -63,25 +67,26 @@ export default function DropdownMenu({ value, onChange, options }) {
       pointerEvents: "none",
       color: "#0F6838",
       fontSize: "12px",
+      ...style.indicator,
     },
   };
 
   return (
-    <div style={styles.container}>
+    <div style={defaultStyles.container}>
       <select
         value={value}
         onChange={handleDropdownChange}
         onMouseDown={toggleDropdown}
         onBlur={handleDropdownBlur}
-        style={styles.select}
+        style={defaultStyles.select}
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value} style={styles.option}>
+          <option key={option.value} value={option.value} style={defaultStyles.option}>
             {option.label}
           </option>
         ))}
       </select>
-      <div style={styles.indicator}>▼</div>
+      <div style={defaultStyles.indicator}>▼</div>
     </div>
   );
 }
