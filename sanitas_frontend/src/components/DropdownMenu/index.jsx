@@ -5,8 +5,11 @@ import React, { useState } from "react";
  * @property {string} value - The currently selected value of the dropdown.
  * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The callback function to be executed when the selected option is changed.
  * @property {Option[]} options - An array of objects representing the options available in the dropdown. Each option should have a `value` and a `label`.
- * @property {React.CSSProperties} [style] - Custom styles: `style.container` for the dropdown container, `style.select` for the select element, `style.option` for each option, and `style.indicator` for the dropdown indicator. Styles affect layout, appearance, and interactions.
- */
+ * @property { {container: React.CSSProperties, select: React.CSSProperties, option: React.CSSProperties, indicator: React.CSSProperties} } [style] - Custom styles for sub-components:
+ *        - `style.container`: Styles for the dropdown container affecting layout and borders.
+ *        - `style.select`: Styles for the select element, controlling appearance and interactions.
+ *        - `style.option`: Styles for each option, affecting text color and background.
+ *        - `style.indicator`: Styles for the dropdown indicator, includes transformations and visibility. */
 
 /**
  * Renders a dropdown menu with configurable options and selected value. The dropdown

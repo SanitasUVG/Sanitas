@@ -8,8 +8,10 @@ import { useEffect, useRef, useState } from "react";
  * @property {string} value - Current value of the input field.
  * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Function for input value changes.
  * @property {string} [placeholder] - Placeholder text for the input field.
- * @property {React.CSSProperties} [style={}] - Custom styles: `style.container` for the outer container (layout and borders), `style.input` for the input field (text color and background), and `style.img` for the icons (styles and hover effects like scaling or color change).
- */
+ * @property { {container: React.CSSProperties, input: React.CSSProperties, img: React.CSSProperties} } [style] - Custom styles for sub-components:
+ *        - `style.container`: Styles for the outer container, affecting layout and borders.
+ *        - `style.input`: Styles for the input field, controlling text color and background.
+ *        - `style.img`: Styles for the icons, including hover effects like scaling or color change. */
 
 /**
  * Renders a SearchInput component with search and clear icons. Allows users to type search queries, clear them with one click,

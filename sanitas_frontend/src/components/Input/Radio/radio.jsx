@@ -6,8 +6,11 @@ import React from "react";
  * @property {boolean} checked - Whether the radio input is currently selected.
  * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Handler for changes to the radio input's state.
  * @property {string} label - The label text displayed next to the radio button.
- * @property {React.CSSProperties} [style={}] - Custom styles: `style.label` for the label (positioning and cursor), `style.input` for the input field (visibility and cursor), `style.outerSpan` for the outer span (layout and borders), and `style.innerSpan` for the inner span (visibility and background color).
- */
+ * @property { {label: React.CSSProperties, input: React.CSSProperties, outerSpan: React.CSSProperties, innerSpan: React.CSSProperties} } [style] - Custom styles for sub-components:
+ *        - `style.label`: Styles for the label, affecting positioning and cursor.
+ *        - `style.input`: Styles for the input field, controlling visibility and cursor.
+ *        - `style.outerSpan`: Styles for the outer span, affecting layout and borders.
+ *        - `style.innerSpan`: Styles for the inner span, controlling visibility and background color. */
 
 /**
  * Renders a radio button input with a label and customizable styles.
