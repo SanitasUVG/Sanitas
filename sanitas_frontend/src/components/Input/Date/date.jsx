@@ -9,22 +9,25 @@ import React from "react";
  * @param {string} [props.placeholder] - A placeholder text shown in the date input.
  * @returns {React.Element} The React Date Input element.
  */
-export default function DateInput({ value, onChange, placeholder }) {
+export default function DateInput({ value, onChange, placeholder, style = {} }) {
+  const defaultStyle = {
+    backgroundColor: "#FFFFFF",
+    color: "#5B6670",
+    border: "1px solid #5B6670",
+    padding: "6px 10px",
+    outline: "none",
+    borderRadius: "5px",
+    fontFamily: "Montserrat, sans-serif",
+    ...style,
+  };
+
   return (
     <input
       type="date"
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      style={{
-        backgroundColor: "#FFFFFF",
-        color: "#5B6670",
-        border: "1px solid #5B6670",
-        padding: "6px 10px",
-        outline: "none",
-        borderRadius: "5px",
-        fontFamily: "Montserrat, sans-serif",
-      }}
+      style={defaultStyle}
     />
   );
 }
