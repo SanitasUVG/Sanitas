@@ -3,18 +3,24 @@ import deleteSearch from "@tabler/icons/outline/x.svg";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Renders a SearchInput component that includes search and clear icons.
- * This component allows users to type search queries, clear them with one click,
- * and supports submission via the Enter key.
+ * @typedef {Object} SearchInputProps
+ * @property {'text' | 'number' | 'date' | 'email' | 'password'} type - Specifies the type of input to render.
+ * @property {string} value - Current value of the input field.
+ * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Function for input value changes.
+ * @property {string} [placeholder] - Placeholder text for the input field.
+ * @property { {container: React.CSSProperties, input: React.CSSProperties, img: React.CSSProperties} } [style] - Custom styles for sub-components:
+ *        - `style.container`: Styles for the outer container, affecting layout and borders.
+ *        - `style.input`: Styles for the input field, controlling text color and background.
+ *        - `style.img`: Styles for the icons, including hover effects like scaling or color change. */
+
+/**
+ * Renders a SearchInput component with search and clear icons. Allows users to type search queries, clear them with one click,
+ * and supports submission via the Enter key. Custom styles can be applied to the container, input field, and icons.
  *
- * @param {Object} props - Properties of the component.
- * @param {'text' | 'number' | 'date' | 'email' | 'password'} props.type - Specifies the type of input to render, controlling the allowed types of text inputs.
- * @param {string} props.value - Current value of the input field.
- * @param {Function} props.onChange - Function to be executed when the input value changes.
- * @param {string} props.placeholder - Placeholder text to display in the input field when it is empty.
- * @returns {JSX.Element} JSX element of the SearchInput component.
+ * @param {SearchInputProps} props - The properties passed to the SearchInput component.
+ * @returns {JSX.Element} An interactive SearchInput component with customizable aesthetics.
  */
-export default function SearchInput({ type, value = "", onChange, placeholder }) {
+export default function SearchInput({ type, value = "", onChange, placeholder, style = {} }) {
   const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
   const inputRef = useRef(null);
 
@@ -38,7 +44,7 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
     }
   };
 
-  const styles = {
+  const defaultStyles = {
     container: {
       display: "flex",
       alignItems: "center",
@@ -47,12 +53,14 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
       borderRadius: "4px",
       maxWidth: "400px",
       minWidth: "300px",
+      ...style.container,
     },
     input: {
       flexGrow: 1,
       border: "none",
       outline: "none",
       color: "#1B1B1B",
+      ...style.input,
     },
     img: {
       cursor: "pointer",
@@ -61,15 +69,13 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
       padding: "0 8px",
       filter: "invert(38%) sepia(11%) saturate(0%) hue-rotate(196deg) brightness(95%) contrast(85%)",
       height: "16px",
-    },
-    placeholder: {
-      color: "#5B6670",
+      ...style.img,
     },
   };
 
   return (
-    <div style={styles.container}>
-      <span style={styles.img}>
+    <div style={defaultStyles.container}>
+      <span style={defaultStyles.img}>
         <img src={userSearch} />
       </span>
       <input
@@ -79,10 +85,15 @@ export default function SearchInput({ type, value = "", onChange, placeholder })
         onChange={onChange}
         placeholder={placeholder}
         name="searchInput"
-        style={styles.input}
+        style={defaultStyles.input}
       />
       {isNotEmpty && (
-        <span onClick={clearInput} tabIndex="0" onKeyDown={handleIconKeyDown} style={styles.img}>
+        <span
+          onClick={clearInput}
+          tabIndex="0"
+          onKeyDown={handleIconKeyDown}
+          style={defaultStyles.img}
+        >
           <img src={deleteSearch} />
         </span>
       )}
