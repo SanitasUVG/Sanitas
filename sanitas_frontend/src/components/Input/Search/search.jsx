@@ -51,7 +51,7 @@ export default function SearchInput({ type, value = "", onChange, placeholder, s
       border: "1px solid #5B6670",
       padding: "5px",
       borderRadius: "4px",
-      maxWidth: "400px",
+      maxWidth: "600px",
       minWidth: "300px",
       ...style.container,
     },
