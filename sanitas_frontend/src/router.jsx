@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import SearchPatientView from "./assets/images";
 import {
   checkCui,
   getGeneralPatientInformation,
@@ -8,7 +9,6 @@ import {
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
-import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 
 const useStore = createEmptyStore();
@@ -51,11 +51,23 @@ const updateInfoView = (
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
-    element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
+    element: (
+      <SearchPatientView
+        searchPatientsApiCall={searchPatient}
+        getGeneralPatientInformation={getGeneralPatientInformation}
+        useStore={useStore}
+      />
+    ),
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
-    element: <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} useStore={useStore} />,
+    element: (
+      <AddPatientView
+        checkCui={checkCui}
+        submitPatientData={submitPatientData}
+        useStore={useStore}
+      />
+    ),
   },
   {
     path: NAV_PATHS.UPDATE_PATIENT,
