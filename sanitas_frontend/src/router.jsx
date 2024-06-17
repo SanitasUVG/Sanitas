@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import SearchPatientView from "./assets/images";
 import {
   checkCui,
   getGeneralPatientInformation,
@@ -9,6 +8,7 @@ import {
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
+import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 
 const useStore = createEmptyStore();
