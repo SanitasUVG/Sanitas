@@ -84,8 +84,7 @@ export default function DashboardSidebar({
         backgroundColor: colors.secondaryBackground,
         padding: "1rem",
         borderRadius: "0.625rem",
-        maxWidth: "20rem",
-        minWidth: "18rem",
+        width: "100%",
       }}
     >
       <div
@@ -93,13 +92,15 @@ export default function DashboardSidebar({
           display: "flex",
           alignItems: "end",
           justifyContent: "end",
+          width: "100%",
         }}
       >
         <IconButton
           icon={returnicon}
           onClick={wrapWithNavigate(onGoBack)}
           style={{
-            width: "3rem",
+            width: "2.1rem",
+            height: "3rem",
           }}
         />
       </div>
@@ -108,19 +109,22 @@ export default function DashboardSidebar({
           display: "flex",
           paddingTop: "2rem",
           paddingBottom: "2rem",
+          width: "100%",
         }}
       >
         <img
           style={{
             width: "6rem",
             height: "3rem",
+            flexGrow: 0,
           }}
           src={SanitasLogo}
           alt="Logo Sanitas"
         />
         <div
           style={{
-            paddingLeft: "1rem",
+            paddingLeft: "0.8rem",
+            flexGrow: 1,
           }}
         >
           <h1
@@ -128,6 +132,7 @@ export default function DashboardSidebar({
               fontFamily: fonts.titleFont,
               fontWeight: "bold",
               fontSize: "1.1rem",
+              paddingRight: "0.5rem",
             }}
           >
             {userInformation.displayName}
@@ -157,12 +162,12 @@ export default function DashboardSidebar({
 
       <h3
         style={{
-          color: "#B2B9B9",
+          color: colors.darkerGrey,
           fontSize: fontSize.textSize,
           fontWeight: "normal",
           paddingBottom: "1rem",
           paddingTop: "1rem",
-          borderBottom: "1px solid #B2B9B9",
+          borderBottom: "0.1rem solid  #B2B9B9 ",
         }}
       >
         Antecedentes
