@@ -29,7 +29,12 @@ const IconButton = ({ icon, onClick, style }) => {
   };
 
   const iconStyle = {
-    filter: "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%)",
+    width: "2.5rem",
+    height: "2.5rem",
+    transition: "filter 0.3s ease-in-out",
+    filter: isHovered
+      ? "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%) drop-shadow(0 0 0.5rem rgb(181, 177, 177))"
+      : "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%)",
   };
 
   return (
