@@ -1,4 +1,5 @@
 import axios from "axios";
+import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
 const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
@@ -45,6 +46,10 @@ export async function searchPatient(query, type) {
         throw new Error("Received patient has no `id`!");
       }
 
+      if (!r.cui) {
+        throw new Error("Received patient has no `cui`!");
+      }
+
       if (!r.nombres) {
         throw new Error("Received patient has no `names`!");
       }
@@ -53,9 +58,15 @@ export async function searchPatient(query, type) {
         throw new Error("Received patient has no `apellidos`!");
       }
 
+      if (!r.fecha_nacimiento) {
+        throw new Error("Received patient has no `fecha_nacimiento`!");
+      }
+
       return {
         id: r.id,
+        cui: r.cui,
         names: `${r.nombres} ${r.apellidos}`,
+        age: calculateYearsBetween(r.fecha_nacimiento),
       };
     });
 
