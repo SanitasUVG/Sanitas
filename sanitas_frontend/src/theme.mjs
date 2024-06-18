@@ -6,6 +6,7 @@ export const colors = {
   statusApproved: "#9BBE43", // Color para estados aprobados
   statusDenied: "#F05050", // Color para estados denegados
   sidebarHover: "#E6E7E7", // Color de fondo para el hover en la barra lateral
+  darkerGrey: "#B2B9B9", // Color gris oscuro
 };
 
 export const fonts = {

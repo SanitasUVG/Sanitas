@@ -4,7 +4,23 @@
  * @property {string} title - The role of this user in the application
  */
 
+import returnicon from "@tabler/icons/outline/arrow-back-up.svg";
+import boneicon from "@tabler/icons/outline/bone.svg";
+import brainicon from "@tabler/icons/outline/brain.svg";
+import facemaskicon from "@tabler/icons/outline/face-mask.svg";
+import flowericon from "@tabler/icons/outline/flower.svg";
+import glassicon from "@tabler/icons/outline/glass-full.svg";
+import stethoscopeicon from "@tabler/icons/outline/stethoscope.svg";
+import userloveicon from "@tabler/icons/outline/user-heart.svg";
+import usericon from "@tabler/icons/outline/user.svg";
+import familyicon from "@tabler/icons/outline/users-group.svg";
+import womanicon from "@tabler/icons/outline/woman.svg";
 import { useNavigate } from "react-router-dom";
+import SanitasLogo from "src/assets/images/logoSanitas.png";
+import { colors, fonts, fontSize } from "src/theme.mjs";
+
+import IconButton from "src/components/Button/Icon/index";
+import TextIconButton from "../Button/TextIcon";
 
 /**
  * @callback SidebarNavigationHandler
@@ -32,22 +48,20 @@ import { useNavigate } from "react-router-dom";
 /**
  * @param {DashboardSidebarProps} props
  */
-export default function DashboardSidebar(
-  {
-    navigateToGeneral,
-    navigateToAppointments,
-    navigateToPersonal,
-    navigateToFamiliar,
-    navigateToAllergies,
-    navigateToObstetrics,
-    navigateToNonPathological,
-    navigateToPsiquiatric,
-    navigateToSurgical,
-    navigateToTraumatological,
-    userInformation,
-    onGoBack,
-  },
-) {
+export default function DashboardSidebar({
+  navigateToGeneral,
+  navigateToAppointments,
+  navigateToPersonal,
+  navigateToFamiliar,
+  navigateToAllergies,
+  navigateToObstetrics,
+  navigateToNonPathological,
+  navigateToPsiquiatric,
+  navigateToSurgical,
+  navigateToTraumatological,
+  userInformation,
+  onGoBack,
+}) {
   const navigate = useNavigate();
   const wrapWithNavigate = (func) => {
     /**
@@ -58,32 +72,153 @@ export default function DashboardSidebar(
     };
   };
 
+  const handleIconClick = () => {
+    onGoBack();
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
+        backgroundColor: colors.secondaryBackground,
+        padding: "1rem",
+        borderRadius: "0.625rem",
+        width: "100%",
       }}
     >
-      <button type="button" onMouseDown={wrapWithNavigate(onGoBack)}>Go Back</button>
-      {/* TODO: Add the Sanitas logo src! */}
-      <img alt="Sanitas logo" src="" />
-      <h1>{userInformation.displayName}</h1>
-      <h2>{userInformation.title}</h2>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "end",
+          justifyContent: "end",
+          width: "100%",
+        }}
+      >
+        <IconButton
+          icon={returnicon}
+          onClick={wrapWithNavigate(onGoBack)}
+          style={{
+            width: "2.1rem",
+            height: "3rem",
+          }}
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          paddingTop: "2rem",
+          paddingBottom: "2rem",
+          width: "100%",
+        }}
+      >
+        <img
+          style={{
+            width: "6rem",
+            height: "3rem",
+            flexGrow: 0,
+          }}
+          src={SanitasLogo}
+          alt="Logo Sanitas"
+        />
+        <div
+          style={{
+            paddingLeft: "0.8rem",
+            flexGrow: 1,
+          }}
+        >
+          <h1
+            style={{
+              fontFamily: fonts.titleFont,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              paddingRight: "0.5rem",
+            }}
+          >
+            {userInformation.displayName}
+          </h1>
+          <h2
+            style={{
+              fontFamily: fonts.titleFont,
+              fontWeight: "normal",
+              fontSize: "0.9rem",
+            }}
+          >
+            {userInformation.title}
+          </h2>
+        </div>
+      </div>
 
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToGeneral)}>General</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToAppointments)}>Citas</button>
+      <TextIconButton
+        icon={usericon}
+        text="General"
+        onClick={wrapWithNavigate(navigateToGeneral)}
+      />
+      <TextIconButton
+        icon={stethoscopeicon}
+        text="Citas"
+        onClick={wrapWithNavigate(navigateToAppointments)}
+      />
 
-      <hr />
-      <h3>Antecedentes</h3>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToAllergies)}>Alérgicos</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToFamiliar)}>Familiares</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToObstetrics)}>Ginecoobstétricos</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToNonPathological)}>No patológicos</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToPersonal)}>Personales</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToPsiquiatric)}>Psiquiátricos</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToSurgical)}>Quirúrgicos</button>
-      <button type="button" onMouseDown={wrapWithNavigate(navigateToTraumatological)}>Traumatológicos</button>
+      <h3
+        style={{
+          color: colors.darkerGrey,
+          fontSize: fontSize.textSize,
+          fontWeight: "normal",
+          paddingBottom: "1rem",
+          paddingTop: "1rem",
+          borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+        }}
+      >
+        Antecedentes
+      </h3>
+
+      <div
+        style={{
+          paddingTop: "1rem",
+        }}
+      >
+        <TextIconButton
+          icon={flowericon}
+          text="Alérgicos"
+          onClick={wrapWithNavigate(navigateToAllergies)}
+        />
+        <TextIconButton
+          icon={familyicon}
+          text="Familiares"
+          onClick={wrapWithNavigate(navigateToFamiliar)}
+        />
+        <TextIconButton
+          icon={womanicon}
+          text="Ginecoobstétricos"
+          onClick={wrapWithNavigate(navigateToObstetrics)}
+        />
+        <TextIconButton
+          icon={glassicon}
+          text="No patológicos"
+          onClick={navigateToNonPathological}
+        />
+        <TextIconButton
+          icon={userloveicon}
+          text="Personales"
+          onClick={wrapWithNavigate(navigateToPersonal)}
+        />
+        <TextIconButton
+          icon={brainicon}
+          text="Psiquiátricos"
+          onClick={wrapWithNavigate(navigateToPsiquiatric)}
+        />
+        <TextIconButton
+          icon={facemaskicon}
+          text="Quirúrgicos"
+          onClick={wrapWithNavigate(navigateToSurgical)}
+        />
+        <TextIconButton
+          icon={boneicon}
+          text="Traumatológicos"
+          onClick={wrapWithNavigate(navigateToTraumatological)}
+        />
+      </div>
     </div>
   );
 }
