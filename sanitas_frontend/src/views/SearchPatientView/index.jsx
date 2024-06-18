@@ -1,6 +1,6 @@
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 import settingsIcon from "@tabler/icons/outline/settings.svg";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";
@@ -13,6 +13,7 @@ import PatientCard from "src/components/PatientCard";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { calculateYearsBetween, formatDate } from "src/utils/date";
+import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**
@@ -24,7 +25,6 @@ import WrapPromise from "src/utils/promiseWrapper";
 /**
  * @typedef {Object} SearchPatientViewProps
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
- * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
 
  * @property {import("src/store.mjs").UseStoreHook} useStore
  */
@@ -32,11 +32,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 /**
  * @param {SearchPatientViewProps} props
  */
-export default function SearchPatientView({
-  searchPatientsApiCall,
-  getGeneralPatientInformation,
-  useStore,
-}) {
+export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
@@ -47,7 +43,7 @@ export default function SearchPatientView({
   const [searchTypeWasCUI, setSearchTypeWasCUI] = useState(false);
   const [defaultView, setDefaultView] = useState(true);
   const [addPatientState, setAddPatientState] = useState(false);
-  const [generalInfoPatientsResources, setGeneralInfoPatientsResources] = useState(null);
+  const [patientsResources, setPatientsResources] = useState(null);
 
   const navigate = useNavigate();
 
@@ -94,78 +90,47 @@ export default function SearchPatientView({
     }
 
     try {
-      const result = await searchPatientsApiCall(query, type);
-      setSearchTypeWasCUI(type === "CUI");
+      // const searchPatientsApiCall = async (query, type) => {
+      //   throw new Error('Simulated API error for development');
+      // };
+      const apiCallPromise = searchPatientsApiCall(query, type);
+      setSearchTypeWasCUI(type === "CUI"); // Set search type immediately based on the type provided
 
-      if (result.error) {
-        const { error } = result;
-        if (error.cause) {
-          const { response } = error.cause;
-          if (response?.status < 500) {
-            showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
-          } else {
-            showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
+      const wrappedPatientsData = WrapPromise(apiCallPromise); // Wrap the actual API call promise
+      setPatientsResources(wrappedPatientsData); // Set the wrapped promise in the state for use in Suspense
+
+      // Optional: Immediately use the wrapped data to update UI states
+      apiCallPromise
+        .then((result) => {
+          if (result.error) {
+            const { error } = result;
+            if (error.cause) {
+              const { response } = error.cause;
+              if (response?.status < 500) {
+                showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
+              } else {
+                showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
+              }
+            } else {
+              showErrorMessage("The API has changed!");
+            }
+            return;
           }
-        } else {
-          showErrorMessage("The API has changed!");
-        }
-        return; // Stop further processing if there is an error
-      }
 
-      const { result: apiPatients } = result;
-      setQueryReturnedEmpty(apiPatients.length <= 0);
-      setPatients(apiPatients);
-
-      if (apiPatients.length > 0) {
-        const wrappedPatientsData = fetchAndProcessPatientData(apiPatients);
-        setGeneralInfoPatientsResources(wrappedPatientsData);
-      } else {
-        setGeneralInfoPatientsResources(null);
-      }
+          const apiPatients = result.result;
+          setQueryReturnedEmpty(apiPatients.length <= 0);
+          if (apiPatients.length > 0) {
+            setPatients(apiPatients);
+          } else {
+            setPatientsResources(null);
+          }
+        })
+        .catch((error) => {
+          showErrorMessage("Error processing your search request.");
+        });
     } catch (error) {
       showErrorMessage("Error processing your search request.");
     }
-  };
-
-  /**
-   * Represents detailed information about a patient.
-   * @typedef {Object} PatientData
-   * @property {string} id - The unique identifier for the patient.
-   * @property {string} cui - The unique civil identification key of the patient.
-   * @property {string} names - The first and middle names of the patient.
-   * @property {string} lastNames - The last names or surname of the patient.
-   * @property {number} age - The current age of the patient, calculated from their birthdate.
-   */
-
-  /**
-   * Fetches and processes patient information asynchronously for a list of patients.
-   * It first delays the fetching operation, retrieves general patient information for each patient,
-   * and then maps and filters the results to return only valid patient data.
-   *
-   * @async
-   * @function fetchAndProcessPatientData
-   * @param {Array<Object>} apiPatients - An array of patient objects to fetch data for.
-   * @returns {Promise<PatientData>} A wrapped promise containing the patient data after processing,
-   *                                 which conforms to the PatientData type.
-   */
-
-  const fetchAndProcessPatientData = (apiPatients) => {
-    const promise = (async () => {
-      const results = await Promise.all(
-        apiPatients.map((patient) => getGeneralPatientInformation(patient.id)),
-      );
-
-      return results
-        .map((item) => {
-          if (!item || !item.result) return null;
-          const { id, cui, names, lastNames, birthdate } = item.result;
-          const age = calculateYearsBetween(new Date(birthdate));
-          return { id, cui, names, lastNames, age };
-        })
-        .filter((item) => item !== null);
-    })();
-
-    return WrapPromise(promise);
   };
 
   /**
@@ -415,24 +380,141 @@ export default function SearchPatientView({
                     Resultados de la Búsqueda
                   </h1>
                   {queryReturnedEmpty
+                    && !patientsResources
                     && (!searchTypeWasCUI
                       ? (
-                        <div>
-                          <p>¡Parece que el paciente no existe!</p>
-                          <p>Prueba buscarlo por CUI.</p>
+                        <div
+                          style={{
+                            width: "70%",
+                            height: "85%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                            paddingBottom: "7rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "28rem",
+                              height: "auto",
+                              padding: "1rem",
+                              borderRadius: "1rem",
+                              gap: "1rem",
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: colors.textPrimary,
+                                fontSize: "1.75rem",
+                                textAlign: "center",
+                                fontFamily: fonts.textFont,
+                              }}
+                            >
+                              ¡Parece que el paciente no existe!
+                            </p>
+                            <p
+                              style={{
+                                color: colors.textPrimary,
+                                fontSize: "1.75rem",
+                                textAlign: "center",
+                                fontFamily: fonts.textFont,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Prueba buscarlo por CUI.
+                            </p>
+                          </div>
                         </div>
                       )
                       : (
-                        <div>
-                          <p>Ingresa la información del paciente aquí.</p>
-                          <BaseButton
-                            text="Ingresar la información del paciente."
-                            onClick={onAddNewPatientClick}
-                          />
+                        <div
+                          style={{
+                            width: "70%",
+                            height: "85%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                            paddingBottom: "7rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                              width: "33rem",
+                              height: "90%",
+                              borderRadius: "1rem",
+                              gap: "0.5rem",
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: colors.textPrimary,
+                                fontSize: "1.75rem",
+                                textAlign: "center",
+                                fontFamily: fonts.textFont,
+                              }}
+                            >
+                              ¡Parece que el paciente no existe!
+                            </p>
+                            <p
+                              style={{
+                                color: colors.textPrimary,
+                                fontSize: "1.75rem",
+                                textAlign: "center",
+                                fontFamily: fonts.textFont,
+                                paddingBottom: "2rem",
+                              }}
+                            >
+                              Ingresa la información del paciente aquí.
+                            </p>
+                            <BaseButton
+                              text="Ingresar la información del paciente."
+                              onClick={onAddNewPatientClick}
+                              style={{
+                                fontSize: "1.10rem",
+                                height: "2.65rem",
+                                width: "25rem",
+                              }}
+                            />
+                          </div>
                         </div>
                       ))}
-                  {error && <div style={{ color: "red" }}>{error}</div>}
-                  {!error && PatientSection({ generalInfoPatientsResources, genViewPatientBtnClick })}
+                  {(error || (error && emptyQuery)) && (
+                    <div
+                      style={{
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: "7rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "25rem",
+                          fontSize: "2rem",
+                          textAlign: "center",
+                          fontFamily: fonts.textFont,
+                          color: colors.statusDenied,
+                        }}
+                      >
+                        {error}
+                      </div>
+                    </div>
+                  )}
+                  {!error && patientsResources && (
+                    <PatientSection
+                      patientsResources={patientsResources}
+                      genViewPatientBtnClick={genViewPatientBtnClick}
+                    />
+                  )}
                 </div>
               </div>
             </>
@@ -480,11 +562,11 @@ const LoadingView = () => {
   );
 };
 
-const PatientSection = ({ generalInfoPatientsResources, genViewPatientBtnClick }) => {
+const PatientSection = ({ patientsResources, genViewPatientBtnClick }) => {
   return (
     <Suspense fallback={<LoadingView />}>
       <PatientCard
-        generalInfoPatientsResources={generalInfoPatientsResources}
+        patientsResources={patientsResources}
         genViewPatientBtnClick={genViewPatientBtnClick}
         style={{
           patientName: {

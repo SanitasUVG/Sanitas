@@ -20,7 +20,7 @@ import BaseButton from "src/components/Button/Base";
  *        - `style.patientName`: Styles for the patient's name and lastName.
  *        - `style.patientAge`: Styles for the patient's age.
  *        - `style.patientCUI`: Styles for the patient's CUI.
- * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
+ * @property {import('src/utils/promiseWrapper').SuspenseResource<import('src/dataLayer.mjs').Result<import('src/dataLayer.mjs').APIPatient, Error>>} patientsResources
  * @property {Function} genViewPatientBtnClick - The function to call when the view button is clicked to set the selected patient id.
  */
 
@@ -30,12 +30,7 @@ import BaseButton from "src/components/Button/Base";
  * @param {PatientCardProps} props
  * @returns {JSX.Element} The React Button element.
  */
-export default function PatientCard({
-  patientInfo,
-  style = {},
-  generalInfoPatientsResources,
-  genViewPatientBtnClick,
-}) {
+export default function PatientCard({ style = {}, patientsResources, genViewPatientBtnClick }) {
   const defaultStyles = {
     mainContainer: {
       display: "flex",
@@ -76,8 +71,8 @@ export default function PatientCard({
     },
   };
 
-  // Read data inside component
-  patientInfo = generalInfoPatientsResources ? generalInfoPatientsResources.read() : [];
+  let patientInfo = [];
+  patientInfo = patientsResources ? patientsResources.read().result : null;
 
   return (
     <div style={defaultStyles.mainContainer}>
@@ -85,7 +80,7 @@ export default function PatientCard({
         <div key={patient.id} style={defaultStyles.cardsContainer}>
           <React.Fragment key={patient.id}>
             <div style={defaultStyles.secondaryContainer}>
-              <h2 style={defaultStyles.patientName}>{`${patient.names} ${patient.lastNames}`}</h2>
+              <h2 style={defaultStyles.patientName}>{`${patient.names}`}</h2>
               <h3 style={defaultStyles.patientAge}>{`Edad: ${patient.age} años`}</h3>
               <h3 style={defaultStyles.patientCUI}>{`CUI: ${patient.cui}`}</h3>
             </div>
