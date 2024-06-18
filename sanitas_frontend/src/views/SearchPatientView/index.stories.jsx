@@ -20,29 +20,32 @@ const Template = (args) => <SearchPatientView {...args} />;
 export const Default = Template.bind({});
 Default.args = {
   searchPatientsApiCall: async (query, type) => {
-    // Simulate a successful API call with predefined data
-    const result = [
-      {
-        id: 1234,
-        names: "Flavio",
-        lastNames: "Martinez",
-        cui: "1234567890123",
-        age: 34,
-      },
-    ];
-    return { result };
-  },
-  getGeneralPatientInformation: async (id) => {
-    // Simulate fetching general patient information
-    return {
-      result: {
-        id: id,
-        cui: "1234567890123",
-        names: "Flavio",
-        lastNames: "Martinez",
-        birthdate: "1986-04-12",
-      },
+    const result = {
+      result: [
+        {
+          id: 1,
+          cui: "1234567890123",
+          names: "Juan",
+          lastNames: "Pérez",
+          age: "19",
+        },
+        {
+          id: 3,
+          cui: "1236237123727",
+          names: "Juan",
+          lastNames: "Lopez",
+          age: "19",
+        },
+        {
+          id: 4,
+          cui: "1273723812811",
+          names: "Juan",
+          lastNames: "Osoy",
+          age: "19",
+        },
+      ],
     };
+    return result;
   },
   useStore: createEmptyStore(),
 };
@@ -65,14 +68,16 @@ UserError.args = {
 
 export const ServerError = Template.bind({});
 ServerError.args = {
-  getGeneralPatientInformation: async (id) => {
-    // Simulate a server error for fetching general patient information
-    throw {
-      response: {
-        status: 500,
-        data: "Internal Server Error",
+  searchPatientsApiCall: async () => {
+    // Simulate a server error
+    const error = {
+      cause: {
+        response: {
+          status: 500,
+        },
       },
     };
+    return { error };
   },
   useStore: createEmptyStore(),
 };
