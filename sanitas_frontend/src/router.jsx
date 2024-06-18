@@ -51,13 +51,7 @@ const updateInfoView = (
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
-    element: (
-      <SearchPatientView
-        searchPatientsApiCall={searchPatient}
-        getGeneralPatientInformation={getGeneralPatientInformation}
-        useStore={useStore}
-      />
-    ),
+    element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
