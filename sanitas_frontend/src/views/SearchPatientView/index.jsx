@@ -276,8 +276,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               <div
                 style={{
                   display: "grid",
+                  width: "26.25rem",
+                  height: "101.5%",
                   gridTemplateColumns: "1rem 7rem 8rem",
-                  gridTemplateRows: "4.5rem 9rem 18rem 23.8rem",
+                  gridTemplateRows: "4.5rem 9rem 18rem 1fr",
                   flexDirection: "column",
                   alignItems: "flex-end",
                   justifyContent: "space-between",
