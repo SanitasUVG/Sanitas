@@ -7,6 +7,7 @@ import React from "react";
  * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} onChange - Handler for changes to the input's value.
  * @property {string} [placeholder] - Optional placeholder text shown in the input when it is empty.
  * @property {React.CSSProperties} [style] - Optional custom styles to apply to the input element.
+ * @property {React.MouseEventHandler<HTMLInputElement>} [onClick] - Optional onClick handler.
  */
 
 /**
@@ -17,7 +18,7 @@ import React from "react";
  * @returns {JSX.Element} The React Input element styled according to specified or default styles.
  */
 
-export default function BaseInput({ type, value, onChange, placeholder, style = {} }) {
+export default function BaseInput({ type, value, onChange, placeholder, style = {}, onClick = () => {} }) {
   const defaultStyle = {
     backgroundColor: "#FFFFFF",
     color: "#000000",
@@ -34,6 +35,7 @@ export default function BaseInput({ type, value, onChange, placeholder, style = 
       type={type}
       value={value}
       onChange={onChange}
+      onClick={onClick}
       placeholder={placeholder}
       style={defaultStyle}
     />
