@@ -1,7 +1,14 @@
+import saveIcon from "@tabler/icons/outline/device-floppy.svg";
+import editIcon from "@tabler/icons/outline/pencil.svg";
+import cancelIcon from "@tabler/icons/outline/x.svg";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import BaseButton from "src/components/Button/Base";
+import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
+import { BaseInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
+import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
 import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
@@ -32,13 +39,22 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @property {import("src/dataLayer.mjs").updateGeneralPatientInformation} updateGeneralPatientInformation
  * @property {import("src/components/DashboardSidebar").DashboardSidebarProps} sidebarConfig - The config for the view sidebar
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateStudentPatientInformation
+ * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getStudentPatientInformation
  */
 
 /**
  * @param {UpdatePatientViewProps} props
  */
 export default function UpdateInfoView(
-  { getGeneralPatientInformation, updateGeneralPatientInformation, sidebarConfig, useStore },
+  {
+    getGeneralPatientInformation,
+    updateGeneralPatientInformation,
+    sidebarConfig,
+    useStore,
+    getStudentPatientInformation,
+    updateStudentPatientInformation,
+  },
 ) {
   const id = useStore((s) => s.selectedPatientId);
 
@@ -57,7 +73,11 @@ export default function UpdateInfoView(
           updateData={updateGeneralPatientInformation}
         />
         <UpdateColaboratorInformationSection patientId={id} />
-        <UpdateStudentInformationSection patientId={id} />
+        <UpdateStudentInformationSection
+          patientId={id}
+          getData={getStudentPatientInformation}
+          updateData={updateStudentPatientInformation}
+        />
       </div>
     </div>
   );
@@ -319,5 +339,147 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
   );
 }
 
-function UpdateStudentInformationSection() {
+/**
+ * @typedef {Object} UpdateStudentInformationSectionProps
+ * @property {number} patientId
+ * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getData
+ * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
+ */
+
+/**
+ * @param {UpdateStudentInformationSectionProps} props
+ */
+function UpdateStudentInformationSection({ patientId, getData, updateData }) {
+  /** @type React.CSSProperties */
+  const h1Styles = {
+    fontFamily: fonts.titleFont,
+    fontSize: fonts.textFont,
+  };
+  /** @type React.CSSProperties */
+  const errorPStyles = {
+    fontFamily: fonts.textFont,
+    fontSize: fontSize.textSize,
+    color: colors.statusDenied,
+  };
+  /** @type React.CSSProperties */
+  const normalTextStyle = {
+    fontFamily: fonts.textFont,
+    fontSize: fontSize.textSize,
+    color: colors.primaryText,
+  };
+
+  const delayedGet = async () => {
+    // await delay(5000);
+    return await getData(patientId);
+  };
+  const resourceGet = WrapPromise(delayedGet());
+
+  const Hijo = () => {
+    const response = resourceGet.read();
+    const [isEditable, setIsEditable] = useState(false);
+
+    /** @type React.MouseEventHandler<HTMLInputElement> */
+    const preventFocusIfNotEditable = (e) => {
+      isEditable && e.preventDefault();
+    };
+
+    /** @type [import("src/dataLayer.mjs").APIStudentInformation, (newInfo: import("src/dataLayer.mjs").APIStudentInformation)=>void] */
+    const [info, setInfo] = useState(response.result);
+    const [carnet, setCarnet] = useState(info?.carnet);
+    const [career, setCareer] = useState(info?.career);
+
+    return (
+      <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingRight: "1rem",
+          }}
+        >
+          <h1 style={h1Styles}>Datos de Estudiante:</h1>
+          {isEditable
+            ? (
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                }}
+              >
+                <IconButton
+                  icon={saveIcon}
+                  onClick={() => {
+                    setIsEditable(false);
+                    setInfo({ ...info, carnet, career });
+                  }}
+                />
+                <IconButton
+                  icon={cancelIcon}
+                  onClick={() => {
+                    setIsEditable(false);
+                    setCarnet(info.carnet);
+                    setCareer(info.career);
+                  }}
+                />
+              </div>
+            )
+            : (
+              <IconButton
+                icon={editIcon}
+                onClick={() => setIsEditable(true)}
+              />
+            )}
+        </div>
+        {response.error
+          ? (
+            <div>
+              <p style={errorPStyles}>Lo sentimos! Ha ocurrido un error al cargar la información.</p>
+              <p style={errorPStyles}>{response.error.toString()}</p>
+            </div>
+          )
+          : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "30% 30% ",
+                rowGap: "0.5rem",
+                columnGap: "2rem",
+              }}
+            >
+              <label style={normalTextStyle}>Carnet:</label>
+              <label style={normalTextStyle}>Carrera:</label>
+              <BaseInput
+                value={carnet}
+                onClick={preventFocusIfNotEditable}
+                onChange={(e) => isEditable && setCarnet(e.target.value)}
+                placeholder="Carnet"
+              />
+              <BaseInput
+                value={career}
+                onClick={preventFocusIfNotEditable}
+                onChange={(e) => isEditable && setCareer(e.target.value)}
+                placeholder="Carrera"
+              />
+            </div>
+          )}
+      </>
+    );
+  };
+  const LoadingView = () => {
+    return (
+      <div>
+        <h1 style={h1Styles}>Datos de Estudiante:</h1>
+        <p style={normalTextStyle}>Cargando datos...</p>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <Suspense fallback={<LoadingView />}>
+        <Hijo />
+      </Suspense>
+    </div>
+  );
 }

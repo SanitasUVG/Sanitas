@@ -287,13 +287,13 @@ export const getStudentPatientInformation = async (id) => {
 /**
  * 	Callback for updating the student information of a patient.
  *
- * @callback {UpdateStudentPatientInformation}
+ * @callback UpdateStudentPatientInformationAPICall
  * @param {APIStudentInformation} APIStudentInfo
  * @returns {Promise<Result<APIStudentInformation, Error>>}
  */
 
 /**
- * @type {UpdateStudentPatientInformation}
+ * @type {UpdateStudentPatientInformationAPICall}
  */
 export const updateStudentPatientInformation = async (APIStudentInfo) => {
   const url = `${BASE_URL}/patient/student`;
