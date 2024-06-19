@@ -1,3 +1,8 @@
+/**
+ * Formats a date string into a standardized YYYY-MM-DD format.
+ * @param {string} dateString - The input date string that needs to be formatted. It should be in a format parseable by the Date constructor.
+ * @returns {string} The formatted date in YYYY-MM-DD format.
+ */
 export const formatDate = (dateString) => {
   const date = new Date(dateString);
   const year = date.getUTCFullYear();
@@ -6,6 +11,11 @@ export const formatDate = (dateString) => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Calculates the number of full years between a specified date and the current date.
+ * @param {string} dateString - The date string in a format that can be parsed by the Date constructor (YYYY-MM-DD).
+ * @returns {number} The number of full years between the given date and today's date.
+ */
 export const calculateYearsBetween = (dateString) => {
   const formattedDate = formatDate(dateString);
   const startDate = new Date(formattedDate);
