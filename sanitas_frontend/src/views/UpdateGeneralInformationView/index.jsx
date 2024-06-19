@@ -374,7 +374,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
   };
   const resourceGet = WrapPromise(delayedGet());
 
-  const Hijo = () => {
+  const InnerChild = () => {
     const response = resourceGet.read();
     const [isEditable, setIsEditable] = useState(false);
 
@@ -497,7 +497,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
   return (
     <div>
       <Suspense fallback={<LoadingView />}>
-        <Hijo />
+        <InnerChild />
       </Suspense>
     </div>
   );
