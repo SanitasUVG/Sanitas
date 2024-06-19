@@ -385,8 +385,28 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 
     /** @type [import("src/dataLayer.mjs").APIStudentInformation, (newInfo: import("src/dataLayer.mjs").APIStudentInformation)=>void] */
     const [info, setInfo] = useState(response.result);
+    const [resourceUpdate, setResourceUpdate] = useState(null);
     const [carnet, setCarnet] = useState(info?.carnet);
     const [career, setCareer] = useState(info?.career);
+    const [updateError, setUpdateError] = useState("");
+
+    if (resourceUpdate !== null) {
+      const response = resourceUpdate.read();
+
+      setUpdateError("");
+      if (response.error) {
+        setUpdateError(`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`);
+      } else {
+        setIsEditable(false);
+        setInfo(response.result);
+      }
+      setResourceUpdate(null);
+    }
+
+    const handleUpdateInformation = () => {
+      const newInfo = { ...info, carnet, career };
+      setResourceUpdate(WrapPromise(updateData(newInfo)));
+    };
 
     return (
       <>
@@ -409,10 +429,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
               >
                 <IconButton
                   icon={saveIcon}
-                  onClick={() => {
-                    setIsEditable(false);
-                    setInfo({ ...info, carnet, career });
-                  }}
+                  onClick={handleUpdateInformation}
                 />
                 <IconButton
                   icon={cancelIcon}
@@ -463,9 +480,11 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
               />
             </div>
           )}
+        <p style={errorPStyles}>{updateError}</p>
       </>
     );
   };
+
   const LoadingView = () => {
     return (
       <div>
