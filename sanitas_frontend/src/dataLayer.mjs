@@ -255,3 +255,64 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
     return { error };
   }
 };
+
+/**
+ * Fetches the surgical history for a specific patient by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} id - The patient's ID.
+ * @returns {Promise<Object>} An object containing either the surgical history data or an error.
+ */
+export const getSurgicalHistory = async (id) => {
+  const url = `${BASE_URL}/patient/surgical-history/${id}`;
+  try {
+    const response = await axios.get(url);
+    if (response.status === 200) {
+      return { result: response.data };
+    } else {
+      return { error: `Received unexpected status code: ${response.status}` };
+    }
+  } catch (error) {
+    if (error.response) {
+      return {
+        error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+      };
+    } else if (error.request) {
+      return { error: "No response received" };
+    } else {
+      return { error: error.message };
+    }
+  }
+};
+
+/**
+ * Updates the surgical history of a patient by their ID.
+ *
+ * @param {string} patientId - The patient's ID.
+ * @param {string} carnet - The student's registration number (if applicable).
+ * @param {string} career - The student's career (if applicable).
+ * @returns {Promise<Object>} - Returns the API response or an error.
+ */
+export const updateSurgicalHistory = async (patientId, carnet, career) => {
+  const url = `${BASE_URL}/patient/surgical-history`;
+
+  try {
+    const response = await axios.put(url, {
+      patientId,
+      carnet,
+      career,
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    } else if (error.request) {
+      message.error("No response received");
+    } else {
+      return error.message;
+    }
+
+    return { error: "Failed to update surgical history." };
+  }
+};
