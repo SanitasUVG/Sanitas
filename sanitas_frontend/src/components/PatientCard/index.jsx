@@ -51,6 +51,8 @@ export default function PatientCard({
       flexDirection: "column",
       width: "70%",
       height: "85%",
+      overflowX: "hidden",
+      overflowY: "auto",
       ...style.mainContainer,
     },
     secondaryContainer: {
