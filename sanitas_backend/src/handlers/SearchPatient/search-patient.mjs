@@ -89,18 +89,18 @@ export const searchPatientHandler = async (event, context) => {
     switch (searchType) {
       case "Carnet":
         sqlQuery =
-          "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
+          "SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
         queryParams.push(requestSearch);
         logger.info({ sqlQuery, queryParams }, "Querying by student ID");
         break;
       case "NumeroColaborador":
         sqlQuery =
-          "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
+          "SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
         queryParams.push(requestSearch);
         logger.info({ sqlQuery, queryParams }, "Querying by employee code");
         break;
       case "CUI":
-        sqlQuery = "SELECT ID, NOMBRES, APELLIDOS FROM PACIENTE WHERE CUI = $1";
+        sqlQuery = "SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE WHERE CUI = $1";
         queryParams.push(requestSearch);
         logger.info({ sqlQuery, queryParams }, "Querying by CUI");
         break;
@@ -111,7 +111,7 @@ export const searchPatientHandler = async (event, context) => {
           .toLowerCase();
 
         sqlQuery = `
-                SELECT ID, NOMBRES, APELLIDOS 
+                SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO 
                 FROM PACIENTE 
                 WHERE TRANSLATE(NOMBRES, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1 
                 OR TRANSLATE(APELLIDOS, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1`;
@@ -135,10 +135,7 @@ export const searchPatientHandler = async (event, context) => {
 
     logger.info("Executing DB query...");
     const response = await client.query(sqlQuery, queryParams);
-    logger.info(
-      { rowCount: response.rowCount },
-      "DB query executed successfully",
-    );
+    logger.info({ rowCount: response.rowCount }, "DB query executed successfully");
 
     if (response.rowCount === 0) {
       logger.info("No patients found, returning empty array.");

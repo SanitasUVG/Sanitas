@@ -59,7 +59,13 @@ export const ROUTES = [
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
-    element: <AddPatientView checkCui={checkCui} submitPatientData={submitPatientData} useStore={useStore} />,
+    element: (
+      <AddPatientView
+        checkCui={checkCui}
+        submitPatientData={submitPatientData}
+        useStore={useStore}
+      />
+    ),
   },
   {
     path: NAV_PATHS.UPDATE_PATIENT,
