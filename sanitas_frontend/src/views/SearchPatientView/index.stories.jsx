@@ -1,8 +1,10 @@
+import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import SearchPatientView from ".";
 
 export default {
+  title: "Views/SearchPatientView",
   component: SearchPatientView,
   decorators: [
     (Story) => (
@@ -13,47 +15,69 @@ export default {
   ],
 };
 
-export const Default = {
-  args: {
-    searchPatientsApiCall: () => {
-      const result = [{
-        id: 1234,
-        names: "Flavio",
-      }];
-      return { result };
-    },
-    useStore: createEmptyStore(),
+const Template = (args) => <SearchPatientView {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  searchPatientsApiCall: async (query, type) => {
+    const result = {
+      result: [
+        {
+          id: 1,
+          cui: "1234567890123",
+          names: "Juan",
+          lastNames: "Pérez",
+          age: "19",
+        },
+        {
+          id: 3,
+          cui: "1236237123727",
+          names: "Juan",
+          lastNames: "Lopez",
+          age: "19",
+        },
+        {
+          id: 4,
+          cui: "1273723812811",
+          names: "Juan",
+          lastNames: "Osoy",
+          age: "19",
+        },
+      ],
+    };
+    return result;
   },
+  useStore: createEmptyStore(),
 };
 
-export const UserError = {
-  args: {
-    searchPatientsApiCall: () => {
-      const error = {
-        cause: {
-          response: {
-            status: 400,
-          },
+export const UserError = Template.bind({});
+UserError.args = {
+  searchPatientsApiCall: async () => {
+    // Simulate a user error
+    const error = {
+      cause: {
+        response: {
+          status: 400,
         },
-      };
-      return { error };
-    },
-    useStore: createEmptyStore(),
+      },
+    };
+    return { error };
   },
+  useStore: createEmptyStore(),
 };
 
-export const ServerError = {
-  args: {
-    searchPatientsApiCall: () => {
-      const error = {
-        cause: {
-          response: {
-            status: 500,
-          },
+export const ServerError = Template.bind({});
+ServerError.args = {
+  searchPatientsApiCall: async () => {
+    // Simulate a server error
+    const error = {
+      cause: {
+        response: {
+          status: 500,
         },
-      };
-      return { error };
-    },
-    useStore: createEmptyStore(),
+      },
+    };
+    return { error };
   },
+  useStore: createEmptyStore(),
 };
