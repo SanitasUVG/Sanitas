@@ -87,16 +87,14 @@ export default function SearchInput({ type, value = "", onChange, placeholder, s
         name="searchInput"
         style={defaultStyles.input}
       />
-      {isNotEmpty && (
-        <span
-          onClick={clearInput}
-          tabIndex="0"
-          onKeyDown={handleIconKeyDown}
-          style={defaultStyles.img}
-        >
-          <img src={deleteSearch} />
-        </span>
-      )}
+      <span
+        onClick={clearInput}
+        tabIndex="0"
+        onKeyDown={handleIconKeyDown}
+        style={defaultStyles.img}
+      >
+        <img src={deleteSearch} style={{ visibility: isNotEmpty ? "visible" : "hidden" }} />
+      </span>
     </div>
   );
 }
