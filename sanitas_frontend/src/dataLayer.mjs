@@ -266,3 +266,52 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
     return { error };
   }
 };
+
+/**
+ * @typedef {Object} APIStudentInformation
+ * @property {number} patientId
+ * @property {string} career
+ * @property {string} carnet
+ */
+
+/**
+ * 	Callback for retrieving the student information of a patient.
+ *
+ * @callback GetStudentPatientInformationAPICall
+ * @param {number} id - The ID of the patient.
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {GetStudentPatientInformationAPICall}
+ */
+export const getStudentPatientInformation = async (id) => {
+  const url = `${BASE_URL}/patient/student/${id}`;
+  try {
+    const { data: result } = await axios.get(url);
+    return { result };
+  } catch (error) {
+    return { error };
+  }
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ *
+ * @callback UpdateStudentPatientInformationAPICall
+ * @param {APIStudentInformation} APIStudentInfo
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {UpdateStudentPatientInformationAPICall}
+ */
+export const updateStudentPatientInformation = async (APIStudentInfo) => {
+  const url = `${BASE_URL}/patient/student`;
+  try {
+    const { data: result } = await axios.put(url, APIStudentInfo);
+    return { result };
+  } catch (error) {
+    return { error };
+  }
+};
