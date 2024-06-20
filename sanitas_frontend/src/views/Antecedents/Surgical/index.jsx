@@ -118,6 +118,7 @@ export function SurgicalHistory({
                   height: "3rem",
                 }}
               />
+              <p>asjdj asdasdasd asdasdasdsad asdadasdad</p>
             </div>
             <div
               style={{

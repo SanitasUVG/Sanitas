@@ -6,7 +6,8 @@ const Card = ({ type, year, surgeryType, date, reason }) => {
 
   const cardStyle = {
     backgroundColor: hover ? colors.sidebarHover : colors.secondaryBackground,
-    borderBottom: hover ? "0.1rem solid transparent" : "0.1rem solid #B2B9B9",
+    borderBottom: hover ? "0.1rem solid transparent" : `0.1rem solid ${colors.darkerGrey}`,
+    cursor: "pointer",
     padding: "1.5rem",
     transition: "background-color 0.3s, border-bottom 0.3s",
   };
