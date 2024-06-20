@@ -106,7 +106,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
   const [error, setError] = useState("");
   const [searchTypeWasCUI, setSearchTypeWasCUI] = useState(false);
-  const [defaultView, setDefaultView] = useState(false);
+  const [defaultView, setDefaultView] = useState(true);
   const [patientsResources, setPatientsResources] = useState(null);
   const { width, height } = useWindowSize();
   const navigate = useNavigate();
