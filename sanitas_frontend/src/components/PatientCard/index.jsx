@@ -1,6 +1,7 @@
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BaseButton from "src/components/Button/Base";
+import { colors, fonts } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";
 
 /**
@@ -23,6 +24,9 @@ import useWindowSize from "src/utils/useWindowSize";
  *        - `style.patientCUI`: Styles for the patient's CUI.
  * @property {import('src/utils/promiseWrapper').SuspenseResource<import('src/dataLayer.mjs').Result<import('src/dataLayer.mjs').APIPatient, Error>>} patientsResources
  * @property {Function} genViewPatientBtnClick - The function to call when the view button is clicked to set the selected patient id.
+ * @property {Function} setQueryReturnedEmpty - The function to call when the query returns an empty result.
+ * @property {Function} adjustHeight - The function to adjust the height of the component.
+ * @property {Function} adjustWidth - The function to adjust the width of the component.
  */
 
 /**
@@ -31,7 +35,14 @@ import useWindowSize from "src/utils/useWindowSize";
  * @param {PatientCardProps} props
  * @returns {JSX.Element} The React Button element.
  */
-export default function PatientCard({ style = {}, patientsResources, genViewPatientBtnClick }) {
+export default function PatientCard({
+  style = {},
+  patientsResources,
+  genViewPatientBtnClick,
+  setQueryReturnedEmpty,
+  adjustHeight,
+  adjustWidth,
+}) {
   const { width, height } = useWindowSize();
 
   const defaultStyles = {
@@ -68,8 +79,52 @@ export default function PatientCard({ style = {}, patientsResources, genViewPati
     },
   };
 
-  let patientInfo = [];
-  patientInfo = patientsResources ? patientsResources.read().result : null;
+  const result = patientsResources.read();
+  if (result.error) {
+    let errorMessage = "";
+    if (result.error && result.error.cause) {
+      const { response } = result.error.cause;
+      if (response?.status < 500) {
+        errorMessage = "Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!";
+      } else {
+        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+      }
+    } else {
+      errorMessage = "Error processing your search request.";
+    }
+
+    return (
+      <div
+        style={{
+          width: "70%",
+          height: "85%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          paddingBottom: adjustHeight(height, "7rem"),
+        }}
+      >
+        <div
+          style={{
+            width: adjustWidth(width, "25rem"),
+            fontSize: adjustWidth(width, "2rem"),
+            textAlign: "center",
+            fontFamily: fonts.textFont,
+            color: colors.statusDenied,
+          }}
+        >
+          {errorMessage}
+        </div>
+      </div>
+    );
+  }
+
+  const patientInfo = result.result;
+
+  useEffect(() => {
+    setQueryReturnedEmpty(patientInfo.length <= 0);
+  }, [patientInfo]);
 
   return (
     <div style={defaultStyles.mainContainer}>

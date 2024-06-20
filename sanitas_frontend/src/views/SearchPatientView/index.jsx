@@ -113,7 +113,6 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
 
   const showErrorMessage = (message) => setError(`ERROR: ${message}`);
   const hideErrorMessage = () => setError("");
-
   const emptyQuery = query.trim().length <= 0;
 
   const dropdownOptions = [
@@ -153,38 +152,12 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
       return;
     }
 
-    try {
-      const apiCallPromise = searchPatientsApiCall(query, type);
-      setSearchTypeWasCUI(type === "CUI");
+    setPatientsResources(null);
+    setQueryReturnedEmpty(false);
+    setSearchTypeWasCUI(type === "CUI");
 
-      const wrappedPatientsData = WrapPromise(apiCallPromise);
-      setPatientsResources(wrappedPatientsData);
-
-      const result = await apiCallPromise;
-
-      if (result.error) {
-        throw result;
-      }
-
-      const apiPatients = result.result;
-      setQueryReturnedEmpty(apiPatients.length <= 0);
-      if (apiPatients.length > 0) {
-        setPatients(apiPatients);
-      } else {
-        setPatientsResources(null);
-      }
-    } catch (error) {
-      if (error.error && error.error.cause) {
-        const { response } = error.error.cause;
-        if (response?.status < 500) {
-          showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
-        } else {
-          showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
-        }
-      } else {
-        showErrorMessage("Error processing your search request.");
-      }
-    }
+    const wrappedPatientsData = WrapPromise(searchPatientsApiCall(query, type));
+    setPatientsResources(wrappedPatientsData);
   };
 
   /**
@@ -475,112 +448,110 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   >
                     Resultados de la Búsqueda
                   </h1>
-                  {queryReturnedEmpty
-                    && !patientsResources
-                    && (!searchTypeWasCUI
-                      ? (
-                        <div
+                  {!searchTypeWasCUI && queryReturnedEmpty && patientsResources && (
+                    <div
+                      style={{
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: adjustHeight(height, "7rem"),
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: adjustWidth(width, "28rem"),
+                          height: "auto",
+                          padding: adjustWidth(width, "1rem"),
+                          borderRadius: adjustWidth(width, "1rem"),
+                          gap: adjustHeight(height, "1rem"),
+                        }}
+                      >
+                        <p
                           style={{
-                            width: "70%",
-                            height: "85%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                            paddingBottom: adjustHeight(height, "7rem"),
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
                           }}
                         >
-                          <div
-                            style={{
-                              width: adjustWidth(width, "28rem"),
-                              height: "auto",
-                              padding: adjustWidth(width, "1rem"),
-                              borderRadius: adjustWidth(width, "1rem"),
-                              gap: adjustHeight(height, "1rem"),
-                            }}
-                          >
-                            <p
-                              style={{
-                                color: colors.textPrimary,
-                                fontSize: adjustWidth(width, "1.75rem"),
-                                textAlign: "center",
-                                fontFamily: fonts.textFont,
-                              }}
-                            >
-                              ¡Parece que el paciente no existe!
-                            </p>
-                            <p
-                              style={{
-                                color: colors.textPrimary,
-                                fontSize: adjustWidth(width, "1.75rem"),
-                                textAlign: "center",
-                                fontFamily: fonts.textFont,
-                                fontWeight: "bold",
-                              }}
-                            >
-                              Prueba buscarlo por CUI.
-                            </p>
-                          </div>
-                        </div>
-                      )
-                      : (
-                        <div
+                          ¡Parece que el paciente no existe!
+                        </p>
+                        <p
                           style={{
-                            width: "70%",
-                            height: "85%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexDirection: "column",
-                            paddingBottom: adjustHeight(height, "7rem"),
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                            fontWeight: "bold",
                           }}
                         >
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              flexDirection: "column",
-                              width: adjustWidth(width, "33rem"),
-                              height: "90%",
-                              borderRadius: adjustWidth(width, "1rem"),
-                              gap: adjustHeight(height, "0.5rem"),
-                            }}
-                          >
-                            <p
-                              style={{
-                                color: colors.textPrimary,
-                                fontSize: adjustWidth(width, "1.75rem"),
-                                textAlign: "center",
-                                fontFamily: fonts.textFont,
-                              }}
-                            >
-                              ¡Parece que el paciente no existe!
-                            </p>
-                            <p
-                              style={{
-                                color: colors.textPrimary,
-                                fontSize: adjustWidth(width, "1.75rem"),
-                                textAlign: "center",
-                                fontFamily: fonts.textFont,
-                                paddingBottom: adjustHeight(height, "2rem"),
-                              }}
-                            >
-                              Ingresa la información del paciente aquí.
-                            </p>
-                            <BaseButton
-                              text="Ingresar la información del paciente."
-                              onClick={onAddNewPatientClick}
-                              style={{
-                                fontSize: adjustWidth(width, "1.10rem"),
-                                height: "2.65rem",
-                                width: adjustWidth(width, "25rem"),
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                  {(error || (error && emptyQuery)) && (
+                          Prueba buscarlo por CUI.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {queryReturnedEmpty && searchTypeWasCUI && patientsResources && (
+                    <div
+                      style={{
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: adjustHeight(height, "7rem"),
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          width: adjustWidth(width, "33rem"),
+                          height: "90%",
+                          borderRadius: adjustWidth(width, "1rem"),
+                          gap: adjustHeight(height, "0.5rem"),
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                          }}
+                        >
+                          ¡Parece que el paciente no existe!
+                        </p>
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                            paddingBottom: adjustHeight(height, "2rem"),
+                          }}
+                        >
+                          Ingresa la información del paciente aquí.
+                        </p>
+                        <BaseButton
+                          text="Ingresar la información del paciente."
+                          onClick={onAddNewPatientClick}
+                          style={{
+                            fontSize: adjustWidth(width, "1.10rem"),
+                            height: "2.65rem",
+                            width: adjustWidth(width, "25rem"),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {emptyQuery && (
                     <div
                       style={{
                         width: "70%",
@@ -605,10 +576,13 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                       </div>
                     </div>
                   )}
-                  {!error && patientsResources && (
+                  {!emptyQuery && patientsResources && (
                     <PatientSection
                       patientsResources={patientsResources}
                       genViewPatientBtnClick={genViewPatientBtnClick}
+                      adjustHeight={adjustHeight}
+                      adjustWidth={adjustWidth}
+                      setQueryReturnedEmpty={setQueryReturnedEmpty}
                     />
                   )}
                 </div>
@@ -664,13 +638,16 @@ const LoadingView = () => {
   );
 };
 
-const PatientSection = ({ patientsResources, genViewPatientBtnClick }) => {
+const PatientSection = ({ patientsResources, genViewPatientBtnClick, setQueryReturnedEmpty }) => {
   const { width, height } = useWindowSize();
   return (
     <Suspense fallback={<LoadingView />}>
       <PatientCard
         patientsResources={patientsResources}
         genViewPatientBtnClick={genViewPatientBtnClick}
+        adjustHeight={adjustHeight}
+        adjustWidth={adjustWidth}
+        setQueryReturnedEmpty={setQueryReturnedEmpty}
         style={{
           mainContainer: {
             borderRadius: adjustWidth(width, "1rem"),
