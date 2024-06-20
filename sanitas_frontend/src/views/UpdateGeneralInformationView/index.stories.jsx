@@ -19,8 +19,8 @@ export default {
 
 const examplePatientData = {
   id: 6969,
-  names: "John",
-  lastNames: "Doe",
+  names: "Johnaaaa",
+  lastNames: "Doee",
   isWoman: false,
   email: "john.doe@example.com",
   contactName1: "Jane Doe",
