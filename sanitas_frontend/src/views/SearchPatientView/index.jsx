@@ -15,6 +15,71 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { calculateYearsBetween, formatDate } from "src/utils/date";
 import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
+import useWindowSize from "src/utils/useWindowSize";
+
+/**
+ * Adjusts the REM values based on the width of the screen.
+ * The function scales the input REM values by a scaleFactor determined by the screen width.
+ *
+ * @param {number} width - The current width of the screen in pixels.
+ * @param {string} remValues - A string containing space-separated REM values to be adjusted.
+ * @returns {string} A string of space-separated REM values adjusted based on the screen width.
+ * @example
+ * // returns "9.300rem 18.600rem"
+ * adjustWidth(1400, "10rem 20rem");
+ */
+const adjustWidth = (width, remValues) => {
+  let scaleFactor;
+  if (width >= 1538) {
+    scaleFactor = 1.0;
+  } else if (width >= 1440) {
+    scaleFactor = 0.93;
+  } else if (width >= 1280) {
+    scaleFactor = 0.83;
+  } else {
+    scaleFactor = 1.0;
+  }
+
+  return remValues
+    .split(" ")
+    .map((rem) => {
+      const value = Number.parseFloat(rem) * scaleFactor;
+      return `${value.toFixed(3)}rem`;
+    })
+    .join(" ");
+};
+
+/**
+ * Adjusts the REM values based on the height of the screen.
+ * The function scales the input REM values by a scaleFactor determined by the screen height.
+ *
+ * @param {number} height - The current height of the screen in pixels.
+ * @param {string} remValues - A string containing space-separated REM values to be adjusted.
+ * @returns {string} A string of space-separated REM values adjusted based on the screen height.
+ * @example
+ * // returns "9.400rem 18.800rem"
+ * adjustHeight(850, "10rem 20rem");
+ */
+const adjustHeight = (height, remValues) => {
+  let scaleFactor;
+  if (height >= 950) {
+    scaleFactor = 1.0;
+  } else if (height >= 900) {
+    scaleFactor = 0.94;
+  } else if (height >= 800) {
+    scaleFactor = 0.84;
+  } else {
+    scaleFactor = 1.0;
+  }
+
+  return remValues
+    .split(" ")
+    .map((rem) => {
+      const value = Number.parseFloat(rem) * scaleFactor;
+      return `${value.toFixed(3)}rem`;
+    })
+    .join(" ");
+};
 
 /**
  * @typedef {Object} PatientPreview
@@ -42,9 +107,8 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   const [error, setError] = useState("");
   const [searchTypeWasCUI, setSearchTypeWasCUI] = useState(false);
   const [defaultView, setDefaultView] = useState(true);
-  const [addPatientState, setAddPatientState] = useState(false);
   const [patientsResources, setPatientsResources] = useState(null);
-
+  const { width, height } = useWindowSize();
   const navigate = useNavigate();
 
   const showErrorMessage = (message) => setError(`ERROR: ${message}`);
@@ -90,46 +154,36 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     }
 
     try {
-      // const searchPatientsApiCall = async (query, type) => {
-      //   throw new Error('Simulated API error for development');
-      // };
       const apiCallPromise = searchPatientsApiCall(query, type);
-      setSearchTypeWasCUI(type === "CUI"); // Set search type immediately based on the type provided
+      setSearchTypeWasCUI(type === "CUI");
 
-      const wrappedPatientsData = WrapPromise(apiCallPromise); // Wrap the actual API call promise
-      setPatientsResources(wrappedPatientsData); // Set the wrapped promise in the state for use in Suspense
+      const wrappedPatientsData = WrapPromise(apiCallPromise);
+      setPatientsResources(wrappedPatientsData);
 
-      // Optional: Immediately use the wrapped data to update UI states
-      apiCallPromise
-        .then((result) => {
-          if (result.error) {
-            const { error } = result;
-            if (error.cause) {
-              const { response } = error.cause;
-              if (response?.status < 500) {
-                showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
-              } else {
-                showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
-              }
-            } else {
-              showErrorMessage("The API has changed!");
-            }
-            return;
-          }
+      const result = await apiCallPromise;
 
-          const apiPatients = result.result;
-          setQueryReturnedEmpty(apiPatients.length <= 0);
-          if (apiPatients.length > 0) {
-            setPatients(apiPatients);
-          } else {
-            setPatientsResources(null);
-          }
-        })
-        .catch((error) => {
-          showErrorMessage("Error processing your search request.");
-        });
+      if (result.error) {
+        throw result;
+      }
+
+      const apiPatients = result.result;
+      setQueryReturnedEmpty(apiPatients.length <= 0);
+      if (apiPatients.length > 0) {
+        setPatients(apiPatients);
+      } else {
+        setPatientsResources(null);
+      }
     } catch (error) {
-      showErrorMessage("Error processing your search request.");
+      if (error.error && error.error.cause) {
+        const { response } = error.error.cause;
+        if (response?.status < 500) {
+          showErrorMessage("Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!");
+        } else {
+          showErrorMessage("Ha ocurrido un error interno, lo sentimos.");
+        }
+      } else {
+        showErrorMessage("Error processing your search request.");
+      }
     }
   };
 
@@ -176,17 +230,18 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
             <>
               <div
                 style={{
+                  width: "100%",
+                  height: "100%",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  transform: "translate(-0.06rem, -0.7rem)",
                 }}
               >
                 <img
                   style={{
-                    width: "25.43rem",
-                    height: "20.75rem",
+                    width: adjustWidth(width, "25.43rem"),
+                    height: "auto",
                   }}
                   src={BorderDecoUpper}
                   alt="Logo Sanitas"
@@ -203,21 +258,28 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               >
                 <img
                   style={{
-                    width: "16rem",
+                    width: adjustWidth(width, "16rem"),
                     height: "auto",
                   }}
                   src={SanitasLogo}
                   alt="Logo Sanitas"
                 />
-                <h1 style={{ fontSize: "3rem", paddingBottom: "0.5rem", color: colors.titleText }}>
+                <h1
+                  style={{
+                    fontSize: adjustWidth(width, "3rem"),
+                    paddingBottom: adjustHeight(height, "0.5rem"),
+                    color: colors.titleText,
+                  }}
+                >
                   Búsqueda de Pacientes
                 </h1>
                 <h3
                   style={{
-                    fontSize: "1.75rem",
+                    fontSize: adjustWidth(width, "1.75rem"),
                     fontFamily: "Lora, serif",
                     fontWeight: "normal",
-                    paddingBottom: "2rem",
+                    paddingBottom: adjustHeight(height, "2rem"),
+                    textAlign: "center",
                   }}
                 >
                   Ingrese carnet, código de trabajador, nombres o CUI del paciente
@@ -225,12 +287,12 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
 
                 <div
                   style={{
-                    width: "40rem",
+                    width: adjustWidth(width, "40rem"),
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "0.5rem",
+                    gap: adjustHeight(height, "0.5rem"),
                   }}
                 >
                   <SearchInput
@@ -238,7 +300,13 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     value={query}
                     onChange={handleInputChange}
                     placeholder="Ingrese su búsqueda..."
-                    style={{ input: { width: "35rem", height: "1.75rem", fontSize: "1.10rem" } }}
+                    style={{
+                      input: {
+                        width: adjustWidth(width, "30rem"),
+                        height: adjustHeight(height, "1.75rem"),
+                        fontSize: adjustWidth(width, "1.10rem"),
+                      },
+                    }}
                   />
 
                   <div
@@ -247,8 +315,8 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "space-evenly",
-                      paddingTop: "1rem",
-                      gap: "2rem",
+                      paddingTop: adjustHeight(height, "1rem"),
+                      gap: adjustHeight(height, "2rem"),
                     }}
                   >
                     <DropdownMenu
@@ -256,8 +324,12 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                       onChange={(e) => setSearchQuery(query, e.target.value)}
                       options={dropdownOptions}
                       style={{
-                        select: { fontSize: fontSize.textSize },
-                        container: { width: "14rem" },
+                        select: {
+                          fontSize: adjustWidth(width, "1.10rem"),
+                        },
+                        container: {
+                          width: adjustWidth(width, "14rem"),
+                        },
                       }}
                     />
 
@@ -268,7 +340,11 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                         await searchBtnClick();
                       }}
                       disabled={emptyQuery}
-                      style={{ fontSize: "1.10rem", height: "2.65rem", width: "14rem" }}
+                      style={{
+                        fontSize: adjustWidth(width, "1.10rem"),
+                        height: "2.65rem",
+                        width: adjustWidth(width, "14rem"),
+                      }}
                     />
                   </div>
                 </div>
@@ -276,10 +352,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               <div
                 style={{
                   display: "grid",
-                  width: "26.25rem",
-                  height: "101.5%",
-                  gridTemplateColumns: "1rem 7rem 8rem",
-                  gridTemplateRows: "4.5rem 9rem 18rem 1fr",
+                  width: "80%",
+                  height: "100%",
+                  gridTemplateColumns: adjustWidth(width, "1rem 7rem 8rem"),
+                  gridTemplateRows: adjustHeight(height, "4.5rem 9rem 18rem") + " 1fr",
                   flexDirection: "column",
                   alignItems: "flex-end",
                   justifyContent: "space-between",
@@ -291,8 +367,8 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     gridColumnStart: 4,
                     gridRowStart: 2,
                     flexDirection: "column",
-                    gap: "1rem",
-                    padding: "1rem 1.5rem 1rem 2rem",
+                    gap: adjustHeight(height, "1rem"),
+                    padding: adjustWidth(width, "0.9rem 1.5rem 1rem 2rem"),
                   }}
                 >
                   <IconButton icon={settingsIcon} onClick={doNothing} />
@@ -300,10 +376,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                 </div>
                 <img
                   style={{
-                    width: "25rem",
-                    height: "20rem",
+                    width: adjustWidth(width, "25.43rem"),
+                    height: "auto",
                     gridRowStart: 4,
-                    gridColumnStart: 2,
+                    gridColumnStart: width >= 1660 ? 3 : 2,
                     gridColumnEnd: 5,
                   }}
                   src={BorderDecoLower}
@@ -314,13 +390,17 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           )
           : (
             <>
-              <div style={{ width: "17rem" }}>
+              <div
+                style={{
+                  width: adjustWidth(width, "17rem"),
+                }}
+              >
                 <img
                   style={{
-                    width: "17rem",
+                    width: adjustWidth(width, "17rem"),
                     height: "auto",
-                    paddingTop: "2rem",
-                    paddingLeft: "2rem",
+                    paddingTop: adjustHeight(height, "2rem"),
+                    paddingLeft: adjustWidth(width, "2rem"),
                   }}
                   src={SanitasLogo}
                   alt="Logo Sanitas"
@@ -331,10 +411,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   width: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  paddingTop: "4.25rem",
-                  paddingLeft: "2rem",
-                  paddingRight: "2rem",
-                  paddingBottom: "2rem",
+                  paddingTop: adjustHeight(height, "4.25rem"),
+                  paddingLeft: adjustWidth(width, "2rem"),
+                  paddingRight: adjustWidth(width, "2rem"),
+                  paddingBottom: adjustHeight(height, "2rem"),
                 }}
               >
                 <div
@@ -342,7 +422,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: "2rem",
+                    gap: adjustHeight(height, "2rem"),
                   }}
                 >
                   <SearchInput
@@ -350,15 +430,25 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     value={query}
                     onChange={handleInputChange}
                     placeholder="Ingrese su búsqueda..."
-                    style={{ input: { width: "35rem", height: "1.75rem", fontSize: "1.10rem" } }}
+                    style={{
+                      input: {
+                        width: adjustWidth(width, "30rem"),
+                        height: adjustHeight(height, "1.75rem"),
+                        fontSize: adjustWidth(width, "1.10rem"),
+                      },
+                    }}
                   />
                   <DropdownMenu
                     value={type}
                     onChange={(e) => setSearchQuery(query, e.target.value)}
                     options={dropdownOptions}
                     style={{
-                      select: { fontSize: fontSize.textSize },
-                      container: { width: "14rem" },
+                      select: {
+                        fontSize: adjustWidth(width, "1.10rem"),
+                      },
+                      container: {
+                        width: adjustWidth(width, "14rem"),
+                      },
                     }}
                   />
                   <BaseButton
@@ -367,15 +457,19 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                       await searchBtnClick();
                     }}
                     disabled={emptyQuery}
-                    style={{ fontSize: "1.10rem", height: "2.65rem", width: "14rem" }}
+                    style={{
+                      fontSize: adjustWidth(width, "1.10rem"),
+                      height: "2.65rem",
+                      width: adjustWidth(width, "14rem"),
+                    }}
                   />
                 </div>
                 <div style={{ height: "100%" }}>
                   <h1
                     style={{
-                      fontSize: fontSize.titleSize,
-                      paddingBottom: "1.5rem",
-                      paddingTop: "2rem",
+                      fontSize: adjustWidth(width, "2rem"),
+                      paddingBottom: adjustHeight(height, "1.5rem"),
+                      paddingTop: adjustHeight(height, "2rem"),
                       color: colors.titleText,
                     }}
                   >
@@ -393,22 +487,22 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                             alignItems: "center",
                             justifyContent: "center",
                             flexDirection: "column",
-                            paddingBottom: "7rem",
+                            paddingBottom: adjustHeight(height, "7rem"),
                           }}
                         >
                           <div
                             style={{
-                              width: "28rem",
+                              width: adjustWidth(width, "28rem"),
                               height: "auto",
-                              padding: "1rem",
-                              borderRadius: "1rem",
-                              gap: "1rem",
+                              padding: adjustWidth(width, "1rem"),
+                              borderRadius: adjustWidth(width, "1rem"),
+                              gap: adjustHeight(height, "1rem"),
                             }}
                           >
                             <p
                               style={{
                                 color: colors.textPrimary,
-                                fontSize: "1.75rem",
+                                fontSize: adjustWidth(width, "1.75rem"),
                                 textAlign: "center",
                                 fontFamily: fonts.textFont,
                               }}
@@ -418,7 +512,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                             <p
                               style={{
                                 color: colors.textPrimary,
-                                fontSize: "1.75rem",
+                                fontSize: adjustWidth(width, "1.75rem"),
                                 textAlign: "center",
                                 fontFamily: fonts.textFont,
                                 fontWeight: "bold",
@@ -438,7 +532,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                             alignItems: "center",
                             justifyContent: "center",
                             flexDirection: "column",
-                            paddingBottom: "7rem",
+                            paddingBottom: adjustHeight(height, "7rem"),
                           }}
                         >
                           <div
@@ -447,16 +541,16 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                               alignItems: "center",
                               justifyContent: "center",
                               flexDirection: "column",
-                              width: "33rem",
+                              width: adjustWidth(width, "33rem"),
                               height: "90%",
-                              borderRadius: "1rem",
-                              gap: "0.5rem",
+                              borderRadius: adjustWidth(width, "1rem"),
+                              gap: adjustHeight(height, "0.5rem"),
                             }}
                           >
                             <p
                               style={{
                                 color: colors.textPrimary,
-                                fontSize: "1.75rem",
+                                fontSize: adjustWidth(width, "1.75rem"),
                                 textAlign: "center",
                                 fontFamily: fonts.textFont,
                               }}
@@ -466,10 +560,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                             <p
                               style={{
                                 color: colors.textPrimary,
-                                fontSize: "1.75rem",
+                                fontSize: adjustWidth(width, "1.75rem"),
                                 textAlign: "center",
                                 fontFamily: fonts.textFont,
-                                paddingBottom: "2rem",
+                                paddingBottom: adjustHeight(height, "2rem"),
                               }}
                             >
                               Ingresa la información del paciente aquí.
@@ -478,9 +572,9 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                               text="Ingresar la información del paciente."
                               onClick={onAddNewPatientClick}
                               style={{
-                                fontSize: "1.10rem",
+                                fontSize: adjustWidth(width, "1.10rem"),
                                 height: "2.65rem",
-                                width: "25rem",
+                                width: adjustWidth(width, "25rem"),
                               }}
                             />
                           </div>
@@ -495,13 +589,13 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                         alignItems: "center",
                         justifyContent: "center",
                         flexDirection: "column",
-                        paddingBottom: "7rem",
+                        paddingBottom: adjustHeight(height, "7rem"),
                       }}
                     >
                       <div
                         style={{
-                          width: "25rem",
-                          fontSize: "2rem",
+                          width: adjustWidth(width, "25rem"),
+                          fontSize: adjustWidth(width, "2rem"),
                           textAlign: "center",
                           fontFamily: fonts.textFont,
                           color: colors.statusDenied,
@@ -527,6 +621,8 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
 }
 
 const LoadingView = () => {
+  const { width, height } = useWindowSize();
+
   return (
     <div
       style={{
@@ -536,13 +632,17 @@ const LoadingView = () => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        paddingBottom: "7rem",
+        paddingBottom: adjustHeight(height, "7rem"),
       }}
     >
-      <div style={{ width: "17rem" }}>
+      <div
+        style={{
+          width: adjustWidth(width, "17rem"),
+        }}
+      >
         <img
           style={{
-            width: "17rem",
+            width: adjustWidth(width, "17rem"),
             height: "auto",
           }}
           src={SanitasLogo}
@@ -553,7 +653,7 @@ const LoadingView = () => {
       <div
         style={{
           color: colors.primaryBackground,
-          fontSize: "2rem",
+          fontSize: adjustWidth(width, "2rem"),
           textAlign: "center",
           fontFamily: fonts.textFont,
         }}
@@ -565,12 +665,25 @@ const LoadingView = () => {
 };
 
 const PatientSection = ({ patientsResources, genViewPatientBtnClick }) => {
+  const { width, height } = useWindowSize();
   return (
     <Suspense fallback={<LoadingView />}>
       <PatientCard
         patientsResources={patientsResources}
         genViewPatientBtnClick={genViewPatientBtnClick}
         style={{
+          mainContainer: {
+            borderRadius: adjustWidth(width, "1rem"),
+            gap: adjustHeight(height, "2rem"),
+          },
+          secondaryContainer: {
+            paddingLeft: adjustWidth(width, "3rem"),
+            gap: adjustHeight(height, "1rem"),
+          },
+          cardsContainer: {
+            height: adjustHeight(height, "10rem"),
+            borderRadius: adjustWidth(width, "1rem"),
+          },
           patientName: {
             fontFamily: fonts.textFont,
           },

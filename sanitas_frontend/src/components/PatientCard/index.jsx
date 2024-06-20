@@ -1,6 +1,7 @@
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
 import React, { useState } from "react";
 import BaseButton from "src/components/Button/Base";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} PatientInfo
@@ -31,14 +32,14 @@ import BaseButton from "src/components/Button/Base";
  * @returns {JSX.Element} The React Button element.
  */
 export default function PatientCard({ style = {}, patientsResources, genViewPatientBtnClick }) {
+  const { width, height } = useWindowSize();
+
   const defaultStyles = {
     mainContainer: {
       display: "flex",
       flexDirection: "column",
       width: "70%",
       height: "85%",
-      borderRadius: "1rem",
-      gap: "2rem",
       ...style.mainContainer,
     },
     secondaryContainer: {
@@ -46,16 +47,12 @@ export default function PatientCard({ style = {}, patientsResources, genViewPati
       flexDirection: "column",
       width: "80%",
       justifyContent: "center",
-      paddingLeft: "3rem",
-      gap: "1rem",
       ...style.secondaryContainer,
     },
     cardsContainer: {
       display: "flex",
       flexDirection: "row",
       border: "0.125rem solid #0F6838",
-      height: "10rem",
-      borderRadius: "1rem",
       ...style.cardsContainer,
     },
     patientName: {
