@@ -132,23 +132,21 @@ export default function PatientCard({
     <div style={defaultStyles.mainContainer}>
       {patientInfo.map((patient) => (
         <div key={patient.id} style={defaultStyles.cardsContainer}>
-          <React.Fragment key={patient.id}>
-            <div style={defaultStyles.secondaryContainer}>
-              <h2 style={defaultStyles.patientName}>{`${patient.names}`}</h2>
-              <h3 style={defaultStyles.patientAge}>{`Edad: ${patient.age} años`}</h3>
-              <h3 style={defaultStyles.patientCUI}>{`CUI: ${patient.cui}`}</h3>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "20%",
-              }}
-            >
-              <BaseButton text="Ver" onClick={genViewPatientBtnClick(patient.id)} />
-            </div>
-          </React.Fragment>
+          <div style={defaultStyles.secondaryContainer}>
+            <h2 style={defaultStyles.patientName}>{`${patient.names}`}</h2>
+            <h3 style={defaultStyles.patientAge}>{`Edad: ${patient.age} años`}</h3>
+            <h3 style={defaultStyles.patientCUI}>{`CUI: ${patient.cui}`}</h3>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "20%",
+            }}
+          >
+            <BaseButton text="Ver" onClick={genViewPatientBtnClick(patient.id)} />
+          </div>
         </div>
       ))}
     </div>
