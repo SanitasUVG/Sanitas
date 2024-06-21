@@ -44,10 +44,10 @@ export default function AppointmentSurgeryCard({ type, year, surgeryType, date, 
   };
 
   const truncateText = (text, maxLength = 30) => {
-    if (text.length > maxLength) {
+    if (text && text.length > maxLength) {
       return text.substring(0, maxLength) + "...";
     }
-    return text;
+    return text || "";
   };
 
   return (
