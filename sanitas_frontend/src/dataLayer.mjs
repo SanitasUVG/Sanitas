@@ -345,19 +345,30 @@ export const getSurgicalHistory = async (id) => {
   }
 };
 
+/**
+ * Updates the surgical history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the surgical events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} surgicalEvents - An array of objects where each object contains details about a surgical event.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
 export const updateSurgicalHistory = async (patientId, surgicalEvents) => {
   const url = `${BASE_URL}/patient/surgical-history`;
-  try {
-    const response = await axios.put(url, {
-      id: patientId,
-      hasSurgicalEvent: surgicalEvents.length > 0,
-      surgicalEventData: surgicalEvents.map((event) => ({
-        surgeryType: event.type,
-        surgeryYear: event.year.toString(),
-        complications: event.complications,
-      })),
-    });
 
+  const payload = {
+    id: patientId,
+    hasSurgicalEvent: surgicalEvents.length > 0,
+    surgicalEventData: surgicalEvents.map((event) => ({
+      surgeryType: event.surgeryType,
+      surgeryYear: event.surgeryYear,
+      complications: event.complications,
+    })),
+  };
+
+  try {
+    const response = await axios.put(url, payload);
     return response.data;
   } catch (error) {
     if (error.response) {
