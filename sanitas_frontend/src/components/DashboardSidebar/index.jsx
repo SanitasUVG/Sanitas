@@ -89,6 +89,7 @@ export default function DashboardSidebar({
           display: "flex",
           alignItems: "end",
           justifyContent: "end",
+          paddingRight: "1rem",
           width: "100%",
         }}
       >
