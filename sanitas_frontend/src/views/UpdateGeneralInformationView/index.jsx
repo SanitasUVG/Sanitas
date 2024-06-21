@@ -1,12 +1,13 @@
-import saveIcon from "@tabler/icons/outline/device-floppy.svg";
-import editIcon from "@tabler/icons/outline/pencil.svg";
-import cancelIcon from "@tabler/icons/outline/x.svg";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 import { Fragment, Suspense, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import BaseButton from "src/components/Button/Base";
 import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
-import { BaseInput } from "src/components/Input";
+import DropdownMenu from "src/components/DropdownMenu";
+import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
@@ -63,10 +64,21 @@ export default function UpdateInfoView(
       style={{
         display: "grid",
         gridTemplateColumns: "20% 80%",
+        padding: "2rem",
+        background: colors.primaryBackground,
+        height: "100vh",
+        gap: "2rem",
       }}
     >
       <DashboardSidebar {...sidebarConfig} />
-      <div>
+      <div
+        style={{
+          overflowY: "scroll",
+          background: colors.secondaryBackground,
+          borderRadius: "0.625rem",
+          width: "99%",
+        }}
+      >
         <UpdateGeneralInformationSection
           patientId={id}
           getData={getGeneralPatientInformation}
@@ -89,25 +101,103 @@ function UpdateColaboratorInformationSection() {
 /**
  * @typedef {Object} UpdateGeneralInformationSectionProps
  * @property {number} patientId
- * @property {Function} getData
- * @property {Function} updateData
+ * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getData
+ * @property {import("src/dataLayer.mjs").UpdateGeneralPatientInformationAPICall} updateData
  */
 
 /**
  * @param {UpdateGeneralInformationSectionProps} props
  */
 function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
-  // const getData2 = async () => {
-  //   await delay(3000);
-  //   return await getData(patientId);
-  // };
+  /** @type React.CSSProperties */
+  const errorPStyles = {
+    fontFamily: fonts.textFont,
+    fontSize: fontSize.textSize,
+    color: colors.statusDenied,
+  };
+
+  const GenInputStyle = (labelRow, labelColumn) => {
+    let gridColumn = `${labelColumn} / ${labelColumn + 1}`;
+    let gridRow = `${labelRow} / ${labelRow + 1}`;
+
+    return { gridColumn, gridRow };
+  };
+
+  const dropdownOptions = [
+    { value: "", label: "Selecciona un tipo de sangre" },
+    { value: "A+", label: "A+" },
+    { value: "A-", label: "A-" },
+    { value: "B+", label: "B+" },
+    { value: "B-", label: "B-" },
+    { value: "AB+", label: "AB+" },
+    { value: "AB-", label: "AB-" },
+    { value: "O+", label: "O+" },
+    { value: "O-", label: "O-" },
+  ];
+
+  const styles = {
+    form: {
+      padding: "20px",
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+    },
+    label: {
+      fontWeight: "bold",
+    },
+    SexInput: {
+      display: "flex",
+      padding: "10px",
+      gap: "20px",
+    },
+    button: {
+      display: "inline-block",
+      padding: "10px 20px",
+      fontSize: "16px",
+      color: "#fff",
+      backgroundColor: "#4CAF50",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      gridColumn: "1 / span 2",
+    },
+    h1: {
+      gridColumn: "1 / span 2",
+      fontSize: "24px",
+      padding: "10px",
+    },
+    h2: {
+      gridColumn: "1 / span 2",
+      fontSize: "24px",
+      padding: "10px",
+      borderTop: `0.1rem solid ${colors.darkerGrey}`,
+      paddingTop: "2rem",
+    },
+    firstsectionform: {
+      gridTemplateColumns: "50% 50%",
+      display: "grid",
+      gap: "20px",
+      padding: "10px",
+    },
+    Secondsectionform: {
+      display: "grid",
+      gap: "20px",
+      padding: "10px",
+    },
+    input: {
+      maxWidth: "18.75rem",
+    },
+  };
+
   const generalInformationResource = WrapPromise(getData(patientId));
   // const generalInformationResource = WrapPromise(getData2());
 
   const Hijo = () => {
+    const [editMode, setEditMode] = useState(false);
+    const [updateError, setUpdateError] = useState("");
+    const [resourceUpdate, setResourceUpdate] = useState(null);
+
     const response = generalInformationResource.read();
     if (response.error) {
-      // FIXME: Manejar el error al obtener la data!
       return (
         <div>
           <h1>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
@@ -120,207 +210,208 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
       ...response.result,
       birthdate: formatDate(response.result.birthdate),
     });
-    const handleUpdatePatient = async () => {
-      const updateInformationResource = WrapPromise(updateData(patientData));
-      const response = updateInformationResource.read();
+
+    if (resourceUpdate !== null) {
+      const response = resourceUpdate.read();
+      setUpdateError("");
       if (response.error) {
-        // FIXME: Manejar el error al actualizar datos!
+        setUpdateError(`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`);
+      } else {
+        setPatientData({ ...response.result, birthdate: formatDate(response.result.birthdate) });
       }
 
-      // NOTE: Los datos fueron actualizados!
+      setResourceUpdate(null);
+    }
+
+    const handleUpdatePatient = async () => {
+      setEditMode(false);
+      const updateInformationResource = WrapPromise(updateData(patientData));
+      setResourceUpdate(updateInformationResource);
+    };
+
+    const handleCancelEdit = () => {
+      setPatientData({ ...response.result, birthdate: formatDate(response.result.birthdate) });
+      setEditMode(false);
     };
 
     return (
-      <form>
-        <div>
-          <label>
-            CUI:
-            <input
-              type="text"
-              value={patientData.cui}
-              onChange={(e) => setPatientData({ ...patientData, cui: e.target.value })}
+      <form style={styles.form}>
+        <h1 style={styles.h1}>Datos Generales:</h1>
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+          {editMode
+            ? (
+              <Fragment>
+                <IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
+                <IconButton icon={CancelIcon} onClick={handleCancelEdit} />
+              </Fragment>
+            )
+            : <IconButton icon={EditIcon} onClick={() => setEditMode(true)} />}
+        </div>
+        <div style={styles.firstsectionform}>
+          <label style={styles.label}>Nombres:</label>
+          <BaseInput
+            type="text"
+            value={patientData.names}
+            onChange={(e) => setPatientData({ ...patientData, names: e.target.value })}
+            placeholder="Nombres"
+            style={{ ...styles.input, ...GenInputStyle(2, 1) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Apellidos:</label>
+          <BaseInput
+            type="text"
+            value={patientData.lastNames}
+            onChange={(e) => setPatientData({ ...patientData, lastNames: e.target.value })}
+            style={{ ...styles.input, ...GenInputStyle(2, 2) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>CUI:</label>
+          <BaseInput
+            type="text"
+            value={patientData.cui}
+            onChange={(e) => setPatientData({ ...patientData, cui: e.target.value })}
+            placeholder="CUI"
+            style={{ ...styles.input, ...GenInputStyle(4, 1) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Email:</label>
+          <BaseInput
+            type="email"
+            value={patientData.email || ""}
+            onChange={(e) => setPatientData({ ...patientData, email: e.target.value })}
+            style={{ ...styles.input, ...GenInputStyle(4, 2) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Sexo:</label>
+          <div style={{ ...styles.SexInput, ...GenInputStyle(6, 1) }}>
+            <RadioInput
+              type="radio"
+              name="gender"
+              value="female"
+              label="Femenino"
+              checked={patientData.isWoman}
+              onChange={() => setPatientData({ ...patientData, isWoman: true })}
+              disabled={!editMode}
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            Nombres:
-            <input
-              type="text"
-              value={patientData.names}
-              onChange={(e) => setPatientData({ ...patientData, names: e.target.value })}
+            <RadioInput
+              type="radio"
+              name="gender"
+              value="male"
+              label="Masculino"
+              checked={!patientData.isWoman}
+              onChange={() => setPatientData({ ...patientData, isWoman: false })}
+              disabled={!editMode}
             />
-          </label>
+          </div>
+
+          <label style={styles.label}>Teléfono:</label>
+          <BaseInput
+            type="text"
+            value={patientData.phone || ""}
+            onChange={(e) => setPatientData({ ...patientData, phone: e.target.value })}
+            style={{ ...styles.input, ...GenInputStyle(6, 2) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Fecha de nacimiento:</label>
+          <DateInput
+            value={patientData.birthdate}
+            onChange={(e) => setPatientData({ ...patientData, birthdate: e.target.value })}
+            style={{ ...styles.input, ...GenInputStyle(8, 1) }}
+            disabled={!editMode}
+          />
         </div>
-        <div>
-          <label>
-            Apellidos:
-            <input
-              type="text"
-              value={patientData.lastNames}
-              onChange={(e) => setPatientData({ ...patientData, lastNames: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Sexo:
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={!patientData.isWoman}
-                  onChange={() => setPatientData({ ...patientData, isWoman: false })}
-                />
-                Masculino
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={patientData.isWoman}
-                  onChange={() => setPatientData({ ...patientData, isWoman: true })}
-                />
-                Femenino
-              </label>
-            </div>
-          </label>
-        </div>
-        <div>
-          <label>
-            Email:
-            <input
-              type="email"
-              value={patientData.email || ""}
-              onChange={(e) => setPatientData({ ...patientData, email: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Nombre de contacto 1:
-            <input
-              type="text"
-              value={patientData.contactName1 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactName1: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Parentesco de contacto 1:
-            <input
-              type="text"
-              value={patientData.contactKinship1 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactKinship1: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Teléfono de contacto 1:
-            <input
-              type="text"
-              value={patientData.contactPhone1 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactPhone1: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Nombre de contacto 2:
-            <input
-              type="text"
-              value={patientData.contactName2 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactName2: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Parentesco de contacto 2:
-            <input
-              type="text"
-              value={patientData.contactKinship2 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactKinship2: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Teléfono de contacto 2:
-            <input
-              type="text"
-              value={patientData.contactPhone2 || ""}
-              onChange={(e) => setPatientData({ ...patientData, contactPhone2: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Tipo de sangre:
-            <select
-              value={patientData.bloodType || ""}
-              onChange={(e) => setPatientData({ ...patientData, bloodType: e.target.value })}
-            >
-              <option value="">Selecciona un tipo de sangre</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Dirección:
-            <input
-              type="text"
-              value={patientData.address || ""}
-              onChange={(e) => setPatientData({ ...patientData, address: e.target.value })}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            ID del seguro:
-            <input
+
+        <div style={styles.Secondsectionform}>
+          <label style={styles.label}>Tipo de sangre:</label>
+          <DropdownMenu
+            value={patientData.bloodType}
+            onChange={(e) => setPatientData({ ...patientData, bloodType: e.target.value })}
+            options={dropdownOptions}
+            disabled={!editMode}
+          />
+          <label style={styles.label}>Dirección:</label>
+          <BaseInput
+            type="text"
+            value={patientData.address || ""}
+            onChange={(e) => setPatientData({ ...patientData, address: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>ID del seguro:</label>
+          <div style={{ paddingBottom: "2rem", width: "100%" }}>
+            <BaseInput
               type="number"
               value={patientData.insuranceId || ""}
               onChange={(e) => setPatientData({ ...patientData, insuranceId: e.target.value })}
+              style={{ width: "18.75rem" }}
+              disabled={!editMode}
             />
-          </label>
+          </div>
         </div>
-        <div>
-          <label>
-            Fecha de nacimiento:
-            <input
-              type="date"
-              value={patientData.birthdate}
-              onChange={(e) => setPatientData({ ...patientData, birthdate: e.target.value })}
-            />
-          </label>
+
+        <h2 style={styles.h2}>Contactos del paciente</h2>
+        <div style={styles.Secondsectionform}>
+          <label style={styles.label}>Nombre de contacto 1:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactName1 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactName1: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Parentesco de contacto 1:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactKinship1 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactKinship1: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Teléfono de contacto 1:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactPhone1 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactPhone1: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Nombre de contacto 2:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactName2 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactName2: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Parentesco de contacto 2:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactKinship2 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactKinship2: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Teléfono de contacto 2:</label>
+          <BaseInput
+            type="text"
+            value={patientData.contactPhone2 || ""}
+            onChange={(e) => setPatientData({ ...patientData, contactPhone2: e.target.value })}
+            style={styles.input}
+            disabled={!editMode}
+          />
         </div>
-        <div>
-          <label>
-            Teléfono:
-            <input
-              type="text"
-              value={patientData.phone || ""}
-              onChange={(e) => setPatientData({ ...patientData, phone: e.target.value })}
-            />
-          </label>
-        </div>
-        <button type="button" onClick={handleUpdatePatient}>
-          Actualizar
-        </button>
+        <p style={errorPStyles}>{updateError}</p>
       </form>
     );
   };
@@ -331,9 +422,8 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
   return (
     <div>
-      <h1>Actualizar información del paciente</h1>
       <Suspense fallback={<LoadingView />}>
-        <Hijo resource={generalInformationResource} />
+        <Hijo />
       </Suspense>
     </div>
   );
@@ -428,11 +518,11 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
                 }}
               >
                 <IconButton
-                  icon={saveIcon}
+                  icon={CheckIcon}
                   onClick={handleUpdateInformation}
                 />
                 <IconButton
-                  icon={cancelIcon}
+                  icon={CancelIcon}
                   onClick={() => {
                     setIsEditable(false);
                     setCarnet(info.carnet);
@@ -443,7 +533,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
             )
             : (
               <IconButton
-                icon={editIcon}
+                icon={EditIcon}
                 onClick={() => setIsEditable(true)}
               />
             )}

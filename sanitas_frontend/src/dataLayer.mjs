@@ -260,8 +260,8 @@ export const getGeneralPatientInformation = async (id) => {
 export const updateGeneralPatientInformation = async (APIPatient) => {
   const url = `${BASE_URL}/patient/general`;
   try {
-    await axios.put(url, APIPatient);
-    return true;
+    const { data: result } = await axios.put(url, APIPatient);
+    return { result };
   } catch (error) {
     return { error };
   }
