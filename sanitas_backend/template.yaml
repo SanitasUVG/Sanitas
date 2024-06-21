@@ -265,6 +265,21 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # get-collaborator.mjs
+  getCollaboratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetGeneralCollaboratorInfo/get-collaborator.getCollaboratorHandler
+      Description: Function to get collaborator data
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/collaborator/{id}
+            Method: GET
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
 const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
@@ -45,6 +46,10 @@ export async function searchPatient(query, type) {
         throw new Error("Received patient has no `id`!");
       }
 
+      if (!r.cui) {
+        throw new Error("Received patient has no `cui`!");
+      }
+
       if (!r.nombres) {
         throw new Error("Received patient has no `names`!");
       }
@@ -53,9 +58,15 @@ export async function searchPatient(query, type) {
         throw new Error("Received patient has no `apellidos`!");
       }
 
+      if (!r.fecha_nacimiento) {
+        throw new Error("Received patient has no `fecha_nacimiento`!");
+      }
+
       return {
         id: r.id,
+        cui: r.cui,
         names: `${r.nombres} ${r.apellidos}`,
+        age: calculateYearsBetween(r.fecha_nacimiento),
       };
     });
 
@@ -249,8 +260,57 @@ export const getGeneralPatientInformation = async (id) => {
 export const updateGeneralPatientInformation = async (APIPatient) => {
   const url = `${BASE_URL}/patient/general`;
   try {
-    await axios.put(url, APIPatient);
-    return true;
+    const { data: result } = await axios.put(url, APIPatient);
+    return { result };
+  } catch (error) {
+    return { error };
+  }
+};
+
+/**
+ * @typedef {Object} APIStudentInformation
+ * @property {number} patientId
+ * @property {string} career
+ * @property {string} carnet
+ */
+
+/**
+ * 	Callback for retrieving the student information of a patient.
+ *
+ * @callback GetStudentPatientInformationAPICall
+ * @param {number} id - The ID of the patient.
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {GetStudentPatientInformationAPICall}
+ */
+export const getStudentPatientInformation = async (id) => {
+  const url = `${BASE_URL}/patient/student/${id}`;
+  try {
+    const { data: result } = await axios.get(url);
+    return { result };
+  } catch (error) {
+    return { error };
+  }
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ *
+ * @callback UpdateStudentPatientInformationAPICall
+ * @param {APIStudentInformation} APIStudentInfo
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {UpdateStudentPatientInformationAPICall}
+ */
+export const updateStudentPatientInformation = async (APIStudentInfo) => {
+  const url = `${BASE_URL}/patient/student`;
+  try {
+    const { data: result } = await axios.put(url, APIStudentInfo);
+    return { result };
   } catch (error) {
     return { error };
   }

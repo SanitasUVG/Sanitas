@@ -19,8 +19,8 @@ export default {
 
 const examplePatientData = {
   id: 6969,
-  names: "John",
-  lastNames: "Doe",
+  names: "Johnaaaa",
+  lastNames: "Doee",
   isWoman: false,
   email: "john.doe@example.com",
   contactName1: "Jane Doe",
@@ -43,6 +43,13 @@ const mockGetGeneralPatientInformation = async (id) => {
     return { error: new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.") };
   }
 };
+const mockGetStudentPatientInformation = async (id) => {
+  if (id === examplePatientData.id) {
+    return { result: { patientId: id, carnet: "22386", career: "Lic. Computación" } };
+  } else {
+    return { error: new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.") };
+  }
+};
 
 const correctStore = createEmptyStore({
   selectedPatientId: examplePatientData.id,
@@ -51,6 +58,7 @@ const correctStore = createEmptyStore({
 export const WithPatientData = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
+    getStudentPatientInformation: mockGetStudentPatientInformation,
     useStore: correctStore,
     sidebarConfig: {
       userInformation: {
@@ -67,6 +75,7 @@ const incorrectStore = createEmptyStore({
 export const ErrorState = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
+    getStudentPatientInformation: mockGetStudentPatientInformation,
     useStore: incorrectStore,
     sidebarConfig: {
       userInformation: {

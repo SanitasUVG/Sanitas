@@ -3,10 +3,11 @@ import {
   checkCui,
   getGeneralPatientInformation,
   getSurgicalHistory,
+  getStudentPatientInformation,
   searchPatient,
   submitPatientData,
   updateGeneralPatientInformation,
-  updateSurgicalHistory,
+  updateStudentPatientInformation,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -50,6 +51,8 @@ const updateInfoView = (
   <UpdateInfoView
     getGeneralPatientInformation={getGeneralPatientInformation}
     updateGeneralPatientInformation={updateGeneralPatientInformation}
+    getStudentPatientInformation={getStudentPatientInformation}
+    updateStudentPatientInformation={updateStudentPatientInformation}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
