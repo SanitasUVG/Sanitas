@@ -7,15 +7,17 @@ import { BaseInput } from "src/components/Input/index";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 
 /**
- * @typedef {Object} SurgicalHistory
- * @property {import("src/dataLayer.mjs").getSurgicalHistory} getSurgicalHistory
- * @property {import("src/dataLayer.mjs").updateSurgicalHistory} updateSurgicalHistory
- * @property {import("src/components/DashboardSidebar").DashboardSidebarProps} sidebarConfig - The config for the view sidebar
- * @property {import("src/store.mjs").UseStoreHook} useStore
- */
-
-/**
- * @param {SurgicalHistory} props
+ * @typedef {Object} SurgicalHistoryProps
+ * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
+ * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
+ * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
+ * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
+ * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
+ *
+ * A component to manage and displays a patient's surgical history, allowing users to add and view records.
+ *
+ * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
+ * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
 
 export function SurgicalHistory({
@@ -29,16 +31,25 @@ export function SurgicalHistory({
   const [surgicalHistory, setSurgicalHistory] = useState([]);
   const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
-  const [birthYear, setBirthYear] = useState(new Date().getFullYear());
 
+  // Fetch the patient's birth year to set the default year for new surgeries
+  const [birthYear, setBirthYear] = useState(new Date().getFullYear());
+  const [error, setError] = useState(null);
+
+  // Fetch the patient's birth year to set the default year for new surgeries
   useEffect(() => {
     const fetchBirthday = async () => {
-      const result = await getBirthdayPatientInfo(id);
-      if (!result.error && result.result && result.result.birthdate) {
-        const birthday = new Date(result.result.birthdate);
-        setBirthYear(birthday.getFullYear());
-      } else {
-        error(result.error || "Error fetching birthday information");
+      try {
+        const result = await getBirthdayPatientInfo(id);
+        if (result && !result.error && result.result && result.result.birthdate) {
+          const birthday = new Date(result.result.birthdate);
+          setBirthYear(birthday.getFullYear());
+          setError(null);
+        } else {
+          throw new Error(result?.error || "Error fetching birthday information");
+        }
+      } catch (error) {
+        setError(error.message);
       }
     };
 
@@ -47,12 +58,15 @@ export function SurgicalHistory({
     }
   }, [id, getBirthdayPatientInfo]);
 
+  // Generate a list of years from the patient's birth year to the current year
   const currentYear = new Date().getFullYear();
   const yearOptions = [];
 
   for (let year = birthYear; year <= currentYear; year++) {
     yearOptions.push({ value: year, label: year.toString() });
   }
+
+  // Fetch the surgical history data for the selected patient
 
   useEffect(() => {
     const fetchSurgicalHistory = async () => {
@@ -62,7 +76,7 @@ export function SurgicalHistory({
       } else if (!result.error) {
         setSurgicalHistory([]);
       } else {
-        error(result.error);
+        setError(result.error);
       }
     };
 
@@ -71,15 +85,17 @@ export function SurgicalHistory({
     }
   }, [id, getSurgicalHistory]);
 
+  // Event handlers for adding, editing, and saving surgical history records
   const handleOpenNewForm = () => {
-    setSelectedSurgery({ type: "", year: currentYear, complications: "" });
+    setSelectedSurgery({ surgeryType: "", surgeryYear: currentYear.toString(), complications: "" });
     setAddingNew(true);
   };
 
+  // Save the new surgery record to the database
   const handleSaveNewSurgery = async () => {
     if (
-      !selectedSurgery.type
-      || !selectedSurgery.year
+      !selectedSurgery.surgeryType
+      || !selectedSurgery.surgeryYear
       || selectedSurgery.complications === undefined
     ) {
       alert("Please fill in all fields before saving.");
@@ -87,7 +103,6 @@ export function SurgicalHistory({
     }
 
     const updatedSurgicalHistory = [...surgicalHistory, selectedSurgery];
-
     const response = await updateSurgicalHistory(id, updatedSurgicalHistory);
 
     if (!response.error) {
@@ -95,15 +110,16 @@ export function SurgicalHistory({
       setAddingNew(false);
       setSelectedSurgery(null);
     } else {
-      error(response.error);
+      setError("API Error:", response.error);
       alert("Error saving the surgical history: " + response.error);
     }
   };
 
+  // Select a surgery record to view
   const handleSelectSurgery = (surgery) => {
     setSelectedSurgery({
-      type: surgery.surgeryType,
-      year: surgery.surgeryYear,
+      surgeryType: surgery.surgeryType,
+      surgeryYear: surgery.surgeryYear,
       complications: surgery.complications,
     });
     setAddingNew(false);
@@ -252,8 +268,8 @@ export function SurgicalHistory({
                     ¿De qué?
                   </p>
                   <BaseInput
-                    value={selectedSurgery.type}
-                    onChange={(e) => setSelectedSurgery({ ...selectedSurgery, type: e.target.value })}
+                    value={selectedSurgery.surgeryType}
+                    onChange={(e) => setSelectedSurgery({ ...selectedSurgery, surgeryType: e.target.value })}
                     readOnly={!addingNew}
                     placeholder="Ingrese acá el motivo o tipo de cirugía"
                     style={{
@@ -275,12 +291,12 @@ export function SurgicalHistory({
                   </p>
                   <DropdownMenu
                     options={yearOptions}
-                    value={selectedSurgery.year}
+                    value={selectedSurgery.surgeryYear}
                     readOnly={!addingNew}
                     onChange={(e) =>
                       setSelectedSurgery({
                         ...selectedSurgery,
-                        year: Number.parseInt(e.target.value),
+                        surgeryYear: e.target.value,
                       })}
                   />
 
