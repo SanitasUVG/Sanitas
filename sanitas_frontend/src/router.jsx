@@ -57,6 +57,7 @@ const updateInfoView = (
 
 const surgicalHistoryView = (
   <SurgicalHistory
+    getBirthdayPatientInfo={getGeneralPatientInformation}
     getSurgicalHistory={getSurgicalHistory}
     updateSurgicalHistory={updateSurgicalHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
