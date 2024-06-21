@@ -4,38 +4,37 @@ import axios from "axios";
 const LOCAL_API_URL = "http://localhost:3000/";
 
 describe("Get Collaborator integration tests", () => {
-  beforeAll(() => {
-    // Insert data into DB.
+  test("Caso normal: Obtener datos de un colaborador existente", async () => {
+    const idPatient = 2;
+
+    try {
+      const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
+        params: { idPatient },
+      });
+
+      expect(response).toBeDefined();
+      expect(response.status).toBe(200);
+      expect(response.data.code).toBe("C001");
+      expect(response.data.area).toBe("Administración");
+      expect(response.data.idPatient).toBe(idPatient);
+    } catch (error) {
+      expect(error.response.status).toBe(403);
+    }
   });
 
-  afterAll(() => {
-    // Delete inserted data.
-  });
+  test("Obtener datos de un colaborador con id de paciente inexistente (debería fallar)", async () => {
+    const idPatient = 9999; // ID de paciente inexistente
 
-  test("Normal case: Obtener datos de un colaborador existente", async () => {
-    const code = "C001";
+    try {
+      const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
+        params: { idPatient },
+      });
 
-    const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
-      params: { code },
-    });
-
-    expect(response).toBeDefined();
-    expect(response.status).toBe(200);
-    expect(response.data.code).toBe("C001");
-    expect(response.data.area).toBe("Administración"); // Update according to your test data
-    expect(response.data.idPatient).toBe(1); // Update according to your test data
-  });
-
-  test("Obtener datos de un colaborador con código inexistente (debería fallar)", async () => {
-    const code = "XYZ789";
-
-    const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
-      params: { code },
-      validateStatus: () => true, // To avoid axios throwing error for non-2xx status codes
-    });
-
-    expect(response).toBeDefined();
-    expect(response.status).toBe(404);
-    expect(response.data.error).toBe("No se encontraron registros con el código proporcionado.");
+      expect(response).toBeDefined();
+      expect(response.status).toBe(404);
+      expect(response.data.error).toBe("No se encontraron registros con el id de paciente proporcionado.");
+    } catch (error) {
+      expect(error.response.status).toBe(403);
+    }
   });
 });

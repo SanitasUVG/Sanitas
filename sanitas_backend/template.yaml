@@ -277,7 +277,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /patient/collaborator
+            Path: /patient/collaborator/{id}
             Method: GET
 
   ApplicationResourceGroup:

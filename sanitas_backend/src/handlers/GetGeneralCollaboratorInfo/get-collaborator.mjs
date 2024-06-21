@@ -2,13 +2,9 @@ import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 
-// Function to map DB collaborator to API collaborator
+// Función para mapear el colaborador de la base de datos al formato del API
 function mapToAPICollaborator(dbCollaborator) {
-  const {
-    codigo: code,
-    area,
-    id_paciente: idPatient,
-  } = dbCollaborator;
+  const { codigo: code, area, id_paciente: idPatient } = dbCollaborator;
 
   return {
     code,
@@ -20,20 +16,19 @@ function mapToAPICollaborator(dbCollaborator) {
 export const getCollaboratorHandler = async (event, context) => {
   withRequest(event, context);
 
-  logger.info({ event }, "Event received:");
+  logger.info({ event }, "Evento recibido:");
 
   if (event.httpMethod !== "GET") {
     throw new Error(`getCollaboratorHandler solo acepta el método GET, intentaste: ${event.httpMethod}`);
   }
 
-  const { code } = event.queryStringParameters || {};
-  logger.info({ code }, "Query parameter 'code':");
+  const { idPatient } = event.queryStringParameters || {};
 
-  if (!code) {
+  if (!idPatient) {
     return createResponse()
       .setStatusCode(400)
       .addCORSHeaders()
-      .setBody({ error: "El parámetro 'code' es requerido." })
+      .setBody({ error: "El parámetro 'idPatient' es requerido." })
       .build();
   }
 
@@ -44,30 +39,30 @@ export const getCollaboratorHandler = async (event, context) => {
     client = getPgClient(url);
     await client.connect();
 
-    logger.info({ code }, "Consultando datos del colaborador en la base de datos...");
+    logger.info({ idPatient }, "Obteniendo datos del colaborador desde la base de datos...");
 
-    const query = "SELECT * FROM colaborador WHERE codigo = $1";
-    const values = [code];
+    const query = `
+      SELECT codigo, area, id_paciente
+      FROM colaborador
+      WHERE id_paciente = $1
+    `;
+    const values = [idPatient];
 
     logger.info({ query, values }, "Consulta SQL y valores:");
 
     const result = await client.query(query, values);
-    logger.info({ result }, "Query result:");
+    logger.info({ result }, "Resultado de la consulta:");
 
     if (result.rowCount === 0) {
       return createResponse()
         .setStatusCode(404)
         .addCORSHeaders()
-        .setBody({ error: "No se encontraron registros con el código proporcionado." })
+        .setBody({ error: "No se encontraron registros con el id de paciente proporcionado." })
         .build();
     }
 
-    const dbCollaborator = result.rows[0];
-    logger.info({ dbCollaborator }, "DB Collaborator Data:");
-
-    const apiCollaborator = mapToAPICollaborator(dbCollaborator);
-
-    logger.info("Datos del colaborador obtenidos exitosamente.");
+    const collaborator = result.rows[0];
+    const apiCollaborator = mapToAPICollaborator(collaborator);
 
     return createResponse()
       .setStatusCode(200)
@@ -75,13 +70,13 @@ export const getCollaboratorHandler = async (event, context) => {
       .setBody(apiCollaborator)
       .build();
   } catch (error) {
-    logger.error(error, "Error querying database:");
+    logger.error(error, "Error al consultar la base de datos:");
     await client?.end();
 
     return createResponse()
       .setStatusCode(500)
       .addCORSHeaders()
-      .setBody({ error: "Internal Server Error" })
+      .setBody({ error: "Error Interno del Servidor" })
       .build();
   }
 };
