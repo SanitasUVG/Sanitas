@@ -2,12 +2,13 @@ import { Outlet } from "react-router-dom";
 import {
   checkCui,
   getGeneralPatientInformation,
-  getSurgicalHistory,
   getStudentPatientInformation,
+  getSurgicalHistory,
   searchPatient,
   submitPatientData,
   updateGeneralPatientInformation,
   updateStudentPatientInformation,
+  updateSurgicalHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
