@@ -121,12 +121,12 @@ export function SurgicalHistory({
         flexDirection: "row",
         backgroundColor: colors.primaryBackground,
         height: "100vh",
-        padding: "1rem",
+        padding: "2rem",
       }}
     >
       <div
         style={{
-          width: "30%",
+          width: "25%",
         }}
       >
         <DashboardSidebar {...sidebarConfig} />
@@ -254,6 +254,7 @@ export function SurgicalHistory({
                   <BaseInput
                     value={selectedSurgery.type}
                     onChange={(e) => setSelectedSurgery({ ...selectedSurgery, type: e.target.value })}
+                    readOnly={!addingNew}
                     placeholder="Ingrese acá el motivo o tipo de cirugía"
                     style={{
                       width: "95%",
@@ -275,6 +276,7 @@ export function SurgicalHistory({
                   <DropdownMenu
                     options={yearOptions}
                     value={selectedSurgery.year}
+                    readOnly={!addingNew}
                     onChange={(e) =>
                       setSelectedSurgery({
                         ...selectedSurgery,
@@ -295,6 +297,7 @@ export function SurgicalHistory({
                   <BaseInput
                     value={selectedSurgery.complications || ""}
                     onChange={(e) => setSelectedSurgery({ ...selectedSurgery, complications: e.target.value })}
+                    readOnly={!addingNew}
                     placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
                     style={{
                       width: "95%",
