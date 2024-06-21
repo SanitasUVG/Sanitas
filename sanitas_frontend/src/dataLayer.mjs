@@ -285,22 +285,17 @@ export const getSurgicalHistory = async (id) => {
   }
 };
 
-/**
- * Updates the surgical history of a patient by their ID.
- *
- * @param {string} patientId - The patient's ID.
- * @param {string} carnet - The student's registration number (if applicable).
- * @param {string} career - The student's career (if applicable).
- * @returns {Promise<Object>} - Returns the API response or an error.
- */
-export const updateSurgicalHistory = async (patientId, carnet, career) => {
+export const updateSurgicalHistory = async (patientId, surgicalEvents) => {
   const url = `${BASE_URL}/patient/surgical-history`;
-
   try {
     const response = await axios.put(url, {
-      patientId,
-      carnet,
-      career,
+      id: patientId,
+      hasSurgicalEvent: surgicalEvents.length > 0,
+      surgicalEventData: surgicalEvents.map((event) => ({
+        surgeryType: event.type,
+        surgeryYear: event.year.toString(),
+        complications: event.complications,
+      })),
     });
 
     return response.data;
@@ -308,11 +303,9 @@ export const updateSurgicalHistory = async (patientId, carnet, career) => {
     if (error.response) {
       return error.response.data;
     } else if (error.request) {
-      message.error("No response received");
+      alert("No response received");
     } else {
       return error.message;
     }
-
-    return { error: "Failed to update surgical history." };
   }
 };
