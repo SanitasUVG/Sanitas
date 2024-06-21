@@ -28,7 +28,7 @@ describe("Update Patient integration tests", () => {
 
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
-    expect(response.data.message).toBe("Datos del paciente actualizados exitosamente.");
+    expect(response.data.phone).toBe(patientData.phone);
   });
 
   test("Actualizar datos de un paciente sin proporcionar ningún campo para actualizar", async () => {
@@ -40,7 +40,7 @@ describe("Update Patient integration tests", () => {
 
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
-    expect(response.data.message).toBe("Datos del paciente actualizados exitosamente.");
+    expect(response.data.id).toBe(patientData.id);
   });
 
   test("Actualizar datos de un paciente con una ID inexistente (debería fallar)", async () => {

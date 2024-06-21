@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { mapToAPIPatient } from "utils";
 
 function mapToDbPatient(apiPatient) {
   const {
@@ -91,6 +92,7 @@ export const updatePatientHandler = async (event, context) => {
         correo = COALESCE($16, correo),
         es_mujer = COALESCE($17, es_mujer)
       WHERE id = $1
+      RETURNING *
     `;
     const values = [
       patientData.id,
@@ -121,6 +123,18 @@ export const updatePatientHandler = async (event, context) => {
     }
 
     logger.info("Datos del paciente actualizados exitosamente.");
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
+      },
+      body: JSON.stringify(mapToAPIPatient(result.rows[0])),
+    };
+
+    logger.info(response, "Respondiendo con:");
+    return response;
   } catch (error) {
     logger.error(error, "¡Se produjo un error al actualizar los datos del paciente!");
 
@@ -146,17 +160,4 @@ export const updatePatientHandler = async (event, context) => {
   } finally {
     await client?.end();
   }
-
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Origin": "*", // Allow from anywhere
-      "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
-    },
-    body: JSON.stringify({ message: "Datos del paciente actualizados exitosamente." }),
-  };
-
-  logger.info(response, "Respondiendo con:");
-  return response;
 };
