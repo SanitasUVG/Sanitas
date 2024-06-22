@@ -31,11 +31,10 @@ export function SurgicalHistory({
   const [surgicalHistory, setSurgicalHistory] = useState([]);
   const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
-  const [surgeryType, setSurgeryType] = useState("");
+  const [error, setError] = useState(null);
 
   // Fetch the patient's birth year to set the default year for new surgeries
   const [birthYear, setBirthYear] = useState(new Date().getFullYear());
-  const [error, setError] = useState(null);
 
   // Fetch the patient's birth year to set the default year for new surgeries
   useEffect(() => {
@@ -47,7 +46,9 @@ export function SurgicalHistory({
           setBirthYear(birthday.getFullYear());
           setError(null);
         } else {
-          throw new Error(result?.error || "Error fetching birthday information");
+          throw new Error(
+            result?.error || "¡Ha ocurrido un error al obtener la fecha de nacimiento!",
+          );
         }
       } catch (error) {
         setError(error.message);
@@ -68,36 +69,22 @@ export function SurgicalHistory({
   }
 
   // Fetch the surgical history data for the selected patient
-
   useEffect(() => {
     const fetchSurgicalHistory = async () => {
       const result = await getSurgicalHistory(id);
       if (!result.error && result.result && result.result.surgicalEventData) {
         setSurgicalHistory(result.result.surgicalEventData);
-      } else if (!result.error) {
-        setSurgicalHistory([]);
-      } else {
-        setError(result.error);
-      }
-    };
-
-    if (id) {
-      fetchSurgicalHistory();
-    }
-  }, [id, getSurgicalHistory]);
-
-  useEffect(() => {
-    const fetchSurgicalHistory = async () => {
-      try {
-        const result = await getSurgicalHistory(id);
-        if (result.status === 200) {
-          setSurgicalHistory(result.data.surgicalEventData);
-          setError(null);
+      } else if (result.error) {
+        if (result.error.status === 404) {
+          setSurgicalHistory([]);
         } else {
-          throw new Error(result.data.error || "Unknown error occurred");
+          setError(
+            result.error.message
+              || "¡Ha ocurrido un error al obtener los antecedentes quirúrjicos!",
+          );
         }
-      } catch (error) {
-        setError(error.message);
+      } else {
+        setSurgicalHistory([]);
       }
     };
 
@@ -119,7 +106,7 @@ export function SurgicalHistory({
       || !selectedSurgery.surgeryYear
       || selectedSurgery.complications === undefined
     ) {
-      alert("Please fill in all fields before saving.");
+      setError("Por favor, complete todos los campos antes de guardar el registro quirúrjico");
       return;
     }
 
@@ -130,9 +117,9 @@ export function SurgicalHistory({
       setSurgicalHistory(updatedSurgicalHistory);
       setAddingNew(false);
       setSelectedSurgery(null);
+      setError(null);
     } else {
-      setError("API Error:", response.error);
-      alert("Error saving the surgical history: " + response.error);
+      setError(`Ha ocurrido un error al guardar el antecedente quirúrjico: ${response.error}`);
     }
   };
 
@@ -244,6 +231,21 @@ export function SurgicalHistory({
                   onClick={handleOpenNewForm}
                   style={{ width: "100%", height: "3rem" }}
                 />
+                {error && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: fontSize.textSize,
+                      color: colors.statusDenied,
+                      paddingBottom: "1rem",
+                      paddingTop: "2rem",
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
               </div>
 
               {surgicalHistory.length > 0
@@ -292,7 +294,7 @@ export function SurgicalHistory({
                     value={selectedSurgery ? selectedSurgery.surgeryType : ""}
                     onChange={(e) => setSelectedSurgery({ ...selectedSurgery, surgeryType: e.target.value })}
                     readOnly={!addingNew}
-                    placeholder="Ingrese acá el motivo o tipo de cirugía"
+                    placeholder="Ingrese acá el motivo o tipo de cirugía."
                     style={{
                       width: "95%",
                       height: "10%",
