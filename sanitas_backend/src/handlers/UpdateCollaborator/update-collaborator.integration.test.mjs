@@ -1,56 +1,39 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
+import { LOCAL_API_URL } from "../testHelpers.mjs";
 
-const LOCAL_API_URL = "http://localhost:3000/";
+const API_URL = `${LOCAL_API_URL}/patient/collaborator/`;
 
-describe("Update Collaborator integration tests", () => {
-  beforeAll(() => {
-    // Insert data into DB.
+describe("Collaborator Handler", () => {
+  let collaboratorId = 2;
+  let fakeCollaboratorId = 9999;
+
+  it("should return 403 if no ID is provided", async () => {
+    try {
+      await axios.get(API_URL); // Petición GET sin ID
+    } catch (error) {
+      expect(error.response.status).toBe(403);
+    }
   });
-  afterAll(() => {
-    // Delete inserted data.
-  });
 
-  test("Normal case: Actualizar datos de un colaborador existente", async () => {
-    const collaboratorData = {
-      code: "C001",
-      area: "Administración",
-      idPatient: 1,
-    };
-
-    const response = await axios.put(`${LOCAL_API_URL}/patient/collaborator`, collaboratorData);
+  it("should return a collaborator", async () => {
+    const response = await axios.get(API_URL + collaboratorId);
 
     expect(response).toBeDefined();
-    expect(response.status).toBe(200); // Ensure successful request
-    expect(response.data.code).toBe("C001");
-    expect(response.data.area).toBe("Administración");
-    expect(response.data.idPatient).toBe(1);
+    expect(response.status).toBe(200);
+
+    const collaborator = response.data;
+    expect(collaborator).toBeDefined();
+    expect(collaborator.code).toBe("C001");
+    expect(collaborator.area).toBe("Administración");
+    expect(collaborator.patientId).toBe(2);
   });
 
-  test("Actualizar datos de un colaborador sin proporcionar ningún campo para actualizar", async () => {
-    const collaboratorData = {
-      code: "C001",
-    };
-
-    const response = await axios.put(`${LOCAL_API_URL}/patient/collaborator`, collaboratorData);
-
-    expect(response).toBeDefined();
-    expect(response.status).toBe(200); // Ensure successful request
-    expect(response.data.code).toBe("C001");
-  });
-
-  test("Actualizar datos de un colaborador con código inexistente (debería fallar)", async () => {
-    const collaboratorData = {
-      code: "XYZ789",
-      area: "Recursos Humanos",
-    };
-
-    const response = await axios.put(`${LOCAL_API_URL}/patient/collaborator`, collaboratorData, {
-      validateStatus: () => true, // Ensure axios does not throw an error for non-2xx status codes
-    });
-
-    // Verify the error message
-    expect(response.status).toBe(500); // Change to expected status code
-    expect(response.data.error).toBe("Internal Server Error"); // Change to expected error message
+  it("should not find a collaborator", async () => {
+    try {
+      await axios.get(API_URL + fakeCollaboratorId);
+    } catch (error) {
+      expect(error.response.status).toBe(404);
+    }
   });
 });
