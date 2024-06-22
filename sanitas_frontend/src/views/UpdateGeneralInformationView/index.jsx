@@ -135,7 +135,8 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
       borderRadius: "5px",
     },
     label: {
-      fontWeight: "bold",
+      fontSize: fontSize.textSize,
+      fontFamily: fonts.textFont,
     },
     SexInput: {
       display: "flex",
@@ -160,9 +161,8 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
     },
     h2: {
       gridColumn: "1 / span 2",
-      fontSize: "24px",
-      padding: "10px",
-      borderTop: `0.1rem solid ${colors.darkerGrey}`,
+      fontSize: fontSize.subtitleSize,
+      fontFamily: fonts.titleFont,
       paddingTop: "2rem",
     },
     firstsectionform: {
@@ -189,15 +189,6 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
     const [resourceUpdate, setResourceUpdate] = useState(null);
 
     const response = collaboratorInformationResource.read();
-
-    if (response.error) {
-      return (
-        <div>
-          <h1>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
-          <p>{response.error.toString()}</p>
-        </div>
-      );
-    }
 
     const [patientData, setPatientData] = useState({
       ...response.result,
@@ -718,14 +709,17 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
               />
             )}
         </div>
-        {response.error
+        {
+          /* response.error
           ? (
             <div>
               <p style={errorPStyles}>Lo sentimos! Ha ocurrido un error al cargar la información.</p>
               <p style={errorPStyles}>{response.error.toString()}</p>
             </div>
           )
-          : (
+          :*/
+
+
             <div
               style={{
                 display: "grid",
@@ -749,7 +743,8 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
                 placeholder="Carrera"
               />
             </div>
-          )}
+
+        }
         <p style={errorPStyles}>{updateError}</p>
       </>
     );
