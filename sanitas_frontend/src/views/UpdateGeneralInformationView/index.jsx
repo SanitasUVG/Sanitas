@@ -317,12 +317,13 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
   const styles = {
     form: {
-      padding: "20px",
+      padding: "2rem",
       border: "1px solid #ddd",
       borderRadius: "5px",
     },
     label: {
-      fontWeight: "bold",
+      fontSize: fontSize.textSize,
+      fontFamily: fonts.textFont,
     },
     SexInput: {
       display: "flex",
@@ -343,25 +344,24 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
     h1: {
       gridColumn: "1 / span 2",
       fontSize: "24px",
-      padding: "10px",
     },
     h2: {
       gridColumn: "1 / span 2",
-      fontSize: "24px",
-      padding: "10px",
-      borderTop: `0.1rem solid ${colors.darkerGrey}`,
+      fontSize: fontSize.subtitleSize,
+      fontFamily: fonts.titleFont,
+      // borderTop: `0.1rem solid ${colors.darkerGrey}`,
       paddingTop: "2rem",
     },
     firstsectionform: {
       gridTemplateColumns: "50% 50%",
       display: "grid",
       gap: "20px",
-      padding: "10px",
+      paddingTop: "10px",
     },
     Secondsectionform: {
       display: "grid",
       gap: "20px",
-      padding: "10px",
+      paddingTop: "10px",
     },
     input: {
       maxWidth: "18.75rem",
@@ -416,14 +416,14 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
     return (
       <form style={styles.form}>
-        <h1 style={styles.h1}>Datos Generales:</h1>
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h1 style={styles.h1}>Datos Generales:</h1>
           {editMode
             ? (
-              <Fragment>
+              <div>
                 <IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
                 <IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-              </Fragment>
+              </div>
             )
             : <IconButton icon={EditIcon} onClick={() => setEditMode(true)} />}
         </div>
@@ -623,7 +623,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
   /** @type React.CSSProperties */
   const h1Styles = {
     fontFamily: fonts.titleFont,
-    fontSize: fonts.textFont,
+    fontSize: fontSize.subtitleSize,
   };
   /** @type React.CSSProperties */
   const errorPStyles = {
@@ -765,7 +765,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
   };
 
   return (
-    <div>
+    <div style={{ padding: "2rem" }}>
       <Suspense fallback={<LoadingView />}>
         <InnerChild />
       </Suspense>
