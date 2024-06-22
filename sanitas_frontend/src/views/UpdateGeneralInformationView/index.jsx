@@ -107,7 +107,7 @@ export default function UpdateInfoView(
  * @typedef {Object} UpdateColaboratorInformationSectionProps
  * @property {number} patientId
  * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getData
- * @property {import("src/dataLayer.mjs").UpdateCollaboratorInformation} updateData
+ * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
  */
 
 /**
@@ -130,7 +130,7 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
 
   const styles = {
     form: {
-      padding: "20px",
+      padding: "2rem",
       border: "1px solid #ddd",
       borderRadius: "5px",
     },
@@ -157,24 +157,24 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
     h1: {
       gridColumn: "1 / span 2",
       fontSize: "24px",
-      padding: "10px",
     },
     h2: {
       gridColumn: "1 / span 2",
       fontSize: fontSize.subtitleSize,
       fontFamily: fonts.titleFont,
+      // borderTop: `0.1rem solid ${colors.darkerGrey}`,
       paddingTop: "2rem",
     },
     firstsectionform: {
       gridTemplateColumns: "50% 50%",
       display: "grid",
       gap: "20px",
-      padding: "10px",
+      paddingTop: "10px",
     },
     Secondsectionform: {
       display: "grid",
       gap: "20px",
-      padding: "10px",
+      paddingTop: "10px",
     },
     input: {
       maxWidth: "18.75rem",
@@ -213,20 +213,20 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
     };
 
     const handleCancelEdit = () => {
-      setPatientData({ ...response.result, birthdate: formatDate(response.result.birthdate) });
+      setPatientData({ ...response.result });
       setEditMode(false);
     };
 
     return (
       <form style={styles.form}>
-        <h1 style={styles.h1}>Datos de Colaborador:</h1>
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h1 style={styles.h1}>Datos de Colaborador:</h1>
           {editMode
             ? (
-              <Fragment>
+              <div>
                 <IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
                 <IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-              </Fragment>
+              </div>
             )
             : <IconButton icon={EditIcon} onClick={() => setEditMode(true)} />}
         </div>
@@ -709,17 +709,14 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
               />
             )}
         </div>
-        {
-          /* response.error
+        {response.error
           ? (
             <div>
               <p style={errorPStyles}>Lo sentimos! Ha ocurrido un error al cargar la información.</p>
               <p style={errorPStyles}>{response.error.toString()}</p>
             </div>
           )
-          :*/
-
-
+          : (
             <div
               style={{
                 display: "grid",
@@ -743,8 +740,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
                 placeholder="Carrera"
               />
             </div>
-
-        }
+          )}
         <p style={errorPStyles}>{updateError}</p>
       </>
     );

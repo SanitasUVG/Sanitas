@@ -49,7 +49,7 @@ export const getCollaboratorHandler = async (event, context) => {
       return createResponse()
         .setStatusCode(404)
         .addCORSHeaders()
-        .setBody(JSON.stringify({ message: "Invalid request: No colaborador with the given ID found." }))
+        .setBody({ message: "Invalid request: No colaborador with the given ID found." })
         .build();
     }
 
@@ -70,7 +70,7 @@ export const getCollaboratorHandler = async (event, context) => {
     return createResponse()
       .setStatusCode(500)
       .addCORSHeaders()
-      .setBody(JSON.stringify(error))
+      .setBody(error)
       .build();
   } finally {
     await client?.end();
