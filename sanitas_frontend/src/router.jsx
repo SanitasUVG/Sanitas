@@ -40,10 +40,10 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
     navigate(NAV_PATHS.SEARCH_PATIENT);
   },
   navigateToGeneral: (navigate) => {
-    navigate(`/${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.GENERAL_INFORMATION}`);
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.GENERAL_INFORMATION}`);
   },
   navigateToSurgical: (navigate) => {
-    navigate(`/${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.SURGICAL_HISTORY}`);
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.SURGICAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -89,7 +89,7 @@ export const ROUTES = [
     element: <Outlet />,
     children: [
       {
-        path: "",
+        index: true,
         element: updateInfoView,
       },
       {
