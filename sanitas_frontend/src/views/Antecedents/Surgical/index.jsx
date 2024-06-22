@@ -31,6 +31,7 @@ export function SurgicalHistory({
   const [surgicalHistory, setSurgicalHistory] = useState([]);
   const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
+  const [surgeryType, setSurgeryType] = useState("");
 
   // Fetch the patient's birth year to set the default year for new surgeries
   const [birthYear, setBirthYear] = useState(new Date().getFullYear());
@@ -77,6 +78,26 @@ export function SurgicalHistory({
         setSurgicalHistory([]);
       } else {
         setError(result.error);
+      }
+    };
+
+    if (id) {
+      fetchSurgicalHistory();
+    }
+  }, [id, getSurgicalHistory]);
+
+  useEffect(() => {
+    const fetchSurgicalHistory = async () => {
+      try {
+        const result = await getSurgicalHistory(id);
+        if (result.status === 200) {
+          setSurgicalHistory(result.data.surgicalEventData);
+          setError(null);
+        } else {
+          throw new Error(result.data.error || "Unknown error occurred");
+        }
+      } catch (error) {
+        setError(error.message);
       }
     };
 
@@ -268,7 +289,7 @@ export function SurgicalHistory({
                     ¿De qué?
                   </p>
                   <BaseInput
-                    value={selectedSurgery.surgeryType}
+                    value={selectedSurgery ? selectedSurgery.surgeryType : ""}
                     onChange={(e) => setSelectedSurgery({ ...selectedSurgery, surgeryType: e.target.value })}
                     readOnly={!addingNew}
                     placeholder="Ingrese acá el motivo o tipo de cirugía"
@@ -279,6 +300,7 @@ export function SurgicalHistory({
                       fontSize: "1rem",
                     }}
                   />
+
                   <p
                     style={{
                       paddingBottom: "0.5rem",
