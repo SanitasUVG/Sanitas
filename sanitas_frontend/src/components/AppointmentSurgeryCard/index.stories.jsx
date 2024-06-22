@@ -1,10 +1,9 @@
-import { action } from "@storybook/addon-actions";
 import React from "react";
-import Card from ".";
+import AppointmentSurgeryCard from ".";
 
 export default {
-  title: "Components/Card",
-  component: Card,
+  title: "Components/AppointmentSurgeryCard",
+  component: AppointmentSurgeryCard,
   argTypes: {
     type: { control: "select", options: ["surgical", "appointment"] },
     year: { control: "text" },
@@ -14,7 +13,7 @@ export default {
   },
 };
 
-const Template = (args) => <Card {...args} />;
+const Template = (args) => <AppointmentSurgeryCard {...args} />;
 
 export const Surgical = Template.bind({});
 Surgical.args = {
