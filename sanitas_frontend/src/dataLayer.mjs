@@ -369,14 +369,14 @@ export const updateSurgicalHistory = async (patientId, surgicalEvents) => {
 
   try {
     const response = await axios.put(url, payload);
-    return response.data;
+    return { result: response.data };
   } catch (error) {
     if (error.response) {
-      return error.response.data;
+      return { error: error.response.data };
     } else if (error.request) {
-      alert("No response received");
+      return { error: "No response received" };
     } else {
-      return error.message;
+      return { error: error.message };
     }
   }
 };
