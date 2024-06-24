@@ -1,4 +1,5 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { getCollaboratorInformation } from "src/dataLayer.mjs";
 import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
 
@@ -51,6 +52,14 @@ const mockGetStudentPatientInformation = async (id) => {
   }
 };
 
+const mockGetCollaboratorInformation = async (id) => {
+  if (id === examplePatientData.id) {
+    return { result: { patientId: id, code: "C001", area: "Administracion" } };
+  } else {
+    return { error: new Error("Error al buscar el paciente. Asegúrese de que el ID es correcto.") };
+  }
+};
+
 const correctStore = createEmptyStore({
   selectedPatientId: examplePatientData.id,
 });
@@ -59,6 +68,7 @@ export const WithPatientData = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
     getStudentPatientInformation: mockGetStudentPatientInformation,
+    getCollaboratorInformation: mockGetCollaboratorInformation,
     useStore: correctStore,
     sidebarConfig: {
       userInformation: {
@@ -76,6 +86,7 @@ export const ErrorState = {
   args: {
     getGeneralPatientInformation: mockGetGeneralPatientInformation,
     getStudentPatientInformation: mockGetStudentPatientInformation,
+    getCollaboratorInformation: mockGetCollaboratorInformation,
     useStore: incorrectStore,
     sidebarConfig: {
       userInformation: {
