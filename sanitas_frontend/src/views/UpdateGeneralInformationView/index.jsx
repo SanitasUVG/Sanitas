@@ -42,6 +42,8 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateStudentPatientInformation
  * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getStudentPatientInformation
+ * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getCollaboratorInformation
+ * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateCollaboratorInformation
  */
 
 /**
@@ -55,6 +57,8 @@ export default function UpdateInfoView(
     useStore,
     getStudentPatientInformation,
     updateStudentPatientInformation,
+    getCollaboratorInformation,
+    updateCollaboratorInformation,
   },
 ) {
   const id = useStore((s) => s.selectedPatientId);
@@ -84,7 +88,11 @@ export default function UpdateInfoView(
           getData={getGeneralPatientInformation}
           updateData={updateGeneralPatientInformation}
         />
-        <UpdateColaboratorInformationSection patientId={id} />
+        <UpdateColaboratorInformationSection
+          patientId={id}
+          getData={getCollaboratorInformation}
+          updateData={updateCollaboratorInformation}
+        />
         <UpdateStudentInformationSection
           patientId={id}
           getData={getStudentPatientInformation}
@@ -95,7 +103,170 @@ export default function UpdateInfoView(
   );
 }
 
-function UpdateColaboratorInformationSection() {
+/**
+ * @typedef {Object} UpdateColaboratorInformationSectionProps
+ * @property {number} patientId
+ * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getData
+ * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
+ */
+
+/**
+ * @param {UpdateColaboratorInformationSectionProps} props
+ */
+function UpdateColaboratorInformationSection({ patientId, getData, updateData }) {
+  /** @type React.CSSProperties */
+  const errorPStyles = {
+    fontFamily: fonts.textFont,
+    fontSize: fontSize.textSize,
+    color: colors.statusDenied,
+  };
+
+  const GenInputStyle = (labelRow, labelColumn) => {
+    let gridColumn = `${labelColumn} / ${labelColumn + 1}`;
+    let gridRow = `${labelRow} / ${labelRow + 1}`;
+
+    return { gridColumn, gridRow };
+  };
+
+  const styles = {
+    form: {
+      padding: "2rem",
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+    },
+    label: {
+      fontSize: fontSize.textSize,
+      fontFamily: fonts.textFont,
+    },
+    SexInput: {
+      display: "flex",
+      padding: "10px",
+      gap: "20px",
+    },
+    button: {
+      display: "inline-block",
+      padding: "10px 20px",
+      fontSize: "16px",
+      color: "#fff",
+      backgroundColor: "#4CAF50",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      gridColumn: "1 / span 2",
+    },
+    h1: {
+      gridColumn: "1 / span 2",
+      fontSize: "24px",
+    },
+    h2: {
+      gridColumn: "1 / span 2",
+      fontSize: fontSize.subtitleSize,
+      fontFamily: fonts.titleFont,
+      // borderTop: `0.1rem solid ${colors.darkerGrey}`,
+      paddingTop: "2rem",
+    },
+    firstsectionform: {
+      gridTemplateColumns: "50% 50%",
+      display: "grid",
+      gap: "20px",
+      paddingTop: "10px",
+    },
+    Secondsectionform: {
+      display: "grid",
+      gap: "20px",
+      paddingTop: "10px",
+    },
+    input: {
+      maxWidth: "18.75rem",
+    },
+  };
+
+  const collaboratorInformationResource = WrapPromise(getData(patientId));
+
+  const Hijo = () => {
+    const [editMode, setEditMode] = useState(false);
+    const [updateError, setUpdateError] = useState("");
+    const [resourceUpdate, setResourceUpdate] = useState(null);
+
+    const response = collaboratorInformationResource.read();
+
+    const [patientData, setPatientData] = useState({
+      ...response.result,
+    });
+
+    if (resourceUpdate !== null) {
+      const response = resourceUpdate.read();
+      setUpdateError("");
+      if (response.error) {
+        setUpdateError(`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`);
+      } else {
+        setPatientData({ ...response.result });
+      }
+
+      setResourceUpdate(null);
+    }
+
+    const handleUpdatePatient = async () => {
+      setEditMode(false);
+      const updateInformationResource = WrapPromise(updateData(patientData));
+      setResourceUpdate(updateInformationResource);
+    };
+
+    const handleCancelEdit = () => {
+      setPatientData({ ...response.result });
+      setEditMode(false);
+    };
+
+    return (
+      <form style={styles.form}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h1 style={styles.h1}>Datos de Colaborador:</h1>
+          {editMode
+            ? (
+              <div>
+                <IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
+                <IconButton icon={CancelIcon} onClick={handleCancelEdit} />
+              </div>
+            )
+            : <IconButton icon={EditIcon} onClick={() => setEditMode(true)} />}
+        </div>
+        <div style={styles.firstsectionform}>
+          <label style={styles.label}>Codigo:</label>
+          <BaseInput
+            type="text"
+            value={patientData.code}
+            onChange={(e) => setPatientData({ ...patientData, code: e.target.value })}
+            placeholder="Codigo"
+            style={{ ...styles.input, ...GenInputStyle(2, 1) }}
+            disabled={!editMode}
+          />
+
+          <label style={styles.label}>Area:</label>
+          <BaseInput
+            type="text"
+            value={patientData.area}
+            onChange={(e) => setPatientData({ ...patientData, area: e.target.value })}
+            placeholder="Area"
+            style={{ ...styles.input, ...GenInputStyle(2, 2) }}
+            disabled={!editMode}
+          />
+        </div>
+        <p style={errorPStyles}>{updateError}</p>
+      </form>
+    );
+  };
+
+  const LoadingView = () => {
+    return <div>Cargando información del paciente...</div>;
+  };
+
+  return (
+    <div>
+      <Suspense fallback={<LoadingView />}>
+        <Hijo />
+      </Suspense>
+    </div>
+  );
 }
 
 /**

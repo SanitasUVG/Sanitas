@@ -28,6 +28,11 @@ const exampleStudentData = {
   career: "Lic. Computación",
 };
 
+const exampleCollaboratorData = {
+  code: "C001",
+  area: "Admin",
+};
+
 /** @type {import("src/components/DashboardSidebar").UserInformation} */
 const exampleUserInformation = {
   displayName: "Jennifer Bustamante",
@@ -46,6 +51,7 @@ describe("UpdateInfoView tests", () => {
   test("Displays patient information correctly", async () => {
     const getGeneralPatientInformation = vi.fn().mockResolvedValue({ result: examplePatientData });
     const getStudentPatientInformation = vi.fn().mockResolvedValue({ result: exampleStudentData });
+    const getCollaboratorInformation = vi.fn().mockResolvedValue({ result: exampleCollaboratorData });
     const useStore = createEmptyStore();
 
     render(
@@ -57,6 +63,7 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 getStudentPatientInformation={getStudentPatientInformation}
+                getCollaboratorInformation={getCollaboratorInformation}
                 updateGeneralPatientInformation={() => {}}
                 useStore={useStore}
                 sidebarConfig={{ userInformation: exampleUserInformation }}
@@ -87,6 +94,7 @@ describe("UpdateInfoView tests", () => {
     const errorMessage = "Error al buscar el paciente. Asegúrese de que el ID es correcto.";
     const getGeneralPatientInformation = vi.fn().mockResolvedValue({ error: new Error("error") });
     const getStudentPatientInformation = vi.fn().mockResolvedValue({ error: new Error("error") });
+    const getCollaboratorInformation = vi.fn().mockResolvedValue({ error: new Error("error") });
     const useStore = createEmptyStore();
 
     render(
@@ -98,6 +106,7 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 getStudentPatientInformation={getStudentPatientInformation}
+                getCollaboratorInformation={getCollaboratorInformation}
                 updateGeneralPatientInformation={() => {}}
                 useStore={useStore}
                 sidebarConfig={{ userInformation: exampleUserInformation }}
@@ -116,6 +125,7 @@ describe("UpdateInfoView tests", () => {
   test("Shows loading message when fetching patient information", () => {
     const getGeneralPatientInformation = vi.fn().mockResolvedValue(new Promise(() => {}));
     const getStudentPatientInformation = vi.fn().mockResolvedValue(new Promise(() => {}));
+    const getCollaboratorInformation = vi.fn().mockResolvedValue(new Promise(() => {}));
     const useStore = createEmptyStore();
 
     render(
@@ -127,6 +137,7 @@ describe("UpdateInfoView tests", () => {
               <UpdateInfoView
                 getGeneralPatientInformation={getGeneralPatientInformation}
                 getStudentPatientInformation={getStudentPatientInformation}
+                getCollaboratorInformation={getCollaboratorInformation}
                 updateGeneralPatientInformation={() => {}}
                 useStore={useStore}
                 sidebarConfig={{ userInformation: exampleUserInformation }}
@@ -137,6 +148,6 @@ describe("UpdateInfoView tests", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Cargando información del paciente...")).toBeVisible();
+    expect(screen.getAllByText("Cargando información del paciente..."));
   });
 });

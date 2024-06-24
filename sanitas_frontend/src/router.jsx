@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import {
   checkCui,
+  getCollaboratorInformation,
   getGeneralPatientInformation,
   getStudentPatientInformation,
   searchPatient,
   submitPatientData,
+  updateCollaboratorInformation,
   updateGeneralPatientInformation,
   updateStudentPatientInformation,
 } from "./dataLayer.mjs";
@@ -47,6 +49,8 @@ const updateInfoView = (
     updateGeneralPatientInformation={updateGeneralPatientInformation}
     getStudentPatientInformation={getStudentPatientInformation}
     updateStudentPatientInformation={updateStudentPatientInformation}
+    getCollaboratorInformation={getCollaboratorInformation}
+    updateCollaboratorInformation={updateCollaboratorInformation}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />

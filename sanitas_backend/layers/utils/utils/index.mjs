@@ -190,3 +190,42 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
     career,
   };
 }
+
+/**
+ * @typedef {Object} DBCollaborator
+ * @property {number} id
+ * @property {string} codigo
+ * @property {string} area
+ * @property {number} id_paciente
+ */
+
+/**
+
+*@typedef { Object } APICollaborator
+*@property { number } id
+*@property { string } codigo
+*@property { string } area
+*@property { number } patientId
+  * /
+
+/**
+
+Maps a DBCollaborator to an APICollaborator.
+@param {DBCollaborator} dbCollaborator The collaborator received from the DB.
+@returns {APICollaborator} The collaborator object the API must return.
+*/
+export function mapToAPICollaboratorInfo(dbCollaborator) {
+  const {
+    id,
+    codigo: code,
+    area,
+    id_paciente: patientId,
+  } = dbCollaborator;
+
+  return {
+    id,
+    code,
+    area,
+    patientId,
+  };
+}
