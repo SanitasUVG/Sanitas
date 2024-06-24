@@ -1,40 +1,39 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
+import { LOCAL_API_URL } from "../testHelpers.mjs";
 
-const LOCAL_API_URL = "http://localhost:3000/";
+const API_URL = "${LOCAL_API_URL}/patient/collaborator/";
 
-describe("Get Collaborator integration tests", () => {
-  test("Caso normal: Obtener datos de un colaborador existente", async () => {
-    const idPatient = 2;
+describe("Collaborator Handler", () => {
+  let collaboratorId = 2;
+  let fakeCollaboratorId = 9999;
 
+  it("should return 403 if no ID is provided", async () => {
     try {
-      const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
-        params: { idPatient },
-      });
-
-      expect(response).toBeDefined();
-      expect(response.status).toBe(200);
-      expect(response.data.code).toBe("C001");
-      expect(response.data.area).toBe("Administración");
-      expect(response.data.idPatient).toBe(idPatient);
+      await axios.get(API_URL); // Petición GET sin ID
     } catch (error) {
       expect(error.response.status).toBe(403);
     }
   });
 
-  test("Obtener datos de un colaborador con id de paciente inexistente (debería fallar)", async () => {
-    const idPatient = 9999; // ID de paciente inexistente
+  it("should return a collaborator", async () => {
+    const response = await axios.get(API_URL + collaboratorId);
 
+    expect(response).toBeDefined();
+    expect(response.status).toBe(200);
+
+    const collaborator = response.data;
+    expect(collaborator).toBeDefined();
+    expect(collaborator.code).toBe("C001");
+    expect(collaborator.area).toBe("Administración");
+    expect(collaborator.patientId).toBe(2);
+  });
+
+  it("should not find a collaborator", async () => {
     try {
-      const response = await axios.get(`${LOCAL_API_URL}/patient/collaborator`, {
-        params: { idPatient },
-      });
-
-      expect(response).toBeDefined();
-      expect(response.status).toBe(404);
-      expect(response.data.error).toBe("No se encontraron registros con el id de paciente proporcionado.");
+      await axios.get(API_URL + fakeCollaboratorId);
     } catch (error) {
-      expect(error.response.status).toBe(403);
+      expect(error.response.status).toBe(404);
     }
   });
 });
