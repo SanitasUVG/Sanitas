@@ -1,11 +1,13 @@
 import { Outlet } from "react-router-dom";
 import {
   checkCui,
+  getCollaboratorInformation,
   getGeneralPatientInformation,
   getStudentPatientInformation,
   getSurgicalHistory,
   searchPatient,
   submitPatientData,
+  updateCollaboratorInformation,
   updateGeneralPatientInformation,
   updateStudentPatientInformation,
   updateSurgicalHistory,
@@ -54,6 +56,8 @@ const updateInfoView = (
     updateGeneralPatientInformation={updateGeneralPatientInformation}
     getStudentPatientInformation={getStudentPatientInformation}
     updateStudentPatientInformation={updateStudentPatientInformation}
+    getCollaboratorInformation={getCollaboratorInformation}
+    updateCollaboratorInformation={updateCollaboratorInformation}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
