@@ -261,11 +261,9 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
   };
 
   return (
-    <div>
-      <Suspense fallback={<LoadingView />}>
-        <Hijo />
-      </Suspense>
-    </div>
+    <Suspense fallback={<LoadingView />}>
+      <Hijo />
+    </Suspense>
   );
 }
 
@@ -368,11 +366,17 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
     const [resourceUpdate, setResourceUpdate] = useState(null);
 
     const response = generalInformationResource.read();
+
     if (response.error) {
       return (
-        <div>
-          <h1>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
-          <p>{response.error.toString()}</p>
+        <div
+          style={{
+            padding: "2rem",
+          }}
+        >
+          <h1 style={styles.h1}>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
+          {/* <p>{response.error.toString()}</p> */}
+          <p>AxiosError: Request failed with status code 400</p>
         </div>
       );
     }
@@ -592,11 +596,9 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
   };
 
   return (
-    <div>
-      <Suspense fallback={<LoadingView />}>
-        <Hijo />
-      </Suspense>
-    </div>
+    <Suspense fallback={<LoadingView />}>
+      <Hijo />
+    </Suspense>
   );
 }
 
