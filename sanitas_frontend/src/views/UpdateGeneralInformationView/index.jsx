@@ -10,8 +10,8 @@ import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { delay } from "src/utils";
 import { formatDate } from "src/utils/date";
-import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**

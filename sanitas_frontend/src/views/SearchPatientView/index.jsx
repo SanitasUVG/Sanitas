@@ -10,76 +10,13 @@ import IconButton from "src/components/Button/Icon";
 import DropdownMenu from "src/components/DropdownMenu";
 import { SearchInput } from "src/components/Input";
 import PatientCard from "src/components/PatientCard";
+import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { adjustHeight, adjustWidth, delay } from "src/utils";
 import { calculateYearsBetween, formatDate } from "src/utils/date";
-import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
-
-/**
- * Adjusts the REM values based on the width of the screen.
- * The function scales the input REM values by a scaleFactor determined by the screen width.
- *
- * @param {number} width - The current width of the screen in pixels.
- * @param {string} remValues - A string containing space-separated REM values to be adjusted.
- * @returns {string} A string of space-separated REM values adjusted based on the screen width.
- * @example
- * // returns "9.300rem 18.600rem"
- * adjustWidth(1400, "10rem 20rem");
- */
-const adjustWidth = (width, remValues) => {
-  let scaleFactor;
-  if (width >= 1538) {
-    scaleFactor = 1.0;
-  } else if (width >= 1440) {
-    scaleFactor = 0.93;
-  } else if (width >= 1280) {
-    scaleFactor = 0.83;
-  } else {
-    scaleFactor = 1.0;
-  }
-
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
-};
-
-/**
- * Adjusts the REM values based on the height of the screen.
- * The function scales the input REM values by a scaleFactor determined by the screen height.
- *
- * @param {number} height - The current height of the screen in pixels.
- * @param {string} remValues - A string containing space-separated REM values to be adjusted.
- * @returns {string} A string of space-separated REM values adjusted based on the screen height.
- * @example
- * // returns "9.400rem 18.800rem"
- * adjustHeight(850, "10rem 20rem");
- */
-const adjustHeight = (height, remValues) => {
-  let scaleFactor;
-  if (height >= 950) {
-    scaleFactor = 1.0;
-  } else if (height >= 900) {
-    scaleFactor = 0.94;
-  } else if (height >= 800) {
-    scaleFactor = 0.84;
-  } else {
-    scaleFactor = 1.0;
-  }
-
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
-};
 
 /**
  * @typedef {Object} PatientPreview
@@ -182,44 +119,35 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     <div
       style={{
         backgroundColor: "#0F6838",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         height: "100vh",
+        width: "100vw",
+        padding: "2rem",
       }}
     >
       <div
         style={{
           backgroundColor: "#FFFFFF",
-          display: "flex",
-          flexDirection: "row",
-          width: "95%",
-          height: "95%",
-          textAlign: "left",
+          width: "100%",
+          height: "100%",
+          position: "relative",
+          display: "grid",
+          // textAlign: "left",
         }}
       >
         {defaultView
           ? (
             <>
-              <div
+              <img
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
+                  width: adjustWidth(width, "25.43rem"),
+                  height: "auto",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                 }}
-              >
-                <img
-                  style={{
-                    width: adjustWidth(width, "25.43rem"),
-                    height: "auto",
-                  }}
-                  src={BorderDecoUpper}
-                  alt="Logo Sanitas"
-                />
-              </div>
+                src={BorderDecoUpper}
+                alt="Borde decorativo superior"
+              />
               <div
                 style={{
                   display: "flex",
@@ -322,43 +250,26 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   </div>
                 </div>
               </div>
-              <div
+              <IconButton
+                icon={logoutIcon}
+                onClick={doNothing}
                 style={{
-                  display: "grid",
-                  width: "80%",
-                  height: "100%",
-                  gridTemplateColumns: adjustWidth(width, "1rem 7rem 8rem"),
-                  gridTemplateRows: adjustHeight(height, "4.5rem 9rem 18rem") + " 1fr",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
+                  position: "absolute",
+                  top: "2rem",
+                  right: "2rem",
                 }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gridColumnStart: 4,
-                    gridRowStart: 2,
-                    flexDirection: "column",
-                    gap: adjustHeight(height, "1rem"),
-                    padding: adjustWidth(width, "0.9rem 1.5rem 1rem 2rem"),
-                  }}
-                >
-                  <IconButton icon={settingsIcon} onClick={doNothing} />
-                  <IconButton icon={logoutIcon} onClick={doNothing} />
-                </div>
-                <img
-                  style={{
-                    width: adjustWidth(width, "25.43rem"),
-                    height: "auto",
-                    gridRowStart: 4,
-                    gridColumnStart: width >= 1660 ? 3 : 2,
-                    gridColumnEnd: 5,
-                  }}
-                  src={BorderDecoLower}
-                  alt="Logo Sanitas"
-                />
-              </div>
+              />
+              <img
+                style={{
+                  width: adjustWidth(width, "25.43rem"),
+                  height: "auto",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                }}
+                src={BorderDecoLower}
+                alt="Borde decorativo inferior"
+              />
             </>
           )
           : (
@@ -594,54 +505,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
   );
 }
 
-const LoadingView = () => {
-  const { width, height } = useWindowSize();
-
-  return (
-    <div
-      style={{
-        width: "70%",
-        height: "85%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        paddingBottom: adjustHeight(height, "7rem"),
-      }}
-    >
-      <div
-        style={{
-          width: adjustWidth(width, "17rem"),
-        }}
-      >
-        <img
-          style={{
-            width: adjustWidth(width, "17rem"),
-            height: "auto",
-          }}
-          src={SanitasLogo}
-          alt="Logo Sanitas"
-        />
-      </div>
-
-      <div
-        style={{
-          color: colors.primaryBackground,
-          fontSize: adjustWidth(width, "2rem"),
-          textAlign: "center",
-          fontFamily: fonts.textFont,
-        }}
-      >
-        Loading patients...
-      </div>
-    </div>
-  );
-};
-
 const PatientSection = ({ patientsResources, genViewPatientBtnClick, setQueryReturnedEmpty }) => {
   const { width, height } = useWindowSize();
   return (
-    <Suspense fallback={<LoadingView />}>
+    <Suspense fallback={<Throbber loadingMessage="Cargando pacientes..." />}>
       <PatientCard
         patientsResources={patientsResources}
         genViewPatientBtnClick={genViewPatientBtnClick}

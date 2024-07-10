@@ -4,7 +4,7 @@
  * @property {() => T} read
  */
 
-import { delay } from "./general";
+import { delay } from ".";
 
 function a() {
   return new Promise((res, rej) => {
