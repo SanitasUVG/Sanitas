@@ -8,6 +8,7 @@ import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
+import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { delay } from "src/utils";
@@ -257,7 +258,12 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
   };
 
   const LoadingView = () => {
-    return <div>Cargando información del paciente...</div>;
+    return (
+      <div>
+        <h1 style={styles.h1}>Datos de Colaborador:</h1>
+        <Throbber loadingMessage="Cargando información de colaborador..." />
+      </div>
+    );
   };
 
   return (
@@ -588,7 +594,12 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
   };
 
   const LoadingView = () => {
-    return <div>Cargando información del paciente...</div>;
+    return (
+      <div>
+        <h1 style={styles.h1}>Datos Generales:</h1>
+        <Throbber loadingMessage="Cargando información del paciente..." />
+      </div>
+    );
   };
 
   return (
@@ -750,7 +761,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
     return (
       <div>
         <h1 style={h1Styles}>Datos de Estudiante:</h1>
-        <p style={normalTextStyle}>Cargando datos...</p>
+        <Throbber loadingMessage="Cargando datos de estudiante..." />
       </div>
     );
   };
