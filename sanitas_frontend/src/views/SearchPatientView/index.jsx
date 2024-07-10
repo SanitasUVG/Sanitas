@@ -129,14 +129,17 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
           backgroundColor: "#FFFFFF",
           width: "100%",
           height: "100%",
-          position: "relative",
-          display: "grid",
-          // textAlign: "left",
         }}
       >
         {defaultView
           ? (
-            <>
+            <div
+              style={{
+                position: "relative",
+                display: "grid",
+                height: "100%",
+              }}
+            >
               <img
                 style={{
                   width: adjustWidth(width, "25.43rem"),
@@ -183,7 +186,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     textAlign: "center",
                   }}
                 >
-                  Ingrese carnet, código de trabajador, nombres o CUI del paciente
+                  Ingrese el carnet, código de trabajador, nombres o CUI
                 </h3>
 
                 <div
@@ -270,10 +273,14 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                 src={BorderDecoLower}
                 alt="Borde decorativo inferior"
               />
-            </>
+            </div>
           )
           : (
-            <>
+            <div
+              style={{
+                display: "flex",
+              }}
+            >
               <div
                 style={{
                   width: adjustWidth(width, "17rem"),
@@ -498,7 +505,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   )}
                 </div>
               </div>
-            </>
+            </div>
           )}
       </div>
     </div>
