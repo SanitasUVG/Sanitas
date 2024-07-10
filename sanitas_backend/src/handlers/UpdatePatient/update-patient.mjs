@@ -111,7 +111,7 @@ export const updatePatientHandler = async (event, context) => {
       patientData.telefono || null,
       patientData.cui || null,
       patientData.correo || null,
-      patientData.es_mujer || null,
+      patientData.es_mujer !== null ? patientData.es_mujer : null,
     ];
 
     logger.info({ query, values }, "Consulta SQL y valores:");
