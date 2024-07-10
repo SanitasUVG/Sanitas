@@ -184,7 +184,7 @@ export function PatientForm({
   /**
    * Handles changes to the gender radio buttons.
    * Updates the patient's gender in the state based on the selected option.
-   * @param {string} isFemale - The selected gender.
+   * @param {boolean} isFemale - The selected gender.
    */
   const handleGenderChange = (isFemale) => {
     setPatientData({ ...patientData, sex: isFemale });
@@ -266,8 +266,8 @@ export function PatientForm({
           <div style={{ paddingRight: "1.25rem" }}>
             <RadioInput
               name="gender"
-              checked={patientData.sex === "F"}
-              onChange={() => handleGenderChange("F")}
+              checked={patientData.sex === true}
+              onChange={() => handleGenderChange(true)}
               label="Femenino"
               style={{
                 fontFamily: fonts.textFont,
@@ -277,8 +277,8 @@ export function PatientForm({
           <div>
             <RadioInput
               name="gender"
-              checked={patientData.sex === "M"}
-              onChange={() => handleGenderChange("M")}
+              checked={patientData.sex === false}
+              onChange={() => handleGenderChange(false)}
               label="Masculino"
             />
           </div>
