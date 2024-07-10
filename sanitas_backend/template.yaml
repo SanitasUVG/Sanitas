@@ -10,6 +10,16 @@ Parameters:
     Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
     Description: 'The Postgres DB URL to connect during lambdas execution'
     NoEcho: true
+  CognitoUserPoolName:
+    Type: String
+    Default: SanitasCognitoUserPool
+    Description: The user pool used to authenticate Sanitas users.
+  CognitoUserPoolClientName:
+    Type: String
+    Default: SanitasCognitoUserPoolClient
+    Description: The user pool client used to connect to the user pool
+      in Sanitas.
+
 # More info about Globals:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -33,12 +43,7 @@ Globals:
       - !Ref DBConnectionLayer
       - !Ref LambdaLoggingLayer
       - !Ref UtilsLayer
-  Api:
-    TracingEnabled: true
-    Cors:
-      AllowMethods: "'OPTIONS,POST,GET,PUT'"
-      AllowHeaders: "'*'"
-      AllowOrigin: "'*'"
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -124,6 +129,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref SanitasAPI
             Path: /patient/search
             Method: POST
   # Each Lambda function is defined by properties:
@@ -279,6 +285,42 @@ Resources:
           Properties:
             Path: /patient/collaborator/{id}
             Method: GET
+
+  SanitasAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Staging
+      TracingEnabled: true
+      Cors:
+        AllowMethods: "'OPTIONS,POST,GET,PUT'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref CognitoUserPoolName
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: true
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: !Ref CognitoUserPoolClientName
+      GenerateSecret: false
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
