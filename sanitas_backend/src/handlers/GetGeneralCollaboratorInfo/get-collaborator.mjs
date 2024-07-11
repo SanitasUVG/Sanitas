@@ -44,12 +44,12 @@ export const getCollaboratorHandler = async (event, context) => {
     logger.info(dbResponse, "Query done!");
 
     if (dbResponse.rowCount === 0) {
-      logger.error("No record found!");
+      logger.error("No record found! Returning default data");
 
       return createResponse()
-        .setStatusCode(404)
+        .setStatusCode(200)
         .addCORSHeaders()
-        .setBody({ message: "Invalid request: No colaborador with the given ID found." })
+        .setBody({ patientId: id, code: "", area: "" })
         .build();
     }
 
@@ -63,10 +63,6 @@ export const getCollaboratorHandler = async (event, context) => {
       .build();
   } catch (error) {
     logger.error(error, "An error has occurred!");
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify(error),
-    };
     return createResponse()
       .setStatusCode(500)
       .addCORSHeaders()
