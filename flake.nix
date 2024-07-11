@@ -169,8 +169,8 @@
                 };
                 jsformat = {
                   enable = true;
-                  name = "dprint";
-                  description = "Javascript formatter";
+                  name = "Biome JSFormatter";
+                  description = "Javascript formatter written in rust";
                   files = "\.[mc]?jsx?$";
                   entry = "${pkgs.biome}/bin/biome format";
                 };
