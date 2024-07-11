@@ -1,15 +1,15 @@
 {
-  "name": "logging",
-  "version": "1.0.0",
-  "description": "The logging package that actually implements all the logic",
-  "main": "index.mjs",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "ElrohirGT",
-  "license": "MIT",
-  "dependencies": {
-    "pino": "^9.0.0",
-    "pino-lambda": "^4.4.0"
-  }
+	"name": "logging",
+	"version": "1.0.0",
+	"description": "The logging package that actually implements all the logic",
+	"main": "index.mjs",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "ElrohirGT",
+	"license": "MIT",
+	"dependencies": {
+		"pino": "^9.0.0",
+		"pino-lambda": "^4.4.0"
+	}
 }

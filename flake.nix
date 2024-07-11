@@ -172,7 +172,7 @@
                   name = "dprint";
                   description = "Javascript formatter";
                   files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.dprint}/bin/dprint fmt --allow-no-files";
+                  entry = "${pkgs.biome}/bin/biome format";
                 };
                 yamlFormatter = {
                   enable = true;
@@ -197,10 +197,10 @@
                 };
                 jslinter = {
                   enable = true;
-                  name = "oxclint JSLinter";
+                  name = "Biome JSLinter";
                   description = "Javascript linter written in rust";
                   files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.oxlint}/bin/oxlint --max-warnings=0 -D correctness -D restriction";
+                  entry = "${pkgs.biome}/bin/biome lint --error-on-warnings";
                 };
               };
             };

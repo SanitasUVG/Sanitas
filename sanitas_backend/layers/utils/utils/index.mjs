@@ -52,51 +52,51 @@
  * @returns {APIPatient} The patient object the API must return.
  */
 export function mapToAPIPatient(dbPatient) {
-  const {
-    id,
-    cui,
-    es_mujer: isWoman,
-    correo: email,
-    nombres: names,
-    apellidos: lastNames,
+	const {
+		id,
+		cui,
+		es_mujer: isWoman,
+		correo: email,
+		nombres: names,
+		apellidos: lastNames,
 
-    nombre_contacto1: contactName1,
-    parentesco_contacto1: contactKinship1,
-    telefono_contacto1: contactPhone1,
+		nombre_contacto1: contactName1,
+		parentesco_contacto1: contactKinship1,
+		telefono_contacto1: contactPhone1,
 
-    nombre_contacto2: contactName2,
-    parentesco_contacto2: contactKinship2,
-    telefono_contacto2: contactPhone2,
+		nombre_contacto2: contactName2,
+		parentesco_contacto2: contactKinship2,
+		telefono_contacto2: contactPhone2,
 
-    tipo_sangre: bloodType,
-    direccion: address,
-    id_seguro: insuranceId,
-    fecha_nacimiento: birthdate,
-    telefono: phone,
-  } = dbPatient;
+		tipo_sangre: bloodType,
+		direccion: address,
+		id_seguro: insuranceId,
+		fecha_nacimiento: birthdate,
+		telefono: phone,
+	} = dbPatient;
 
-  return {
-    id,
-    cui,
-    email,
-    isWoman,
-    names,
-    lastNames,
+	return {
+		id,
+		cui,
+		email,
+		isWoman,
+		names,
+		lastNames,
 
-    contactName1,
-    contactKinship1,
-    contactPhone1,
+		contactName1,
+		contactKinship1,
+		contactPhone1,
 
-    contactName2,
-    contactKinship2,
-    contactPhone2,
+		contactName2,
+		contactKinship2,
+		contactPhone2,
 
-    bloodType,
-    address,
-    insuranceId,
-    birthdate,
-    phone,
-  };
+		bloodType,
+		address,
+		insuranceId,
+		birthdate,
+		phone,
+	};
 }
 
 /**
@@ -123,43 +123,47 @@ export function mapToAPIPatient(dbPatient) {
  * @returns {ResponseBuilder}
  */
 export function createResponse() {
-  /** @type ResponseBuilder */
-  const builder = {
-    status: 500,
-    headers: {},
-    body: "",
+	/** @type ResponseBuilder */
+	const builder = {
+		status: 500,
+		headers: {},
+		body: "",
 
-    setStatusCode: (status) => {
-      builder.status = status;
-      return builder;
-    },
+		setStatusCode: (status) => {
+			builder.status = status;
+			return builder;
+		},
 
-    setBody: (bodyObj) => {
-      builder.body = JSON.stringify(bodyObj);
-      return builder;
-    },
+		setBody: (bodyObj) => {
+			builder.body = JSON.stringify(bodyObj);
+			return builder;
+		},
 
-    addHeader: (header, value) => {
-      builder.headers[header] = value;
-      return builder;
-    },
+		addHeader: (header, value) => {
+			builder.headers[header] = value;
+			return builder;
+		},
 
-    addCORSHeaders: (allowMethods = "GET", allowOrigin = "*", allowHeaders = "Content-Type") => {
-      builder.addHeader("Access-Control-Allow-Headers", allowHeaders);
-      builder.addHeader("Access-Control-Allow-Origin", allowOrigin);
-      builder.addHeader("Access-Control-Allow-Methods", allowMethods);
+		addCORSHeaders: (
+			allowMethods = "GET",
+			allowOrigin = "*",
+			allowHeaders = "Content-Type",
+		) => {
+			builder.addHeader("Access-Control-Allow-Headers", allowHeaders);
+			builder.addHeader("Access-Control-Allow-Origin", allowOrigin);
+			builder.addHeader("Access-Control-Allow-Methods", allowMethods);
 
-      return builder;
-    },
+			return builder;
+		},
 
-    build: () => ({
-      statusCode: builder.status,
-      headers: builder.headers,
-      body: builder.body,
-    }),
-  };
+		build: () => ({
+			statusCode: builder.status,
+			headers: builder.headers,
+			body: builder.body,
+		}),
+	};
 
-  return builder;
+	return builder;
 }
 
 /**
@@ -182,13 +186,13 @@ export function createResponse() {
  * @returns {APIStudentInfo} The API formatted student information.
  */
 export function mapToAPIStudentInfo(dbStudentInfo) {
-  const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
+	const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
 
-  return {
-    patientId,
-    carnet,
-    career,
-  };
+	return {
+		patientId,
+		carnet,
+		career,
+	};
 }
 
 /**
@@ -215,17 +219,12 @@ Maps a DBCollaborator to an APICollaborator.
 @returns {APICollaborator} The collaborator object the API must return.
 */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-  const {
-    id,
-    codigo: code,
-    area,
-    id_paciente: patientId,
-  } = dbCollaborator;
+	const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
 
-  return {
-    id,
-    code,
-    area,
-    patientId,
-  };
+	return {
+		id,
+		code,
+		area,
+		patientId,
+	};
 }

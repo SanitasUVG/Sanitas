@@ -20,57 +20,63 @@ import React from "react";
  * @param {RadioInputProps} props - The properties passed to the RadioInput component.
  * @returns {JSX.Element} A labeled radio button element with customizable styles.
  */
-export default function RadioInput({ name, checked, onChange, label, style = {} }) {
-  const defaultStyles = {
-    label: {
-      position: "relative",
-      paddingLeft: "25px",
-      cursor: "pointer",
-      display: "inline-block",
-      ...style.label,
-    },
-    input: {
-      position: "absolute",
-      opacity: 0,
-      cursor: "pointer",
-      ...style.input,
-    },
-    outerSpan: {
-      position: "absolute",
-      top: "0",
-      left: "0",
-      height: "20px",
-      width: "20px",
-      backgroundColor: "#FFFFFF",
-      borderRadius: "50%",
-      border: "1px solid #5B6670",
-      display: "inline-block",
-      padding: "3px",
-      ...style.outerSpan,
-    },
-    innerSpan: {
-      display: checked ? "block" : "none",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "#0F6838",
-      borderRadius: "50%",
-      ...style.innerSpan,
-    },
-  };
+export default function RadioInput({
+	name,
+	checked,
+	onChange,
+	label,
+	style = {},
+}) {
+	const defaultStyles = {
+		label: {
+			position: "relative",
+			paddingLeft: "25px",
+			cursor: "pointer",
+			display: "inline-block",
+			...style.label,
+		},
+		input: {
+			position: "absolute",
+			opacity: 0,
+			cursor: "pointer",
+			...style.input,
+		},
+		outerSpan: {
+			position: "absolute",
+			top: "0",
+			left: "0",
+			height: "20px",
+			width: "20px",
+			backgroundColor: "#FFFFFF",
+			borderRadius: "50%",
+			border: "1px solid #5B6670",
+			display: "inline-block",
+			padding: "3px",
+			...style.outerSpan,
+		},
+		innerSpan: {
+			display: checked ? "block" : "none",
+			width: "100%",
+			height: "100%",
+			backgroundColor: "#0F6838",
+			borderRadius: "50%",
+			...style.innerSpan,
+		},
+	};
 
-  return (
-    <label style={defaultStyles.label}>
-      <input
-        type="radio"
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        style={defaultStyles.input}
-      />
-      <span style={defaultStyles.outerSpan}>
-        <span style={defaultStyles.innerSpan}></span>
-      </span>
-      {label}
-    </label>
-  );
+	return (
+		<label style={defaultStyles.label}>
+			<input
+				type="radio"
+				name={name}
+				checked={checked}
+				onChange={onChange}
+				style={defaultStyles.input}
+			/>
+			<span style={defaultStyles.outerSpan}>
+				<span style={defaultStyles.innerSpan} />
+			</span>
+			{label}
+		</label>
+	);
 }

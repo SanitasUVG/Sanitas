@@ -15,53 +15,54 @@ import React, { useState } from "react";
  * @returns {JSX.Element} The React Button element.
  */
 export default function BaseButton({ text, onClick, style = {} }) {
-  const [isHovered, setIsHovered] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
+	const ariaLabel = `${text} button icon`;
 
-  const defaultStyle = {
-    backgroundColor: "#0F6838",
-    color: "#FFFFFF",
-    borderRadius: "5px",
-    padding: "10px 20px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "background-color 0.3s",
-    overflow: "hidden",
-    minWidth: "100px",
-    ...style,
-  };
+	const defaultStyle = {
+		backgroundColor: "#0F6838",
+		color: "#FFFFFF",
+		borderRadius: "5px",
+		padding: "10px 20px",
+		border: "none",
+		cursor: "pointer",
+		fontSize: "14px",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		transition: "background-color 0.3s",
+		overflow: "hidden",
+		minWidth: "100px",
+		...style,
+	};
 
-  const textStyle = {
-    opacity: isHovered ? 0 : 1,
-    position: "relative",
-    visibility: isHovered ? "hidden" : "visible",
-    transition: "opacity 0.3s, visibility 0.3s",
-  };
+	const textStyle = {
+		opacity: isHovered ? 0 : 1,
+		position: "relative",
+		visibility: isHovered ? "hidden" : "visible",
+		transition: "opacity 0.3s, visibility 0.3s",
+	};
 
-  const iconStyle = {
-    filter: "invert(100%)",
-    opacity: isHovered ? 1 : 0,
-    transform: isHovered ? "scale(1)" : "scale(0)",
-    transition: "opacity 0.3s, transform 0.3s",
-    position: "absolute",
-    fontSize: "24px",
-    transformOrigin: "center",
-    visibility: isHovered ? "visible" : "hidden",
-  };
+	const iconStyle = {
+		filter: "invert(100%)",
+		opacity: isHovered ? 1 : 0,
+		transform: isHovered ? "scale(1)" : "scale(0)",
+		transition: "opacity 0.3s, transform 0.3s",
+		position: "absolute",
+		fontSize: "24px",
+		transformOrigin: "center",
+		visibility: isHovered ? "visible" : "hidden",
+	};
 
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={defaultStyle}
-    >
-      <span style={textStyle}>{text}</span>
-      <img src={arrowRight} style={iconStyle} />
-    </button>
-  );
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			onMouseEnter={() => setIsHovered(true)}
+			onMouseLeave={() => setIsHovered(false)}
+			style={defaultStyle}
+		>
+			<span style={textStyle}>{text}</span>
+			<img src={arrowRight} style={iconStyle} alt={ariaLabel} />
+		</button>
+	);
 }
