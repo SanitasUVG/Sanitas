@@ -172,6 +172,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
   const handleOpenNewForm = () => {
     setSelectedSurgery({ surgeryType: "", surgeryYear: currentYear.toString(), complications: "" });
     setAddingNew(true);
+    setError(null);
   };
 
   // Save the new surgery record to the database
@@ -206,6 +207,9 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
+
+  // Render logic for no surgical history found
+  const noHistoryMessage = surgicalHistory.length === 0 && !addingNew && !selectedSurgery;
 
   // Select a surgery record to view
   const handleSelectSurgery = (surgery) => {
@@ -254,19 +258,17 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
           />
         </div>
 
-        {surgicalHistory.length > 0 && !error
-          ? (
-            surgicalHistory.map((surgery, index) => (
-              <InformationCard
-                key={index}
-                type="surgical"
-                year={surgery.surgeryYear}
-                surgeryType={surgery.surgeryType}
-                onClick={() => handleSelectSurgery(surgery)}
-              />
-            ))
-          )
-          : (
+        {surgicalHistory.length > 0
+          ? surgicalHistory.map((surgery, index) => (
+            <InformationCard
+              key={index}
+              type="surgical"
+              year={surgery.surgeryYear}
+              surgeryType={surgery.surgeryType}
+              onClick={() => handleSelectSurgery(surgery)}
+            />
+          ))
+          : noHistoryMessage && (
             <p style={{ textAlign: "center", paddingTop: "20px" }}>
               No se ha encontrado antecedentes quirúrgicos para el paciente.
             </p>
