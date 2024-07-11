@@ -11,6 +11,19 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
+/**
+ * @typedef {Object} SurgicalHistoryProps
+ * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
+ * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
+ * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
+ * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
+ * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
+ *
+ * Component to manage and display a patient's surgical history, allowing users to add and view records.
+ *
+ * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
+ * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
+ */
 export function SurgicalHistory({
   getBirthdayPatientInfo,
   getSurgicalHistory,
@@ -115,19 +128,17 @@ export function SurgicalHistory({
 }
 
 /**
- * @typedef {Object} SurgicalHistoryProps
- * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
- * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
- * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
- * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
- * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
+ * @typedef {Object} SurgicalViewProps
+ * @property {number} id - The patient's ID.
+ * @property {Object} birthdayResource - Wrapped resource for fetching birthdate data.
+ * @property {Object} surgicalHistoryResource - Wrapped resource for fetching surgical history data.
+ * @property {Function} updateSurgicalHistory - Function to update the surgical history.
  *
- * A component to manage and displays a patient's surgical history, allowing users to add and view records.
+ * Internal view component for managing the display and modification of a patient's surgical history, with options to add or edit records.
  *
- * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
- * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
+ * @param {SurgicalViewProps} props - Specific props for the SurgicalView component.
+ * @returns {JSX.Element} - A detailed view for managing surgical history with interactivity to add or edit records.
  */
-
 function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSurgicalHistory }) {
   const birthYearData = birthdayResource.read().result; // Fetch the patient's birth year
   const surgicalHistoryData = surgicalHistoryResource.read().result; // Fetch the patient's surgical history
@@ -357,6 +368,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
                     onClick={handleSaveNewSurgery}
                     style={{ width: "30%", height: "3rem" }}
                   />
+                  <div style={{ width: "1rem" }}></div>
                   <BaseButton
                     text="Cancelar"
                     onClick={handleCancel}
