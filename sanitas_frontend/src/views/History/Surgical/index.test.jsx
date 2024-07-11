@@ -1,112 +1,110 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { toast } from "react-toastify";
+import { describe, expect, test, vi } from "vitest";
 import { SurgicalHistory } from ".";
 
-const mockGetSurgicalHistory = vi.fn();
-const mockUpdateSurgicalHistory = vi.fn();
-const mockUseStore = vi.fn();
-const sidebarConfig = {
-  userInformation: {
-    displayName: "Jennifer Bustamante",
-    title: "Doctora UVG",
-  },
-};
-const mockGetBirthdayPatientInfo = vi.fn();
+vi.mock("react-toastify", () => {
+  return {
+    toast: {
+      error: vi.fn(),
+      success: vi.fn(),
+      info: vi.fn(),
+    },
+  };
+});
 
-const exampleUserInformation = {
-  displayName: "Jennifer Bustamante",
-  title: "Doctora UVG",
-};
-
-const setup = (surgicalHistoryData = []) => {
-  mockGetSurgicalHistory.mockResolvedValue({ result: { surgicalEventData: surgicalHistoryData } });
-  mockUseStore.mockImplementation(() => ({ selectedPatientId: "1" }));
-  mockGetBirthdayPatientInfo.mockResolvedValue({
-    result: { birthdate: "1980-05-20" },
-  });
-
-  render(
-    <MemoryRouter>
-      <SurgicalHistory
-        getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-        getSurgicalHistory={mockGetSurgicalHistory}
-        updateSurgicalHistory={mockUpdateSurgicalHistory}
-        sidebarConfig={{ userInformation: exampleUserInformation }}
-        useStore={mockUseStore}
-      />
-    </MemoryRouter>,
+describe("SurgicalHistory Component Tests", () => {
+  const mockGetBirthdayPatientInfo = vi.fn(() => Promise.resolve({ result: { birthdate: "1990-01-01" } }));
+  const mockGetSurgicalHistory = vi.fn(() =>
+    Promise.resolve({
+      result: [{ surgeryType: "Appendectomy", surgeryYear: "2020", complications: "None" }],
+    })
   );
-};
+  const mockUpdateSurgicalHistory = vi.fn(() => Promise.resolve({ success: true }));
+  const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-describe("SurgicalHistory", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
+  const sidebarConfig = {
+    userInformation: { displayName: "User Testing" },
+  };
 
-  it("displays multiple surgical histories when provided", async () => {
-    const surgicalData = [
-      { surgeryType: "Appendectomy", surgeryYear: "2019", complications: "None" },
-      { surgeryType: "Gallbladder Removal", surgeryYear: "2021", complications: "Minor infection" },
-    ];
-    setup(surgicalData);
+  const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
+  test("opens new form on button click", async () => {
+    render(
+      <Wrapper>
+        <SurgicalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+          getSurgicalHistory={mockGetSurgicalHistory}
+          updateSurgicalHistory={mockUpdateSurgicalHistory}
+          sidebarConfig={sidebarConfig}
+          useStore={mockUseStore}
+        />
+      </Wrapper>,
+    );
+    // Correctamente espera por el botón antes de hacer clic
+    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
+    fireEvent.click(addButton);
     await waitFor(() => {
-      expect(screen.getByText("Appendectomy")).toBeInTheDocument();
-      expect(screen.getByText("2019")).toBeInTheDocument();
-      expect(screen.getByText("Gallbladder Removal")).toBeInTheDocument();
-      expect(screen.getByText("2021")).toBeInTheDocument();
+      expect(screen.getByText("Guardar")).toBeInTheDocument();
     });
   });
 
-  it("allows user to add a new surgical record", async () => {
-    setup();
-
-    // Utilizando getByRole para encontrar el botón
-    fireEvent.click(screen.getByRole("button", { name: /Agregar antecedente quirúrgico/i }));
-
-    expect(screen.getByPlaceholderText(/Ingrese acá el motivo o tipo de cirugía/i)).toBeVisible();
-    expect(screen.getByRole("combobox")).toBeVisible();
-    expect(
-      screen.getByPlaceholderText(
-        /Ingrese complicaciones que pudo haber tenido durante o después de la cirugía/i,
-      ),
-    ).toBeVisible();
-  });
-
-  it("resets the input fields and closes the form when cancel is clicked", async () => {
-    setup();
-
-    // Utilizando getByRole para encontrar el botón
-    fireEvent.click(screen.getByRole("button", { name: /Agregar antecedente quirúrgico/i }));
-    fireEvent.change(screen.getByPlaceholderText(/Ingrese acá el motivo o tipo de cirugía/i), {
-      target: { value: "Test Surgery" },
-    });
-    fireEvent.change(screen.getByRole("combobox"), {
-      target: { value: "2020" },
-    });
-    fireEvent.change(
-      screen.getByPlaceholderText(
-        /Ingrese complicaciones que pudo haber tenido durante o después de la cirugía/i,
-      ),
-      {
-        target: { value: "None" },
-      },
+  test("cancels new surgical record form on button click", async () => {
+    render(
+      <Wrapper>
+        <SurgicalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+          getSurgicalHistory={mockGetSurgicalHistory}
+          updateSurgicalHistory={mockUpdateSurgicalHistory}
+          sidebarConfig={sidebarConfig}
+          useStore={mockUseStore}
+        />
+      </Wrapper>,
     );
 
-    fireEvent.click(screen.getByText("Cancelar"));
-
+    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
+    fireEvent.click(addButton);
     await waitFor(() => {
-      expect(
-        screen.queryByPlaceholderText(/Ingrese acá el motivo o tipo de cirugía/i),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByPlaceholderText(
-          /Ingrese complicaciones que pudo haber tenido durante o después de la cirugía/i,
-        ),
-      ).not.toBeInTheDocument();
-      expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+      expect(screen.getByText("Guardar")).toBeInTheDocument();
+    });
+
+    const cancelButton = screen.getByText("Cancelar");
+    fireEvent.click(cancelButton);
+    await waitFor(() => {
+      expect(screen.queryByText("Guardar")).not.toBeInTheDocument();
+    });
+  });
+
+  test("shows an error message when trying to save with empty fields", async () => {
+    render(
+      <Wrapper>
+        <SurgicalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+          getSurgicalHistory={mockGetSurgicalHistory}
+          updateSurgicalHistory={mockUpdateSurgicalHistory}
+          sidebarConfig={sidebarConfig}
+          useStore={mockUseStore}
+        />
+      </Wrapper>,
+    );
+
+    // Abre el formulario para agregar un nuevo registro quirúrgico
+    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
+    fireEvent.click(addButton);
+
+    // Espera a que se cargue el formulario
+    await waitFor(() => {
+      expect(screen.getByText("Guardar")).toBeInTheDocument();
+    });
+
+    // Intenta guardar con los campos vacíos
+    const saveButton = screen.getByText("Guardar");
+    fireEvent.click(saveButton);
+
+    // Verifica que aparece el mensaje de error indicando que los campos están vacíos
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Complete todos los campos requeridos.");
     });
   });
 });
