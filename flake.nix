@@ -65,8 +65,6 @@
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system;};
       requiredPkgs = with pkgs; [
-        dprint
-        oxlint
         jq
       ];
       frontendRequiredPkgs = with pkgs; [
