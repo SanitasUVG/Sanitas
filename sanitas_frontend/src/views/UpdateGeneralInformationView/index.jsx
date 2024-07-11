@@ -375,8 +375,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
           }}
         >
           <h1 style={styles.h1}>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
-          {/* <p>{response.error.toString()}</p> */}
-          <p>AxiosError: Request failed with status code 400</p>
+          <p>{response.error.toString()}</p>
         </div>
       );
     }
