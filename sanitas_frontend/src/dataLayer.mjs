@@ -317,55 +317,6 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 };
 
 /**
- * @typedef {Object} CollaboratorAPIInformation
- * @property {number} patientId
- * @property {string} code
- * @property {string} area
- */
-
-/**
- * 	Callback for retrieving the collaborator information of a patient.
- *
- * @callback GetCollaboratorPatientInformationAPICall
- * @param {number} id - The ID of the patient.
- * @returns {Promise<Result<CollaboratorAPIInformation, Error>>}
- */
-
-/**
- * @type {GetCollaboratorPatientInformationAPICall}
- */
-export const getCollaboratorInformation = async (id) => {
-  const url = `${BASE_URL}/patient/collaborator/${id}`;
-  try {
-    const { data: result } = await axios.get(url);
-    return { result };
-  } catch (error) {
-    return { error };
-  }
-};
-
-/**
- * 	Callback for updating the student information of a patient.
- *
- * @callback UpdateCollaboratorPatientInformationAPICall
- * @param {APICollaboratorInfo} APICollaboratorInfo
- * @returns {Promise<Result<APICollaboratorInfo, Error>>}
- */
-
-/**
- * @type {UpdateCollaboratorPatientInformationAPICall}
- */
-export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
-  const url = `${BASE_URL}/patient/collaborator/`;
-  try {
-    const { data: result } = await axios.put(url, APICollaboratorInfo);
-    return { result };
-  } catch (error) {
-    return { error };
-  }
-};
-
-/**
  * Fetches the surgical history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
@@ -427,5 +378,54 @@ export const updateSurgicalHistory = async (patientId, surgicalEvents) => {
     } else {
       return { error: error.message };
     }
+  }
+};
+
+/**
+ * @typedef {Object} CollaboratorAPIInformation
+ * @property {number} patientId
+ * @property {string} code
+ * @property {string} area
+ */
+
+/**
+ * 	Callback for retrieving the collaborator information of a patient.
+ *
+ * @callback GetCollaboratorPatientInformationAPICall
+ * @param {number} id - The ID of the patient.
+ * @returns {Promise<Result<CollaboratorAPIInformation, Error>>}
+ */
+
+/**
+ * @type {GetCollaboratorPatientInformationAPICall}
+ */
+export const getCollaboratorInformation = async (id) => {
+  const url = `${BASE_URL}/patient/collaborator/${id}`;
+  try {
+    const { data: result } = await axios.get(url);
+    return { result };
+  } catch (error) {
+    return { error };
+  }
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ *
+ * @callback UpdateCollaboratorPatientInformationAPICall
+ * @param {APICollaboratorInfo} APICollaboratorInfo
+ * @returns {Promise<Result<APICollaboratorInfo, Error>>}
+ */
+
+/**
+ * @type {UpdateCollaboratorPatientInformationAPICall}
+ */
+export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
+  const url = `${BASE_URL}/patient/collaborator/`;
+  try {
+    const { data: result } = await axios.put(url, APICollaboratorInfo);
+    return { result };
+  } catch (error) {
+    return { error };
   }
 };

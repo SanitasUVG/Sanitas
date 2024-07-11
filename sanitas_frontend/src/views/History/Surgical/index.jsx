@@ -7,6 +7,7 @@ import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
 import { BaseInput } from "src/components/Input/index";
+import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
@@ -20,6 +21,10 @@ export function SurgicalHistory({
   const id = useStore((s) => s.selectedPatientId);
   const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
   const surgicalHistoryResource = WrapPromise(getSurgicalHistory(id));
+
+  const LoadingView = () => {
+    return <Throbber loadingMessage="Cargando información de los antecedentes quirúrjicos..." />;
+  };
 
   return (
     <div
@@ -94,7 +99,7 @@ export function SurgicalHistory({
               gap: "2rem",
             }}
           >
-            <Suspense fallback={<div>Cargando información del paciente...</div>}>
+            <Suspense fallback={<LoadingView />}>
               <SurgicalView
                 id={id}
                 birthdayResource={birthdayResource}
@@ -213,6 +218,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
         flexDirection: "row",
         width: "100%",
         height: "100%",
+        gap: "1.5rem",
       }}
     >
       <div
@@ -264,10 +270,10 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
               borderRadius: "10px",
               padding: "1rem",
               height: "65vh",
-              flex: 1.8,
+              flex: 1.5,
               overflowY: "auto",
               width: "100%",
-              marginLeft: "2rem",
+              paddingLeft: "2rem",
             }}
           >
             <p
@@ -342,7 +348,6 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
                 paddingTop: "5rem",
                 display: "flex",
                 justifyContent: "center",
-                gap: "2rem",
               }}
             >
               {addingNew && (
