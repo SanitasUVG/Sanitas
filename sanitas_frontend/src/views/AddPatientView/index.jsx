@@ -96,6 +96,7 @@ export function PatientForm({
 }) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
   if (!patientData) return null;
 
@@ -111,17 +112,17 @@ export function PatientForm({
   const validateFormData = () => {
     const fields = ["names", "surnames", "birthDate"];
     if (patientData.cui.length !== 13) {
-      alert("El CUI debe contener exactamente 13 caracteres.");
+      setUpdateError("El CUI debe contener exactamente 13 caracteres.");
       return false;
     }
     for (let field of fields) {
       if (!patientData[field]) {
-        alert(`El campo ${field} es obligatorio y no puede estar vacío.`);
+        setUpdateError(`El campo ${field} es obligatorio y no puede estar vacío.`);
         return false;
       }
     }
     if (patientData.sex === null) {
-      alert(`El campo de género es obligatorio.`);
+      setUpdateError(`El campo de género es obligatorio.`);
       return false;
     }
     return true;
@@ -152,6 +153,12 @@ export function PatientForm({
         <Throbber loadingMessage="Guardando datos del paciente..." />
       </div>
     );
+  };
+
+  const errorPStyles = {
+    fontFamily: fonts.textFont,
+    fontSize: fontSize.textSize,
+    color: colors.statusDenied,
   };
 
   return (
@@ -254,6 +261,7 @@ export function PatientForm({
               disabled={isLoading} // Deshabilitar el botón mientras se carga
             />
           </div>
+          <p style={errorPStyles}>{updateError}</p>
         </div>
       )}
     </div>
