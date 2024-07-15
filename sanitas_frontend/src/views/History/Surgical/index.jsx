@@ -143,13 +143,17 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
   const birthYearData = birthdayResource.read().result; // Fetch the patient's birth year
   const surgicalHistoryData = surgicalHistoryResource.read().result; // Fetch the patient's surgical history
 
-  const [surgicalHistory, setSurgicalHistory] = useState(
-    surgicalHistoryData?.surgicalEventData || [],
-  );
+  const [surgicalHistory, setSurgicalHistory] = useState({
+    data: surgicalHistoryData?.medicalHistory.surgeries.data || [],
+    version: surgicalHistoryData?.medicalHistory.surgeries.version || 1,
+  });
 
   const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
   const [error, setError] = useState(null);
+
+  // No surgical data in API
+  const noSurgeryData = surgicalHistory.data.length === 0;
 
   const currentYear = new Date().getFullYear();
 
@@ -188,10 +192,17 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
     }
 
     toast.info("Guardando antecedente quirúrgico...");
-    const updatedSurgicalHistory = [...surgicalHistory, selectedSurgery];
+    const updatedSurgicalHistory = {
+      data: [...surgicalHistory.data, selectedSurgery],
+      version: surgicalHistory.version,
+    };
 
     try {
-      const response = await updateSurgicalHistory(id, updatedSurgicalHistory);
+      const response = await updateSurgicalHistory(
+        id,
+        updatedSurgicalHistory.data,
+        surgicalHistory.version,
+      );
       if (!response.error) {
         setSurgicalHistory(updatedSurgicalHistory);
         setAddingNew(false);
@@ -207,9 +218,6 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
-
-  // Render logic for no surgical history found
-  const noHistoryMessage = surgicalHistory.length === 0 && !addingNew && !selectedSurgery;
 
   // Select a surgery record to view
   const handleSelectSurgery = (surgery) => {
@@ -258,20 +266,22 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
           />
         </div>
 
-        {surgicalHistory.length > 0
-          ? surgicalHistory.map((surgery, index) => (
-            <InformationCard
-              key={index}
-              type="surgical"
-              year={surgery.surgeryYear}
-              surgeryType={surgery.surgeryType}
-              onClick={() => handleSelectSurgery(surgery)}
-            />
-          ))
-          : noHistoryMessage && (
+        {noSurgeryData
+          ? (
             <p style={{ textAlign: "center", paddingTop: "20px" }}>
-              No se ha encontrado antecedentes quirúrgicos para el paciente.
+              ¡Parece que no hay antecedentes quirúrgicos! Agrega uno en el botón de arriba.
             </p>
+          )
+          : (
+            surgicalHistory.data.map((surgery, index) => (
+              <InformationCard
+                key={index}
+                type="surgical"
+                year={surgery.surgeryYear}
+                surgeryType={surgery.surgeryType}
+                onClick={() => handleSelectSurgery(surgery)}
+              />
+            ))
           )}
       </div>
 

@@ -328,7 +328,8 @@ export const getSurgicalHistory = async (id) => {
   try {
     const response = await axios.get(url);
     if (response.status === 200) {
-      return { result: response.data };
+      const version = response.data.medicalHistory.surgeries.version;
+      return { result: response.data, version };
     } else {
       return { error: `Received unexpected status code: ${response.status}` };
     }
@@ -354,22 +355,30 @@ export const getSurgicalHistory = async (id) => {
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-export const updateSurgicalHistory = async (patientId, surgicalEvents) => {
+export const updateSurgicalHistory = async (patientId, surgicalEvents, currentVersion) => {
   const url = `${BASE_URL}/patient/surgical-history`;
 
   const payload = {
-    id: patientId,
-    hasSurgicalEvent: surgicalEvents.length > 0,
-    surgicalEventData: surgicalEvents.map((event) => ({
-      surgeryType: event.surgeryType,
-      surgeryYear: event.surgeryYear,
-      complications: event.complications,
-    })),
+    patientId: patientId,
+    medicalHistory: {
+      surgeries: {
+        version: currentVersion,
+        data: surgicalEvents.map((event) => ({
+          surgeryType: event.surgeryType,
+          surgeryYear: event.surgeryYear,
+          complications: event.complications,
+        })),
+      },
+    },
   };
 
   try {
     const response = await axios.put(url, payload);
-    return { result: response.data };
+    if (response.status === 200) {
+      return { result: response.data };
+    } else {
+      return { error: `Unexpected status code: ${response.status}` };
+    }
   } catch (error) {
     if (error.response) {
       return { error: error.response.data };

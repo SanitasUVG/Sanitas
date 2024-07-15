@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { colors, fonts } from "src/theme.mjs";
 
 /**
- * @typedef {Object} AppointmentSurgeryCardProps
+ * @typedef {Object} InformationCardProps
  * @property {'surgical' | 'appointment'} type - Distinguishes between surgical and appointment types to render appropriate information.
  * @property {string} year - The year of the surgery or appointment.
  * @property {string} surgeryType - The type of surgery, only applicable if `type` is 'surgical'.
@@ -18,10 +18,10 @@ import { colors, fonts } from "src/theme.mjs";
  *
  * Styles are applied directly through inline styles, and hover effects are managed with internal state.
  *
- * @param {AppointmentSurgeryCardProps} props - The properties passed to the card component.
+ * @param {InformationCardProps} props - The properties passed to the card component.
  * @returns {JSX.Element} The React component rendering the card with either surgical or appointment information.
  */
-export default function AppointmentSurgeryCard({ type, year, surgeryType, date, reason, onClick }) {
+export default function InformationCard({ type, year, surgeryType, date, reason, onClick }) {
   const [hover, setHover] = useState(false);
 
   const cardStyle = {
