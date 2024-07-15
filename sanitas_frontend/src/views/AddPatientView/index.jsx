@@ -246,6 +246,7 @@ export function PatientForm({
               placeholder="Fecha de nacimiento"
             />
           </div>
+          <p style={errorPStyles}>{updateError}</p>
           <div
             style={{
               display: "flex",
@@ -261,7 +262,6 @@ export function PatientForm({
               disabled={isLoading} // Deshabilitar el botón mientras se carga
             />
           </div>
-          <p style={errorPStyles}>{updateError}</p>
         </div>
       )}
     </div>
