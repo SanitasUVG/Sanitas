@@ -1,7 +1,6 @@
 import React, { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-
 import BaseButton from "src/components/Button/Base/index";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -140,28 +139,45 @@ export function SurgicalHistory({
  * @returns {JSX.Element} - A detailed view for managing surgical history with interactivity to add or edit records.
  */
 function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSurgicalHistory }) {
-  const birthYearData = birthdayResource.read().result; // Fetch the patient's birth year
-  const surgicalHistoryData = surgicalHistoryResource.read().result; // Fetch the patient's surgical history
+  const [selectedSurgery, setSelectedSurgery] = useState(null);
+  const [addingNew, setAddingNew] = useState(false);
+  const [error, setError] = useState("");
+  const [yearOptions, setYearOptions] = useState([]);
+
+  const birthYearResult = birthdayResource.read();
+  const surgicalHistoryResult = surgicalHistoryResource.read();
+
+  let errorMessage = "";
+  if (birthYearResult.error || surgicalHistoryResult.error) {
+    const error = birthYearResult.error || surgicalHistoryResult.error;
+    if (error && error.response) {
+      const { status } = error.response;
+      if (status < 500) {
+        errorMessage = "Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+      } else {
+        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+      }
+    } else {
+      errorMessage = "Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
+    }
+  }
+
+  const birthYearData = birthYearResult.result;
+  const surgicalHistoryData = surgicalHistoryResult.result;
 
   const [surgicalHistory, setSurgicalHistory] = useState({
     data: surgicalHistoryData?.medicalHistory.surgeries.data || [],
     version: surgicalHistoryData?.medicalHistory.surgeries.version || 1,
   });
 
-  const [selectedSurgery, setSelectedSurgery] = useState(null);
-  const [addingNew, setAddingNew] = useState(false);
-  const [error, setError] = useState(null);
-
   // No surgical data in API
   const noSurgeryData = surgicalHistory.data.length === 0;
-
   const currentYear = new Date().getFullYear();
 
   const birthYear = birthYearData?.birthdate
     ? new Date(birthYearData.birthdate).getFullYear()
     : null;
 
-  const [yearOptions, setYearOptions] = useState([]);
   useEffect(() => {
     const options = [];
     if (birthYear) {
@@ -176,7 +192,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
   const handleOpenNewForm = () => {
     setSelectedSurgery({ surgeryType: "", surgeryYear: currentYear.toString(), complications: "" });
     setAddingNew(true);
-    setError(null);
+    setError(" ");
   };
 
   // Save the new surgery record to the database
@@ -207,7 +223,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
         setSurgicalHistory(updatedSurgicalHistory);
         setAddingNew(false);
         setSelectedSurgery(null);
-        setError(null);
+        setError("");
         toast.success("Antecedente quirúrgico guardado con éxito.");
       } else {
         setError(`Ha ocurrido un error al guardar el antecedente quirúrgico: ${response.error}`);
@@ -266,7 +282,21 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
           />
         </div>
 
-        {noSurgeryData
+        {errorMessage && (
+          <div
+            style={{
+              color: "red",
+              paddingTop: "1rem",
+              textAlign: "center",
+              fontFamily: fonts.titleFont,
+              fontSize: fontSize.textSize,
+            }}
+          >
+            {errorMessage}
+          </div>
+        )}
+
+        {noSurgeryData && !errorMessage
           ? (
             <p style={{ textAlign: "center", paddingTop: "20px" }}>
               ¡Parece que no hay antecedentes quirúrgicos! Agrega uno en el botón de arriba.
