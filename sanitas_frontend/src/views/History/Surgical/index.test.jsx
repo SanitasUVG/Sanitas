@@ -18,7 +18,14 @@ describe("SurgicalHistory Component Tests", () => {
   const mockGetBirthdayPatientInfo = vi.fn(() => Promise.resolve({ result: { birthdate: "1990-01-01" } }));
   const mockGetSurgicalHistory = vi.fn(() =>
     Promise.resolve({
-      result: [{ surgeryType: "Appendectomy", surgeryYear: "2020", complications: "None" }],
+      result: {
+        medicalHistory: {
+          surgeries: {
+            data: [{ surgeryType: "Appendectomy", surgeryYear: "2020", complications: "None" }],
+            version: 1,
+          },
+        },
+      },
     })
   );
   const mockUpdateSurgicalHistory = vi.fn(() => Promise.resolve({ success: true }));
@@ -42,7 +49,10 @@ describe("SurgicalHistory Component Tests", () => {
         />
       </Wrapper>,
     );
-    // Correctamente espera por el botón antes de hacer clic
+
+    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
+    await waitFor(() => expect(mockGetSurgicalHistory).toHaveBeenCalled());
+
     const addButton = await screen.findByText("Agregar antecedente quirúrgico");
     fireEvent.click(addButton);
     await waitFor(() => {
@@ -62,6 +72,9 @@ describe("SurgicalHistory Component Tests", () => {
         />
       </Wrapper>,
     );
+
+    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
+    await waitFor(() => expect(mockGetSurgicalHistory).toHaveBeenCalled());
 
     const addButton = await screen.findByText("Agregar antecedente quirúrgico");
     fireEvent.click(addButton);
@@ -89,20 +102,19 @@ describe("SurgicalHistory Component Tests", () => {
       </Wrapper>,
     );
 
-    // Abre el formulario para agregar un nuevo registro quirúrgico
+    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
+    await waitFor(() => expect(mockGetSurgicalHistory).toHaveBeenCalled());
+
     const addButton = await screen.findByText("Agregar antecedente quirúrgico");
     fireEvent.click(addButton);
 
-    // Espera a que se cargue el formulario
     await waitFor(() => {
       expect(screen.getByText("Guardar")).toBeInTheDocument();
     });
 
-    // Intenta guardar con los campos vacíos
     const saveButton = screen.getByText("Guardar");
     fireEvent.click(saveButton);
 
-    // Verifica que aparece el mensaje de error indicando que los campos están vacíos
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith("Complete todos los campos requeridos.");
     });
