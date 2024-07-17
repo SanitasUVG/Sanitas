@@ -165,8 +165,11 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
   const birthYearData = birthYearResult.result;
   const surgicalHistoryData = surgicalHistoryResult.result;
 
+  let sortedData = surgicalHistoryData?.medicalHistory.surgeries.data || [];
+  sortedData.sort((a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear));
+
   const [surgicalHistory, setSurgicalHistory] = useState({
-    data: surgicalHistoryData?.medicalHistory.surgeries.data || [],
+    data: sortedData,
     version: surgicalHistoryData?.medicalHistory.surgeries.version || 1,
   });
 
@@ -208,10 +211,13 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
     }
 
     toast.info("Guardando antecedente quirúrgico...");
+
     const updatedSurgicalHistory = {
       data: [...surgicalHistory.data, selectedSurgery],
       version: surgicalHistory.version,
     };
+
+    updatedSurgicalHistory.data.sort((a, b) => b.surgeryYear - a.surgeryYear);
 
     try {
       const response = await updateSurgicalHistory(
