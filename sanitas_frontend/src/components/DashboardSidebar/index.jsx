@@ -178,24 +178,9 @@ export default function DashboardSidebar({
         }}
       >
         <TextIconButton
-          icon={flowericon}
-          text="Alérgicos"
-          onClick={wrapWithNavigate(navigateToAllergies)}
-        />
-        <TextIconButton
           icon={familyicon}
           text="Familiares"
           onClick={wrapWithNavigate(navigateToFamiliar)}
-        />
-        <TextIconButton
-          icon={womanicon}
-          text="Ginecoobstétricos"
-          onClick={wrapWithNavigate(navigateToObstetrics)}
-        />
-        <TextIconButton
-          icon={glassicon}
-          text="No patológicos"
-          onClick={navigateToNonPathological}
         />
         <TextIconButton
           icon={userloveicon}
@@ -203,9 +188,9 @@ export default function DashboardSidebar({
           onClick={wrapWithNavigate(navigateToPersonal)}
         />
         <TextIconButton
-          icon={brainicon}
-          text="Psiquiátricos"
-          onClick={wrapWithNavigate(navigateToPsiquiatric)}
+          icon={flowericon}
+          text="Alérgicos"
+          onClick={wrapWithNavigate(navigateToAllergies)}
         />
         <TextIconButton
           icon={facemaskicon}
@@ -216,6 +201,21 @@ export default function DashboardSidebar({
           icon={boneicon}
           text="Traumatológicos"
           onClick={wrapWithNavigate(navigateToTraumatological)}
+        />
+        <TextIconButton
+          icon={brainicon}
+          text="Psiquiátricos"
+          onClick={wrapWithNavigate(navigateToPsiquiatric)}
+        />
+        <TextIconButton
+          icon={womanicon}
+          text="Ginecoobstétricos"
+          onClick={wrapWithNavigate(navigateToObstetrics)}
+        />
+        <TextIconButton
+          icon={glassicon}
+          text="No patológicos"
+          onClick={navigateToNonPathological}
         />
       </div>
     </div>
