@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import BaseButton from "src/components/Button/Base/index";
@@ -7,6 +7,24 @@ import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 
+/**
+ * @typedef {Object} PatientData
+ * @property {string} cui - Unique identifier for the patient.
+ * @property {string} names - First and middle names of the patient.
+ * @property {string} surnames - Last names of the patient.
+ * @property {boolean} isWoman - Gender of the patient.
+ * @property {string} birthDate - Birthdate of the patient.
+ * @property {boolean} isNew - Indicates if the patient data is new or existing.
+ */
+
+/**
+ * Component for adding new patients.
+ * Uses navigation state to pre-fill the CUI if available.
+ *
+ * @param {AddPatientViewProps} props - Component properties.
+ * @param {import("src/store.mjs").UseStoreHook} props.useStore
+ * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
+ */
 export function AddPatientView({ submitPatientData, useStore }) {
   const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
   const location = useLocation();
@@ -76,18 +94,30 @@ export function AddPatientView({ submitPatientData, useStore }) {
           >
             Por favor, registre al paciente
           </h3>
-          <PatientForm
-            patientData={patientData}
-            setPatientData={setPatientData}
-            submitPatientData={submitPatientData}
-            setSelectedPatientId={setSelectedPatientId}
-          />
+          <Suspense fallback={<div>Cargando...</div>}>
+            <PatientForm
+              patientData={patientData}
+              setPatientData={setPatientData}
+              submitPatientData={submitPatientData}
+              setSelectedPatientId={setSelectedPatientId}
+            />
+          </Suspense>
         </div>
       </div>
     </div>
   );
 }
 
+/**
+ * Form component for displaying and managing input for patient data.
+ * Handles data validation and submission to the server for registration or updates.
+ *
+ * @param {Object} props - Component properties.
+ * @param {PatientData} props.patientData - Current data for a single patient.
+ * @param {function(PatientData): void} props.setPatientData - Function to update the state with patient data.
+ * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data to the server.
+ * @param {function(newId): void} props.setSelectedPatientId - Function to set a new ID in the store.
+ */
 export function PatientForm({
   patientData,
   setPatientData,
@@ -98,8 +128,12 @@ export function PatientForm({
   const [isLoading, setIsLoading] = useState(false);
   const [updateError, setUpdateError] = useState("");
 
-  if (!patientData) return null;
-
+  /**
+   * Handles changes to the input fields for patient data and updates the state.
+   * Filters input based on the field type to ensure data integrity.
+   * @param {string} field - The field name to update.
+   * @param {string} value - The new value for the field.
+   */
   const handleChange = (field, value) => {
     if (field === "names" || field === "surnames") {
       const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
@@ -109,6 +143,11 @@ export function PatientForm({
     }
   };
 
+  /**
+   * Validates the patient data form before submission.
+   * Ensures all required fields are filled.
+   * @returns {boolean} True if the form is valid, false otherwise.
+   */
   const validateFormData = () => {
     const fields = ["names", "surnames", "birthDate"];
     if (patientData.cui.length !== 13) {
@@ -128,6 +167,9 @@ export function PatientForm({
     return true;
   };
 
+  /**
+   * Submits the patient data to the server.
+   */
   const handleSubmit = async () => {
     if (validateFormData()) {
       setIsLoading(true);
@@ -143,16 +185,13 @@ export function PatientForm({
     }
   };
 
+  /**
+   * Handles changes to the gender radio buttons.
+   * Updates the patient's gender in the state based on the selected option.
+   * @param {boolean} isFemale - The selected gender.
+   */
   const handleGenderChange = (isFemale) => {
     setPatientData({ ...patientData, sex: isFemale });
-  };
-
-  const LoadingView = () => {
-    return (
-      <div>
-        <Throbber loadingMessage="Guardando datos del paciente..." />
-      </div>
-    );
   };
 
   const errorPStyles = {
@@ -163,107 +202,143 @@ export function PatientForm({
 
   return (
     <div>
-      {isLoading ? <LoadingView /> : (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "right",
-              alignItems: "right",
-              width: "45%",
-            }}
-          >
-            <p>CUI del paciente:</p>
-            <BaseInput
-              type="text"
-              value={patientData.cui}
-              onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
-              placeholder="CUI"
-              style={{
-                borderColor: patientData.cui.length === 13
-                  ? colors.statusApproved
-                  : colors.statusDenied,
-              }}
-            />
-            {patientData.cui.length !== 13 && (
-              <div style={{ color: colors.statusDenied }}>
-                El CUI debe contener exactamente 13 caracteres.
-              </div>
-            )}
-
-            <p>Ingrese el nombre del paciente:</p>
-
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <BaseInput
-                type="text"
-                value={patientData.names}
-                onChange={(e) => handleChange("names", e.target.value)}
-                placeholder="Nombres"
-                style={{ flex: 1 }}
-              />
-              <BaseInput
-                type="text"
-                value={patientData.surnames}
-                onChange={(e) => handleChange("surnames", e.target.value)}
-                placeholder="Apellidos"
-                style={{ flex: 1 }}
-              />
-            </div>
-
+      {isLoading
+        ? (
+          <div>
+            <Suspense fallback={<Throbber loadingMessage="Cargando" />}>
+              <Throbber loadingMessage="Guardando datos del paciente..." />
+            </Suspense>
+          </div>
+        )
+        : (
+          <div>
             <div
               style={{
                 display: "flex",
-                flexDirection: "row",
-                justifyContent: "left",
-                alignItems: "left",
-                paddingTop: "1.25rem",
-                paddingBottom: "1.25rem",
+                flexDirection: "column",
+                justifyContent: "right",
+                alignItems: "right",
+                width: "45%",
               }}
             >
-              <div style={{ paddingRight: "1.25rem" }}>
-                <RadioInput
-                  name="gender"
-                  checked={patientData.sex === true}
-                  onChange={() => handleGenderChange(true)}
-                  label="Femenino"
-                />
-              </div>
-              <div>
-                <RadioInput
-                  name="gender"
-                  checked={patientData.sex === false}
-                  onChange={() => handleGenderChange(false)}
-                  label="Masculino"
-                />
-              </div>
-            </div>
+              <p
+                style={{
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
+                  paddingBottom: "0.625rem",
+                }}
+              >
+                CUI del paciente:
+              </p>
+              <BaseInput
+                type="text"
+                value={patientData.cui}
+                onChange={(e) => handleChange("cui", e.target.value.replace(/\D/g, ""))}
+                placeholder="CUI"
+                style={{
+                  borderColor: patientData.cui.length === 13
+                    ? colors.statusApproved
+                    : colors.statusDenied,
+                }}
+              />
+              {patientData.cui.length !== 13 && (
+                <div style={{ color: colors.statusDenied }}>
+                  El CUI debe contener exactamente 13 caracteres.
+                </div>
+              )}
 
-            <p>Ingrese la fecha de nacimiento del paciente:</p>
-            <DateInput
-              value={patientData.birthDate}
-              onChange={(e) => handleChange("birthDate", e.target.value)}
-              placeholder="Fecha de nacimiento"
-            />
+              <p
+                style={{
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
+                  paddingBottom: "0.625rem",
+                  paddingTop: "1.25rem",
+                }}
+              >
+                Ingrese el nombre del paciente:
+              </p>
+
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <BaseInput
+                  type="text"
+                  value={patientData.names}
+                  onChange={(e) => handleChange("names", e.target.value)}
+                  placeholder="Nombres"
+                  style={{ flex: 1 }}
+                />
+                <BaseInput
+                  type="text"
+                  value={patientData.surnames}
+                  onChange={(e) => handleChange("surnames", e.target.value)}
+                  placeholder="Apellidos"
+                  style={{ flex: 1 }}
+                />
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "left",
+                  alignItems: "left",
+                  paddingTop: "1.25rem",
+                  paddingBottom: "1.25rem",
+                }}
+              >
+                <div style={{ paddingRight: "1.25rem" }}>
+                  <RadioInput
+                    name="gender"
+                    checked={patientData.sex === true}
+                    onChange={() => handleGenderChange(true)}
+                    label="Femenino"
+                    style={{
+                      fontFamily: fonts.textFont,
+                    }}
+                  />
+                </div>
+                <div>
+                  <RadioInput
+                    name="gender"
+                    checked={patientData.sex === false}
+                    onChange={() => handleGenderChange(false)}
+                    label="Masculino"
+                  />
+                </div>
+              </div>
+
+              <p
+                style={{
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
+                  paddingBottom: "0.625rem",
+                }}
+              >
+                Ingrese la fecha de nacimiento del paciente:
+              </p>
+              <DateInput
+                value={patientData.birthDate}
+                onChange={(e) => handleChange("birthDate", e.target.value)}
+                placeholder="Fecha de nacimiento"
+              />
+            </div>
+            <p style={errorPStyles}>{updateError}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                paddingTop: "4.5rem",
+              }}
+            >
+              <BaseButton
+                text="Registrar información"
+                onClick={handleSubmit}
+                disabled={isLoading} // Deshabilitar el botón mientras se carga
+              />
+            </div>
           </div>
-          <p style={errorPStyles}>{updateError}</p>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              paddingTop: "4.5rem",
-            }}
-          >
-            <BaseButton
-              text="Registrar información"
-              onClick={handleSubmit}
-              disabled={isLoading} // Deshabilitar el botón mientras se carga
-            />
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

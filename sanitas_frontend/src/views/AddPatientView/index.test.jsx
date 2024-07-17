@@ -5,6 +5,26 @@ import { describe, expect, test, vi } from "vitest";
 import { AddPatientView } from "../AddPatientView";
 
 describe("AddPatientView tests", () => {
+  test("Check CUI with invalid length shows alert", () => {
+    window.alert = vi.fn();
+    const submitPatientData = vi.fn();
+    const useStore = createEmptyStore();
+    render(
+      <MemoryRouter>
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
+      </MemoryRouter>,
+    );
+
+    const input = screen.getByPlaceholderText("CUI");
+    fireEvent.change(input, { target: { value: "123" } });
+    const button = screen.getByText("Registrar información");
+    fireEvent.click(button);
+
+    const errorMessages = screen.getAllByText("El CUI debe contener exactamente 13 caracteres.");
+    expect(errorMessages.length).toBeGreaterThan(0);
+    expect(submitPatientData).not.toHaveBeenCalled();
+  });
+
   test("Valid CUI triggers submitPatientData function", async () => {
     const submitPatientData = vi.fn().mockResolvedValue({ id: "test-id" });
     const useStore = createEmptyStore();
