@@ -9,18 +9,25 @@ const pool = new CognitoUserPool({
 });
 
 /**
- * @param {any} email - The users email
- * @param {any} password - The users password
- * @returns {Promise<Object>} The Amazon cognito response if successful.
+ * Registers a user inside the cognito API.
+ * @param {string} email - The users email
+ * @param {string} password - The users password
+ * @returns {Promise<import("./dataLayer.mjs").Result<*,*>>} The Amazon cognito response if successful will be inside the .result field.
  */
-export function Register(email, password) {
-  return new Promise((res, rej) => {
-    pool.signUp(email, password, [], null, (err, data) => {
-      if (err) {
-        rej(err);
-      } else {
-        res(data);
-      }
+export async function registerUser(email, password) {
+  try {
+    const result = await new Promise((res, rej) => {
+      pool.signUp(email, password, [], null, (err, data) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(data);
+        }
+      });
     });
-  });
+
+    return { result };
+  } catch (error) {
+    return { error };
+  }
 }
