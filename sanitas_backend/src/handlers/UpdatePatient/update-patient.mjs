@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { mapToAPIPatient } from "utils";
+import { createResponse, mapToAPIPatient } from "utils";
 
 function mapToDbPatient(apiPatient) {
 	const {
@@ -47,6 +47,7 @@ function mapToDbPatient(apiPatient) {
 	};
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: The function isn't actually complex, is just a little too large.
 export const updatePatientHandler = async (event, context) => {
 	withRequest(event, context);
 
@@ -55,6 +56,8 @@ export const updatePatientHandler = async (event, context) => {
 			`updatePatientHandler solo acepta el método PUT, intentaste: ${event.httpMethod}`,
 		);
 	}
+
+	const responseBuilder = createResponse().addCORSHeaders("PUT");
 
 	const apiPatientData = JSON.parse(event.body);
 	const patientData = mapToDbPatient(apiPatientData);
@@ -74,7 +77,10 @@ export const updatePatientHandler = async (event, context) => {
 		);
 
 		if (!patientData.id) {
-			throw new Error("ID es requerido.");
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ message: "ID es requerido." })
+				.build();
 		}
 
 		const query = `
@@ -126,49 +132,28 @@ export const updatePatientHandler = async (event, context) => {
 		const result = await client.query(query, values);
 
 		if (result.rowCount === 0) {
-			throw new Error("No se encontraron registros con el ID proporcionado.");
+			const message = "No se encontraron registros con el ID proporcionado.";
+			logger.error(message);
+			return responseBuilder.setStatusCode(400).setBody({ message }).build();
 		}
 
 		logger.info("Datos del paciente actualizados exitosamente.");
-		const response = {
-			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Headers": "Content-Type",
-				"Access-Control-Allow-Origin": "*", // Allow from anywhere
-				"Access-Control-Allow-Methods": "PUT", // Allow only PUT request
-			},
-			body: JSON.stringify(mapToAPIPatient(result.rows[0])),
-		};
+		const response = responseBuilder
+			.setStatusCode(200)
+			.setBody(mapToAPIPatient(result.rows[0]))
+			.build();
 
 		logger.info(response, "Respondiendo con:");
 		return response;
 	} catch (error) {
-		logger.error(
-			error,
-			"¡Se produjo un error al actualizar los datos del paciente!",
-		);
+		const message = "Se produjo un error al actualizar los datos del paciente.";
+		logger.error(error, message);
 
-		const statusCode = 400;
-		let errorMessage =
-			"Se produjo un error al actualizar los datos del paciente.";
+		const response = responseBuilder
+			.setStatusCode(500)
+			.setBody({ message })
+			.build();
 
-		if (error.message === "ID es requerido.") {
-			errorMessage = "ID es requerido.";
-		} else if (
-			error.message === "No se encontraron registros con el ID proporcionado."
-		) {
-			errorMessage = "No se encontraron registros con el ID proporcionado.";
-		}
-
-		const response = {
-			statusCode: statusCode,
-			headers: {
-				"Access-Control-Allow-Headers": "Content-Type",
-				"Access-Control-Allow-Origin": "*", // Allow from anywhere
-				"Access-Control-Allow-Methods": "PUT", // Allow only PUT request
-			},
-			body: JSON.stringify({ error: errorMessage }),
-		};
 		return response;
 	} finally {
 		await client?.end();

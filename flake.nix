@@ -167,13 +167,6 @@
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff format --dialect postgres";
                 };
-                jsformat = {
-                  enable = true;
-                  name = "Biome JSFormatter";
-                  description = "Javascript formatter written in rust";
-                  files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.biome}/bin/biome format";
-                };
                 yamlFormatter = {
                   enable = true;
                   name = "yamlfmt";
@@ -194,13 +187,6 @@
                   description = "A multidialect SQL linter and formatter";
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff lint --dialect postgres";
-                };
-                jslinter = {
-                  enable = true;
-                  name = "Biome JSLinter";
-                  description = "Javascript linter written in rust";
-                  files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.biome}/bin/biome lint --error-on-warnings";
                 };
               };
             };
