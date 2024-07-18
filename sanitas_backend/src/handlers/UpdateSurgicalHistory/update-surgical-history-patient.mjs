@@ -1,33 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils";
-
-/**
- * Transforms database record of surgical history into the API response format.
- * @param {Object} dbData - The database record for surgical history.
- * @returns {Object} Formatted response object with API-friendly field names.
- */
-function formatSurgicalHistoryResponse(dbData) {
-  let surgicalEventData;
-  try {
-    if (typeof dbData.antecedente_quirurgico_data === "string") {
-      surgicalEventData = JSON.parse(dbData.antecedente_quirurgico_data);
-    } else {
-      surgicalEventData = dbData.antecedente_quirurgico_data;
-    }
-    if (!Array.isArray(surgicalEventData)) {
-      surgicalEventData = [surgicalEventData];
-    }
-  } catch (error) {
-    surgicalEventData = [];
-  }
-
-  return {
-    patientId: dbData.id_paciente,
-    hasSurgicalEvent: dbData.antecedente_quirurgico,
-    surgicalEventData,
-  };
-}
+import { createResponse, mapToAPISurgicalHistory } from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create surgical history for a specific patient.
@@ -46,21 +19,23 @@ export const updateSurgicalHistoryHandler = async (event, context) => {
   let client;
   try {
     const url = process.env.POSTGRES_URL;
-    logger.info(url, "Connecting to DB...");
+    logger.info({ url }, "Connecting to DB...");
     client = getPgClient(url);
     await client.connect();
+    logger.info("Connected!");
 
-    const body = JSON.parse(event.body);
-    const { id, hasSurgicalEvent, surgicalEventData } = body;
+    logger.info({ eventBody: event.body }, "Parsing event body...");
+    /** @type {import("utils/defaultValues.mjs").APISurgicalHistory}  */
+    const { patientId: id, medicalHistory } = JSON.parse(event.body);
+    logger.info("Event body parsed!");
 
     if (!id) {
+      logger.error("No id provided!");
       return responseBuilder
         .setStatusCode(400)
         .setBody({ error: "Invalid input: Missing or empty required fields." })
         .build();
     }
-
-    const surgicalEventDataJSON = JSON.stringify(surgicalEventData);
 
     const upsertQuery = `
         INSERT INTO antecedentes_quirurgicos (id_paciente, antecedente_quirurgico, antecedente_quirurgico_data)
@@ -70,25 +45,27 @@ export const updateSurgicalHistoryHandler = async (event, context) => {
             antecedente_quirurgico_data = COALESCE(EXCLUDED.antecedente_quirurgico_data, antecedentes_quirurgicos.antecedente_quirurgico_data)
         RETURNING *;
     `;
-    const values = [id, hasSurgicalEvent, surgicalEventDataJSON];
+    const values = [id, true, medicalHistory];
+    logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
     const result = await client.query(upsertQuery, values);
+    logger.info("Done inserting/updating!");
 
     if (result.rowCount === 0) {
+      logger.error("No value was inserted/updated in the DB!");
+
       return responseBuilder
         .setStatusCode(404)
         .setBody({ message: "Failed to insert or update surgical history." })
         .build();
     }
 
+    logger.info("Mapping DB response into API response...");
     const updatedRecord = result.rows[0];
-    const formattedResponse = formatSurgicalHistoryResponse(updatedRecord);
+    const formattedResponse = mapToAPISurgicalHistory(updatedRecord);
+    logger.info({ formattedResponse }, "Done! Responding with:");
     return responseBuilder.setStatusCode(200).setBody(formattedResponse).build();
   } catch (error) {
-    logger.error("An error occurred while updating surgical history!", {
-      message: error.message,
-      stack: error.stack,
-      data: error.data,
-    });
+    logger.error({ error }, "An error occurred while updating surgical history!");
 
     if (error.code === "23503") {
       return responseBuilder

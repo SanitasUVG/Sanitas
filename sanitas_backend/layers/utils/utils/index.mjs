@@ -47,6 +47,20 @@
  */
 
 /**
+ * @template T
+ * @typedef {Object} APIMedicalHistory
+ * @property {number} patientId - The patient Id associated to this medical history.
+ * @property {T} medicalHistory - The medical history data, each can have it's own format.
+ */
+
+/**
+ * @template T
+ * @typedef {Object} APIMedicalHistoryItem
+ * @property {number} version - The version of this JSON API when it was saved to the DB.
+ * @property {T} data - The data this item contains.
+ */
+
+/**
  * Maps a DBPatient to an APIPatient.
  * @param {DBPatient} dbPatient The patient received from the DB.
  * @returns {APIPatient} The patient object the API must return.
@@ -112,7 +126,7 @@ export function mapToAPIPatient(dbPatient) {
  * @property {(status: number)=>ResponseBuilder} setStatusCode - Sets the response status code.
  * @property {(bodyObj: object)=> ResponseBuilder} setBody - Sets the response body. You don't need to stringify the body, this function will take care of that for you.
  * @property {(header: string, value: string)=>ResponseBuilder} addHeader - Adds a header to the response.
- * @property {AddCORSHeadersCallback}  addCORSHeaders - Adds some headers wanted by CORS.
+ * @property {AddCORSHeadersCallback}  addCORSHeaders - Adds some headers wanted by CORS. The default method is GET, origin is * and headres is Content-Type only.
  * @property {()=> import('aws-lambda').APIGatewayProxyResult} build - Build the Response.
  */
 
@@ -355,5 +369,24 @@ export function mapToAPITraumatologicHistory(dbData) {
     medicalHistory: {
       traumas: traumatologicData,
     },
+  }
+  
+/**
+ * @typedef {Object} DBSurgicalHistory
+ * @property {number} id_paciente
+ * @property {import("./defaultValues.mjs").SurgicalHistory} antecedente_quirurgico_data - The JSON object stored in the DB.
+ */
+
+/**
+ * Maps database surgical history data to the API format.
+ * @param {DBSurgicalHistory} dbData - The surgical history data from the database.
+ * @returns {import('./defaultValues.mjs').APISurgicalHistory} The surgical history formatted for the API.
+ */
+export function mapToAPISurgicalHistory(dbData) {
+  let { id_paciente: patientId, antecedente_quirurgico_data: medicalHistory } = dbData;
+
+  return {
+    patientId,
+    medicalHistory,
   };
 }
