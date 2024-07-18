@@ -1,5 +1,5 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import LoginView from ".";
+import LogoutView from ".";
 
 export default {
   component: LogoutView,
