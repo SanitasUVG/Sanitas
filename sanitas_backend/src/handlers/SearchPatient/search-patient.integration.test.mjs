@@ -1,14 +1,14 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
 import axios from "axios";
 
 const LOCAL_API_URL = "http://localhost:3000/patient/search";
 
 describe("Search Patient Integration Tests", () => {
 	beforeAll(() => {
-		// Insert data into DB.
+		// TODO: Insert data into DB.
 	});
 	afterAll(() => {
-		// Delete inserted data.
+		// TODO: Delete inserted data.
 	});
 
 	it("should return patients by carnet", async () => {

@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
 import { LOCAL_API_URL } from "../testHelpers.mjs";
 
@@ -31,7 +31,7 @@ describe("Student Handler", () => {
 
 	it("should not found a patiend", async () => {
 		try {
-			const response = await axios.get(API_URL + fakestudentId);
+			await axios.get(API_URL + fakestudentId);
 		} catch (error) {
 			expect(error.response.status).toBe(404);
 		}

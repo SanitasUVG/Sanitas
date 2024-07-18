@@ -1,6 +1,26 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 
+function checkValidInput(patientData) {
+	if (!patientData.cui) {
+		return false;
+	}
+	if (!patientData.names) {
+		return false;
+	}
+	if (!patientData.lastNames) {
+		return false;
+	}
+	if (patientData.isWoman === undefined) {
+		return false;
+	}
+	if (!patientData.birthdate) {
+		return false;
+	}
+
+	return true;
+}
+
 export const createPatientHandler = async (event, context) => {
 	withRequest(event, context);
 
@@ -21,27 +41,21 @@ export const createPatientHandler = async (event, context) => {
 		client = getPgClient(url);
 		await client.connect();
 
+		logger.info("Validating data...");
+		if (!checkValidInput(patientData)) {
+			logger.error({ patientData }, "The data is missing some fields!");
+
+			return {
+				statusCode: 400,
+				body: JSON.stringify({ error: "Invalid data" }),
+			};
+		}
+		logger.info({ patientData }, "Data is valid!");
+
 		logger.info(
 			patientData,
 			"Inserting new patient record into the database...",
 		);
-
-		// Validating that all required fields are present
-		if (!patientData.cui) {
-			throw new Error("CUI is required.");
-		}
-		if (!patientData.names) {
-			throw new Error("NAMES is required.");
-		}
-		if (!patientData.lastNames) {
-			throw new Error("LASTNAMES is required.");
-		}
-		if (patientData.isWoman === undefined) {
-			throw new Error("isWoman is required.");
-		}
-		if (!patientData.birthdate) {
-			throw new Error("BIRTHDATE is required.");
-		}
 
 		const query = `
       INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
@@ -75,17 +89,7 @@ export const createPatientHandler = async (event, context) => {
 		let statusCode = 400;
 		let errorMessage = "An error occurred while creating the patient record.";
 
-		if (error.message === "CUI is required.") {
-			errorMessage = "CUI is required.";
-		} else if (error.message === "NAMES is required.") {
-			errorMessage = "NAMES is required.";
-		} else if (error.message === "LASTNAMES is required.") {
-			errorMessage = "LASTNAMES is required.";
-		} else if (error.message === "isWoman is required.") {
-			errorMessage = "isWoman is required.";
-		} else if (error.message === "BIRTHDATE is required.") {
-			errorMessage = "BIRTHDATE is required.";
-		} else if (error.message.includes("violates unique constraint")) {
+		if (error.message.includes("violates unique constraint")) {
 			statusCode = 409;
 			errorMessage = "CUI already exists.";
 		}

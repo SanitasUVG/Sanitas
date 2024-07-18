@@ -18,7 +18,7 @@ function formatSurgicalHistoryResponse(dbData) {
 		if (!Array.isArray(surgicalEventData)) {
 			surgicalEventData = [surgicalEventData];
 		}
-	} catch (error) {
+	} catch (_error) {
 		surgicalEventData = [];
 	}
 
