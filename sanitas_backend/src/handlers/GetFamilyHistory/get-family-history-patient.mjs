@@ -2,6 +2,7 @@ import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPIFamilyHistory } from "utils";
+import { genDefaultFamiliarHistory } from "utils/defaultValues.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve family medical history for a specific patient by their ID.
@@ -51,9 +52,10 @@ export const getFamilyHistoryHandler = async (event, context) => {
     if (dbResponse.rowCount === 0) {
       logger.info("No family history found! Returning default values...");
       return responseBuilder
-        .setStatusCode(404)
+        .setStatusCode(200)
         .setBody({
-          message: "No family history found for the provided patientId.",
+          patientId: id,
+          medicalHistory: genDefaultFamiliarHistory(),
         })
         .build();
     }

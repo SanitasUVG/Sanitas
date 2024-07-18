@@ -52,10 +52,13 @@ describe("Get Traumatologic History integration tests", () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
 
-    const { message } = response.data;
-    expect(message).toBe("No traumatological history found for the provided patientId.");
+    const traumatologicHistory = response.data;
+
+    expect(traumatologicHistory).toBeDefined();
+    expect(traumatologicHistory.patientId).toBe(nonExistentPatientId);
+    expect(traumatologicHistory.medicalHistory.traumas.data.length).toBe(0);
   });
 
   test("Invalid ID provided", async () => {

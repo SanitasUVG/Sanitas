@@ -98,10 +98,23 @@ describe("Get Family Medical History integration tests", () => {
     });
 
     expect(response).toBeDefined();
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
 
-    const { message } = response.data;
-    expect(message).toBe("No family history found for the provided patientId.");
+    /** @type {import("utils/index.mjs").FamiliarMedicalHistoryAPI} */
+    const familiarHistory = response.data;
+
+    expect(familiarHistory).toBeDefined();
+    expect(familiarHistory.patientId).toBe(nonExistentPatientId);
+    expect(familiarHistory.medicalHistory.hypertension.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.diabetesMellitus.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.hypothyroidism.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.asthma.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.convulsions.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.myocardialInfarction.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.cancer.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.cardiacDiseases.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.renalDiseases.data.length).toBe(0);
+    expect(familiarHistory.medicalHistory.others.data.length).toBe(0);
   });
 
   test("Invalid ID provided", async () => {

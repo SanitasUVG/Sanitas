@@ -1,6 +1,7 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, mapToAPITraumatologicHistory } from "utils";
+import { genDefaultTraumatologicalHistory } from "utils/defaultValues.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve traumatologic history for a specific patient by their ID.
@@ -46,9 +47,10 @@ export const getTraumatologicalHistoryHandler = async (event, context) => {
     if (dbResponse.rowCount === 0) {
       logger.info("No traumatologic history found! Returning default values...");
       return responseBuilder
-        .setStatusCode(404)
+        .setStatusCode(200)
         .setBody({
-          message: "No traumatological history found for the provided patientId.",
+          patientId: id,
+          medicalHistory: genDefaultTraumatologicalHistory(),
         })
         .build();
     }
