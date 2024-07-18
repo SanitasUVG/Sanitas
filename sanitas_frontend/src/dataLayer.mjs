@@ -106,7 +106,7 @@ export const checkCui = async (cui) => {
  */
 export const submitPatientData = async (patientData) => {
   try {
-    const response = await axios.post(
+    const { data: result } = await axios.post(
       `${BASE_URL}/patient`,
       {
         cui: patientData.cui,
@@ -122,15 +122,9 @@ export const submitPatientData = async (patientData) => {
       },
     );
 
-    return response.data;
+    return { result };
   } catch (error) {
-    if (error.response) {
-      throw new Error(error.response.data.error || "Error registering information");
-    } else if (error.request) {
-      throw new Error("No response was received");
-    } else {
-      throw new Error("Error setting up request");
-    }
+    return { error };
   }
 };
 
