@@ -264,8 +264,6 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
 
 /**
  * @typedef {Object} FamiliarMedicalHistory
- * @property {number} patientId - The unique identifier of the patient.
- * @property {Object} medicalHistory - An object containing formatted medical history data.
  * @property {null|MedicalConditionData} medicalHistory.hypertension - Medical history data for hypertension.
  * @property {null|MedicalConditionData} medicalHistory.diabetesMellitus - Medical history data for diabetes mellitus.
  * @property {null|MedicalConditionData} medicalHistory.hypothyroidism - Medical history data for hypothyroidism.
@@ -276,6 +274,12 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
  * @property {null|MedicalConditionData} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
  * @property {null|MedicalConditionData} medicalHistory.renalDiseases - Medical history data for renal diseases.
  * @property {null|MedicalConditionData} medicalHistory.others - Medical history data for other conditions.
+ */
+
+/**
+ * @typedef {Object} FamiliarMedicalHistoryAPI
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {FamiliarMedicalHistory} medicalHistory - An object containing formatted medical history data.
  */
 
 /**
@@ -369,8 +373,9 @@ export function mapToAPITraumatologicHistory(dbData) {
     medicalHistory: {
       traumas: traumatologicData,
     },
-  }
-  
+  };
+}
+
 /**
  * @typedef {Object} DBSurgicalHistory
  * @property {number} id_paciente
