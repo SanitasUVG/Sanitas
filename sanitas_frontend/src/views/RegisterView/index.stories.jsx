@@ -2,7 +2,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import LoginView from ".";
 
 export default {
-  component: LoginView,
+  component: RegisterView,
   decorators: [
     (Story) => {
       return (
