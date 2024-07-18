@@ -19,7 +19,7 @@
   "scripts": {
     "test": "npm install && node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "lint": "biome lint --error-on-warnings ./src/ ./layers/",
-    "format": "biome format --write ./src/ ./layers/"
+    "format": "biome format --write ./src/ ./layers/",
     "format:check": "biome format ./src/ ./layers/"
   },
   "jest": {
