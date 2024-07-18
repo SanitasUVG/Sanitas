@@ -4,12 +4,21 @@ import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import BaseButton from "src/components/Button/Base";
 import { BaseInput } from "src/components/Input";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
+import useWindowSize from "src/utils/useWindowSize";
 
 export default function LoginView() {
+  const { width, height } = useWindowSize();
+
   /** @type React.CSSStyleDeclaration */
   const inputStyles = {
     width: "100%",
-    padding: ".8rem",
+    paddingTop: adjustHeight(height, "0.8rem"),
+    paddingBottom: adjustHeight(height, "0.8rem"),
+    paddingRight: adjustWidth(width, "0.8rem"),
+    paddingLeft: adjustWidth(width, "0.8rem"),
+
+    fontSize: fontSize.textSize,
   };
   return (
     <div
@@ -19,7 +28,6 @@ export default function LoginView() {
         backgroundSize: "cover",
         width: "100vw",
         height: "100vh",
-
         display: "grid",
         alignItems: "center",
         justifyItems: "center",
@@ -30,10 +38,10 @@ export default function LoginView() {
       <div
         style={{
           background: "white",
-          padding: "4rem 8vw 0 8vw",
+          padding: adjustHeight(height, "4rem") + " 8vw 0 8vw",
           display: "flex",
           flexDirection: "column",
-          gap: "3rem",
+          gap: adjustHeight(height, "3rem"),
           width: "45%",
           height: "90%",
           position: "relative",
@@ -50,7 +58,6 @@ export default function LoginView() {
           <img
             style={{
               alignSelf: "center",
-              // maxWidth: "33%",
               height: "15vh",
             }}
             alt="UVG Logo"
@@ -62,6 +69,8 @@ export default function LoginView() {
               textAlign: "center",
               fontFamily: fonts.titleFont,
               color: colors.titleText,
+              paddingBottom: adjustHeight(height, "1rem"),
+              paddingTop: adjustHeight(height, "1rem"),
             }}
           >
             ¡Bienvenid@!
@@ -70,7 +79,8 @@ export default function LoginView() {
             style={{
               textAlign: "center",
               fontFamily: fonts.textFont,
-              fontSize: fontSize.subtitleSize,
+              fontSize: "1.5rem",
+              paddingBottom: adjustHeight(height, "1rem"),
             }}
           >
             Ingresa tus datos
@@ -82,7 +92,7 @@ export default function LoginView() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "1.5rem",
+            gap: adjustHeight(height, "1.5rem"),
           }}
         >
           <div>
@@ -90,7 +100,8 @@ export default function LoginView() {
               style={{
                 display: "block",
                 fontFamily: fonts.textFont,
-                fontSize: fontSize.textSize,
+                fontSize: fontSize.subtitleSize,
+                paddingBottom: adjustHeight(height, "0.5rem"),
               }}
             >
               Correo electrónico:
@@ -102,23 +113,27 @@ export default function LoginView() {
               style={{
                 display: "block",
                 fontFamily: fonts.textFont,
-                fontSize: fontSize.textSize,
+                fontSize: fontSize.subtitleSize,
+                paddingTop: adjustHeight(height, "0.5rem"),
+                paddingBottom: adjustHeight(height, "0.5rem"),
               }}
             >
               Contraseña:
             </label>
             <BaseInput placeholder="Ingrese su contraseña" style={inputStyles} />
+            <p
+              style={{
+                textAlign: "right",
+                fontFamily: fonts.titleFont,
+                fontSize: "0.90rem",
+                color: colors.titleText,
+                fontWeight: "bold",
+                paddingTop: adjustHeight(height, "0.5rem"),
+              }}
+            >
+              ¿Olvidaste tu contraseña?
+            </p>
           </div>
-          <p
-            style={{
-              textAlign: "right",
-              fontFamily: fonts.titleFont,
-              fontSize: fontSize.textSize,
-              color: colors.titleText,
-            }}
-          >
-            ¿Olvidaste tu contraseña?
-          </p>
         </div>
 
         {/* Footer */}
@@ -133,6 +148,8 @@ export default function LoginView() {
             style={{
               alignSelf: "center",
               width: "75%",
+              fontFamily: fonts.titleFont,
+              fontSize: fontSize.textSize,
             }}
           />
           <p
@@ -140,6 +157,7 @@ export default function LoginView() {
               alignSelf: "center",
               fontFamily: fonts.titleFont,
               fontSize: fontSize.textSize,
+              paddingTop: adjustHeight(height, "1rem"),
             }}
           >
             ¿No tienes cuenta?{" "}
@@ -149,7 +167,7 @@ export default function LoginView() {
                 color: colors.titleText,
               }}
             >
-              Crea una aquí
+              Crea una aquí.
             </a>
           </p>
         </div>
@@ -157,10 +175,10 @@ export default function LoginView() {
         <img
           src={logoSanitas}
           style={{
-            width: "4rem",
+            width: adjustWidth(width, "6rem"),
             position: "absolute",
-            bottom: "1rem",
-            right: "1rem",
+            bottom: adjustHeight(height, "1rem"),
+            right: adjustHeight(height, "1rem"),
           }}
         />
       </div>
