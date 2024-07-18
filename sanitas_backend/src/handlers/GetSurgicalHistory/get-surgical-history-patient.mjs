@@ -1,40 +1,7 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils";
-
-/**
- * Maps database surgical history data to the API format.
- * @param {Object} dbData - The surgical history data from the database.
- * @returns {Object} The surgical history formatted for the API.
- */
-function mapToAPISurgicalHistory(dbData) {
-  let surgicalEventData;
-  try {
-    // Check if dbData.antecedente_quirurgico_data is already an object or a string that needs parsing
-    if (typeof dbData.antecedente_quirurgico_data === "string") {
-      surgicalEventData = JSON.parse(dbData.antecedente_quirurgico_data);
-    } else {
-      surgicalEventData = dbData.antecedente_quirurgico_data;
-    }
-
-    // Ensure surgicalEventData is always an array
-    if (!Array.isArray(surgicalEventData)) {
-      surgicalEventData = [surgicalEventData];
-    }
-  } catch (parseError) {
-    logger.error("Failed to parse surgicalEventData:", {
-      data: dbData.antecedente_quirurgico_data,
-      parseError: parseError.message,
-    });
-    throw new Error("Invalid JSON data in database.");
-  }
-
-  return {
-    patientId: dbData.id_paciente,
-    hasSurgicalEvent: dbData.antecedente_quirurgico,
-    surgicalEventData,
-  };
-}
+import { genDefaultSurgicalHistory } from "utils/defaultValues.mjs";
+import { createResponse, mapToAPISurgicalHistory } from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve surgical history for a specific patient by their ID.
@@ -57,41 +24,38 @@ export const getSurgicalHistoryHandler = async (event, context) => {
   let client;
   try {
     const url = process.env.POSTGRES_URL;
-    logger.info(url, "Connecting to DB...");
+    logger.info({ url }, "Connecting to DB...");
     client = getPgClient(url);
     await client.connect();
+    logger.info("Connected!");
 
-    const id = event.pathParameters.id;
+    const id = Number.parseInt(event.pathParameters.id, 10);
     if (!id) {
-      logger.error("No ID received!");
+      logger.error("Invalid ID received!");
       return responseBuilder
         .setStatusCode(400)
-        .setBody({ error: "Invalid request: No patientId supplied!" })
+        .setBody({ error: "Invalid request: No valid patientId supplied!" })
         .build();
     }
 
-    const dbResponse = await client.query(
-      "SELECT * FROM antecedentes_quirurgicos WHERE id_paciente = $1;",
-      [id],
-    );
+    let query = "SELECT * FROM antecedentes_quirurgicos WHERE id_paciente = $1;";
+    let args = [id];
+    logger.info({ query, args }, "Querying DB...");
+    const dbResponse = await client.query(query, args);
+    logger.info("Query done!");
+
     if (dbResponse.rowCount === 0) {
-      logger.error("No surgical history found!");
-      return responseBuilder
-        .setStatusCode(404)
-        .setBody({ error: "No surgical history found for the provided ID." })
-        .build();
-    }
-
-    if (!dbResponse.rows[0].antecedente_quirurgico) {
-      dbResponse.rows[0].antecedente_quirurgico_data = [];
-      return responseBuilder
-        .setStatusCode(200)
-        .setBody(mapToAPISurgicalHistory(dbResponse.rows[0]))
-        .build();
+      logger.info("No surgical history found! Returning default values...");
+      return responseBuilder.setStatusCode(200).setBody({
+        patientId: id,
+        medicalHistory: genDefaultSurgicalHistory(),
+      }).build();
     }
 
     try {
       const surgicalHistory = mapToAPISurgicalHistory(dbResponse.rows[0]);
+
+      logger.info({ surgicalHistory }, "Responding with:");
       return responseBuilder.setStatusCode(200).setBody(surgicalHistory).build();
     } catch (error) {
       logger.error("An error occurred while processing surgical history:", {
