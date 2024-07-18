@@ -82,6 +82,12 @@ export default function PatientCard({
 
 	const result = patientsResources.read();
 
+	useEffect(() => {
+		if (!result.error) {
+			setQueryReturnedEmpty(result.result.length <= 0);
+		}
+	}, [result, setQueryReturnedEmpty]);
+
 	if (result.error) {
 		let errorMessage = "";
 		if (result.error?.cause) {
@@ -123,11 +129,9 @@ export default function PatientCard({
 		);
 	}
 
+	// Since we check first for errors
+	// this patientInfo should be defined
 	const patientInfo = result.result;
-
-	useEffect(() => {
-		setQueryReturnedEmpty(patientInfo.length <= 0);
-	}, [patientInfo, setQueryReturnedEmpty]);
 
 	return (
 		<div style={defaultStyles.mainContainer}>

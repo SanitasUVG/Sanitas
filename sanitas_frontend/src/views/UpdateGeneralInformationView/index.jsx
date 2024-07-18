@@ -376,6 +376,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	const generalInformationResource = WrapPromise(getData(patientId));
 	// const generalInformationResource = WrapPromise(getData2());
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This is a subcomponent, it will be complex almost by default.
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
