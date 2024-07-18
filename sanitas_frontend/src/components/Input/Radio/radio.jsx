@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * @typedef {Object} RadioInputProps
  * @property {string} name - The name attribute for the radio input; used to group radio buttons.

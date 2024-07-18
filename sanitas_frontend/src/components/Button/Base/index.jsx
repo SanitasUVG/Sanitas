@@ -1,5 +1,5 @@
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
-import React, { useState } from "react";
+import { useState } from "react";
 
 /**
  * @typedef {Object} BaseButtonProps

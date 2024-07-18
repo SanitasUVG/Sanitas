@@ -1,6 +1,6 @@
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import { colors, fonts } from "src/theme.mjs";
-import { adjustHeight, adjustWidth } from "src/utils";
+import { adjustWidth } from "src/utils";
 import useWindowSize from "src/utils/useWindowSize";
 
 /**

@@ -1,5 +1,4 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { getCollaboratorInformation } from "src/dataLayer.mjs";
 import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import SearchPatientView from ".";

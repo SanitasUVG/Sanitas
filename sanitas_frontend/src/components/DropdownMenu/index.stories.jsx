@@ -1,4 +1,3 @@
-import React from "react";
 import DropdownMenu from ".";
 
 export default {

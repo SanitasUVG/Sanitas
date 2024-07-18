@@ -1,6 +1,5 @@
 import { action } from "@storybook/addon-actions";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
-import React from "react";
 import TextIconButton from ".";
 
 export default {
