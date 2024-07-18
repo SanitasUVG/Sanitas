@@ -39,17 +39,6 @@ const exampleUserInformation = {
 	title: "Doctora UVG",
 };
 
-const mockGetGeneralPatientInformation = async (id) => {
-	if (id === examplePatientData.id) {
-		return { result: examplePatientData };
-	}
-	return {
-		error: new Error(
-			"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
-		),
-	};
-};
-
 describe("UpdateInfoView tests", () => {
 	test("Displays patient information correctly", async () => {
 		const getGeneralPatientInformation = vi
@@ -139,7 +128,7 @@ describe("UpdateInfoView tests", () => {
 		await waitFor(
 			() => {
 				expect(
-					screen.getByText((content, element) =>
+					screen.getByText((content, _element) =>
 						content.includes(errorMessage),
 					),
 				).toBeVisible();

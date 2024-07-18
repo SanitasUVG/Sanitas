@@ -1,26 +1,10 @@
+import { delay } from ".";
+
 /**
  * @template T
  * @typedef {Object} SuspenseResource
  * @property {() => T} read
  */
-
-import { delay } from ".";
-
-function a() {
-	return new Promise((res, rej) => {
-		// blablabla programando blablab
-		try {
-			res(data);
-		} catch (error) {
-			rej(error);
-		}
-	});
-}
-
-async function b() {
-	// blablabla programando blablab
-	return data;
-}
 
 /**
  * Function used to wrap a promise for use with suspense.

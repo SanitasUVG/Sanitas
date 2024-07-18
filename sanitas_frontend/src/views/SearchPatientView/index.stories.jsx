@@ -18,7 +18,7 @@ const Template = (args) => <SearchPatientView {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-	searchPatientsApiCall: async (query, type) => {
+	searchPatientsApiCall: async (_query, _type) => {
 		const result = {
 			result: [
 				{

@@ -382,6 +382,10 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		const [resourceUpdate, setResourceUpdate] = useState(null);
 
 		const response = generalInformationResource.read();
+		const [patientData, setPatientData] = useState({
+			...response?.result,
+			birthdate: formatDate(response.result?.birthdate),
+		});
 
 		if (response.error) {
 			return (
@@ -397,11 +401,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				</div>
 			);
 		}
-
-		const [patientData, setPatientData] = useState({
-			...response.result,
-			birthdate: formatDate(response.result.birthdate),
-		});
 
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();

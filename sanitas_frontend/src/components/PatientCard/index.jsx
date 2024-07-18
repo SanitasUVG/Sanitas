@@ -81,6 +81,7 @@ export default function PatientCard({
 	};
 
 	const result = patientsResources.read();
+
 	if (result.error) {
 		let errorMessage = "";
 		if (result.error?.cause) {

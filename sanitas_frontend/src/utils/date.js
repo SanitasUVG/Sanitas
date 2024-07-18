@@ -4,6 +4,10 @@
  * @returns {string} The formatted date in YYYY-MM-DD format.
  */
 export const formatDate = (dateString) => {
+	if (dateString === null) {
+		return null;
+	}
+
 	const date = new Date(dateString);
 	const year = date.getUTCFullYear();
 	const month = String(date.getUTCMonth() + 1).padStart(2, "0");

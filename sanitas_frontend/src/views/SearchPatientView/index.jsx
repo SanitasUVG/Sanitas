@@ -35,10 +35,6 @@ import useWindowSize from "src/utils/useWindowSize";
 export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
 	const { query, type } = useStore((store) => store.searchQuery);
 	const setSearchQuery = useStore((store) => store.setSearchQuery);
-	const [patients, setPatients] = useStore((store) => [
-		store.patients,
-		store.setPatients,
-	]);
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 
 	const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);

@@ -72,10 +72,6 @@ export default function DashboardSidebar({
 		};
 	};
 
-	const handleIconClick = () => {
-		onGoBack();
-	};
-
 	return (
 		<div
 			style={{
