@@ -42,7 +42,7 @@ export const handler = async (event, context) => {
       /** @type {APIStudentInfo} */
       const defaultStudentInfo = {
         patientId: id,
-        carner: "",
+        carnet: "",
         career: "",
       };
       logger.error({ defaultStudentInfo }, "No record found! Returning empty data...");

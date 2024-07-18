@@ -10,6 +10,7 @@ import IconButton from "src/components/Button/Icon";
 import DropdownMenu from "src/components/DropdownMenu";
 import { SearchInput } from "src/components/Input";
 import PatientCard from "src/components/PatientCard";
+import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts } from "src/theme.mjs";
 import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
@@ -117,44 +118,38 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     <div
       style={{
         backgroundColor: "#0F6838",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         height: "100vh",
+        width: "100vw",
+        padding: "2rem",
       }}
     >
       <div
         style={{
           backgroundColor: "#FFFFFF",
-          display: "flex",
-          flexDirection: "row",
-          width: "95%",
-          height: "95%",
-          textAlign: "left",
+          width: "100%",
+          height: "100%",
         }}
       >
         {defaultView
           ? (
-            <>
-              <div
+            <div
+              style={{
+                position: "relative",
+                display: "grid",
+                height: "100%",
+              }}
+            >
+              <img
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
+                  width: adjustWidth(width, "25.43rem"),
+                  height: "auto",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                 }}
-              >
-                <img
-                  style={{
-                    width: adjustWidth(width, "25.43rem"),
-                    height: "auto",
-                  }}
-                  src={BorderDecoUpper}
-                  alt="Logo Sanitas"
-                />
-              </div>
+                src={BorderDecoUpper}
+                alt="Borde decorativo superior"
+              />
               <div
                 style={{
                   display: "flex",
@@ -190,7 +185,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     textAlign: "center",
                   }}
                 >
-                  Ingrese carnet, código de trabajador, nombres o CUI del paciente
+                  Ingrese el carnet, código de trabajador, nombres o CUI
                 </h3>
 
                 <div
@@ -257,47 +252,34 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   </div>
                 </div>
               </div>
-              <div
+              <IconButton
+                icon={logoutIcon}
+                onClick={doNothing}
                 style={{
-                  display: "grid",
-                  width: "80%",
-                  height: "100%",
-                  gridTemplateColumns: adjustWidth(width, "1rem 7rem 8rem"),
-                  gridTemplateRows: adjustHeight(height, "4.5rem 9rem 18rem") + " 1fr",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
+                  position: "absolute",
+                  top: "2rem",
+                  right: "2rem",
                 }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gridColumnStart: 4,
-                    gridRowStart: 2,
-                    flexDirection: "column",
-                    gap: adjustHeight(height, "1rem"),
-                    padding: adjustWidth(width, "0.9rem 1.5rem 1rem 2rem"),
-                  }}
-                >
-                  <IconButton icon={settingsIcon} onClick={doNothing} />
-                  <IconButton icon={logoutIcon} onClick={doNothing} />
-                </div>
-                <img
-                  style={{
-                    width: adjustWidth(width, "25.43rem"),
-                    height: "auto",
-                    gridRowStart: 4,
-                    gridColumnStart: width >= 1660 ? 3 : 2,
-                    gridColumnEnd: 5,
-                  }}
-                  src={BorderDecoLower}
-                  alt="Logo Sanitas"
-                />
-              </div>
-            </>
+              />
+              <img
+                style={{
+                  width: adjustWidth(width, "25.43rem"),
+                  height: "auto",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                }}
+                src={BorderDecoLower}
+                alt="Borde decorativo inferior"
+              />
+            </div>
           )
           : (
-            <>
+            <div
+              style={{
+                display: "flex",
+              }}
+            >
               <div
                 style={{
                   width: adjustWidth(width, "17rem"),
@@ -522,61 +504,17 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                   )}
                 </div>
               </div>
-            </>
+            </div>
           )}
       </div>
     </div>
   );
 }
 
-const LoadingView = () => {
-  const { width, height } = useWindowSize();
-
-  return (
-    <div
-      style={{
-        width: "70%",
-        height: "85%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        paddingBottom: adjustHeight(height, "7rem"),
-      }}
-    >
-      <div
-        style={{
-          width: adjustWidth(width, "17rem"),
-        }}
-      >
-        <img
-          style={{
-            width: adjustWidth(width, "17rem"),
-            height: "auto",
-          }}
-          src={SanitasLogo}
-          alt="Logo Sanitas"
-        />
-      </div>
-
-      <div
-        style={{
-          color: colors.primaryBackground,
-          fontSize: adjustWidth(width, "2rem"),
-          textAlign: "center",
-          fontFamily: fonts.textFont,
-        }}
-      >
-        Loading patients...
-      </div>
-    </div>
-  );
-};
-
 const PatientSection = ({ patientsResources, genViewPatientBtnClick, setQueryReturnedEmpty }) => {
   const { width, height } = useWindowSize();
   return (
-    <Suspense fallback={<LoadingView />}>
+    <Suspense fallback={<Throbber loadingMessage="Cargando pacientes..." />}>
       <PatientCard
         patientsResources={patientsResources}
         genViewPatientBtnClick={genViewPatientBtnClick}

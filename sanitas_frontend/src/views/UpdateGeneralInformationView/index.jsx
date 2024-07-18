@@ -8,10 +8,11 @@ import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
+import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { delay } from "src/utils";
 import { formatDate } from "src/utils/date";
-import { delay } from "src/utils/general";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**
@@ -257,15 +258,18 @@ function UpdateColaboratorInformationSection({ patientId, getData, updateData })
   };
 
   const LoadingView = () => {
-    return <div>Cargando información del paciente...</div>;
+    return (
+      <div>
+        <h1 style={styles.h1}>Datos de Colaborador:</h1>
+        <Throbber loadingMessage="Cargando información de colaborador..." />
+      </div>
+    );
   };
 
   return (
-    <div>
-      <Suspense fallback={<LoadingView />}>
-        <Hijo />
-      </Suspense>
-    </div>
+    <Suspense fallback={<LoadingView />}>
+      <Hijo />
+    </Suspense>
   );
 }
 
@@ -368,10 +372,15 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
     const [resourceUpdate, setResourceUpdate] = useState(null);
 
     const response = generalInformationResource.read();
+
     if (response.error) {
       return (
-        <div>
-          <h1>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
+        <div
+          style={{
+            padding: "2rem",
+          }}
+        >
+          <h1 style={styles.h1}>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
           <p>{response.error.toString()}</p>
         </div>
       );
@@ -588,15 +597,18 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
   };
 
   const LoadingView = () => {
-    return <div>Cargando información del paciente...</div>;
+    return (
+      <div>
+        <h1 style={styles.h1}>Datos Generales:</h1>
+        <Throbber loadingMessage="Cargando información del paciente..." />
+      </div>
+    );
   };
 
   return (
-    <div>
-      <Suspense fallback={<LoadingView />}>
-        <Hijo />
-      </Suspense>
-    </div>
+    <Suspense fallback={<LoadingView />}>
+      <Hijo />
+    </Suspense>
   );
 }
 
@@ -750,7 +762,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
     return (
       <div>
         <h1 style={h1Styles}>Datos de Estudiante:</h1>
-        <p style={normalTextStyle}>Cargando datos...</p>
+        <Throbber loadingMessage="Cargando datos de estudiante..." />
       </div>
     );
   };

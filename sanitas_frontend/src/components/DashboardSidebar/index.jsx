@@ -72,10 +72,6 @@ export default function DashboardSidebar({
     };
   };
 
-  const handleIconClick = () => {
-    onGoBack();
-  };
-
   return (
     <div
       style={{
@@ -85,6 +81,7 @@ export default function DashboardSidebar({
         padding: "1rem",
         borderRadius: "0.625rem",
         width: "100%",
+        height: "100%",
       }}
     >
       <div
@@ -92,6 +89,7 @@ export default function DashboardSidebar({
           display: "flex",
           alignItems: "end",
           justifyContent: "end",
+          paddingRight: "1rem",
           width: "100%",
         }}
       >
@@ -133,6 +131,7 @@ export default function DashboardSidebar({
               fontWeight: "bold",
               fontSize: "1.1rem",
               paddingRight: "0.5rem",
+              paddingTop: "0.4rem",
             }}
           >
             {userInformation.displayName}
@@ -179,24 +178,9 @@ export default function DashboardSidebar({
         }}
       >
         <TextIconButton
-          icon={flowericon}
-          text="Alérgicos"
-          onClick={wrapWithNavigate(navigateToAllergies)}
-        />
-        <TextIconButton
           icon={familyicon}
           text="Familiares"
           onClick={wrapWithNavigate(navigateToFamiliar)}
-        />
-        <TextIconButton
-          icon={womanicon}
-          text="Ginecoobstétricos"
-          onClick={wrapWithNavigate(navigateToObstetrics)}
-        />
-        <TextIconButton
-          icon={glassicon}
-          text="No patológicos"
-          onClick={navigateToNonPathological}
         />
         <TextIconButton
           icon={userloveicon}
@@ -204,9 +188,9 @@ export default function DashboardSidebar({
           onClick={wrapWithNavigate(navigateToPersonal)}
         />
         <TextIconButton
-          icon={brainicon}
-          text="Psiquiátricos"
-          onClick={wrapWithNavigate(navigateToPsiquiatric)}
+          icon={flowericon}
+          text="Alérgicos"
+          onClick={wrapWithNavigate(navigateToAllergies)}
         />
         <TextIconButton
           icon={facemaskicon}
@@ -217,6 +201,21 @@ export default function DashboardSidebar({
           icon={boneicon}
           text="Traumatológicos"
           onClick={wrapWithNavigate(navigateToTraumatological)}
+        />
+        <TextIconButton
+          icon={brainicon}
+          text="Psiquiátricos"
+          onClick={wrapWithNavigate(navigateToPsiquiatric)}
+        />
+        <TextIconButton
+          icon={womanicon}
+          text="Ginecoobstétricos"
+          onClick={wrapWithNavigate(navigateToObstetrics)}
+        />
+        <TextIconButton
+          icon={glassicon}
+          text="No patológicos"
+          onClick={navigateToNonPathological}
         />
       </div>
     </div>
