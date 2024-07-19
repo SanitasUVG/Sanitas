@@ -3,7 +3,8 @@ import { CognitoUserPool } from "amazon-cognito-identity-js";
 const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "";
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "";
 
-const pool = new CognitoUserPool({
+/** @type {null|CognitoUserPool} */
+const pool = process.env.NODE_ENV === "test" ? null : new CognitoUserPool({
   UserPoolId: COGNITO_POOL_ID,
   ClientId: COGNITO_CLIENT_ID,
 });
