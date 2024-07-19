@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { registerUser } from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -17,6 +18,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { SurgicalHistory } from "./views/History/Surgical";
+import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
@@ -24,7 +26,10 @@ import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 const useStore = createEmptyStore();
 
 export const NAV_PATHS = {
-  SEARCH_PATIENT: "/",
+  // SEARCH_PATIENT: "/",
+  // REGISTER_USER: "/register",
+  SEARCH_PATIENT: "/search",
+  REGISTER_USER: "/",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
@@ -94,6 +99,21 @@ export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
     element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
+  },
+  {
+    path: NAV_PATHS.REGISTER_USER,
+    // element: (
+    //   <RegisterView
+    //     registerUser={(_email, _password) => {
+    //       console.log("Register user called");
+    //     }}
+    //   />
+    // ),
+    element: (
+      <RegisterView
+        registerUser={registerUser}
+      />
+    ),
   },
   {
     path: NAV_PATHS.ADD_PATIENT,

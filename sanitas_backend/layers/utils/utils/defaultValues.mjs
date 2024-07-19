@@ -2,7 +2,7 @@
  * @typedef {Object} SurgicalDataItem
  * @property {string} surgeryType - The type of surgery.
  * @property {string} surgeryYear - The year of surgery.
- * @property {string} complications - The complications that arose when the surgery was performed.
+ * @property {string} complications - The complications that arouse when the surgery was performed..
  */
 
 /**
@@ -26,23 +26,14 @@ export const genDefaultSurgicalHistory = () => ({
 });
 
 /**
- * @typedef {Object} FamiliarMedicalHistory
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} hypertension
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} diabetesMellitus
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} hypothyroidism
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} asthma
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} convulsions
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} myocardialInfarction
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} cancer
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} cardiacDiseases
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} renalDiseases
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} others
+ * @typedef {import("./index.mjs").FamiliarMedicalHistory} FamiliarMedicalHistory
  */
 
 /**
- * Generates the default value for a familiar medical history in the DB.
+ * Generates the default value for a surgical history in the DB.
  * @returns {FamiliarMedicalHistory}
  */
+
 export const genDefaultFamiliarHistory = () => ({
   hypertension: {
     version: 1,
@@ -87,18 +78,17 @@ export const genDefaultFamiliarHistory = () => ({
 });
 
 /**
- * @typedef {Object} TraumatologicalHistory
- * @property {import("./index.mjs").APIMedicalHistoryItem<any[]>} traumas
+ * @typedef {import("./index.mjs").TraumatologicMedicalHistory} TraumatologicalHistory
  */
 
 /**
- * Generates the default value for a traumatological history in the DB.
+ * Generates the default value for a surgical history in the DB.
  * @returns {TraumatologicalHistory}
  */
+
 export const genDefaultTraumatologicalHistory = () => ({
   traumas: {
     version: 1,
     data: [],
   },
 });
-

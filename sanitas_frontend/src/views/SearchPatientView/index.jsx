@@ -340,42 +340,44 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     {error}
                   </div>
                 )}
-                {patientsResources ? (
-                  <Suspense fallback={<Throbber />}>
-                    {patientsResources.map((patient) => (
-                      <PatientCard
-                        key={patient.id}
-                        patient={patient}
-                        onClick={genViewPatientBtnClick(patient.id)}
-                      />
-                    ))}
-                    {queryReturnedEmpty && (
-                      <div
-                        style={{
-                          fontSize: adjustWidth(width, "1.25rem"),
-                          textAlign: "center",
-                          marginTop: adjustHeight(height, "2rem"),
-                        }}
-                      >
-                        No se encontraron resultados para su búsqueda.
-                      </div>
-                    )}
-                  </Suspense>
-                ) : (
-                  <div
-                    style={{
-                      fontSize: adjustWidth(width, "1.25rem"),
-                      textAlign: "center",
-                      marginTop: adjustHeight(height, "2rem"),
-                    }}
-                  >
-                    {emptyQuery ? (
-                      "Por favor, ingrese algo para buscar."
-                    ) : (
-                      <Throbber />
-                    )}
-                  </div>
-                )}
+                {patientsResources
+                  ? (
+                    <Suspense fallback={<Throbber />}>
+                      {patientsResources.map((patient) => (
+                        <PatientCard
+                          key={patient.id}
+                          patient={patient}
+                          onClick={genViewPatientBtnClick(patient.id)}
+                        />
+                      ))}
+                      {queryReturnedEmpty && (
+                        <div
+                          style={{
+                            fontSize: adjustWidth(width, "1.25rem"),
+                            textAlign: "center",
+                            marginTop: adjustHeight(height, "2rem"),
+                          }}
+                        >
+                          No se encontraron resultados para su búsqueda.
+                        </div>
+                      )}
+                    </Suspense>
+                  )
+                  : (
+                    <div
+                      style={{
+                        fontSize: adjustWidth(width, "1.25rem"),
+                        textAlign: "center",
+                        marginTop: adjustHeight(height, "2rem"),
+                      }}
+                    >
+                      {emptyQuery
+                        ? (
+                          "Por favor, ingrese algo para buscar."
+                        )
+                        : <Throbber />}
+                    </div>
+                  )}
               </div>
             </div>
           )}
@@ -383,3 +385,42 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
     </div>
   );
 }
+
+const PatientSection = ({ patientsResources, genViewPatientBtnClick, setQueryReturnedEmpty }) => {
+  const { width, height } = useWindowSize();
+  return (
+    <Suspense fallback={<Throbber loadingMessage="Cargando pacientes..." />}>
+      <PatientCard
+        patientsResources={patientsResources}
+        genViewPatientBtnClick={genViewPatientBtnClick}
+        adjustHeight={adjustHeight}
+        adjustWidth={adjustWidth}
+        setQueryReturnedEmpty={setQueryReturnedEmpty}
+        style={{
+          mainContainer: {
+            borderRadius: adjustWidth(width, "1rem"),
+            gap: adjustHeight(height, "2rem"),
+          },
+          secondaryContainer: {
+            paddingLeft: adjustWidth(width, "3rem"),
+            gap: adjustHeight(height, "1rem"),
+          },
+          cardsContainer: {
+            minHeight: adjustHeight(height, "10rem"),
+            borderRadius: adjustWidth(width, "1rem"),
+          },
+          patientName: {
+            fontFamily: fonts.textFont,
+          },
+          patientAge: {
+            fontFamily: fonts.textFont,
+          },
+          patientCUI: {
+            fontFamily: fonts.textFont,
+          },
+        }}
+      >
+      </PatientCard>
+    </Suspense>
+  );
+};

@@ -119,7 +119,7 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
 export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
   familyHistoryData.patientId = patientId;
 
-  const response = await axios.put(`${LOCAL_API_URL}/patient/family-history`, familyHistoryData);
+  const response = await axios.put(`${LOCAL_API_URL}patient/family-history`, familyHistoryData);
 
   expect(response.status).toBe(200);
 }
@@ -157,7 +157,7 @@ export async function updatePatientTraumatologicHistory(patientId, traumatologic
   traumatologicHistoryData.patientId = patientId;
 
   const response = await axios.put(
-    `${LOCAL_API_URL}/patient/traumatological-history`,
+    `${LOCAL_API_URL}patient/traumatological-history`,
     traumatologicHistoryData,
   );
   expect(response.status).toBe(200);
