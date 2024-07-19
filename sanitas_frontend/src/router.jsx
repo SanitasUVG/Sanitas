@@ -23,8 +23,10 @@ import UpdateInfoView from "./views/UpdateGeneralInformationView";
 const useStore = createEmptyStore();
 
 export const NAV_PATHS = {
-  SEARCH_PATIENT: "/",
-  REGISTER_USER: "/register",
+  // SEARCH_PATIENT: "/",
+  // REGISTER_USER: "/register",
+  SEARCH_PATIENT: "/search",
+  REGISTER_USER: "/",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
