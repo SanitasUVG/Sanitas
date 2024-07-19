@@ -21,7 +21,7 @@ describe("TraumatologicHistory Component Tests", () => {
       result: {
         medicalHistory: {
           traumas: {
-            data: [{ surgeryType: "Appendectomy", surgeryYear: "2020", complications: "None" }],
+            data: [{ whichBone: "Femur", year: "2023", treatment: "Surgery" }],
             version: 1,
           },
         },

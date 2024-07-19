@@ -27,7 +27,7 @@ const mockGetTraumatologicHistoryWithData = async (id) => ({
   result: {
     medicalHistory: {
       traumas: {
-        data: [{ surgeryType: "Appendectomy", surgeryYear: "2019", complications: "None" }],
+        data: [{ whichBone: "Femur", year: "2023", treatment: "Surgery" }],
         version: 1,
       },
     },
