@@ -229,18 +229,150 @@ Maps a DBCollaborator to an APICollaborator.
 @returns {APICollaborator} The collaborator object the API must return.
 */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-  const {
-    id,
-    codigo: code,
-    area,
-    id_paciente: patientId,
-  } = dbCollaborator;
+  const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
 
   return {
     id,
     code,
     area,
     patientId,
+  };
+}
+
+/**
+ * @typedef {Object} MedicalConditionData
+ * @property {number} version - The version of the data format.
+ * @property {Array<string|Object>} data - An array containing the medical history data.
+ *                                         This array may contain simple strings for some conditions
+ *                                         and objects for others that require more detailed information.
+ */
+
+/**
+ * @typedef {Object} DBData
+ * @property {number} id_paciente - The unique identifier of the patient.
+ * @property {null|MedicalConditionData} hipertension_arterial_data - Medical history data for hypertension.
+ * @property {null|MedicalConditionData} diabetes_mellitus_data - Medical history data for diabetes mellitus.
+ * @property {null|MedicalConditionData} hipotiroidismo_data - Medical history data for hypothyroidism.
+ * @property {null|MedicalConditionData} asma_data - Medical history data for asthma.
+ * @property {null|MedicalConditionData} convulsiones_data - Medical history data for convulsions.
+ * @property {null|MedicalConditionData} infarto_agudo_miocardio_data - Medical history data for myocardial infarction.
+ * @property {null|MedicalConditionData} cancer_data - Medical history data for cancer.
+ * @property {null|MedicalConditionData} enfermedades_cardiacas_data - Medical history data for cardiac diseases.
+ * @property {null|MedicalConditionData} enfermedades_renales_data - Medical history data for renal diseases.
+ * @property {null|MedicalConditionData} otros_data - Medical history data for other conditions not listed separately.
+ */
+
+/**
+ * @typedef {Object} FamiliarMedicalHistory
+ * @property {null|MedicalConditionData} medicalHistory.hypertension - Medical history data for hypertension.
+ * @property {null|MedicalConditionData} medicalHistory.diabetesMellitus - Medical history data for diabetes mellitus.
+ * @property {null|MedicalConditionData} medicalHistory.hypothyroidism - Medical history data for hypothyroidism.
+ * @property {null|MedicalConditionData} medicalHistory.asthma - Medical history data for asthma.
+ * @property {null|MedicalConditionData} medicalHistory.convulsions - Medical history data for convulsions.
+ * @property {null|MedicalConditionData} medicalHistory.myocardialInfarction - Medical history data for myocardial infarction.
+ * @property {null|MedicalConditionData} medicalHistory.cancer - Medical history data for cancer.
+ * @property {null|MedicalConditionData} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
+ * @property {null|MedicalConditionData} medicalHistory.renalDiseases - Medical history data for renal diseases.
+ * @property {null|MedicalConditionData} medicalHistory.others - Medical history data for other conditions.
+ */
+
+/**
+ * @typedef {Object} FamiliarMedicalHistoryAPI
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {FamiliarMedicalHistory} medicalHistory - An object containing formatted medical history data.
+ */
+
+/**
+ * Converts the database records for a patient's medical history from the raw format to a structured API response format.
+ * This function checks if each medical condition data exists; if not, it returns a default structure with an empty array.
+ * It handles the transformation of nested data where applicable.
+ *
+ * @param {DBData} dbData - The raw database data containing fields for various medical conditions of a patient.
+ * @returns {FamiliarMedicalHistory}  A structured object containing the patientId and a detailed medicalHistory,
+ *                   where each condition is formatted according to the MedicalConditionData specification.
+ */
+export function mapToAPIFamilyHistory(dbData) {
+  const formatResponse = (data) => {
+    if (!data) return { version: 1, data: [] };
+    if (typeof data === "string") {
+      try {
+        return JSON.parse(data);
+      } catch (error) {
+        return { version: 1, data: [] };
+      }
+    }
+    return data;
+  };
+
+  const medicalHistory = {};
+
+  const keys = Object.keys(dbData);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (key !== "id_paciente") {
+      medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
+    }
+  }
+
+  return {
+    patientId: dbData.id_paciente,
+    medicalHistory: {
+      hypertension: formatResponse(dbData.hipertension_arterial_data),
+      diabetesMellitus: formatResponse(dbData.diabetes_mellitus_data),
+      hypothyroidism: formatResponse(dbData.hipotiroidismo_data),
+      asthma: formatResponse(dbData.asma_data),
+      convulsions: formatResponse(dbData.convulsiones_data),
+      myocardialInfarction: formatResponse(dbData.infarto_agudo_miocardio_data),
+      cancer: formatResponse(dbData.cancer_data),
+      cardiacDiseases: formatResponse(dbData.enfermedades_cardiacas_data),
+      renalDiseases: formatResponse(dbData.enfermedades_renales_data),
+      others: formatResponse(dbData.otros_data),
+    },
+  };
+}
+
+/**
+ * @typedef {Object} DBTraumatologicData
+ * @property {number} id_paciente - The unique identifier of the patient.
+ * @property {null|string|TraumatologicData} antecedente_traumatologico_data - The JSON or object containing detailed trauma data.
+ */
+
+/**
+ * @typedef {Object} TraumatologicData
+ * @property {number} version - The version of the data format.
+ * @property {Array.<TraumaDetail>} data - Detailed information about each trauma.
+ */
+
+/**
+ * @typedef {Object} TraumaDetail
+ * @property {string} whichBone - The bone that was affected.
+ * @property {string} year - The year when the trauma occurred.
+ * @property {string} treatment - The treatment administered.
+ */
+
+/**
+ * @typedef {Object} TraumatologicMedicalHistory
+ * @property {TraumatologicData} traumas - Detailed records of the patient's traumatologic incidents.
+ */
+
+/**
+ * @typedef {Object} TraumatologicHistory
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {TraumatologicMedicalHistory} medicalHistory - Contains the detailed traumatologic history of the patient.
+ */
+
+/**
+ * @param {DBTraumatologicData} dbData - The database record for traumatologic history.
+ * @returns {TraumatologicHistory} Formatted response object with API-friendly field names.
+ */
+export function mapToAPITraumatologicHistory(dbData) {
+  let { id_paciente: patientId, antecedente_traumatologico_data: traumatologicData } = dbData;
+
+  return {
+    patientId: patientId,
+    medicalHistory: {
+      traumas: traumatologicData,
+    },
   };
 }
 
