@@ -1,6 +1,6 @@
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 import settingsIcon from "@tabler/icons/outline/settings.svg";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";
@@ -12,9 +12,8 @@ import { SearchInput } from "src/components/Input";
 import PatientCard from "src/components/PatientCard";
 import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
-import { colors, fonts, fontSize } from "src/theme.mjs";
-import { adjustHeight, adjustWidth, delay } from "src/utils";
-import { calculateYearsBetween, formatDate } from "src/utils/date";
+import { colors, fonts } from "src/theme.mjs";
+import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
 
