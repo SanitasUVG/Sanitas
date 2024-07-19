@@ -7,10 +7,18 @@ export default defineConfig({
   resolve: {
     alias: {
       src: "/src",
+      // NOTE: AWS Cognito library needs this to run on release.
+      ...(process.env.NODE_ENV !== "development"
+        ? {
+          "./runtimeConfig": "./runtimeConfig.browser",
+        }
+        : {}),
     },
   },
   define: {
     "process.env": process.env,
+    // NOTE: AWS Cognito library needs this to run on development.
+    ...(process.env.NODE_ENV === "development" ? { global: {} } : {}),
   },
   test: {
     environment: "jsdom",

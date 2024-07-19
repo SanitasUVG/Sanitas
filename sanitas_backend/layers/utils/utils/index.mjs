@@ -35,9 +35,9 @@
  * @property {string|null} contactKinship1
  * @property {string|null} contactPhone1
  *
- * @property {string|null} contactName1
- * @property {string|null} contactKinship1
- * @property {string|null} contactPhone1
+ * @property {string|null} contactName2
+ * @property {string|null} contactKinship2
+ * @property {string|null} contactPhone2
  *
  * @property {string|null} bloodType
  * @property {string|null} address
@@ -50,7 +50,7 @@
  * @template T
  * @typedef {Object} APIMedicalHistory
  * @property {number} patientId - The patient Id associated to this medical history.
- * @property {T} medicalHistory - The medical history data, each can have it's own format.
+ * @property {T} medicalHistory - The medical history data, each can have its own format.
  */
 
 /**
@@ -126,7 +126,7 @@ export function mapToAPIPatient(dbPatient) {
  * @property {(status: number)=>ResponseBuilder} setStatusCode - Sets the response status code.
  * @property {(bodyObj: object)=> ResponseBuilder} setBody - Sets the response body. You don't need to stringify the body, this function will take care of that for you.
  * @property {(header: string, value: string)=>ResponseBuilder} addHeader - Adds a header to the response.
- * @property {AddCORSHeadersCallback}  addCORSHeaders - Adds some headers wanted by CORS. The default method is GET, origin is * and headres is Content-Type only.
+ * @property {AddCORSHeadersCallback}  addCORSHeaders - Adds some headers wanted by CORS. The default method is GET, origin is * and headers are Content-Type only.
  * @property {()=> import('aws-lambda').APIGatewayProxyResult} build - Build the Response.
  */
 
@@ -214,27 +214,20 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
  */
 
 /**
-
-*@typedef { Object } APICollaborator
-*@property { number } id
-*@property { string } codigo
-*@property { string } area
-*@property { number } patientId
-  * /
+ * @typedef {Object} APICollaborator
+ * @property {number} id
+ * @property {string} codigo
+ * @property {string} area
+ * @property {number} patientId
+ */
 
 /**
-
-Maps a DBCollaborator to an APICollaborator.
-@param {DBCollaborator} dbCollaborator The collaborator received from the DB.
-@returns {APICollaborator} The collaborator object the API must return.
-*/
+ * Maps a DBCollaborator to an APICollaborator.
+ * @param {DBCollaborator} dbCollaborator The collaborator received from the DB.
+ * @returns {APICollaborator} The collaborator object the API must return.
+ */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-  const {
-    id,
-    codigo: code,
-    area,
-    id_paciente: patientId,
-  } = dbCollaborator;
+  const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
 
   return {
     id,
@@ -261,5 +254,53 @@ export function mapToAPISurgicalHistory(dbData) {
   return {
     patientId,
     medicalHistory,
+  };
+}
+
+/**
+ * @typedef {Object} MedicalConditionData
+ * @property {number} version - The version of the data format.
+ * @property {Array<string|Object>} data - An array containing the medical history data.
+ *                                         This array may contain simple strings for some conditions
+ *                                         and objects for others that require more detailed information.
+ */
+
+/**
+ * @typedef {Object} DBData
+ * @property {number} id_paciente - The unique identifier of the patient.
+ * @property {null|MedicalConditionData} hipertension_arterial_data - Medical history data for hypertension.
+ * @property {null|MedicalConditionData} diabetes_mellitus_data - Medical history data for diabetes mellitus.
+ * @property {null|MedicalConditionData} hipotiroidismo_data - Medical history data for hypothyroidism.
+ * @property {null|MedicalConditionData} asma_data - Medical history data for asthma.
+ * @property {null|MedicalConditionData} convulsiones_data - Medical history data for convulsions.
+ * @property {null|MedicalConditionData} infarto_agudo_miocardio_data - Medical history data for acute myocardial infarction.
+ */
+
+/**
+ * Maps the medical history database data to the API format.
+ * @param {DBData} dbData - The medical history data from the database.
+ * @returns {import('./defaultValues.mjs').APIMedicalHistory<MedicalConditionData>} The medical history data formatted for the API.
+ */
+export function mapToAPIMedicalHistory(dbData) {
+  const {
+    id_paciente: patientId,
+    hipertension_arterial_data,
+    diabetes_mellitus_data,
+    hipotiroidismo_data,
+    asma_data,
+    convulsiones_data,
+    infarto_agudo_miocardio_data,
+  } = dbData;
+
+  return {
+    patientId,
+    medicalHistory: {
+      hipertension_arterial: hipertension_arterial_data,
+      diabetes_mellitus: diabetes_mellitus_data,
+      hipotiroidismo: hipotiroidismo_data,
+      asma: asma_data,
+      convulsiones: convulsiones_data,
+      infarto_agudo_miocardio: infarto_agudo_miocardio_data,
+    },
   };
 }

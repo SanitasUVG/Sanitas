@@ -10,6 +10,16 @@ Parameters:
     Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
     Description: 'The Postgres DB URL to connect during lambdas execution'
     NoEcho: true
+  CognitoUserPoolName:
+    Type: String
+    Default: SanitasCognitoUserPool
+    Description: The user pool used to authenticate Sanitas users.
+  CognitoUserPoolClientName:
+    Type: String
+    Default: SanitasCognitoUserPoolClient
+    Description: The user pool client used to connect to the user pool
+      in Sanitas.
+
 # More info about Globals:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -33,12 +43,7 @@ Globals:
       - !Ref DBConnectionLayer
       - !Ref LambdaLoggingLayer
       - !Ref UtilsLayer
-  Api:
-    TracingEnabled: true
-    Cors:
-      AllowMethods: "'OPTIONS,POST,GET,PUT'"
-      AllowHeaders: "'*'"
-      AllowOrigin: "'*'"
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -124,6 +129,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref SanitasAPI
             Path: /patient/search
             Method: POST
   # Each Lambda function is defined by properties:
@@ -249,6 +255,72 @@ Resources:
             Method: PUT
 
   # This is a Lambda function config associated with the source code:
+  # get-family-history-patient.mjs
+
+  getFamilyHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetFamilyHistory/get-family-history-patient.getFamilyHistoryHandler
+      Description: Retrieves family history for a specific patient
+        by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/family-history/{id}
+            Method: GET
+
+  # This is a Lambda function config associated with the source code:
+  # update-family-history.mjs
+  updateFamilyHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateFamilyHistory/update-family-history-patient.updateFamilyHistoryHandler
+      Description: Updates the family history for a specific patient
+        by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/family-history
+            Method: PUT
+
+  # This is a Lambda function config associated with the source code:
+  # get-traumatological-history-patient.mjs
+
+  getTraumatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetTraumatologicalHistory/get-traumatological-history-patient.getTraumatologicalHistoryHandler
+      Description: Retrieves traumatological history for a specific
+        patient by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/traumatological-history/{id}
+            Method: GET
+
+  # This is a Lambda function config associated with the source code:
+  # update-traumatological-history.mjs
+  updateTraumatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateTraumatologicalHistory/update-traumatological-history-patient.updateTraumatologicalHistoryHandler
+      Description: Updates the traumatological history for a specific
+        patient by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/traumatological-history
+            Method: PUT
+
+  # This is a Lambda function config associated with the source code:
   # get-patient.mjs
   getStudentFunction:
     Type: AWS::Serverless::Function
@@ -279,6 +351,45 @@ Resources:
           Properties:
             Path: /patient/collaborator/{id}
             Method: GET
+
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  SanitasAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Staging
+      TracingEnabled: true
+      Cors:
+        AllowMethods: "'OPTIONS,POST,GET,PUT'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref CognitoUserPoolName
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+      UsernameAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          Name: email
+          Required: true
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: !Ref CognitoUserPoolClientName
+      GenerateSecret: false
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
