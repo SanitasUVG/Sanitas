@@ -443,7 +443,7 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
                     name="treatment"
                     checked={selectedTrauma?.treatment === "Conservador"}
                     onChange={() => handleFieldChange("treatment", "Conservador")}
-                    label="Conservador"
+                    label="Conservador (yeso, canal, inmovilizador)"
                   />
                 </div>
               </div>
