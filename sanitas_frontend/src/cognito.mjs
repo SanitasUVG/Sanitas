@@ -1,5 +1,6 @@
 import { CognitoUserPool } from "amazon-cognito-identity-js";
 
+// FIXME: CHANGE THE DEFAULT STRINGS FOR EMPTY STRINGS BEFORE PUBLISHING!
 const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "us-east-2_qXDWDnKQf";
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "6q1gvfb8ohm7k6qmkm8sik1n8r";
 
