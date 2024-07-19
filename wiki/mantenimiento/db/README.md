@@ -246,3 +246,66 @@ erDiagram
     USUARIO ||--o{ SESION: ""
     USUARIO ||--|{ CONSULTA: ""
 ```
+
+## Registro de Antecedentes
+
+Como se puede ver en el diagrama de arriba los antecedentes tienen varios tipos,
+cada tipo es una tabla y cada columna de la tabla representa una subsección que se
+realiza en el formulario de ingreso, estas subsecciones se basan en las tablas
+del [documento dado por las
+doctoras](https://docs.google.com/document/d/1a8_8ttHOb4EbQKosgHKt-BNi6O9dTE_Z/edit?usp=sharing&ouid=101365484409367835585&rtpof=true&sd=true).
+
+Debido a que la data de estas subsecciones puede variar grandemente con el
+tiempo se decidió junto con los ingenieros César Vinicio y Marvin Raúl
+guardarlos en formato JSON. Cada registro JSON tiene una propiedad JSON dentro
+de sí que detalla qué versión de la estructura es, la documentación de cada
+versión se encuentra a continuación.
+
+### Antecedentes Familiares
+
+### Antecedentes Personales
+
+### Antecedentes Alérgicos
+
+### Antecedentes Quirúrgicos (Surgical)
+
+Los antecedentes quirúrgicos almacenados dentro del JSON tienen la siguiente
+estructura:
+
+```json
+{
+  "medicalHistory": {
+    "surgeries": {
+      "version": 1,
+      "data": [
+        {
+          "surgeryType": "Appendectomy",
+          "surgeryYear": "2023",
+          "complications": "None"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Versiones
+
+- Versión 1: La versión 1 contiene una propiedad `data` que es un array con
+  elementos de la forma:
+
+```json
+{
+    "surgeryType": "String",
+    "surgeryYear": "String",
+    "complications": "String"
+}
+```
+
+### Antecedentes Traumatológicos
+
+### Antecedentes Psiquiátricos
+
+### Antecedentes Ginecoobstetricos
+
+### Antecedentes no Patológicos
