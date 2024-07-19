@@ -138,7 +138,7 @@
                   if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
                   then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
                   else "ip route get 1.2.3.4 | awk '{print $7}'";
-              in "cd sanitas_backend/ && sam build && sam local start-api --add-host=hostpc:$(${ipCommand})";
+              in "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
               pg_setup = {
                 exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
                 process-compose = {
