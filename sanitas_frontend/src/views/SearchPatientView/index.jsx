@@ -26,6 +26,7 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @typedef {Object} SearchPatientViewProps
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
+
  * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
@@ -289,31 +290,63 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     width: adjustWidth(width, "17rem"),
                     height: "auto",
                     paddingTop: adjustHeight(height, "2rem"),
+                    paddingLeft: adjustWidth(width, "2rem"),
                   }}
                   src={SanitasLogo}
                   alt="Logo Sanitas"
                 />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  paddingTop: adjustHeight(height, "4.25rem"),
+                  paddingLeft: adjustWidth(width, "2rem"),
+                  paddingRight: adjustWidth(width, "2rem"),
+                  paddingBottom: adjustHeight(height, "2rem"),
+                }}
+              >
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexDirection: "row",
                     alignItems: "center",
-                    justifyContent: "center",
-                    gap: adjustHeight(height, "1rem"),
+                    gap: adjustHeight(height, "2rem"),
                   }}
                 >
-                  <BaseButton
-                    text="Nuevo Paciente"
-                    onClick={onAddNewPatientClick}
+                  <SearchInput
+                    type="text"
+                    value={query}
+                    onChange={handleInputChange}
+                    placeholder="Ingrese su búsqueda..."
                     style={{
-                      fontSize: adjustWidth(width, "1.10rem"),
-                      height: "2.65rem",
-                      width: adjustWidth(width, "14rem"),
+                      input: {
+                        width: adjustWidth(width, "30rem"),
+                        height: adjustHeight(height, "1.75rem"),
+                        fontSize: adjustWidth(width, "1.10rem"),
+                      },
+                    }}
+                  />
+                  <DropdownMenu
+                    value={type}
+                    onChange={(e) => setSearchQuery(query, e.target.value)}
+                    options={dropdownOptions}
+                    style={{
+                      select: {
+                        fontSize: adjustWidth(width, "1.10rem"),
+                      },
+                      container: {
+                        width: adjustWidth(width, "14rem"),
+                      },
                     }}
                   />
                   <BaseButton
-                    text="Regresar"
-                    onClick={() => setDefaultView(true)}
+                    text="Buscar Paciente"
+                    onClick={async () => {
+                      await searchBtnClick();
+                    }}
+                    disabled={emptyQuery}
                     style={{
                       fontSize: adjustWidth(width, "1.10rem"),
                       height: "2.65rem",
@@ -321,63 +354,155 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     }}
                   />
                 </div>
-              </div>
-              <div
-                style={{
-                  width: adjustWidth(width, "70%"),
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                {error && (
-                  <div
+                <div style={{ height: "100%" }}>
+                  <h1
                     style={{
-                      color: colors.errorText,
-                      marginBottom: adjustHeight(height, "1rem"),
+                      fontSize: adjustWidth(width, "2rem"),
+                      paddingBottom: adjustHeight(height, "1.5rem"),
+                      paddingTop: adjustHeight(height, "2rem"),
+                      color: colors.titleText,
                     }}
                   >
-                    {error}
-                  </div>
-                )}
-                {patientsResources
-                  ? (
-                    <Suspense fallback={<Throbber />}>
-                      {patientsResources.map((patient) => (
-                        <PatientCard
-                          key={patient.id}
-                          patient={patient}
-                          onClick={genViewPatientBtnClick(patient.id)}
-                        />
-                      ))}
-                      {queryReturnedEmpty && (
-                        <div
-                          style={{
-                            fontSize: adjustWidth(width, "1.25rem"),
-                            textAlign: "center",
-                            marginTop: adjustHeight(height, "2rem"),
-                          }}
-                        >
-                          No se encontraron resultados para su búsqueda.
-                        </div>
-                      )}
-                    </Suspense>
-                  )
-                  : (
+                    Resultados de la Búsqueda
+                  </h1>
+                  {!searchTypeWasCUI && queryReturnedEmpty && patientsResources && (
                     <div
                       style={{
-                        fontSize: adjustWidth(width, "1.25rem"),
-                        textAlign: "center",
-                        marginTop: adjustHeight(height, "2rem"),
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: adjustHeight(height, "7rem"),
                       }}
                     >
-                      {emptyQuery
-                        ? (
-                          "Por favor, ingrese algo para buscar."
-                        )
-                        : <Throbber />}
+                      <div
+                        style={{
+                          width: adjustWidth(width, "28rem"),
+                          height: "auto",
+                          padding: adjustWidth(width, "1rem"),
+                          borderRadius: adjustWidth(width, "1rem"),
+                          gap: adjustHeight(height, "1rem"),
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                          }}
+                        >
+                          ¡Parece que el paciente no existe!
+                        </p>
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Prueba buscarlo por CUI.
+                        </p>
+                      </div>
                     </div>
                   )}
+
+                  {queryReturnedEmpty && searchTypeWasCUI && patientsResources && (
+                    <div
+                      style={{
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: adjustHeight(height, "7rem"),
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          width: adjustWidth(width, "33rem"),
+                          height: "90%",
+                          borderRadius: adjustWidth(width, "1rem"),
+                          gap: adjustHeight(height, "0.5rem"),
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                          }}
+                        >
+                          ¡Parece que el paciente no existe!
+                        </p>
+                        <p
+                          style={{
+                            color: colors.textPrimary,
+                            fontSize: adjustWidth(width, "1.75rem"),
+                            textAlign: "center",
+                            fontFamily: fonts.textFont,
+                            paddingBottom: adjustHeight(height, "2rem"),
+                          }}
+                        >
+                          Ingresa la información del paciente aquí.
+                        </p>
+                        <BaseButton
+                          text="Ingresar la información del paciente."
+                          onClick={onAddNewPatientClick}
+                          style={{
+                            fontSize: adjustWidth(width, "1.10rem"),
+                            height: "2.65rem",
+                            width: adjustWidth(width, "25rem"),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {emptyQuery && (
+                    <div
+                      style={{
+                        width: "70%",
+                        height: "85%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        paddingBottom: adjustHeight(height, "7rem"),
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: adjustWidth(width, "25rem"),
+                          fontSize: adjustWidth(width, "2rem"),
+                          textAlign: "center",
+                          fontFamily: fonts.textFont,
+                          color: colors.statusDenied,
+                        }}
+                      >
+                        {error}
+                      </div>
+                    </div>
+                  )}
+                  {!emptyQuery && patientsResources && (
+                    <PatientSection
+                      patientsResources={patientsResources}
+                      genViewPatientBtnClick={genViewPatientBtnClick}
+                      adjustHeight={adjustHeight}
+                      adjustWidth={adjustWidth}
+                      setQueryReturnedEmpty={setQueryReturnedEmpty}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           )}
