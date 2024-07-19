@@ -10,9 +10,15 @@ const pool = new CognitoUserPool({
 
 /**
  * Registers a user inside the cognito API.
+ * @callback CognitoRegisterUserCallback
+ *
  * @param {string} email - The users email
  * @param {string} password - The users password
  * @returns {Promise<import("./dataLayer.mjs").Result<*,*>>} The Amazon cognito response if successful will be inside the .result field.
+ */
+
+/**
+ * @type CognitoRegisterUserCallback
  */
 export async function registerUser(email, password) {
   try {

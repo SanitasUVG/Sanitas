@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import LoginView from ".";
+import { delay } from "src/utils";
+import RegisterView from ".";
 
 export default {
   component: RegisterView,
@@ -16,6 +17,24 @@ export default {
   ],
 };
 
+/** @type {{args: import(".").RegisterViewProps}} */
 export const Default = {
-  args: {},
+  args: {
+    registerUser: async (_email, _password) => {
+      await delay(1000);
+      const result = "OK";
+      return { result };
+    },
+  },
+};
+
+/** @type {{args: import(".").RegisterViewProps}} */
+export const Error = {
+  args: {
+    registerUser: async (_email, _password) => {
+      await delay(1000);
+      const error = "Simulated server error";
+      return { error };
+    },
+  },
 };
