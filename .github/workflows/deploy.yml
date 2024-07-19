@@ -49,14 +49,14 @@ jobs:
         id: get_pool_id
         run: echo id=$(sam list resources --stack-name sanitas-backend
           --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPool")
-          | .PhysicalResourceId') | sed -e 's/^\"//' -e 's/\"$//')
-          >> $GITHUB_OUTPUT
+          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\"$//') >>
+          $GITHUB_OUTPUT
       - name: Saving Cognito Client ID
         id: get_client_id
         run: echo id=$(sam list resources --stack-name sanitas-backend
           --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPoolClient")
-          | .PhysicalResourceId') | sed -e 's/^\"//' -e 's/\"$//')
-          >> $GITHUB_OUTPUT
+          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\"$//') >>
+          $GITHUB_OUTPUT
         # yamllint enable rule:line-length
 
   frontend-deploy:
