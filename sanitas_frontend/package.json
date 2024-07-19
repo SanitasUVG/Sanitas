@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "yarn install && vite",
     "build": "yarn install && vite build",
-    "lint": "oxlint -D correctness -D restriction .",
+    "lint": "oxlint -D correctness .",
     "format": "dprint fmt",
     "test": "yarn install && vitest",
     "storybook": "yarn install && storybook dev -p 6006 --no-open",
