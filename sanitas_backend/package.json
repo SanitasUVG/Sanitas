@@ -17,7 +17,7 @@
   },
   "scripts": {
     "test": "npm install && node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "lint": "oxlint -D correctness -D restriction .",
+    "lint": "oxlint -D correctness .",
     "format": "dprint fmt"
   },
   "jest": {
