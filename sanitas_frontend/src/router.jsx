@@ -16,6 +16,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { SurgicalHistory } from "./views/History/Surgical";
+import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
@@ -27,6 +28,7 @@ export const NAV_PATHS = {
   // REGISTER_USER: "/register",
   SEARCH_PATIENT: "/search",
   REGISTER_USER: "/",
+  LOGIN_USER: "/login",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
@@ -85,18 +87,15 @@ export const ROUTES = [
   },
   {
     path: NAV_PATHS.REGISTER_USER,
-    // element: (
-    //   <RegisterView
-    //     registerUser={(_email, _password) => {
-    //       console.log("Register user called");
-    //     }}
-    //   />
-    // ),
     element: (
       <RegisterView
         registerUser={registerUser}
       />
     ),
+  },
+  {
+    path: NAV_PATHS.LOGIN_USER,
+    element: <LoginView />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,

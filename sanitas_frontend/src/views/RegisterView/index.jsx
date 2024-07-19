@@ -1,10 +1,12 @@
 import { Suspense, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logoSanitas from "src/assets/images/logoSanitas.png";
 import backgroundImage from "src/assets/images/UVGBackground.jpg";
 import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import BaseButton from "src/components/Button/Base";
 import { BaseInput } from "src/components/Input";
 import Throbber from "src/components/Throbber";
+import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
@@ -24,6 +26,7 @@ export default function RegisterView({ registerUser }) {
   };
 
   const Child = () => {
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -39,7 +42,7 @@ export default function RegisterView({ registerUser }) {
       if (response.error) {
         setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
       } else {
-        // TODO: Navigate to appropriate view...
+        navigate(NAV_PATHS.LOGIN_USER, { replace: true });
       }
 
       setRegisterResource(null);
@@ -147,6 +150,7 @@ export default function RegisterView({ registerUser }) {
                 Contraseña:
               </label>
               <BaseInput
+                type="password"
                 placeholder="Ingrese su contraseña"
                 style={inputStyles}
                 value={password}
@@ -222,7 +226,7 @@ export default function RegisterView({ registerUser }) {
           height: "100vh",
         }}
       >
-        <Throbber loadingMessage="Iniciando sesión..." />
+        <Throbber loadingMessage="Registrando usuario..." />
       </div>
     );
   };
