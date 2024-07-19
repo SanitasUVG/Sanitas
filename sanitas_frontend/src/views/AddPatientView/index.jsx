@@ -30,15 +30,15 @@ export function AddPatientView({ submitPatientData, useStore }) {
   const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
   const location = useLocation();
 
-  const [patientData, setPatientData] = useState({
-    cui: location.state?.cui ?? "",
-    names: "",
-    surnames: "",
-    sex: null,
-    birthDate: "",
-  });
-
   const Hijo = () => {
+    const [patientData, setPatientData] = useState({
+      cui: location.state?.cui ?? "",
+      names: "",
+      surnames: "",
+      sex: null,
+      birthDate: "",
+    });
+
     const navigate = useNavigate();
     const [updateError, setUpdateError] = useState("");
     const [resourceUpdate, setResourceUpdate] = useState(null);
