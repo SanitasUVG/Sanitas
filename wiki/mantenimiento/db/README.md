@@ -246,3 +246,214 @@ erDiagram
     USUARIO ||--o{ SESION: ""
     USUARIO ||--|{ CONSULTA: ""
 ```
+
+## Registro de Antecedentes
+
+Como se puede ver en el diagrama de arriba los antecedentes tienen varios tipos,
+cada tipo es una tabla y cada columna de la tabla representa una subsección que se
+realiza en el formulario de ingreso, estas subsecciones se basan en las tablas
+del [documento dado por las
+doctoras](https://docs.google.com/document/d/1a8_8ttHOb4EbQKosgHKt-BNi6O9dTE_Z/edit?usp=sharing&ouid=101365484409367835585&rtpof=true&sd=true).
+
+Debido a que la data de estas subsecciones puede variar grandemente con el
+tiempo se decidió junto con los ingenieros César Vinicio y Marvin Raúl
+guardarlos en formato JSON. Cada registro JSON tiene una propiedad JSON dentro
+de sí que detalla qué versión de la estructura es, la documentación de cada
+versión se encuentra a continuación.
+
+### Antecedentes Familiares
+
+Los antecedentes familiares se organizan por tipo de condición médica. Cada
+condición se almacena en un objeto JSON que lista los familiares afectados,
+permitiendo una rápida actualización y mantenimiento de los datos.
+
+```json
+{
+  "medicalHistory": {
+    "hypertension": {
+      "version": 1,
+      "data": ["Father", "Mother"]
+    },
+    "diabetesMellitus": {
+      "version": 1,
+      "data": ["Mother", "Brother"]
+    },
+    "hypothyroidism": {
+      "version": 1,
+      "data": ["Grandmother"]
+    },
+    "asthma": {
+      "version": 1,
+      "data": []
+    },
+    "convulsions": {
+      "version": 1,
+      "data": ["Uncle"]
+    },
+    "myocardialInfarction": {
+      "version": 1,
+      "data": []
+    },
+    "cancer": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Mother",
+          "typeOfCancer": "Breast"
+        }
+      ]
+    },
+    "cardiacDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Father",
+          "typeOfDisease": "Hypertrophy"
+        }
+      ]
+    },
+    "renalDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Grandfather",
+          "typeOfDisease": "Renal Failure"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Brother",
+          "disease": "Psoriasis"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Versiones
+
+- Versión 1: La versión 1 contiene una propiedad `data` que son arrays de la
+  forma:
+
+  - hypertension, diabetesMellitus, hypothyroidism, asthma, convulsions,
+    myocardialInfarction: Array\[String\], cada elemento es un familiar afectado.
+
+  ```json
+  ["String", "String"]
+  ```
+
+  - cancer, cardiacDiseases, renalDiseases, others: Array de objetos. Cada
+    objeto puede contener:
+
+    - who: String, especifica quién en la familia tiene la condición.
+    - typeOfCancer, typeOfDisease, disease: String, especifica el tipo de
+      cáncer, enfermedad cardíaca, enfermedad renal o cualquier otra condición.
+
+    ```json
+    [
+      {
+        "who": "String",
+        "typeOfCancer": "String"
+      }
+    ]
+    ```
+
+### Antecedentes Personales
+
+### Antecedentes Alérgicos
+
+### Antecedentes Quirúrgicos (Surgical)
+
+Los antecedentes quirúrgicos almacenados dentro del JSON tienen la siguiente
+estructura:
+
+```json
+{
+  "medicalHistory": {
+    "surgeries": {
+      "version": 1,
+      "data": [
+        {
+          "surgeryType": "Appendectomy",
+          "surgeryYear": "2023",
+          "complications": "None"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- Versión 1: La versión 1 contiene una propiedad `data` que es un array con
+  elementos de la forma:
+
+```json
+{
+  "surgeryType": "String",
+  "surgeryYear": "String",
+  "complications": "String"
+}
+```
+
+### Antecedentes Traumatológicos
+
+Los registros de antecedentes traumatológicos se almacenan en formato JSON.
+Cada registro detalla el tipo de trauma, el año de ocurrencia y el
+tratamiento administrado, lo que facilita la actualización y el mantenimiento
+de los datos.
+
+```json
+{
+  "medicalHistory": {
+    "traumas": {
+      "version": 1,
+      "data": [
+        {
+          "whichBone": "Femur",
+          "year": "2023",
+          "treatment": "Surgery"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- Versión 1: La versión 1 contiene una propiedad `data` que es un array de
+  objetos de la forma:
+
+  - whichBone: String, indica qué hueso fue afectado.
+  - year: String, año en que ocurrió el trauma.
+  - treatment: String, tratamiento recibido.
+
+  ```json
+  [
+    {
+      "whichBone": "Femur",
+      "year": "2023",
+      "treatment": "Surgery"
+    }
+  ]
+  ```
+
+### Antecedentes Psiquiátricos
+
+### Antecedentes Ginecoobstetricos
+
+### Antecedentes no Patológicos
