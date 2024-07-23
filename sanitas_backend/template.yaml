@@ -276,8 +276,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: src/handlers/GetPersonalHistory/get-personal-history-patient.getPersonalHistoryHandler
-      Description: Retrieves Personal history for a specific patient
+      Handler: ./src/handlers/GetPersonalHistory/get-personal-history-patient.getPersonalHistoryHandler
+      Description: Retrieves the personal history for a specific patient
         by ID.
       Events:
         Api:
@@ -292,14 +292,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: src/handlers/UpdateFamilyHistory/update-family-history-patient.updateFamilyHistoryHandler
+      Handler: ./src/handlers/UpdateFamilyHistory/update-family-history-patient.updateFamilyHistoryHandler
       Description: Updates the family history for a specific patient
         by ID.
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /patient/personal-history
+            Path: /patient/family-history
             Method: PUT
 
   # This is a Lambda function config associated with the source code:
@@ -308,14 +308,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: ./src/handlers/UpdatePersonalHistory/update-personal-history-patient.updatePersonalhistoryHandler
-      Description: Updates the family history for a specific patient
+      Handler: ./src/handlers/UpdatePersonalHistory/update-personal-history-patient.updatePersonalHistoryHandler
+      Description: Updates the personal history for a specific patient
         by ID.
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /patient/family-history
+            Path: /patient/personal-history
             Method: PUT
 
   # This is a Lambda function config associated with the source code:
