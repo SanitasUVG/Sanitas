@@ -401,6 +401,7 @@ export function mapToAPIPersonalHistory(dbData) {
     },
   };
 }
+
 /**
  * Converts the database records for a patient's medical history from the raw format to a structured API response format.
  * This function checks if each medical condition data exists; if not, it returns a default structure with an empty array.
