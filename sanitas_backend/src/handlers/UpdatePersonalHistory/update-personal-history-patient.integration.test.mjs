@@ -160,39 +160,71 @@ describe("Update Personal Medical History integration tests", () => {
   });
 
   test("Fail to update personal medical history with invalid ID", async () => {
-    const familyHistoryData = {
-      patientId: "999999",
+    const personalHistoryData = {
+      patientId: "9999999",
       medicalHistory: {
         hypertension: {
           version: 1,
-          data: ["Father", "Mother"],
+          data: [{
+            medicine: "Medicina random 1",
+            dose: "5ml",
+            frequency: "3 veces al día",
+          }, {
+            medicine: "Medicina random 2",
+            dose: "10ml",
+            frequency: "Una vez al día",
+          }],
         },
         diabetesMellitus: {
           version: 1,
-          data: ["Mother", "Brother"],
+          data: [
+            {
+              medicine: "Medicina random 4",
+              dose: "2 pastillas",
+              frequency: "Cada 8 horas",
+            },
+          ],
         },
         hypothyroidism: {
           version: 1,
-          data: ["Grandmother"],
+          data: [
+            {
+              medicine: "Medicina random 4",
+              dose: "2 pastillas",
+              frequency: "Cada 8 horas",
+            },
+          ],
         },
         asthma: {
           version: 1,
-          data: [],
+          data: [
+            {
+              medicine: "Medicina random 4",
+              dose: "2 pastillas",
+              frequency: "Cada 8 horas",
+            },
+          ],
         },
         convulsions: {
           version: 1,
-          data: ["Uncle"],
+          data: [
+            {
+              medicine: "Medicina random 4",
+              dose: "2 pastillas",
+              frequency: "Cada 8 horas",
+            },
+          ],
         },
         myocardialInfarction: {
           version: 1,
-          data: [],
+          data: [2012, 2016],
         },
         cancer: {
           version: 1,
           data: [
             {
-              who: "Mother",
               typeOfCancer: "Breast",
+              treatment: "Operation",
             },
           ],
         },
@@ -200,8 +232,16 @@ describe("Update Personal Medical History integration tests", () => {
           version: 1,
           data: [
             {
-              who: "Father",
               typeOfDisease: "Hypertrophy",
+              medicine: "Medicina random 5",
+              dose: "5ml",
+              frequency: "1 vez al día",
+            },
+            {
+              typeOfDisease: "Hypertrophy 2",
+              medicine: "Medicina random 5",
+              dose: "5ml",
+              frequency: "1 vez al día",
             },
           ],
         },
@@ -209,8 +249,16 @@ describe("Update Personal Medical History integration tests", () => {
           version: 1,
           data: [
             {
-              who: "Grandfather",
-              typeOfDisease: "Renal Failure",
+              typeOfDisease: "Hypertrophy 2",
+              medicine: "Medicina random 5",
+              dose: "5ml",
+              frequency: "1 vez al día",
+            },
+            {
+              typeOfDisease: "Hypertrophy 2",
+              medicine: "Medicina random 5",
+              dose: "5ml",
+              frequency: "1 vez al día",
             },
           ],
         },
@@ -218,15 +266,17 @@ describe("Update Personal Medical History integration tests", () => {
           version: 1,
           data: [
             {
-              who: "Brother",
-              disease: "Psoriasis",
+              typeOfDisease: "Hypertrophy 2",
+              medicine: "Medicina random 5",
+              dose: "5ml",
+              frequency: "1 vez al día",
             },
           ],
         },
       },
     };
 
-    const response = await axios.put(API_URL, familyHistoryData, {
+    const response = await axios.put(API_URL, personalHistoryData, {
       validateStatus: () => true,
     });
 
