@@ -331,18 +331,20 @@ export function mapToAPIFamilyHistory(dbData) {
   };
 }
 
+// NOTE: We should not use "object" normally but this types will have to be changed when doing the JSDoc refactoring...
+
 /**
  * @typedef {Object} PersonalMedicalHistory
- * @property {null|MedicalConditionData} medicalHistory.hypertension - Medical history data for hypertension.
- * @property {null|MedicalConditionData} medicalHistory.diabetesMellitus - Medical history data for diabetes mellitus.
- * @property {null|MedicalConditionData} medicalHistory.hypothyroidism - Medical history data for hypothyroidism.
- * @property {null|MedicalConditionData} medicalHistory.asthma - Medical history data for asthma.
- * @property {null|MedicalConditionData} medicalHistory.convulsions - Medical history data for convulsions.
- * @property {null|MedicalConditionData} medicalHistory.myocardialInfarction - Medical history data for myocardial infarction.
- * @property {null|MedicalConditionData} medicalHistory.cancer - Medical history data for cancer.
- * @property {null|MedicalConditionData} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
- * @property {null|MedicalConditionData} medicalHistory.renalDiseases - Medical history data for renal diseases.
- * @property {null|MedicalConditionData} medicalHistory.others - Medical history data for other conditions.
+ * @property {null|Object} medicalHistory.hypertension - Medical history data for hypertension.
+ * @property {null|Object} medicalHistory.diabetesMellitus - Medical history data for diabetes mellitus.
+ * @property {null|Object} medicalHistory.hypothyroidism - Medical history data for hypothyroidism.
+ * @property {null|Object} medicalHistory.asthma - Medical history data for asthma.
+ * @property {null|Object} medicalHistory.convulsions - Medical history data for convulsions.
+ * @property {null|Object} medicalHistory.myocardialInfarction - Medical history data for myocardial infarction.
+ * @property {null|Object} medicalHistory.cancer - Medical history data for cancer.
+ * @property {null|Object} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
+ * @property {null|Object} medicalHistory.renalDiseases - Medical history data for renal diseases.
+ * @property {null|Object} medicalHistory.others - Medical history data for other conditions.
  */
 
 /**
