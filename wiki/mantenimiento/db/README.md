@@ -504,40 +504,40 @@ lista los datos requeridos según la condición.
   - Las condiciones: Hipertensión arterial, Diabetes Mellitus,
     Hipotiroidismo, Asma y Convulsiones tienen la siguiente forma:
 
-```json
-{
-  "medicine": "String",
-  "dose": "String",
-  "frequency": "String"
-}
-```
+  ```json
+  {
+    "medicine": "String",
+    "dose": "String",
+    "frequency": "String"
+  }
+  ```
 
-- Mientras el cáncer tiene la forma:
+  - Mientras el cáncer tiene la forma:
 
-```json
-{
-  "typeOfCancer": "String",
-  "treatment": "String"
-}
-```
+  ```json
+  {
+    "typeOfCancer": "String",
+    "treatment": "String"
+  }
+  ```
 
-- El infarto agudo de miocardio tiene la forma:
+  - El infarto agudo de miocardio tiene la forma:
 
-```json
-2012, 2016
-```
+  ```json
+  2012, 2016
+  ```
 
-- Por último enfermedades cardíacas, enfermedades renales y otros tienen la
-  forma:
+  - Por último enfermedades cardíacas, enfermedades renales y otros tienen la
+    forma:
 
-```json
-{
-  "typeOfDisease": "String",
-  "medicine": "String",
-  "dose": "String",
-  "frequency": "String"
-}
-```
+  ```json
+  {
+    "typeOfDisease": "String",
+    "medicine": "String",
+    "dose": "String",
+    "frequency": "String"
+  }
+  ```
 
 ### Antecedentes Traumatológicos
 
