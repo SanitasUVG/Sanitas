@@ -375,43 +375,71 @@ lista los datos requeridos según la condición.
     "hypertension": {
       "version": 1,
       "data": [
-        "Father",
-        "Mother"
+        {
+          "medicine": "Medicina random 1",
+          "dose": "5ml",
+          "frequency": "3 veces al día"
+        },
+        {
+          "medicine": "Medicina random 2",
+          "dose": "10ml",
+          "frequency": "Una vez al día"
+        }
       ]
     },
     "diabetesMellitus": {
       "version": 1,
       "data": [
-        "Mother",
-        "Brother"
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
       ]
     },
     "hypothyroidism": {
       "version": 1,
       "data": [
-        "Grandmother"
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
       ]
     },
     "asthma": {
       "version": 1,
-      "data": []
+      "data": [
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
+      ]
     },
     "convulsions": {
       "version": 1,
       "data": [
-        "Uncle"
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
       ]
     },
     "myocardialInfarction": {
       "version": 1,
-      "data": []
+      "data": [
+        2012,
+        2016
+      ]
     },
     "cancer": {
       "version": 1,
       "data": [
         {
-          "who": "Mother",
-          "typeOfCancer": "Breast"
+          "typeOfCancer": "Breast",
+          "treatment": "Operation"
         }
       ]
     },
@@ -419,8 +447,16 @@ lista los datos requeridos según la condición.
       "version": 1,
       "data": [
         {
-          "who": "Father",
-          "typeOfDisease": "Hypertrophy"
+          "typeOfDisease": "Hypertrophy",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        },
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
         }
       ]
     },
@@ -428,8 +464,16 @@ lista los datos requeridos según la condición.
       "version": 1,
       "data": [
         {
-          "who": "Grandfather",
-          "typeOfDisease": "Renal Failure"
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        },
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
         }
       ]
     },
@@ -437,44 +481,10 @@ lista los datos requeridos según la condición.
       "version": 1,
       "data": [
         {
-          "who": "Brother",
-          "disease": "Psoriasis"
-        }
-      ]
-    }
-  }
-}
-```
-
-<!-- markdownlint-disable MD024 -->
-
-#### Versiones
-
-- Version 1: La versión 1 contiene un array de datos de la forma:
-
-```json
-
-```
-
-<!-- markdownlint-enable MD024 -->
-
-### Antecedentes Alérgicos
-
-### Antecedentes Quirúrgicos (Surgical)
-
-Los antecedentes quirúrgicos almacenados dentro del JSON tienen la siguiente
-estructura:
-
-```json
-{
-  "medicalHistory": {
-    "surgeries": {
-      "version": 1,
-      "data": [
-        {
-          "surgeryType": "Appendectomy",
-          "surgeryYear": "2023",
-          "complications": "None"
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
         }
       ]
     }
@@ -489,13 +499,43 @@ estructura:
 <!-- markdownlint-enable MD024 -->
 
 - Versión 1: La versión 1 contiene una propiedad `data` que es un array con
-  elementos de la forma:
+  elementos con forma dependiendo de la pregunta.
+
+  - Las condiciones: Hipertensión arterial, Diabetes Mellitus,
+    Hipotiroidismo, Asma y Convulsiones tienen la siguiente forma:
 
 ```json
 {
-  "surgeryType": "String",
-  "surgeryYear": "String",
-  "complications": "String"
+  "medicine": "String",
+  "dose": "String",
+  "frequency": "String"
+}
+```
+
+- Mientras el cáncer tiene la forma:
+
+```json
+{
+  "typeOfCancer": "String",
+  "treatment": "String"
+}
+```
+
+- El infarto agudo de miocardio tiene la forma:
+
+```json
+2012, 2016
+```
+
+- Por último enfermedades cardíacas, enfermedades renales y otros tienen la
+  forma:
+
+```json
+{
+  "typeOfDisease": "String",
+  "medicine": "String",
+  "dose": "String",
+  "frequency": "String"
 }
 ```
 
