@@ -364,6 +364,100 @@ permitiendo una rápida actualización y mantenimiento de los datos.
 
 ### Antecedentes Personales
 
+Los antecedentes personales se organizan por tipo de condición médica. Al igual
+que los antecedentes familiares cada condición se almacena en un objeto JSON que
+lista los datos requeridos según la condición.
+
+```json
+{
+  "patientId": "1",
+  "medicalHistory": {
+    "hypertension": {
+      "version": 1,
+      "data": [
+        "Father",
+        "Mother"
+      ]
+    },
+    "diabetesMellitus": {
+      "version": 1,
+      "data": [
+        "Mother",
+        "Brother"
+      ]
+    },
+    "hypothyroidism": {
+      "version": 1,
+      "data": [
+        "Grandmother"
+      ]
+    },
+    "asthma": {
+      "version": 1,
+      "data": []
+    },
+    "convulsions": {
+      "version": 1,
+      "data": [
+        "Uncle"
+      ]
+    },
+    "myocardialInfarction": {
+      "version": 1,
+      "data": []
+    },
+    "cancer": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Mother",
+          "typeOfCancer": "Breast"
+        }
+      ]
+    },
+    "cardiacDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Father",
+          "typeOfDisease": "Hypertrophy"
+        }
+      ]
+    },
+    "renalDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Grandfather",
+          "typeOfDisease": "Renal Failure"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Brother",
+          "disease": "Psoriasis"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+- Version 1: La versión 1 contiene un array de datos de la forma:
+
+```json
+
+```
+
+<!-- markdownlint-enable MD024 -->
+
 ### Antecedentes Alérgicos
 
 ### Antecedentes Quirúrgicos (Surgical)
@@ -457,3 +551,4 @@ de los datos.
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
+
