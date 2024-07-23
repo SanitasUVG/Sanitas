@@ -182,7 +182,7 @@ describe("Update Personal Medical History integration tests", () => {
 
     expect(response).toBeDefined();
     expect(response.status).toBe(404);
-    expect(response.data.error).toBe("No family history found for the provided ID.");
+    expect(response.data.error).toBe("No personal history found for the provided ID.");
   });
 
   test("Fail to update personal medical history due to missing required fields", async () => {
