@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
+import React, { useEffect, useState } from "react";
 import BaseButton from "src/components/Button/Base";
 import { colors, fonts } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";
@@ -35,130 +36,119 @@ import useWindowSize from "src/utils/useWindowSize";
  * @returns {JSX.Element} The React Button element.
  */
 export default function PatientCard({
-	style = {},
-	patientsResources,
-	genViewPatientBtnClick,
-	setQueryReturnedEmpty,
-	adjustHeight,
-	adjustWidth,
+  style = {},
+  patientsResources,
+  genViewPatientBtnClick,
+  setQueryReturnedEmpty,
+  adjustHeight,
+  adjustWidth,
 }) {
-	const { width, height } = useWindowSize();
+  const { width, height } = useWindowSize();
 
-	const defaultStyles = {
-		mainContainer: {
-			display: "flex",
-			flexDirection: "column",
-			width: "70%",
-			height: "85%",
-			overflowX: "hidden",
-			overflowY: "auto",
-			...style.mainContainer,
-		},
-		secondaryContainer: {
-			display: "flex",
-			flexDirection: "column",
-			width: "80%",
-			justifyContent: "center",
-			...style.secondaryContainer,
-		},
-		cardsContainer: {
-			display: "flex",
-			flexDirection: "row",
-			border: "0.125rem solid #0F6838",
-			...style.cardsContainer,
-		},
-		patientName: {
-			...style.patientName,
-		},
-		patientAge: {
-			fontWeight: "normal",
-			...style.patientAge,
-		},
-		patientCUI: {
-			fontWeight: "normal",
-			...style.patientCUI,
-		},
-	};
+  const defaultStyles = {
+    mainContainer: {
+      display: "flex",
+      flexDirection: "column",
+      width: "70%",
+      height: "85%",
+      overflowX: "hidden",
+      overflowY: "auto",
+      ...style.mainContainer,
+    },
+    secondaryContainer: {
+      display: "flex",
+      flexDirection: "column",
+      width: "80%",
+      justifyContent: "center",
+      ...style.secondaryContainer,
+    },
+    cardsContainer: {
+      display: "flex",
+      flexDirection: "row",
+      border: "0.125rem solid #0F6838",
+      ...style.cardsContainer,
+    },
+    patientName: {
+      ...style.patientName,
+    },
+    patientAge: {
+      fontWeight: "normal",
+      ...style.patientAge,
+    },
+    patientCUI: {
+      fontWeight: "normal",
+      ...style.patientCUI,
+    },
+  };
 
-	const result = patientsResources.read();
+  const result = patientsResources.read();
+  if (result.error) {
+    let errorMessage = "";
+    if (result.error && result.error.cause) {
+      const { response } = result.error.cause;
+      if (response?.status < 500) {
+        errorMessage = "Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!";
+      } else {
+        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+      }
+    } else {
+      errorMessage = "Error processing your search request.";
+    }
 
-	useEffect(() => {
-		if (!result.error) {
-			setQueryReturnedEmpty(result.result.length <= 0);
-		}
-	}, [result, setQueryReturnedEmpty]);
+    return (
+      <div
+        style={{
+          width: "70%",
+          height: "85%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          paddingBottom: adjustHeight(height, "7rem"),
+        }}
+      >
+        <div
+          style={{
+            width: adjustWidth(width, "25rem"),
+            fontSize: adjustWidth(width, "2rem"),
+            textAlign: "center",
+            fontFamily: fonts.textFont,
+            color: colors.statusDenied,
+          }}
+        >
+          {errorMessage}
+        </div>
+      </div>
+    );
+  }
 
-	if (result.error) {
-		let errorMessage = "";
-		if (result.error?.cause) {
-			const { response } = result.error.cause;
-			if (response?.status < 500) {
-				errorMessage =
-					"Búsqueda incorrecta, ¡Por favor ingresa todos los parámetros!";
-			} else {
-				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-			}
-		} else {
-			errorMessage = "Error processing your search request.";
-		}
+  const patientInfo = result.result;
 
-		return (
-			<div
-				style={{
-					width: "70%",
-					height: "85%",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					flexDirection: "column",
-					paddingBottom: adjustHeight(height, "7rem"),
-				}}
-			>
-				<div
-					style={{
-						width: adjustWidth(width, "25rem"),
-						fontSize: adjustWidth(width, "2rem"),
-						textAlign: "center",
-						fontFamily: fonts.textFont,
-						color: colors.statusDenied,
-					}}
-				>
-					{errorMessage}
-				</div>
-			</div>
-		);
-	}
+  useEffect(() => {
+    setQueryReturnedEmpty(patientInfo.length <= 0);
+  }, [patientInfo]);
 
-	// Since we check first for errors
-	// this patientInfo should be defined
-	const patientInfo = result.result;
-
-	return (
-		<div style={defaultStyles.mainContainer}>
-			{patientInfo.map((patient) => (
-				<div key={patient.id} style={defaultStyles.cardsContainer}>
-					<div style={defaultStyles.secondaryContainer}>
-						<h2 style={defaultStyles.patientName}>{`${patient.names}`}</h2>
-						<h3
-							style={defaultStyles.patientAge}
-						>{`Edad: ${patient.age} años`}</h3>
-						<h3 style={defaultStyles.patientCUI}>{`CUI: ${patient.cui}`}</h3>
-					</div>
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							width: "20%",
-						}}
-					>
-						<BaseButton
-							text="Ver"
-							onClick={genViewPatientBtnClick(patient.id)}
-						/>
-					</div>
-				</div>
-			))}
-		</div>
-	);
+  return (
+    <div style={defaultStyles.mainContainer}>
+      {patientInfo.map((patient) => (
+        <div key={patient.id} style={defaultStyles.cardsContainer}>
+          <div style={defaultStyles.secondaryContainer}>
+            <h2 style={defaultStyles.patientName}>{`${patient.names}`}</h2>
+            <h3 style={defaultStyles.patientAge}>{`Edad: ${patient.age} años`}</h3>
+            <h3 style={defaultStyles.patientCUI}>{`CUI: ${patient.cui}`}</h3>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "20%",
+            }}
+          >
+            <BaseButton text="Ver" onClick={genViewPatientBtnClick(patient.id)} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }

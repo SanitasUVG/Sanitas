@@ -1,10 +1,26 @@
-import { delay } from ".";
-
 /**
  * @template T
  * @typedef {Object} SuspenseResource
  * @property {() => T} read
  */
+
+import { delay } from ".";
+
+function a() {
+  return new Promise((res, rej) => {
+    // blablabla programando blablab
+    try {
+      res(data);
+    } catch (error) {
+      rej(error);
+    }
+  });
+}
+
+async function b() {
+  // blablabla programando blablab
+  return data;
+}
 
 /**
  * Function used to wrap a promise for use with suspense.
@@ -15,31 +31,31 @@ import { delay } from ".";
  * @returns {SuspenseResource<T>} - The promise wrapped in an API thats compatible with suspense.
  */
 export default function WrapPromise(promise) {
-	let status = "pending";
-	let response;
+  let status = "pending";
+  let response;
 
-	const suspender = promise.then(
-		(res) => {
-			status = "success";
-			response = res;
-		},
-		(error) => {
-			status = "error";
-			response = error;
-		},
-	);
+  const suspender = promise.then(
+    (res) => {
+      status = "success";
+      response = res;
+    },
+    (error) => {
+      status = "error";
+      response = error;
+    },
+  );
 
-	const read = () => {
-		if (status === "pending") {
-			throw suspender;
-		}
-		if (status === "error") {
-			throw response;
-		}
-		return response;
-	};
+  const read = () => {
+    if (status === "pending") {
+      throw suspender;
+    } else if (status === "error") {
+      throw response;
+    } else {
+      return response;
+    }
+  };
 
-	return { read };
+  return { read };
 }
 
 /**
@@ -47,29 +63,30 @@ export default function WrapPromise(promise) {
  * @returns {SuspenseResource<T>}
  */
 export function WrapPromiseErrorMock() {
-	return {
-		read: () => {
-			throw "MOCK ERROR";
-		},
-	};
+  return {
+    read: () => {
+      throw "MOCK ERROR";
+    },
+  };
 }
 
 /**
  * @param {number} msTimeout - The number of ms to simulate before failing.
  */
 export function WrapPromisePrendingMock(msTimeout) {
-	let status = "pending";
-	const promise = delay(msTimeout).then((res) => {
-		status = "error";
-		res();
-	});
+  let status = "pending";
+  const promise = delay(msTimeout).then((res) => {
+    status = "error";
+    res();
+  });
 
-	const read = () => {
-		if (status === "pending") {
-			throw promise;
-		}
-		throw "MOCK ERROR";
-	};
+  const read = () => {
+    if (status === "pending") {
+      throw promise;
+    } else {
+      throw "MOCK ERROR";
+    }
+  };
 
-	return { read };
+  return { read };
 }

@@ -1,88 +1,78 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import {
-	createTestPatient,
-	LOCAL_API_URL,
-	updatePatientSurgicalHistory,
-} from "../testHelpers.mjs";
+import { createTestPatient, LOCAL_API_URL, updatePatientSurgicalHistory } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/surgical-history/`;
-let patientId;
 
-async function createPatient(hasHistory) {
-	// Create a test patient first
-	const patientResponse = await createTestPatient();
-	patientId = patientResponse;
+async function createPatient() {
+  // Create a test patient first
+  const patientId = await createTestPatient();
 
-	// Now update their surgical history
-	await updatePatientSurgicalHistory(patientId, {
-		hasSurgicalEvent: hasHistory,
-		surgicalEventData: [
-			{
-				surgeryType: "Appendectomy",
-				surgeryYear: "2023",
-				complications: "None",
-			},
-		],
-	});
+  // Now update their surgical history
+  await updatePatientSurgicalHistory(patientId, {
+    medicalHistory: {
+      surgeries: {
+        version: 1,
+        data: [
+          {
+            surgeryType: "Appendectomy",
+            surgeryYear: "2023",
+            complications: "None",
+          },
+        ],
+      },
+    },
+  });
 
-	return patientId;
+  return patientId;
 }
 
 describe("Get Surgical History integration tests", () => {
-	beforeAll(async () => {
-		patientId = await createPatient(true);
-	});
+  let patientId;
+  beforeAll(async () => {
+    patientId = await createPatient(true);
+  });
 
-	test("Retrieve existing surgical history", async () => {
-		const response = await axios.get(`${API_URL}${patientId}`);
+  test("Retrieve existing surgical history", async () => {
+    const response = await axios.get(`${API_URL}${patientId}`);
 
-		expect(response).toBeDefined();
-		expect(response.status).toBe(200);
+    expect(response).toBeDefined();
+    expect(response.status).toBe(200);
 
-		const surgicalHistory = response.data;
+    /** @type {import("utils/defaultValues.mjs").APISurgicalHistory} */
+    const surgicalHistory = response.data;
 
-		expect(surgicalHistory).toBeDefined();
-		expect(surgicalHistory.patientId).toBe(patientId);
-		expect(surgicalHistory.hasSurgicalEvent).toBeTruthy();
-		expect(surgicalHistory.surgicalEventData.length).toBeGreaterThan(0);
-		expect(surgicalHistory.surgicalEventData[0].surgeryType).toBe(
-			"Appendectomy",
-		);
-	});
+    expect(surgicalHistory).toBeDefined();
+    expect(surgicalHistory.patientId).toBe(patientId);
+    expect(surgicalHistory.medicalHistory.surgeries.data.length).toBe(1);
+    expect(surgicalHistory.medicalHistory.surgeries.data[0].surgeryType).toBe("Appendectomy");
+  });
 
-	test("Fail to retrieve surgical history for non-existent patient", async () => {
-		const nonExistentPatientId = 999999; // Assuming this ID does not exist
-		const response = await axios.get(`${API_URL}${nonExistentPatientId}`, {
-			validateStatus: () => true,
-		});
+  test("Retrieve default surgical history for non-existent patient", async () => {
+    const nonExistentPatientId = 999999; // Assuming this ID does not exist
+    const response = await axios.get(`${API_URL}${nonExistentPatientId}`, {
+      validateStatus: () => true,
+    });
 
-		expect(response).toBeDefined();
-		expect(response.status).toBe(404);
+    expect(response).toBeDefined();
+    expect(response.status).toBe(200);
 
-		const { error } = response.data;
-		expect(error).toBe("No surgical history found for the provided ID.");
-	});
+    /** @type {import("utils/defaultValues.mjs").APISurgicalHistory} */
+    const surgicalHistory = response.data;
 
-	test("Invalid ID provided", async () => {
-		const invalidId = "100000000"; // Assuming this is an invalid ID format
-		const response = await axios.get(`${API_URL}${invalidId}`, {
-			validateStatus: () => true,
-		});
+    expect(surgicalHistory).toBeDefined();
+    expect(surgicalHistory.patientId).toBe(nonExistentPatientId);
+    expect(surgicalHistory.medicalHistory.surgeries.data.length).toBe(0);
+  });
 
-		expect(response).toBeDefined();
-		expect(response.status).toBe(404);
+  test("Invalid ID provided", async () => {
+    const invalidId = "abckdj";
+    const response = await axios.get(`${API_URL}${invalidId}`, { validateStatus: () => true });
 
-		const { error } = response.data;
-		expect(error).toBe("No surgical history found for the provided ID.");
-	});
+    expect(response).toBeDefined();
+    expect(response.status).toBe(400);
 
-	test("Patient with hasSurgicalEvent false is not returning info.", async () => {
-		patientId = await createPatient(false);
-		const response = await axios.get(`${API_URL}${patientId}`, {
-			validateStatus: () => true,
-		});
-		expect(response).toBeDefined();
-		expect(response.data.surgicalEventData).toEqual([]);
-	}, 10000);
+    const { error } = response.data;
+    expect(error).toBe("Invalid request: No valid patientId supplied!");
+  });
 });

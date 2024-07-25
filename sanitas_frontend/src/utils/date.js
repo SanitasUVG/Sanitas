@@ -4,15 +4,11 @@
  * @returns {string} The formatted date in YYYY-MM-DD format.
  */
 export const formatDate = (dateString) => {
-	if (dateString === null) {
-		return null;
-	}
-
-	const date = new Date(dateString);
-	const year = date.getUTCFullYear();
-	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-	const day = String(date.getUTCDate()).padStart(2, "0");
-	return `${year}-${month}-${day}`;
+  const date = new Date(dateString);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 /**
@@ -21,17 +17,14 @@ export const formatDate = (dateString) => {
  * @returns {number} The number of full years between the given date and today's date.
  */
 export const calculateYearsBetween = (dateString) => {
-	const formattedDate = formatDate(dateString);
-	const startDate = new Date(formattedDate);
-	const today = new Date();
-	const differenceInYears = today.getFullYear() - startDate.getFullYear();
-	const monthDifference = today.getMonth() - startDate.getMonth();
+  const formattedDate = formatDate(dateString);
+  const startDate = new Date(formattedDate);
+  const today = new Date();
+  const differenceInYears = today.getFullYear() - startDate.getFullYear();
+  const monthDifference = today.getMonth() - startDate.getMonth();
 
-	if (
-		monthDifference < 0 ||
-		(monthDifference === 0 && today.getDate() < startDate.getDate())
-	) {
-		return differenceInYears - 1;
-	}
-	return differenceInYears;
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < startDate.getDate())) {
+    return differenceInYears - 1;
+  }
+  return differenceInYears;
 };

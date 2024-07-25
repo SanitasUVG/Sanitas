@@ -5,94 +5,85 @@ import { describe, expect, test, vi } from "vitest";
 import SearchPatientView from ".";
 
 describe("Search Patient view UI tests", () => {
-	test("Can't search if query is empty", () => {
-		const apiCall = vi.fn();
-		const useStore = createEmptyStore();
+  test("Can't search if query is empty", () => {
+    const apiCall = vi.fn();
+    const useStore = createEmptyStore();
 
-		const dom = render(
-			<MemoryRouter>
-				<SearchPatientView
-					searchPatientsApiCall={apiCall}
-					useStore={useStore}
-				/>
-			</MemoryRouter>,
-		);
-		const searchBtn = dom.getByText("Buscar Paciente");
+    const dom = render(
+      <MemoryRouter>
+        <SearchPatientView searchPatientsApiCall={apiCall} useStore={useStore} />
+      </MemoryRouter>,
+    );
+    const searchBtn = dom.getByText("Buscar Paciente");
 
-		fireEvent.click(searchBtn);
+    fireEvent.click(searchBtn);
 
-		expect(apiCall).toHaveBeenCalledTimes(0);
-	});
+    expect(apiCall).toHaveBeenCalledTimes(0);
+  });
 
-	test("On search calls function", async () => {
-		const apiCall = vi.fn(() =>
-			Promise.resolve({
-				result: [],
-			}),
-		);
-		const useStore = createEmptyStore();
+  test("On search calls function", async () => {
+    const apiCall = vi.fn(() =>
+      Promise.resolve({
+        result: [],
+      })
+    );
+    const useStore = createEmptyStore();
 
-		const dom = render(
-			<MemoryRouter>
-				<SearchPatientView
-					searchPatientsApiCall={apiCall}
-					useStore={useStore}
-				/>
-			</MemoryRouter>,
-		);
+    const dom = render(
+      <MemoryRouter>
+        <SearchPatientView searchPatientsApiCall={apiCall} useStore={useStore} />
+      </MemoryRouter>,
+    );
 
-		const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
-		const searchBtn = dom.getByText("Buscar Paciente");
+    const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
+    const searchBtn = dom.getByText("Buscar Paciente");
 
-		fireEvent.change(searchElem, { target: { value: "3284834428" } });
-		fireEvent.click(searchBtn);
+    fireEvent.change(searchElem, { target: { value: "3284834428" } });
+    fireEvent.click(searchBtn);
 
-		await waitFor(() => {
-			expect(apiCall).toHaveBeenCalledOnce();
-		});
-	});
+    await waitFor(() => {
+      expect(apiCall).toHaveBeenCalledOnce();
+    });
+  });
 
-	test("Display a button to see patient", async () => {
-		const apiCall = vi.fn(() =>
-			Promise.resolve({
-				result: [
-					{
-						id: 1234,
-						cui: "1234567890123",
-						names: "Flavio",
-						lastNames: "Martinez",
-						age: 34,
-					},
-				],
-			}),
-		);
-		const useStore = createEmptyStore();
+  test("Display a button to see patient", async () => {
+    const apiCall = vi.fn(() =>
+      Promise.resolve({
+        result: [
+          {
+            id: 1234,
+            cui: "1234567890123",
+            names: "Flavio",
+            lastNames: "Martinez",
+            age: 34,
+          },
+        ],
+      })
+    );
+    const useStore = createEmptyStore();
 
-		const dom = render(
-			<MemoryRouter>
-				<SearchPatientView
-					searchPatientsApiCall={apiCall}
-					useStore={useStore}
-				/>
-			</MemoryRouter>,
-		);
-		const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
-		const searchBtn = dom.getByText("Buscar Paciente");
+    const dom = render(
+      <MemoryRouter>
+        <SearchPatientView searchPatientsApiCall={apiCall} useStore={useStore} />
+      </MemoryRouter>,
+    );
+    const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
+    const searchBtn = dom.getByText("Buscar Paciente");
 
-		fireEvent.change(searchElem, { target: { value: "2348234890" } });
-		fireEvent.click(searchBtn);
+    fireEvent.change(searchElem, { target: { value: "2348234890" } });
+    fireEvent.click(searchBtn);
 
-		await waitFor(() => {
-			expect(apiCall).toHaveBeenCalledOnce();
-		});
+    await waitFor(() => {
+      expect(apiCall).toHaveBeenCalledOnce();
+    });
 
-		await waitFor(
-			() => {
-				expect(dom.getByText("Ver")).toBeVisible();
-			},
-			{
-				timeout: 500,
-			},
-		);
-	});
+    await waitFor(
+      () => {
+        expect(dom.getByText("Ver")).toBeVisible();
+      },
+      {
+        timeout: 500,
+      },
+    );
+  });
 });

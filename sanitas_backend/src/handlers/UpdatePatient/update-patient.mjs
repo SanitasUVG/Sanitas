@@ -1,89 +1,78 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPIPatient } from "utils";
+import { mapToAPIPatient } from "utils";
 
 function mapToDbPatient(apiPatient) {
-	const {
-		id,
-		cui,
-		isWoman: es_mujer,
-		email: correo,
-		names: nombres,
-		lastNames: apellidos,
+  const {
+    id,
+    cui,
+    isWoman: es_mujer,
+    email: correo,
+    names: nombres,
+    lastNames: apellidos,
 
-		contactName1: nombre_contacto1,
-		contactKinship1: parentesco_contacto1,
-		contactPhone1: telefono_contacto1,
+    contactName1: nombre_contacto1,
+    contactKinship1: parentesco_contacto1,
+    contactPhone1: telefono_contacto1,
 
-		contactName2: nombre_contacto2,
-		contactKinship2: parentesco_contacto2,
-		contactPhone2: telefono_contacto2,
+    contactName2: nombre_contacto2,
+    contactKinship2: parentesco_contacto2,
+    contactPhone2: telefono_contacto2,
 
-		bloodType: tipo_sangre,
-		address: direccion,
-		insuranceId: id_seguro,
-		birthdate: fecha_nacimiento,
-		phone: telefono,
-	} = apiPatient;
+    bloodType: tipo_sangre,
+    address: direccion,
+    insuranceId: id_seguro,
+    birthdate: fecha_nacimiento,
+    phone: telefono,
+  } = apiPatient;
 
-	return {
-		id,
-		cui,
-		es_mujer,
-		correo,
-		nombres,
-		apellidos,
-		nombre_contacto1,
-		parentesco_contacto1,
-		telefono_contacto1,
-		nombre_contacto2,
-		parentesco_contacto2,
-		telefono_contacto2,
-		tipo_sangre,
-		direccion,
-		id_seguro,
-		fecha_nacimiento,
-		telefono,
-	};
+  return {
+    id,
+    cui,
+    es_mujer,
+    correo,
+    nombres,
+    apellidos,
+    nombre_contacto1,
+    parentesco_contacto1,
+    telefono_contacto1,
+    nombre_contacto2,
+    parentesco_contacto2,
+    telefono_contacto2,
+    tipo_sangre,
+    direccion,
+    id_seguro,
+    fecha_nacimiento,
+    telefono,
+  };
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: The function isn't actually complex, is just a little too large.
 export const updatePatientHandler = async (event, context) => {
-	withRequest(event, context);
+  withRequest(event, context);
 
-	if (event.httpMethod !== "PUT") {
-		throw new Error(
-			`updatePatientHandler solo acepta el método PUT, intentaste: ${event.httpMethod}`,
-		);
-	}
+  if (event.httpMethod !== "PUT") {
+    throw new Error(`updatePatientHandler solo acepta el método PUT, intentaste: ${event.httpMethod}`);
+  }
 
-	const responseBuilder = createResponse().addCORSHeaders("PUT");
+  const apiPatientData = JSON.parse(event.body);
+  const patientData = mapToDbPatient(apiPatientData);
 
-	const apiPatientData = JSON.parse(event.body);
-	const patientData = mapToDbPatient(apiPatientData);
+  logger.info(process.env, "Las variables de entorno son:");
 
-	logger.info(process.env, "Las variables de entorno son:");
+  let client;
+  try {
+    const url = process.env.POSTGRES_URL;
+    logger.info(url, "Conectando a la base de datos...");
+    client = getPgClient(url);
+    await client.connect();
 
-	let client;
-	try {
-		const url = process.env.POSTGRES_URL;
-		logger.info(url, "Conectando a la base de datos...");
-		client = getPgClient(url);
-		await client.connect();
+    logger.info(patientData, "Actualizando datos del paciente en la base de datos...");
 
-		logger.info(
-			patientData,
-			"Actualizando datos del paciente en la base de datos...",
-		);
+    if (!patientData.id) {
+      throw new Error("ID es requerido.");
+    }
 
-		if (!patientData.id) {
-			return responseBuilder
-				.setStatusCode(400)
-				.setBody({ message: "ID es requerido." })
-				.build();
-		}
-
-		const query = `
+    const query = `
       UPDATE paciente
       SET 
         nombres = COALESCE($2, nombres),
@@ -105,57 +94,70 @@ export const updatePatientHandler = async (event, context) => {
       WHERE id = $1
       RETURNING *
     `;
-		const values = [
-			patientData.id,
-			patientData.nombres || null,
-			patientData.apellidos || null,
-			patientData.nombre_contacto1 || null,
-			patientData.parentesco_contacto1 || null,
-			patientData.telefono_contacto1 || null,
-			patientData.nombre_contacto2 || null,
-			patientData.parentesco_contacto2 || null,
-			patientData.telefono_contacto2 || null,
-			patientData.tipo_sangre || null,
-			patientData.direccion || null,
-			patientData.id_seguro || null,
-			patientData.fecha_nacimiento
-				? new Date(patientData.fecha_nacimiento)
-				: null,
-			patientData.telefono || null,
-			patientData.cui || null,
-			patientData.correo || null,
-			patientData.es_mujer !== null ? patientData.es_mujer : null,
-		];
+    const values = [
+      patientData.id,
+      patientData.nombres || null,
+      patientData.apellidos || null,
+      patientData.nombre_contacto1 || null,
+      patientData.parentesco_contacto1 || null,
+      patientData.telefono_contacto1 || null,
+      patientData.nombre_contacto2 || null,
+      patientData.parentesco_contacto2 || null,
+      patientData.telefono_contacto2 || null,
+      patientData.tipo_sangre || null,
+      patientData.direccion || null,
+      patientData.id_seguro || null,
+      patientData.fecha_nacimiento ? new Date(patientData.fecha_nacimiento) : null,
+      patientData.telefono || null,
+      patientData.cui || null,
+      patientData.correo || null,
+      patientData.es_mujer !== null ? patientData.es_mujer : null,
+    ];
 
-		logger.info({ query, values }, "Consulta SQL y valores:");
+    logger.info({ query, values }, "Consulta SQL y valores:");
 
-		const result = await client.query(query, values);
+    const result = await client.query(query, values);
 
-		if (result.rowCount === 0) {
-			const message = "No se encontraron registros con el ID proporcionado.";
-			logger.error(message);
-			return responseBuilder.setStatusCode(400).setBody({ message }).build();
-		}
+    if (result.rowCount === 0) {
+      throw new Error("No se encontraron registros con el ID proporcionado.");
+    }
 
-		logger.info("Datos del paciente actualizados exitosamente.");
-		const response = responseBuilder
-			.setStatusCode(200)
-			.setBody(mapToAPIPatient(result.rows[0]))
-			.build();
+    logger.info("Datos del paciente actualizados exitosamente.");
+    const response = {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
+      },
+      body: JSON.stringify(mapToAPIPatient(result.rows[0])),
+    };
 
-		logger.info(response, "Respondiendo con:");
-		return response;
-	} catch (error) {
-		const message = "Se produjo un error al actualizar los datos del paciente.";
-		logger.error(error, message);
+    logger.info(response, "Respondiendo con:");
+    return response;
+  } catch (error) {
+    logger.error(error, "¡Se produjo un error al actualizar los datos del paciente!");
 
-		const response = responseBuilder
-			.setStatusCode(500)
-			.setBody({ message })
-			.build();
+    let statusCode = 400;
+    let errorMessage = "Se produjo un error al actualizar los datos del paciente.";
 
-		return response;
-	} finally {
-		await client?.end();
-	}
+    if (error.message === "ID es requerido.") {
+      errorMessage = "ID es requerido.";
+    } else if (error.message === "No se encontraron registros con el ID proporcionado.") {
+      errorMessage = "No se encontraron registros con el ID proporcionado.";
+    }
+
+    const response = {
+      statusCode: statusCode,
+      headers: {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*", // Allow from anywhere
+        "Access-Control-Allow-Methods": "PUT", // Allow only PUT request
+      },
+      body: JSON.stringify({ error: errorMessage }),
+    };
+    return response;
+  } finally {
+    await client?.end();
+  }
 };

@@ -20,91 +20,81 @@ import { useEffect, useRef, useState } from "react";
  * @param {SearchInputProps} props - The properties passed to the SearchInput component.
  * @returns {JSX.Element} An interactive SearchInput component with customizable aesthetics.
  */
-export default function SearchInput({
-	type,
-	value = "",
-	onChange,
-	placeholder,
-	style = {},
-}) {
-	const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
-	const inputRef = useRef(null);
+export default function SearchInput({ type, value = "", onChange, placeholder, style = {} }) {
+  const [isNotEmpty, setIsNotEmpty] = useState(value.length > 0);
+  const inputRef = useRef(null);
 
-	useEffect(() => {
-		setIsNotEmpty(value && value.length > 0);
-	}, [value]);
+  useEffect(() => {
+    setIsNotEmpty(value && value.length > 0);
+  }, [value]);
 
-	const clearInput = () => {
-		const event = { target: { value: "", name: inputRef.current.name } };
-		onChange(event);
-		inputRef.current.focus();
-	};
+  const clearInput = () => {
+    const event = { target: { value: "", name: inputRef.current.name } };
+    onChange(event);
+    inputRef.current.focus();
+  };
 
-	/**
-	 * Handles the Enter key press on the clear icon.
-	 * @param {React.KeyboardEvent} e - Keyboard event.
-	 */
-	const handleIconKeyDown = (e) => {
-		if (e.key === "Enter") {
-			clearInput();
-		}
-	};
+  /**
+   * Handles the Enter key press on the clear icon.
+   * @param {React.KeyboardEvent} e - Keyboard event.
+   */
+  const handleIconKeyDown = (e) => {
+    if (e.key === "Enter") {
+      clearInput();
+    }
+  };
 
-	const defaultStyles = {
-		container: {
-			display: "flex",
-			alignItems: "center",
-			border: "1px solid #5B6670",
-			padding: "5px",
-			borderRadius: "4px",
-			maxWidth: "600px",
-			minWidth: "300px",
-			...style.container,
-		},
-		input: {
-			flexGrow: 1,
-			border: "none",
-			outline: "none",
-			color: "#1B1B1B",
-			...style.input,
-		},
-		img: {
-			cursor: "pointer",
-			display: "flex",
-			alignItems: "center",
-			padding: "0 8px",
-			filter:
-				"invert(38%) sepia(11%) saturate(0%) hue-rotate(196deg) brightness(95%) contrast(85%)",
-			height: "16px",
-			...style.img,
-		},
-	};
+  const defaultStyles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      border: "1px solid #5B6670",
+      padding: "5px",
+      borderRadius: "4px",
+      maxWidth: "600px",
+      minWidth: "300px",
+      ...style.container,
+    },
+    input: {
+      flexGrow: 1,
+      border: "none",
+      outline: "none",
+      color: "#1B1B1B",
+      ...style.input,
+    },
+    img: {
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      padding: "0 8px",
+      filter: "invert(38%) sepia(11%) saturate(0%) hue-rotate(196deg) brightness(95%) contrast(85%)",
+      height: "16px",
+      ...style.img,
+    },
+  };
 
-	return (
-		<div style={defaultStyles.container}>
-			<span style={defaultStyles.img}>
-				<img src={userSearch} alt="Search icon" />
-			</span>
-			<input
-				ref={inputRef}
-				type={type}
-				value={value}
-				onChange={onChange}
-				placeholder={placeholder}
-				name="searchInput"
-				style={defaultStyles.input}
-			/>
-			<span
-				onClick={clearInput}
-				onKeyDown={handleIconKeyDown}
-				style={defaultStyles.img}
-			>
-				<img
-					src={deleteSearch}
-					style={{ visibility: isNotEmpty ? "visible" : "hidden" }}
-					alt="Delete search icon"
-				/>
-			</span>
-		</div>
-	);
+  return (
+    <div style={defaultStyles.container}>
+      <span style={defaultStyles.img}>
+        <img src={userSearch} />
+      </span>
+      <input
+        ref={inputRef}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        name="searchInput"
+        style={defaultStyles.input}
+      />
+      <span
+        onClick={clearInput}
+        tabIndex="0"
+        onKeyDown={handleIconKeyDown}
+        style={defaultStyles.img}
+      >
+        <img src={deleteSearch} style={{ visibility: isNotEmpty ? "visible" : "hidden" }} />
+      </span>
+    </div>
+  );
 }

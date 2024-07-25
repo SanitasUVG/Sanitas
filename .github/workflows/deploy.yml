@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend_url: ${{ steps.get_url_step.outputs.url }}
+      cognito_user_pool_id: ${{ steps.get_pool_id.outputs.id }}
+      cognito_pool_client_id: ${{ steps.get_client_id.outputs.id }}
     defaults:
       run:
         shell: nix develop .#cicdBackend --command bash {0}
@@ -33,18 +35,29 @@ jobs:
           aws-region: us-east-2
           role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
       - name: Building Backend
-        # yamllint disable-line rule:line-length
         run: sam build --use-container
       - name: Deploying Backend
-        # yamllint disable-line rule:line-length
+        # yamllint disable rule:line-length
         run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
           --parameter-overrides PostgresURL=${{ secrets.DB_URL }}
       - name: Saving Backend URL
         id: get_url_step
-        # yamllint disable-line rule:line-length
         run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
           --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e
           's/\"$//') >> $GITHUB_OUTPUT
+      - name: Saving Cognito Pool ID
+        id: get_pool_id
+        run: echo id=$(sam list resources --stack-name sanitas-backend
+          --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPool")
+          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\"$//') >>
+          $GITHUB_OUTPUT
+      - name: Saving Cognito Client ID
+        id: get_client_id
+        run: echo id=$(sam list resources --stack-name sanitas-backend
+          --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPoolClient")
+          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\"$//') >>
+          $GITHUB_OUTPUT
+        # yamllint enable rule:line-length
 
   frontend-deploy:
     name: Frontend Deployment
@@ -64,9 +77,12 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: actions/configure-pages@v4
       - name: Building frontend
-        # yamllint disable-line rule:line-length
+        # yamllint disable rule:line-length
         run: yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url
+          }} COGNITO_POOL_ID=${{ needs.backend-deploy.outputs.cognito_user_pool_id
+          }} COGNITO_CLIENT_ID=${{ needs.backend-deploy.outputs.cognito_pool_client_id
           }} yarn build --base=/Sanitas/
+      # yamllint enable rule:line-length
       - name: Uploading to Github pages
         uses: actions/upload-pages-artifact@v3
         with:

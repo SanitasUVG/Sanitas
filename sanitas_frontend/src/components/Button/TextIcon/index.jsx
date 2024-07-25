@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 /**
  * @typedef {Object} TextIconButtonProps
@@ -15,42 +15,40 @@ import { useState } from "react";
  * @returns {JSX.Element} A button element containing both an icon and text with interactive hover effects.
  */
 const TextIconButton = ({ icon, text, onClick, style }) => {
-	const [isHovered, setIsHovered] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-	const baseStyle = {
-		backgroundColor: isHovered ? "#E6E7E7" : "#FFFFFF",
-		border: "none",
-		cursor: "pointer",
-		outline: "none",
-		padding: "10px 20px",
-		display: "flex",
-		alignItems: "center",
-		gap: "10px",
-		transition: "background-color 0.3s ease",
-		width: "100%",
-		...style,
-	};
+  const baseStyle = {
+    backgroundColor: isHovered ? "#E6E7E7" : "#FFFFFF",
+    border: "none",
+    cursor: "pointer",
+    outline: "none",
+    padding: "10px 20px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    transition: "background-color 0.3s ease",
+    width: "100%",
+    ...style,
+  };
 
-	const renderIcon = () => {
-		if (typeof icon === "string") {
-			return (
-				<img src={icon} alt="Icon" style={{ height: "18px", width: "18px" }} />
-			);
-		}
-		return icon;
-	};
+  const renderIcon = () => {
+    if (typeof icon === "string") {
+      return <img src={icon} alt="Icon" style={{ height: "18px", width: "18px" }} />;
+    }
+    return icon;
+  };
 
-	return (
-		<button
-			type="button"
-			style={baseStyle}
-			onClick={onClick}
-			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}
-		>
-			{renderIcon()} {text}
-		</button>
-	);
+  return (
+    <button
+      type="button"
+      style={baseStyle}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {renderIcon()} {text}
+    </button>
+  );
 };
 
 export default TextIconButton;
