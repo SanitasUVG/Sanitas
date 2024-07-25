@@ -311,6 +311,80 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 };
 
 /**
+ * Fetches the traumatological history for a specific patient by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} id - The patient's ID.
+ * @returns {Promise<Object>} An object containing either the traumatological history data or an error.
+ */
+export const getTraumatologicalHistory = async (id) => {
+  const url = `${BASE_URL}/patient/traumatological-history/${id}`;
+  try {
+    const response = await axios.get(url);
+    if (response.status === 200) {
+      return { result: response.data };
+    } else {
+      return { error: `Received unexpected status code: ${response.status}` };
+    }
+  } catch (error) {
+    if (error.response) {
+      return {
+        error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+      };
+    } else if (error.request) {
+      return { error: "No response received" };
+    } else {
+      return { error: error.message };
+    }
+  }
+};
+
+/**
+ * Updates the traumatological history for a specific patient by sending a PUT request to the server.
+ * This function constructs a payload from the traumatological events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} traumatologicalEvents - An array of objects where each object contains details about a traumatological event.
+ * @param {number} currentVersion - The current version of the traumatological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateTraumatologicalHistory = async (patientId, traumatologicalEvents, currentVersion) => {
+  const url = `${BASE_URL}/patient/traumatological-history`;
+
+  const payload = {
+    patientId: patientId,
+    medicalHistory: {
+      traumatological: {
+        version: currentVersion,
+        data: traumatologicalEvents.map((event) => ({
+          eventType: event.eventType,
+          eventYear: event.eventYear,
+          details: event.details,
+        })),
+      },
+    },
+  };
+
+  try {
+    const response = await axios.put(url, payload);
+    if (response.status === 200) {
+      return { result: response.data };
+    } else {
+      return { error: `Unexpected status code: ${response.status}` };
+    }
+  } catch (error) {
+    if (error.response) {
+      return { error: error.response.data };
+    } else if (error.request) {
+      return { error: "No response received" };
+    } else {
+      return { error: error.message };
+    }
+  }
+};
+
+/**
  * Fetches the surgical history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
