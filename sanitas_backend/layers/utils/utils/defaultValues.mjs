@@ -33,7 +33,6 @@ export const genDefaultSurgicalHistory = () => ({
  * Generates the default value for a surgical history in the DB.
  * @returns {FamiliarMedicalHistory}
  */
-
 export const genDefaultFamiliarHistory = () => ({
   hypertension: {
     version: 1,
@@ -88,6 +87,53 @@ export const genDefaultFamiliarHistory = () => ({
 
 export const genDefaultTraumatologicalHistory = () => ({
   traumas: {
+    version: 1,
+    data: [],
+  },
+});
+
+/**
+ * Generates the default value for a personal medical history in the DB.
+ * @returns {import("./index.mjs").PersonalMedicalHistory}
+ */
+export const genDefaultPersonalHistory = () => ({
+  hypertension: {
+    version: 1,
+    data: [],
+  },
+  diabetesMellitus: {
+    version: 1,
+    data: [],
+  },
+  hypothyroidism: {
+    version: 1,
+    data: [],
+  },
+  asthma: {
+    version: 1,
+    data: [],
+  },
+  convulsions: {
+    version: 1,
+    data: [],
+  },
+  myocardialInfarction: {
+    version: 1,
+    data: [],
+  },
+  cancer: {
+    version: 1,
+    data: [],
+  },
+  cardiacDiseases: {
+    version: 1,
+    data: [],
+  },
+  renalDiseases: {
+    version: 1,
+    data: [],
+  },
+  others: {
     version: 1,
     data: [],
   },
