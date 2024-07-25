@@ -19,10 +19,10 @@
  * @returns {SurgicalHistory}
  */
 export const genDefaultSurgicalHistory = () => ({
-  surgeries: {
-    version: 1,
-    data: [],
-  },
+	surgeries: {
+		version: 1,
+		data: [],
+	},
 });
 
 /**
@@ -34,46 +34,46 @@ export const genDefaultSurgicalHistory = () => ({
  * @returns {FamiliarMedicalHistory}
  */
 export const genDefaultFamiliarHistory = () => ({
-  hypertension: {
-    version: 1,
-    data: [],
-  },
-  diabetesMellitus: {
-    version: 1,
-    data: [],
-  },
-  hypothyroidism: {
-    version: 1,
-    data: [],
-  },
-  asthma: {
-    version: 1,
-    data: [],
-  },
-  convulsions: {
-    version: 1,
-    data: [],
-  },
-  myocardialInfarction: {
-    version: 1,
-    data: [],
-  },
-  cancer: {
-    version: 1,
-    data: [],
-  },
-  cardiacDiseases: {
-    version: 1,
-    data: [],
-  },
-  renalDiseases: {
-    version: 1,
-    data: [],
-  },
-  others: {
-    version: 1,
-    data: [],
-  },
+	hypertension: {
+		version: 1,
+		data: [],
+	},
+	diabetesMellitus: {
+		version: 1,
+		data: [],
+	},
+	hypothyroidism: {
+		version: 1,
+		data: [],
+	},
+	asthma: {
+		version: 1,
+		data: [],
+	},
+	convulsions: {
+		version: 1,
+		data: [],
+	},
+	myocardialInfarction: {
+		version: 1,
+		data: [],
+	},
+	cancer: {
+		version: 1,
+		data: [],
+	},
+	cardiacDiseases: {
+		version: 1,
+		data: [],
+	},
+	renalDiseases: {
+		version: 1,
+		data: [],
+	},
+	others: {
+		version: 1,
+		data: [],
+	},
 });
 
 /**
@@ -86,10 +86,10 @@ export const genDefaultFamiliarHistory = () => ({
  */
 
 export const genDefaultTraumatologicalHistory = () => ({
-  traumas: {
-    version: 1,
-    data: [],
-  },
+	traumas: {
+		version: 1,
+		data: [],
+	},
 });
 
 /**
@@ -97,44 +97,44 @@ export const genDefaultTraumatologicalHistory = () => ({
  * @returns {import("./index.mjs").PersonalMedicalHistory}
  */
 export const genDefaultPersonalHistory = () => ({
-  hypertension: {
-    version: 1,
-    data: [],
-  },
-  diabetesMellitus: {
-    version: 1,
-    data: [],
-  },
-  hypothyroidism: {
-    version: 1,
-    data: [],
-  },
-  asthma: {
-    version: 1,
-    data: [],
-  },
-  convulsions: {
-    version: 1,
-    data: [],
-  },
-  myocardialInfarction: {
-    version: 1,
-    data: [],
-  },
-  cancer: {
-    version: 1,
-    data: [],
-  },
-  cardiacDiseases: {
-    version: 1,
-    data: [],
-  },
-  renalDiseases: {
-    version: 1,
-    data: [],
-  },
-  others: {
-    version: 1,
-    data: [],
-  },
+	hypertension: {
+		version: 1,
+		data: [],
+	},
+	diabetesMellitus: {
+		version: 1,
+		data: [],
+	},
+	hypothyroidism: {
+		version: 1,
+		data: [],
+	},
+	asthma: {
+		version: 1,
+		data: [],
+	},
+	convulsions: {
+		version: 1,
+		data: [],
+	},
+	myocardialInfarction: {
+		version: 1,
+		data: [],
+	},
+	cancer: {
+		version: 1,
+		data: [],
+	},
+	cardiacDiseases: {
+		version: 1,
+		data: [],
+	},
+	renalDiseases: {
+		version: 1,
+		data: [],
+	},
+	others: {
+		version: 1,
+		data: [],
+	},
 });
