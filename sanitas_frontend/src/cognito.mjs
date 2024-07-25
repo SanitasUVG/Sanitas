@@ -4,10 +4,13 @@ const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "";
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "";
 
 /** @type {null|CognitoUserPool} */
-const pool = process.env.NODE_ENV === "test" ? null : new CognitoUserPool({
-  UserPoolId: COGNITO_POOL_ID,
-  ClientId: COGNITO_CLIENT_ID,
-});
+const pool =
+	process.env.NODE_ENV === "test"
+		? null
+		: new CognitoUserPool({
+				UserPoolId: COGNITO_POOL_ID,
+				ClientId: COGNITO_CLIENT_ID,
+			});
 
 /**
  * Registers a user inside the cognito API.
@@ -22,19 +25,19 @@ const pool = process.env.NODE_ENV === "test" ? null : new CognitoUserPool({
  * @type CognitoRegisterUserCallback
  */
 export async function registerUser(email, password) {
-  try {
-    const result = await new Promise((res, rej) => {
-      pool.signUp(email, password, [], null, (err, data) => {
-        if (err) {
-          rej(err);
-        } else {
-          res(data);
-        }
-      });
-    });
+	try {
+		const result = await new Promise((res, rej) => {
+			pool.signUp(email, password, [], null, (err, data) => {
+				if (err) {
+					rej(err);
+				} else {
+					res(data);
+				}
+			});
+		});
 
-    return { result };
-  } catch (error) {
-    return { error };
-  }
+		return { result };
+	} catch (error) {
+		return { error };
+	}
 }

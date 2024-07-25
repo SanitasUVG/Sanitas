@@ -4,18 +4,18 @@ import React from "react";
 import TextIconButton from ".";
 
 export default {
-  title: "Components/TextIconButton",
-  component: TextIconButton,
-  argTypes: {
-    onClick: { action: "clicked" },
-  },
+	title: "Components/TextIconButton",
+	component: TextIconButton,
+	argTypes: {
+		onClick: { action: "clicked" },
+	},
 };
 
 const Template = (args) => <TextIconButton {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  icon: arrowRight,
-  text: "Next",
-  onClick: action("Text Icon Button clicked"),
+	icon: arrowRight,
+	text: "Next",
+	onClick: action("Text Icon Button clicked"),
 };

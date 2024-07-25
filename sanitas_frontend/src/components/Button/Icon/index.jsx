@@ -15,39 +15,39 @@ import React, { useState } from "react";
  * @returns {JSX.Element} A button element containing an image styled as an icon with interactive hover effects.
  */
 const IconButton = ({ icon, onClick, style }) => {
-  const [isHovered, setIsHovered] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
 
-  const baseStyle = {
-    backgroundColor: "#FFFFFF",
-    border: "none",
-    cursor: "pointer",
-    outline: "none",
-    padding: "10px",
-    transition: "transform 0.3s ease-in-out",
-    transform: isHovered ? "scale(1.1)" : "scale(1)",
-    ...style,
-  };
+	const baseStyle = {
+		backgroundColor: "#FFFFFF",
+		border: "none",
+		cursor: "pointer",
+		outline: "none",
+		padding: "10px",
+		transition: "transform 0.3s ease-in-out",
+		transform: isHovered ? "scale(1.1)" : "scale(1)",
+		...style,
+	};
 
-  const iconStyle = {
-    width: "2.5rem",
-    height: "2.5rem",
-    transition: "filter 0.3s ease-in-out",
-    filter: isHovered
-      ? "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%) drop-shadow(0 0 0.5rem rgb(181, 177, 177))"
-      : "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%)",
-  };
+	const iconStyle = {
+		width: "2.5rem",
+		height: "2.5rem",
+		transition: "filter 0.3s ease-in-out",
+		filter: isHovered
+			? "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%) drop-shadow(0 0 0.5rem rgb(181, 177, 177))"
+			: "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1500%) hue-rotate(130deg) brightness(90%)",
+	};
 
-  return (
-    <button
-      type="button"
-      style={baseStyle}
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <img src={icon} style={iconStyle} alt="Icon" />
-    </button>
-  );
+	return (
+		<button
+			type="button"
+			style={baseStyle}
+			onClick={onClick}
+			onMouseEnter={() => setIsHovered(true)}
+			onMouseLeave={() => setIsHovered(false)}
+		>
+			<img src={icon} style={iconStyle} alt="Icon" />
+		</button>
+	);
 };
 
 export default IconButton;

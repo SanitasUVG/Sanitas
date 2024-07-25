@@ -18,34 +18,34 @@ import React from "react";
  */
 
 export default function BaseInput({
-  type,
-  value,
-  readOnly = false,
-  onChange,
-  placeholder,
-  style = {},
-  onClick = () => {},
+	type,
+	value,
+	readOnly = false,
+	onChange,
+	placeholder,
+	style = {},
+	onClick = () => {},
 }) {
-  const defaultStyle = {
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
-    border: "1px solid #5B6670",
-    padding: "6px 10px",
-    outline: "none",
-    borderRadius: "5px",
+	const defaultStyle = {
+		backgroundColor: "#FFFFFF",
+		color: "#000000",
+		border: "1px solid #5B6670",
+		padding: "6px 10px",
+		outline: "none",
+		borderRadius: "5px",
 
-    ...style,
-  };
+		...style,
+	};
 
-  return (
-    <input
-      type={type}
-      value={value}
-      readOnly={readOnly}
-      onChange={onChange}
-      onClick={onClick}
-      placeholder={placeholder}
-      style={defaultStyle}
-    />
-  );
+	return (
+		<input
+			type={type}
+			value={value}
+			readOnly={readOnly}
+			onChange={onChange}
+			onClick={onClick}
+			placeholder={placeholder}
+			style={defaultStyle}
+		/>
+	);
 }
