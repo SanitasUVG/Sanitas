@@ -110,7 +110,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
       const response = resourceUpdate.read();
       setUpdateError("");
       if (response.error) {
-        setUpdateError(`Lo sentimos! Ha ocurrido un error al enviar los datos!\n${response.error.toString()}`);
+        setUpdateError(`Lo sentimos! Ha ocurrido un error al enviar los datos! ${response.error.toString()}`);
       } else {
         const id = response.result;
         setSelectedPatientId(id);

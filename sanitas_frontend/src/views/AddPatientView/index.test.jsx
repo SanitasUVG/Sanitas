@@ -26,6 +26,39 @@ describe("AddPatientView tests", () => {
     expect(submitPatientData).not.toHaveBeenCalled();
   });
 
+  test("Displays error message when submitPatientData fails", async () => {
+    const errorMessage = "Error conexion";
+    const useStore = createEmptyStore();
+
+    const submitPatientData = vi.fn().mockResolvedValue({ error: errorMessage });
+    window.alert = vi.fn();
+    render(
+      <MemoryRouter>
+        <AddPatientView submitPatientData={submitPatientData} useStore={useStore} />
+      </MemoryRouter>,
+    );
+
+    const input = screen.getByPlaceholderText("CUI");
+    fireEvent.change(input, { target: { value: "1234567890123" } });
+    const namesInput = screen.getByPlaceholderText("Nombres");
+    fireEvent.change(namesInput, { target: { value: "Test" } });
+    const surnamesInput = screen.getByPlaceholderText("Apellidos");
+    fireEvent.change(surnamesInput, { target: { value: "User" } });
+    const genderInput = screen.getByLabelText("Femenino");
+    fireEvent.click(genderInput);
+    const birthDateInput = screen.getByPlaceholderText("Fecha de nacimiento");
+    fireEvent.change(birthDateInput, { target: { value: "2000-01-01" } });
+    const button = screen.getByText("Registrar información");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      const errorMessages = screen.getAllByText(
+        `Lo sentimos! Ha ocurrido un error al enviar los datos! ${errorMessage}`,
+      );
+      expect(errorMessages.length).toBeGreaterThan(0);
+    });
+  });
+
   test("Valid CUI triggers submitPatientData function", async () => {
     const submitPatientData = vi.fn().mockResolvedValue({ id: "test-id" });
     const useStore = createEmptyStore();
