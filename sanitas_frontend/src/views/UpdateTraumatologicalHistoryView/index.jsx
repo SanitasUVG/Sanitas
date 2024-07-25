@@ -240,6 +240,12 @@ function TraumatologicView({
   const handleFieldChange = (fieldName, value) => {
     setSelectedTrauma((prevTrauma) => ({ ...prevTrauma, [fieldName]: value }));
   };
+
+  const handleCancel = () => {
+    setAddingNew(false);
+    setSelectedTrauma(null);
+  };
+
   return (
     <div
       style={{
@@ -433,7 +439,7 @@ function TraumatologicView({
                 marginTop: "1rem"
               }}
             >
-              <BaseButton onClick={() => setAddingNew(false)} text="Cancelar" />
+              <BaseButton onClick={handleCancel} text="Cancelar" />
               <BaseButton onClick={handleSaveNewTrauma} text="Guardar" />
             </div>
           </div>
@@ -443,4 +449,4 @@ function TraumatologicView({
   );
 }
 
-export default TraumatologicHistory;
+export default TraumatologicView;
