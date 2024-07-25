@@ -1,9 +1,124 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
+import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
+import InformationCard from "src/components/InformationCard";
 import { BaseInput, RadioInput } from "src/components/Input/index";
+import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import WrapPromise from "src/utils/promiseWrapper";
+
+/**
+ * @typedef {Object} TraumatologicHistoryProps
+ * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
+ * @property {Function} getTraumatologicHistory - Function to fetch the traumatologic history of a patient.
+ * @property {Function} updateTraumatologicHistory - Function to update or add new traumatologic records for a patient.
+ * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
+ * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
+ *
+ * Component to manage and display a patient's traumatologic history, allowing users to add and view records.
+ *
+ * @param {TraumatologicHistoryProps} props - The props passed to the TraumatologicHistory component.
+ * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
+ */
+export function TraumatologicHistory({
+  getBirthdayPatientInfo,
+  getTraumatologicHistory,
+  updateTraumatologicHistory,
+  sidebarConfig,
+  useStore,
+}) {
+  const id = useStore((s) => s.selectedPatientId);
+  const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
+  const traumatologicHistoryResource = WrapPromise(getTraumatologicHistory(id));
+
+  const LoadingView = () => <Throbber loadingMessage="Cargando información de los antecedentes traumatológicos..." />;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        backgroundColor: colors.primaryBackground,
+        height: "100vh",
+        padding: "2rem",
+      }}
+    >
+      <div style={{ width: "25%" }}>
+        <DashboardSidebar {...sidebarConfig} />
+      </div>
+
+      <div
+        style={{
+          paddingLeft: "2rem",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: colors.secondaryBackground,
+            padding: "3.125rem",
+            height: "100%",
+            borderRadius: "10px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h1
+              style={{
+                color: colors.titleText,
+                fontFamily: fonts.titleFont,
+                fontSize: fontSize.titleSize,
+              }}
+            >
+              Antecedentes Traumatológicos
+            </h1>
+            <h3
+              style={{
+                fontFamily: fonts.textFont,
+                fontWeight: "normal",
+                fontSize: fontSize.subtitleSize,
+                paddingTop: "0.5rem",
+                paddingBottom: "3rem",
+              }}
+            >
+              Registro de antecedentes traumatológicos
+            </h3>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "space-between",
+              width: "100%",
+              gap: "2rem",
+            }}
+          >
+            <Suspense fallback={<LoadingView />}>
+              <TraumatologicView
+                id={id}
+                birthdayResource={birthdayResource}
+                traumatologicHistoryResource={traumatologicHistoryResource}
+                updateTraumatologicHistory={updateTraumatologicHistory}
+              />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * @typedef {Object} TraumatologicViewProps
@@ -37,7 +152,6 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
     } else {
       errorMessage = "Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
     }
-    toast.error(errorMessage);
   }
 
   const birthYearData = birthYearResult.result;
@@ -76,9 +190,8 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
 
   const handleSaveNewTrauma = async () => {
     if (!selectedTrauma.whichBone || !selectedTrauma.year || selectedTrauma.treatment === undefined) {
-      const errorMsg = "Por favor, complete todos los campos antes de guardar el registro traumatológico";
-      setError(errorMsg);
-      toast.error(errorMsg);
+      setError("Por favor, complete todos los campos antes de guardar el registro traumatológico");
+      toast.error("Complete todos los campos requeridos.");
       return;
     }
 
@@ -101,6 +214,7 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
         setTraumatologicHistory(updatedTraumatologicHistory);
         setAddingNew(false);
         setSelectedTrauma(null);
+        setError("");
         toast.success("Se ha guardado el registro traumatológico exitosamente.");
       } else {
         toast.error(`Error al guardar: ${response.error}`);
@@ -120,6 +234,26 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
 
   const handleFieldChange = (fieldName, value) => {
     setSelectedTrauma((prevTrauma) => ({ ...prevTrauma, [fieldName]: value }));
+  };
+
+  const handleDeleteTrauma = async (index) => {
+    const updatedTraumas = [...traumatologicHistory.data];
+    updatedTraumas.splice(index, 1);
+
+    const updatedTraumatologicHistory = {
+      data: updatedTraumas,
+      version: traumatologicHistory.version,
+    };
+
+    try {
+      await updateTraumatologicHistory(id, updatedTraumas, traumatologicHistory.version);
+      setTraumatologicHistory(updatedTraumatologicHistory);
+      toast.success("Se ha eliminado el antecedente traumatológico exitosamente.");
+      setError("");
+    } catch (error) {
+      setError(error.message);
+      toast.error("Hubo un error al eliminar el registro traumatológico.");
+    }
   };
 
   return (
@@ -212,6 +346,11 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
                         color: "#fff",
                       }}
                     />
+                    <BaseButton
+                      onClick={() => handleDeleteTrauma(index)}
+                      text="Eliminar"
+                      style={{ width: "80px", height: "3rem", backgroundColor: colors.dangerBackground, color: "#fff" }}
+                    />
                   </div>
                 </div>
               ))}
@@ -236,103 +375,84 @@ function TraumatologicView({ id, birthdayResource, traumatologicHistoryResource,
             <h2>{selectedTrauma ? "Editar Antecedente Traumatológico" : "Nuevo Antecedente Traumatológico"}</h2>
 
             <div>
-              <label
+              <p
                 style={{
-                  display: "block",
-                  fontFamily: fonts.titleFont,
-                  fontSize: fontSize.labelSize,
-                  paddingTop: "1rem",
+                  paddingBottom: "0.5rem",
+                  paddingTop: "2rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
                 }}
               >
                 Hueso:
-              </label>
+              </p>
               <BaseInput
-                value={selectedTrauma.whichBone}
+                value={selectedTrauma?.whichBone || ""}
                 onChange={(e) => handleFieldChange("whichBone", e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  marginBottom: "0.5rem",
-                }}
+                placeholder="Ingrese el hueso fracturado"
+                style={{ width: "95%", height: "10%", fontFamily: fonts.textFont, fontSize: "1rem" }}
               />
 
-              <label
+              <p
                 style={{
-                  display: "block",
-                  fontFamily: fonts.titleFont,
-                  fontSize: fontSize.labelSize,
-                  paddingTop: "1rem",
+                  paddingBottom: "0.5rem",
+                  paddingTop: "2rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
                 }}
               >
                 Año:
-              </label>
+              </p>
               <DropdownMenu
                 options={yearOptions}
-                selectedValue={selectedTrauma.year}
-                onSelect={(value) => handleFieldChange("year", value)}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  marginBottom: "0.5rem",
-                }}
+                value={selectedTrauma?.year || ""}
+                onChange={(selectedOption) => handleFieldChange("year", selectedOption.value)}
+                placeholder="Seleccione el año"
               />
 
-              <label
+              <p
                 style={{
-                  display: "block",
-                  fontFamily: fonts.titleFont,
-                  fontSize: fontSize.labelSize,
-                  paddingTop: "1rem",
+                  paddingBottom: "0.5rem",
+                  paddingTop: "2rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
                 }}
               >
                 Tratamiento:
-              </label>
-              <RadioInput
-                label="Cirugía"
-                checked={selectedTrauma.treatment === "Cirugía"}
-                onChange={() => handleFieldChange("treatment", "Cirugía")}
-                name="treatment"
-              />
-              <RadioInput
-                label="Conservador"
-                checked={selectedTrauma.treatment === "Conservador"}
-                onChange={() => handleFieldChange("treatment", "Conservador")}
-                name="treatment"
-              />
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <RadioInput
+                  label="Cirugía"
+                  name="treatment"
+                  checked={selectedTrauma?.treatment === "Cirugía"}
+                  onChange={() => handleFieldChange("treatment", "Cirugía")}
+                />
+                <RadioInput
+                  label="Conservador"
+                  name="treatment"
+                  checked={selectedTrauma?.treatment === "Conservador"}
+                  onChange={() => handleFieldChange("treatment", "Conservador")}
+                />
+              </div>
 
               {error && (
-                <div
+                <p
                   style={{
                     color: "red",
                     paddingTop: "1rem",
+                    textAlign: "center",
                     fontFamily: fonts.titleFont,
                     fontSize: fontSize.textSize,
                   }}
                 >
                   {error}
-                </div>
+                </p>
               )}
 
-              <div style={{ marginTop: "2rem" }}>
+              <div style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}>
                 <BaseButton
                   text="Guardar"
                   onClick={handleSaveNewTrauma}
-                  style={{ width: "100%", height: "3rem" }}
-                />
-                <BaseButton
-                  text="Cancelar"
-                  onClick={() => {
-                    setAddingNew(false);
-                    setSelectedTrauma(null);
-                    setError("");
-                  }}
-                  style={{
-                    width: "100%",
-                    height: "3rem",
-                    backgroundColor: colors.secondaryBackground,
-                    color: "#fff",
-                    marginTop: "0.5rem",
-                  }}
+                  style={{ width: "40%", height: "3rem", backgroundColor: colors.secondaryBackground, color: "#fff" }}
                 />
               </div>
             </div>
