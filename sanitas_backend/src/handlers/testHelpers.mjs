@@ -123,6 +123,21 @@ export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
 
   expect(response.status).toBe(200);
 }
+/**
+ * Updates the personal medical history for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating family medical history data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {MedicalHistory} personalHistoryData - The personal medical history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientPersonalHistory(patientId, personalHistoryData) {
+  personalHistoryData.patientId = patientId;
+
+  const response = await axios.put(`${LOCAL_API_URL}patient/personal-history`, personalHistoryData);
+
+  expect(response.status).toBe(200);
+}
 
 /**
  * @typedef {Object} TraumatologicData
