@@ -393,7 +393,7 @@ function TraumatologicView({
               <DropdownMenu
                 options={yearOptions}
                 value={selectedTrauma?.year || ""}
-                onChange={(selectedOption) => handleFieldChange("year", selectedOption.value)}
+                onChange={(selectedOption) => handleFieldChange("year", selectedOption.target.value)}
                 placeholder="Seleccione el año"
               />
 
@@ -452,7 +452,7 @@ function TraumatologicView({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  paddingTop: "2rem",
+                  paddingTop: "4rem",
                   gap: "1rem",
                 }}
               >
