@@ -3,6 +3,7 @@ import { registerUser } from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
+  getFamilyHistory,
   getGeneralPatientInformation,
   getStudentPatientInformation,
   getSurgicalHistory,
@@ -10,6 +11,7 @@ import {
   searchPatient,
   submitPatientData,
   updateCollaboratorInformation,
+  updateFamilyHistory,
   updateGeneralPatientInformation,
   updateStudentPatientInformation,
   updateSurgicalHistory,
@@ -17,6 +19,7 @@ import {
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
+import { FamiliarHistory } from "./views/History/Familiar";
 import { SurgicalHistory } from "./views/History/Surgical";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -38,6 +41,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   GENERAL_INFORMATION: "general",
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
+  FAMILIAR_HISTORY: "familiar",
   // TODO: Add other Navigation routes...
 };
 
@@ -57,7 +61,10 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.SURGICAL_HISTORY}`);
   },
   navigateToTraumatological: (navigate) => {
-    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.TRAUMATOLOGICAL_HISTORY}`); // Add navigation for new route
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.TRAUMATOLOGICAL_HISTORY}`);
+  },
+  navigateToFamiliar: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -95,6 +102,15 @@ const traumatologicalHistoryView = (
   />
 );
 
+const familiarHistoryView = (
+  <FamiliarHistory
+    getFamiliarlHistory={getFamilyHistory}
+    updateFamiliarHistory={updateFamilyHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
@@ -109,11 +125,7 @@ export const ROUTES = [
     //     }}
     //   />
     // ),
-    element: (
-      <RegisterView
-        registerUser={registerUser}
-      />
-    ),
+    element: <RegisterView registerUser={registerUser} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
@@ -143,7 +155,11 @@ export const ROUTES = [
       },
       {
         path: UPDATE_PATIENT_NAV_PATHS.TRAUMATOLOGICAL_HISTORY,
-        element: traumatologicalHistoryView, // Add new route view
+        element: traumatologicalHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
+        element: familiarHistoryView,
       },
       // TODO: Add more routes...
     ],
