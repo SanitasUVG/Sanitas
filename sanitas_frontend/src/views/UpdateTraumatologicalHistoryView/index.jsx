@@ -26,7 +26,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 export function TraumatologicHistory({
   getBirthdayPatientInfo,
   getTraumatologicHistory,
-  updateTraumatologicHistory,
+  updateTraumatologicalHistory,
   sidebarConfig,
   useStore,
 }) {
@@ -110,7 +110,7 @@ export function TraumatologicHistory({
                 id={id}
                 birthdayResource={birthdayResource}
                 traumatologicHistoryResource={traumatologicHistoryResource}
-                updateTraumatologicHistory={updateTraumatologicHistory}
+                updateTraumatologicalHistory={updateTraumatologicalHistory}
               />
             </Suspense>
           </div>
@@ -125,7 +125,7 @@ export function TraumatologicHistory({
  * @property {number} id - The patient's ID.
  * @property {Object} birthdayResource - Wrapped resource for fetching birthdate data.
  * @property {Object} traumatologicHistoryResource - Wrapped resource for fetching traumatologic history data.
- * @property {Function} updateTraumatologicHistory - Function to update the traumatologic history.
+ * @property {Function} updateTraumatologicalHistory - Function to update the traumatologic history.
  *
  * Internal view component for managing the display and modification of a patient's traumatologic history, with options to add or edit records.
  *
@@ -136,7 +136,7 @@ function TraumatologicView({
   id,
   birthdayResource,
   traumatologicHistoryResource,
-  updateTraumatologicHistory,
+  updateTraumatologicalHistory,
 }) {
   const [selectedTrauma, setSelectedTrauma] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
@@ -213,7 +213,7 @@ function TraumatologicView({
     updatedTraumatologicHistory.data.sort((a, b) => b.year - a.year);
 
     try {
-      const response = await updateTraumatologicHistory(
+      const response = await updateTraumatologicalHistory(
         id,
         updatedTraumatologicHistory.data,
         traumatologicHistory.version,
@@ -227,6 +227,7 @@ function TraumatologicView({
         toast.error(`Error al guardar: ${response.error}`);
       }
     } catch (error) {
+      console.error(error);
       toast.error("Hubo un error interno al guardar el registro traumatológico.");
     }
   };
