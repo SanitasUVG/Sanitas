@@ -43,7 +43,7 @@ export default function DropdownMenu({ value, onChange, readOnly = false, option
   const defaultStyles = {
     container: {
       position: "relative",
-      width: "190px",
+      width: style.container?.width || "11.875rem",
       ...style.container,
     },
     select: {
