@@ -136,7 +136,7 @@ function TraumatologicView({
   id,
   birthdayResource,
   traumatologicHistoryResource,
-  updateTraumatologicHistory
+  updateTraumatologicHistory,
 }) {
   const [selectedTrauma, setSelectedTrauma] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
@@ -167,7 +167,7 @@ function TraumatologicView({
 
   const [traumatologicHistory, setTraumatologicHistory] = useState({
     data: sortedData,
-    version: traumatologicHistoryData?.medicalHistory.traumas.version || 1
+    version: traumatologicHistoryData?.medicalHistory.traumas.version || 1,
   });
 
   const noTraumaData = traumatologicHistory.data.length === 0;
@@ -194,8 +194,11 @@ function TraumatologicView({
   };
 
   const handleSaveNewTrauma = async () => {
-    if (!selectedTrauma.whichBone || !selectedTrauma.year || selectedTrauma.treatment === undefined) {
-      setError("Por favor, complete todos los campos antes de guardar el registro traumatológico");
+    if (
+      !selectedTrauma.whichBone
+      || !selectedTrauma.year
+      || selectedTrauma.treatment === undefined
+    ) {
       toast.error("Complete todos los campos requeridos.");
       return;
     }
@@ -204,7 +207,7 @@ function TraumatologicView({
 
     const updatedTraumatologicHistory = {
       data: [...traumatologicHistory.data, selectedTrauma],
-      version: traumatologicHistory.version
+      version: traumatologicHistory.version,
     };
 
     updatedTraumatologicHistory.data.sort((a, b) => b.year - a.year);
@@ -213,20 +216,17 @@ function TraumatologicView({
       const response = await updateTraumatologicHistory(
         id,
         updatedTraumatologicHistory.data,
-        traumatologicHistory.version
+        traumatologicHistory.version,
       );
       if (!response.error) {
         setTraumatologicHistory(updatedTraumatologicHistory);
         setAddingNew(false);
         setSelectedTrauma(null);
-        setError("");
         toast.success("Se ha guardado el registro traumatológico exitosamente.");
       } else {
         toast.error(`Error al guardar: ${response.error}`);
-        setError(response.error.message);
       }
     } catch (error) {
-      setError(error.message);
       toast.error("Hubo un error interno al guardar el registro traumatológico.");
     }
   };
@@ -253,7 +253,7 @@ function TraumatologicView({
         flexDirection: "row",
         width: "100%",
         height: "100%",
-        gap: "1.5rem"
+        gap: "1.5rem",
       }}
     >
       <div
@@ -263,12 +263,12 @@ function TraumatologicView({
           padding: "1rem",
           height: "65vh",
           flex: 1,
-          overflowY: "auto"
+          overflowY: "auto",
         }}
       >
         <div
           style={{
-            paddingBottom: "0.5rem"
+            paddingBottom: "0.5rem",
           }}
         >
           <BaseButton
@@ -285,166 +285,198 @@ function TraumatologicView({
               paddingTop: "1rem",
               textAlign: "center",
               fontFamily: fonts.titleFont,
-              fontSize: fontSize.textSize
+              fontSize: fontSize.textSize,
             }}
           >
             {errorMessage}
           </div>
         )}
 
-        {noTraumaData && !errorMessage ? (
-          <p style={{ textAlign: "center", paddingTop: "20px" }}>
-            ¡Parece que no hay antecedentes traumatológicos! Agrega uno en el botón de arriba.
-          </p>
-        ) : (
-          <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-            {traumatologicHistory.data.map((trauma, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "0.75rem",
-                  backgroundColor: index % 2 === 0 ? colors.cardBackground : colors.alternateCardBackground,
-                  borderRadius: "5px",
-                  marginBottom: "0.5rem"
-                }}
-              >
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                  <div>
-                    <strong>Hueso:</strong> {trauma.whichBone}
+        {noTraumaData && !errorMessage
+          ? (
+            <p style={{ textAlign: "center", paddingTop: "20px" }}>
+              ¡Parece que no hay antecedentes traumatológicos! Agrega uno en el botón de arriba.
+            </p>
+          )
+          : (
+            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+              {traumatologicHistory.data.map((trauma, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "0.75rem",
+                    backgroundColor: index % 2 === 0 ? colors.cardBackground : colors.alternateCardBackground,
+                    borderRadius: "5px",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                    <div>
+                      <strong>Hueso:</strong> {trauma.whichBone}
+                    </div>
+                    <div>
+                      <strong>Año:</strong> {trauma.year}
+                    </div>
+                    <div>
+                      <strong>Tratamiento:</strong> {trauma.treatment}
+                    </div>
                   </div>
-                  <div>
-                    <strong>Año:</strong> {trauma.year}
-                  </div>
-                  <div>
-                    <strong>Tratamiento:</strong> {trauma.treatment}
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <BaseButton
+                      onClick={() => handleUpdateExistingTrauma(index)}
+                      text="Editar"
+                      style={{
+                        width: "80px",
+                        height: "3rem",
+                        backgroundColor: colors.secondaryBackground,
+                        color: "#fff",
+                      }}
+                    />
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <BaseButton
-                    onClick={() => handleUpdateExistingTrauma(index)}
-                    text="Editar"
-                    style={{
-                      width: "80px",
-                      height: "3rem",
-                      backgroundColor: colors.secondaryBackground,
-                      color: "#fff"
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
       </div>
 
-      {addingNew || selectedTrauma ? (
-        <div
-          style={{
-            border: `1px solid ${colors.primaryBackground}`,
-            borderRadius: "10px",
-            padding: "1rem",
-            height: "65vh",
-            flex: 1.5,
-            overflowY: "auto",
-            width: "100%",
-            paddingLeft: "2rem"
-          }}
-        >
-          <h2>{selectedTrauma ? "Editar Antecedente Traumatológico" : "Nuevo Antecedente Traumatológico"}</h2>
-
-          <div>
-            <p
-              style={{
-                paddingBottom: "0.5rem",
-                paddingTop: "2rem",
-                fontFamily: fonts.textFont,
-                fontSize: fontSize.textSize
-              }}
-            >
-              Hueso:
-            </p>
-            <BaseInput
-              value={selectedTrauma?.whichBone || ""}
-              onChange={(e) => handleFieldChange("whichBone", e.target.value)}
-              placeholder="Ingrese el hueso fracturado"
-              style={{ width: "95%", height: "10%", fontFamily: fonts.textFont, fontSize: "1rem" }}
-            />
-
-            <p
-              style={{
-                paddingBottom: "0.5rem",
-                paddingTop: "2rem",
-                fontFamily: fonts.textFont,
-                fontSize: fontSize.textSize
-              }}
-            >
-              Año:
-            </p>
-            <DropdownMenu
-              options={yearOptions}
-              value={selectedTrauma?.year || ""}
-              onChange={(selectedOption) => handleFieldChange("year", selectedOption.value)}
-              placeholder="Seleccione el año"
-            />
-
-            <p
-              style={{
-                paddingBottom: "0.5rem",
-                paddingTop: "2rem",
-                fontFamily: fonts.textFont,
-                fontSize: fontSize.textSize
-              }}
-            >
-              Tratamiento:
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <RadioInput
-                label="Cirugía"
-                name="treatment"
-                checked={selectedTrauma?.treatment === "Cirugía"}
-                onChange={() => handleFieldChange("treatment", "Cirugía")}
-              />
-              <RadioInput
-                label="Conservador"
-                name="treatment"
-                checked={selectedTrauma?.treatment === "Conservador"}
-                onChange={() => handleFieldChange("treatment", "Conservador")}
-              />
-            </div>
-
-            {error && (
-              <div
+      {addingNew || selectedTrauma
+        ? (
+          <div
+            style={{
+              border: `1px solid ${colors.primaryBackground}`,
+              borderRadius: "10px",
+              padding: "1rem",
+              height: "65vh",
+              flex: 1.5,
+              overflowY: "auto",
+              width: "100%",
+              paddingLeft: "2rem",
+            }}
+          >
+            <div>
+              <p
                 style={{
-                  backgroundColor: colors.errorBackground,
-                  color: colors.errorText,
-                  borderRadius: "0.25rem",
-                  padding: "0.75rem",
-                  textAlign: "center",
+                  paddingBottom: "0.5rem",
+                  paddingTop: "1rem",
                   fontFamily: fonts.textFont,
-                  fontSize: fontSize.textSize
+                  fontSize: fontSize.textSize,
                 }}
               >
-                {error}
-              </div>
-            )}
+                ¿Qué hueso se ha fracturado?
+              </p>
+              <BaseInput
+                value={selectedTrauma?.whichBone || ""}
+                onChange={(e) => handleFieldChange("whichBone", e.target.value)}
+                placeholder="Ingrese el hueso fracturado"
+                style={{
+                  width: "90%",
+                  height: "2.5rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: "1rem",
+                }}
+              />
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: "1rem"
-              }}
-            >
-              <BaseButton onClick={handleCancel} text="Cancelar" />
-              <BaseButton onClick={handleSaveNewTrauma} text="Guardar" />
+              <p
+                style={{
+                  paddingBottom: "0.5rem",
+                  paddingTop: "1.5rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
+                }}
+              >
+                ¿En qué año?
+              </p>
+              <DropdownMenu
+                options={yearOptions}
+                value={selectedTrauma?.year || ""}
+                onChange={(selectedOption) => handleFieldChange("year", selectedOption.value)}
+                placeholder="Seleccione el año"
+              />
+
+              <p
+                style={{
+                  paddingBottom: "0.5rem",
+                  paddingTop: "1.5rem",
+                  fontFamily: fonts.textFont,
+                  fontSize: fontSize.textSize,
+                }}
+              >
+                ¿Qué tipo de tratamiento tuvo?
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                  paddingLeft: "1.5rem",
+                }}
+              >
+                <RadioInput
+                  label="Cirugía"
+                  name="treatment"
+                  checked={selectedTrauma?.treatment === "Cirugía"}
+                  onChange={() => handleFieldChange("treatment", "Cirugía")}
+                  style={{ label: { fontFamily: fonts.textFont } }}
+                />
+                <RadioInput
+                  label="Conservador (yeso, canal, inmovilizador)"
+                  name="treatment"
+                  checked={selectedTrauma?.treatment === "Conservador"}
+                  onChange={() => handleFieldChange("treatment", "Conservador")}
+                  style={{ label: { fontFamily: fonts.textFont } }}
+                />
+              </div>
+
+              {error && (
+                <div
+                  style={{
+                    backgroundColor: colors.errorBackground,
+                    color: colors.errorText,
+                    borderRadius: "0.25rem",
+                    padding: "0.75rem",
+                    textAlign: "center",
+                    fontFamily: fonts.textFont,
+                    fontSize: fontSize.textSize,
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: "2rem",
+                  gap: "1rem",
+                }}
+              >
+                <BaseButton
+                  text="Guardar"
+                  onClick={handleSaveNewTrauma}
+                  style={{ width: "30%", height: "3rem" }}
+                />
+                <BaseButton
+                  text="Cancelar"
+                  onClick={handleCancel}
+                  style={{
+                    width: "30%",
+                    height: "3rem",
+                    backgroundColor: "#fff",
+                    color: colors.primaryBackground,
+                    border: `1.5px solid ${colors.primaryBackground}`,
+                  }}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        )
+        : null}
     </div>
   );
 }
