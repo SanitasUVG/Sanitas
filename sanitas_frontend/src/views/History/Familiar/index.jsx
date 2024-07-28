@@ -200,10 +200,16 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
   const handleSaveNewFamiliar = async () => {
     console.log("Intentando guardar para la enfermedad:", selectedFamiliar.disease);
 
+    if (!selectedFamiliar.disease || !familiarHistory[selectedFamiliar.disease]) {
+      toast.error("Por favor, selecciona una enfermedad válida.");
+      return;
+    }
+
+    console.log("Estado actual antes de guardar:", familiarHistory[selectedFamiliar.disease]);
+
     if (
       !selectedFamiliar.relative
-      || !selectedFamiliar.disease
-      || (["cancer", "otros", "enfermedades_cardiacas", "enfermedades_renales"].includes(
+      || (["cancer", "others", "cardiacDiseases", "renalDiseases"].includes(
         selectedFamiliar.disease,
       )
         && !selectedFamiliar.typeOfDisease)
@@ -212,18 +218,21 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
       return;
     }
 
-    // Preparar nueva entrada
     const newEntry = {
       who: selectedFamiliar.relative,
-      typeOfDisease: selectedFamiliar.typeOfDisease || "",
+      typeOfDisease: selectedFamiliar.typeOfDisease || undefined,
     };
 
-    // Preparar los datos actualizados
-    const updatedData = [...(familiarHistory[selectedFamiliar.disease].data || []), newEntry];
+    if (
+      ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(selectedFamiliar.disease)
+    ) {
+      newEntry.typeOfDisease = selectedFamiliar.typeOfDisease || "";
+    }
+
+    const updatedData = [...familiarHistory[selectedFamiliar.disease].data, newEntry];
     const updatedHistory = {
-      ...familiarHistory[selectedFamiliar.disease],
       data: updatedData,
-      version: (familiarHistory[selectedFamiliar.disease].version || 1) + 1,
+      version: familiarHistory[selectedFamiliar.disease].version,
     };
 
     // Preparar el estado actualizado completo
@@ -247,11 +256,11 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     const response = await updateFamiliarHistory(id, {
       medicalHistory: updatedFamilyHistoryDetails,
     });
-    toast.dismiss("savingFamilyHistory");
+
     if (response.error) {
       toast.error(`Error al guardar la información: ${response.error}`);
     } else {
-      toast.success("Historial familiar actualizado con éxito.");
+      toast.success("Historial familiar guardado con éxito.");
       setFamiliarHistory(updatedFamilyHistoryDetails);
       setSelectedFamiliar({});
       setAddingNew(false);
@@ -259,16 +268,16 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
   };
 
   const diseaseOptions = [
-    { label: "Hipertensión arterial", value: "hipertension_arterial" },
-    { label: "Diabetes Mellitus", value: "diabetes_mellitus" },
-    { label: "Hipotiroidismo", value: "hipotiroidismo" },
-    { label: "Asma", value: "asma" },
-    { label: "Convulsiones", value: "convulsiones" },
-    { label: "Infarto Agudo de Miocardio", value: "infarto_agudo_miocardio" },
+    { label: "Hipertensión arterial", value: "hypertension" },
+    { label: "Diabetes Mellitus", value: "diabetesMellitus" },
+    { label: "Hipotiroidismo", value: "hypothyroidism" },
+    { label: "Asma", value: "asthma" },
+    { label: "Convulsiones", value: "convulsions" },
+    { label: "Infarto Agudo de Miocardio", value: "myocardialInfarction" },
     { label: "Cáncer", value: "cancer" },
-    { label: "Enfermedades cardiacas", value: "enfermedades_cardiacas" },
-    { label: "Enfermedades renales", value: "enfermedades_renales" },
-    { label: "Otros", value: "otros" },
+    { label: "Enfermedades cardiacas", value: "cardiacDiseases" },
+    { label: "Enfermedades renales", value: "renalDiseases" },
+    { label: "Otros", value: "others" },
   ];
 
   return (
@@ -386,7 +395,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
             {selectedFamiliar.disease && (
               <>
-                {selectedFamiliar.disease !== "otros" && (
+                {selectedFamiliar.disease !== "others" && (
                   <>
                     <p
                       style={{
@@ -407,7 +416,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                   </>
                 )}
 
-                {["cancer", "otros", "enfermedades_cardiacas", "enfermedades_renales"].includes(
+                {["cancer", "others", "cardiacDiseases", "renalDiseases"].includes(
                   selectedFamiliar.disease,
                 ) && (
                   <>
@@ -438,7 +447,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                   </>
                 )}
 
-                {selectedFamiliar.disease === "otros" && (
+                {selectedFamiliar.disease === "others" && (
                   <>
                     <p
                       style={{
