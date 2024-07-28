@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { createResponse } from "utils/index.mjs";
 
 /**
  * @typedef {Object} RequestParams
@@ -67,6 +68,7 @@ const checkParameters = (event) => {
 export const searchPatientHandler = async (event, context) => {
   // All log statements are written to CloudWatch
   withRequest(event, context);
+  const responseBuilder = createResponse().addCORSHeaders("POST");
 
   // Call checkParameters to validate the request parameters
   const paramCheckResult = checkParameters(event);
@@ -119,9 +121,9 @@ export const searchPatientHandler = async (event, context) => {
         logger.info({ sqlQuery, queryParams }, "Querying by names or surnames");
         break;
       default:
-        return {
-          statusCode: 400,
-          body: JSON.stringify({
+        return responseBuilder
+          .setStatusCode(400)
+          .setBody({
             isValidRequest: false,
             errorResponse: {
               statusCode: 400,
@@ -129,8 +131,8 @@ export const searchPatientHandler = async (event, context) => {
                 error: "Invalid search type received",
               }),
             },
-          }),
-        };
+          })
+          .build();
     }
 
     logger.info("Executing DB query...");
@@ -139,34 +141,13 @@ export const searchPatientHandler = async (event, context) => {
 
     if (response.rowCount === 0) {
       logger.info("No patients found, returning empty array.");
-      return {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Allow-Origin": "*", // Allow from anywhere
-          "Access-Control-Allow-Methods": "POST", // Allow only GET request
-        },
-        body: JSON.stringify([]),
-      };
+      return responseBuilder.setStatusCode(200).setBody([]).build();
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Origin": "*", // Allow from anywhere
-        "Access-Control-Allow-Methods": "POST", // Allow only GET request
-      },
-      body: JSON.stringify(response.rows),
-    };
+    return responseBuilder.setStatusCode(200).setBody(response.rows).build();
   } catch (error) {
     logger.error({ error: error.message }, "An error has occurred!");
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "DB Error",
-      }),
-    };
+    return responseBuilder.setStatusCode(500).setBody({ error: "DB Error" }).build();
   } finally {
     await client?.end();
     logger.info("Database connection closed");

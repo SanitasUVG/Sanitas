@@ -185,7 +185,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                     textAlign: "center",
                   }}
                 >
-                  Ingrese el carnet, código de trabajador, nombres o CUI
+                  Ingresa carnet, código o nombre
                 </h3>
 
                 <div
@@ -231,7 +231,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                           fontSize: adjustWidth(width, "1.10rem"),
                         },
                         container: {
-                          width: adjustWidth(width, "14rem"),
+                          width: adjustWidth(width, "15rem"),
                         },
                       }}
                     />
@@ -337,7 +337,7 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
                         fontSize: adjustWidth(width, "1.10rem"),
                       },
                       container: {
-                        width: adjustWidth(width, "14rem"),
+                        width: adjustWidth(width, "15rem"),
                       },
                     }}
                   />

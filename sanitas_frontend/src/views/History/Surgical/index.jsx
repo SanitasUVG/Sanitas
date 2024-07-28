@@ -141,7 +141,6 @@ export function SurgicalHistory({
 function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSurgicalHistory }) {
   const [selectedSurgery, setSelectedSurgery] = useState(null);
   const [addingNew, setAddingNew] = useState(false);
-  const [error, setError] = useState("");
   const [yearOptions, setYearOptions] = useState([]);
 
   const birthYearResult = birthdayResource.read();
@@ -195,7 +194,6 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
   const handleOpenNewForm = () => {
     setSelectedSurgery({ surgeryType: "", surgeryYear: currentYear.toString(), complications: "" });
     setAddingNew(true);
-    setError(" ");
   };
 
   // Save the new surgery record to the database
@@ -205,7 +203,6 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
       || !selectedSurgery.surgeryYear
       || selectedSurgery.complications === undefined
     ) {
-      setError("Por favor, complete todos los campos antes de guardar el registro quirúrgico");
       toast.error("Complete todos los campos requeridos.");
       return;
     }
@@ -229,14 +226,11 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
         setSurgicalHistory(updatedSurgicalHistory);
         setAddingNew(false);
         setSelectedSurgery(null);
-        setError("");
         toast.success("Antecedente quirúrgico guardado con éxito.");
       } else {
-        setError(`Ha ocurrido un error al guardar el antecedente quirúrgico: ${response.error}`);
         toast.error(`Error al guardar: ${response.error}`);
       }
     } catch (error) {
-      setError(`Error en la operación: ${error.message}`);
       toast.error(`Error en la operación: ${error.message}`);
     }
   };
