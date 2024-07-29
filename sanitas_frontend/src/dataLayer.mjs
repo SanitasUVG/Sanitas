@@ -349,7 +349,11 @@ export const getTraumatologicalHistory = async (id) => {
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-export const updateTraumatologicalHistory = async (patientId, traumatologicalEvents, currentVersion) => {
+export const updateTraumatologicalHistory = async (
+  patientId,
+  traumatologicalEvents,
+  currentVersion,
+) => {
   const url = `${BASE_URL}/patient/traumatological-history`;
 
   const payload = {
@@ -547,19 +551,32 @@ export const getFamilyHistory = async (id) => {
  */
 export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
   const url = `${BASE_URL}/patient/family-history`;
+
+  // Debug: Inspect familyHistoryDetails before they are sent
+  console.log(
+    "Inspecting familyHistoryDetails before sending:",
+    JSON.stringify(familyHistoryDetails, null, 2),
+  );
+
+  // Asegúrate de que familyHistoryDetails ya es el objeto 'medicalHistory' correcto
   const payload = {
     patientId: patientId,
-    medicalHistory: familyHistoryDetails,
+    medicalHistory: familyHistoryDetails, // Directamente usando los detalles como 'medicalHistory'
   };
+
+  // Debug: Log the payload before sending to check structure
+  console.log("Preparing to send update:", JSON.stringify(payload, null, 2));
 
   try {
     const response = await axios.put(url, payload);
+    console.log("Server Response:", JSON.stringify(response.data, null, 2)); // Log full response
     if (response.status === 200) {
       return { result: response.data };
     } else {
       return { error: `Unexpected status code: ${response.status}` };
     }
   } catch (error) {
+    console.log("Error during update:", error); // Detailed error log
     if (error.response) {
       return { error: error.response.data };
     } else if (error.request) {
