@@ -464,7 +464,6 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                     />
                   </>
                 )}
-
                 {["cancer", "others", "cardiacDiseases", "renalDiseases"].includes(
                   selectedFamiliar.disease,
                 ) && (
