@@ -10,6 +10,19 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
+/**
+ * @typedef {Object} FamiliarHistoryProps
+ * @property {Function} getFamiliarlHistory - Function to fetch the familiar history data.
+ * @property {Function} updateFamiliarHistory - Function to update the familiar history records.
+ * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
+ * @property {Function} useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
+ *
+ * Component responsible for displaying and managing the familiar history section in a medical dashboard.
+ * It includes a sidebar and a main content area where the user can view and add family medical history records.
+ *
+ * @param {FamiliarHistoryProps} props - The props passed to the FamiliarHistory component.
+ * @returns {JSX.Element} - The rendered component with sections for sidebar and familiar history management.
+ */
 export function FamiliarHistory({
   getFamiliarlHistory,
   updateFamiliarHistory,
@@ -110,10 +123,24 @@ export function FamiliarHistory({
   );
 }
 
+/**
+ * @typedef {Object} FamiliarViewProps
+ * @property {string} id - The unique identifier for the patient.
+ * @property {Object} familiarHistoryResource - Wrapped promise containing the familiar history data.
+ * @property {Function} updateFamiliarHistory - Function to update familiar history records.
+ *
+ * This component handles the display and interaction of the familiar medical history. It allows the user
+ * to view existing records, add new entries, and manage interaction states like error handling and data submissions.
+ *
+ * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
+ * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
+ */
 function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
+  // State hooks to manage the selected familiar disease and whether adding a new entry
   const [selectedFamiliar, setSelectedFamiliar] = useState({});
   const [addingNew, setAddingNew] = useState(false);
 
+  // Read the data from the resource and handle any potential errors
   const familiarHistoryResult = familiarHistoryResource.read();
   let errorMessage = "";
   if (familiarHistoryResult.error) {
@@ -130,8 +157,8 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     }
   }
 
+  // Extract the familiar history data and establish initial state
   const familiarHistoryData = familiarHistoryResult.result;
-
   const [familiarHistory, setFamiliarHistory] = useState({
     hypertension: {
       data: familiarHistoryData?.medicalHistory.hypertension.data || [],
@@ -180,7 +207,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     (key) => familiarHistory[key] && familiarHistory[key].data && familiarHistory[key].data.length === 0,
   );
 
-  // Open new form to add a new disease
+  // Handlers for different actions within the component
   const handleOpenNewForm = () => {
     const initialDisease = "hypertension";
     setSelectedFamiliar({ disease: initialDisease });
@@ -189,6 +216,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
   };
 
   const validateDisease = (disease) => {
+    // Validation to ensure the selected disease exists in the state
     if (!familiarHistory[disease]) {
       console.error("La enfermedad seleccionada no es válida:", disease);
       toast.error("Por favor, selecciona una enfermedad válida.");
@@ -197,6 +225,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     return true;
   };
 
+  // Handler for selecting a disease card, setting state to show details without adding new data
   const handleSelectDiseaseCard = (diseaseKey, entry) => {
     setSelectedFamiliar({
       disease: diseaseKey,
@@ -211,17 +240,24 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     setAddingNew(false);
   };
 
-  const handleSaveNewFamiliar = async () => {
-    console.log("Intentando guardar para la enfermedad:", selectedFamiliar.disease);
+  // Changes the disease selection from the dropdown, resetting other fields
+  const handleDiseaseChange = (e) => {
+    const disease = e.target.value;
+    setSelectedFamiliar({
+      disease: disease,
+      relative: "",
+      typeOfDisease: "",
+    });
+  };
 
+  // Handles the saving of new or modified family medical history
+  const handleSaveNewFamiliar = async () => {
     if (!selectedFamiliar.disease || !familiarHistory[selectedFamiliar.disease]) {
       toast.error("Por favor, selecciona una enfermedad válida.");
       return;
     }
 
-    // Paso 1: Log antes de modificar
-    console.log("Estado inicial de familiarHistory:", JSON.stringify(familiarHistory, null, 2));
-
+    // Prepare new entry for saving
     let newEntry = ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
         selectedFamiliar.disease,
       )
@@ -234,6 +270,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
     toast.info("Guardando antecedente quirúrgico...");
 
+    // Update the data for the current disease
     const updatedData = [...familiarHistory[selectedFamiliar.disease].data, newEntry];
     const updatedHistory = {
       ...familiarHistory[selectedFamiliar.disease],
@@ -245,17 +282,8 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
       [selectedFamiliar.disease]: updatedHistory,
     };
 
-    // Paso 2: Log después de modificar
-    console.log(
-      "Estado actualizado que se enviará:",
-      JSON.stringify(updatedFamiliarHistory, null, 2),
-    );
-
     try {
       const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
-
-      // Paso 3: Log después de la respuesta del servidor
-      console.log("Respuesta del servidor:", response);
 
       if (response.error) {
         toast.error(`Error al guardar la información: ${response.error}`);
@@ -267,10 +295,10 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
       }
     } catch (error) {
       toast.error("Error al conectar con el servidor");
-      console.error("Error en la conexión:", error);
     }
   };
 
+  // Definitions of disease options for the dropdown
   const diseaseOptions = [
     { label: "Hipertensión arterial", value: "hypertension" },
     { label: "Diabetes Mellitus", value: "diabetesMellitus" },
@@ -284,6 +312,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
     { label: "Otros", value: "others" },
   ];
 
+  // Function to translate disease keys into more readable format
   const translateDisease = (diseaseKey) => {
     const translations = {
       hypertension: "Hipertensión arterial",
@@ -386,7 +415,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                     type="family"
                     disease={displayedDisease}
                     relative={displayedRelatives}
-                    onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+                    onClick={() => handleSelectDiseaseCard(diseaseKey, { who: displayedRelatives })}
                   />
                 );
               }
@@ -432,7 +461,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                 options={diseaseOptions}
                 value={selectedFamiliar.disease || ""}
                 readOnly={!addingNew}
-                onChange={handleSelectDiseaseCard}
+                onChange={handleDiseaseChange}
                 style={{
                   container: { width: "80%" },
                   select: {},
@@ -459,6 +488,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                     <BaseInput
                       value={selectedFamiliar.relative || ""}
                       onChange={(e) => setSelectedFamiliar({ ...selectedFamiliar, relative: e.target.value })}
+                      readOnly={!addingNew}
                       placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
                       style={{ width: "90%", height: "2.5rem" }}
                     />
@@ -490,6 +520,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                         : selectedFamiliar.disease === "others"
                         ? "Escriba la enfermedad"
                         : "Especifique el tipo de enfermedad (no obligatorio)"}
+                      readOnly={!addingNew}
                       style={{ width: "90%", height: "2.5rem" }}
                     />
                   </>
@@ -511,6 +542,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                       value={selectedFamiliar.relative || ""}
                       onChange={(e) => setSelectedFamiliar({ ...selectedFamiliar, relative: e.target.value })}
                       placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+                      readOnly={!addingNew}
                       style={{ width: "90%", height: "2.5rem" }}
                     />
                   </>
