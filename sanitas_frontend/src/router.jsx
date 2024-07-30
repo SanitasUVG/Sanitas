@@ -19,6 +19,7 @@ import {
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
+import { AlergicHistory } from "./views/History/Alergic";
 import { FamiliarHistory } from "./views/History/Familiar";
 import { SurgicalHistory } from "./views/History/Surgical";
 import RegisterView from "./views/RegisterView";
@@ -42,6 +43,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
   FAMILIAR_HISTORY: "familiar",
+  ALERGIC_HISTORY: "alergic",
   // TODO: Add other Navigation routes...
 };
 
@@ -65,6 +67,9 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   },
   navigateToFamiliar: (navigate) => {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
+  },
+  navigateToAllergies: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALERGIC_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -97,6 +102,16 @@ const traumatologicalHistoryView = (
     getBirthdayPatientInfo={getGeneralPatientInformation}
     getTraumatologicHistory={getTraumatologicalHistory}
     updateTraumatologicalHistory={updateTraumatologicalHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
+const alergicHistoryView = (
+  <AlergicHistory
+    getBirthdayPatientInfo={getGeneralPatientInformation}
+    // getTraumatologicHistory={getTraumatologicalHistory}
+    // updateTraumatologicalHistory={updateTraumatologicalHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
@@ -160,6 +175,10 @@ export const ROUTES = [
       {
         path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
         element: familiarHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.ALERGIC_HISTORY,
+        element: alergicHistoryView,
       },
       // TODO: Add more routes...
     ],
