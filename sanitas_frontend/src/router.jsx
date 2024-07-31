@@ -104,7 +104,7 @@ const traumatologicalHistoryView = (
 
 const familiarHistoryView = (
   <FamiliarHistory
-    getFamiliarlHistory={getFamilyHistory}
+    getFamiliarHistory={getFamilyHistory}
     updateFamiliarHistory={updateFamilyHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}

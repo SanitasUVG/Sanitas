@@ -12,7 +12,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 
 /**
  * @typedef {Object} FamiliarHistoryProps
- * @property {Function} getFamiliarlHistory - Function to fetch the familiar history data.
+ * @property {Function} getFamiliarHistory - Function to fetch the familiar history data.
  * @property {Function} updateFamiliarHistory - Function to update the familiar history records.
  * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
  * @property {Function} useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
@@ -24,13 +24,13 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @returns {JSX.Element} - The rendered component with sections for sidebar and familiar history management.
  */
 export function FamiliarHistory({
-  getFamiliarlHistory,
+  getFamiliarHistory,
   updateFamiliarHistory,
   sidebarConfig,
   useStore,
 }) {
   const id = useStore((s) => s.selectedPatientId);
-  const familiarHistoryResource = WrapPromise(getFamiliarlHistory(id));
+  const familiarHistoryResource = WrapPromise(getFamiliarHistory(id));
 
   const LoadingView = () => {
     return <Throbber loadingMessage="Cargando información de los antecedentes familiares..." />;
