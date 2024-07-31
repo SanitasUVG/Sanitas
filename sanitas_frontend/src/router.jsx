@@ -1,3 +1,4 @@
+import { element } from "prop-types";
 import { Outlet } from "react-router-dom";
 import { registerUser } from "./cognito.mjs";
 import {
@@ -20,6 +21,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { FamiliarHistory } from "./views/History/Familiar";
+import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { SurgicalHistory } from "./views/History/Surgical";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -42,6 +44,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
   FAMILIAR_HISTORY: "familiar",
+  NON_PATHOLOGICAL_HISTORY: "non-pathological",
   // TODO: Add other Navigation routes...
 };
 
@@ -65,6 +68,9 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   },
   navigateToFamiliar: (navigate) => {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
+  },
+  navigateToNonPathological: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NON_PATHOLOGICAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -106,6 +112,15 @@ const familiarHistoryView = (
   <FamiliarHistory
     getFamiliarlHistory={getFamilyHistory}
     updateFamiliarHistory={updateFamilyHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
+const nonPathologicalHistory = (
+  <NonPathologicalHistory
+    getNonPathologicalHistory={getFamilyHistory}
+    updateNonPathologicalHistory={updateFamilyHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
@@ -160,6 +175,10 @@ export const ROUTES = [
       {
         path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
         element: familiarHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.NON_PATHOLOGICAL_HISTORY,
+        element: nonPathologicalHistory,
       },
       // TODO: Add more routes...
     ],
