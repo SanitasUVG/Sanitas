@@ -138,3 +138,38 @@ export const genDefaultPersonalHistory = () => ({
     data: [],
   },
 });
+
+/**
+ * Generates the default value for an allergic medical history in the DB.
+ * @returns {import("./index.mjs").AllergicMedicalHistory}
+ */
+export const genDefaultAllergicHistory = () => ({
+  medicamento: {
+    version: 1,
+    data: [],
+  },
+  comida: {
+    version: 1,
+    data: [],
+  },
+  polvo: {
+    version: 1,
+    data: [],
+  },
+  polen: {
+    version: 1,
+    data: [],
+  },
+  cambioDeClima: {
+    version: 1,
+    data: [],
+  },
+  animales: {
+    version: 1,
+    data: [],
+  },
+  otros: {
+    version: 1,
+    data: [],
+  },
+});

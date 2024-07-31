@@ -177,3 +177,30 @@ export async function updatePatientTraumatologicHistory(patientId, traumatologic
   );
   expect(response.status).toBe(200);
 }
+
+/**
+ * @typedef {Object} AllergicMedicalHistory
+ * @property {Object} medicamento - Allergic history data for medication.
+ * @property {Object} comida - Allergic history data for food.
+ * @property {Object} polvo - Allergic history data for dust.
+ * @property {Object} polen - Allergic history data for pollen.
+ * @property {Object} cambioDeClima - Allergic history data for climate change.
+ * @property {Object} animales - Allergic history data for animals.
+ * @property {Object} otros - Allergic history data for other allergies.
+ */
+
+/**
+ * Updates the allergic medical history for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating allergic medical history data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {import("utils/defaultValues.mjs").AllergicMedicalHistory} surgicalData allergicHistoryData - The allergic medical history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientAllergicHistory(patientId, allergicHistoryData) {
+  allergicHistoryData.patientId = patientId;
+
+  const response = await axios.put(`${LOCAL_API_URL}patient/allergic-history`, allergicHistoryData);
+
+  expect(response.status).toBe(200);
+}
