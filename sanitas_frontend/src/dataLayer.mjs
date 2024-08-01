@@ -23,7 +23,14 @@ const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
  * @type {SearchPatientApiFunction}
  */
 export async function searchPatient(query, type) {
-  let sessionToken = await getSession();
+  const sessionResponse = await getSession();
+  if (sessionResponse.error) {
+    return { error: sessionResponse.error };
+  } else if (!sessionResponse.result.isValid()) {
+    return { error: "Invalid session!" };
+  }
+
+  const token = sessionResponse.result.idToken.jwtToken;
   try {
     let response;
     try {
@@ -35,7 +42,7 @@ export async function searchPatient(query, type) {
         },
         {
           headers: {
-            Authorization: sessionToken.idToken.jwtToken,
+            Authorization: token,
             "Content-Type": "application/json",
           },
         },
