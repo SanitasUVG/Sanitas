@@ -1,4 +1,4 @@
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { delay } from "src/utils";
 import RegisterView from ".";
 
@@ -10,6 +10,7 @@ export default {
         <MemoryRouter>
           <Routes>
             <Route path="/" element={<Story />} />
+            <Route path="/login" element={<Link to="/">Welcome to Login! Go back to register...</Link>} />
           </Routes>
         </MemoryRouter>
       );

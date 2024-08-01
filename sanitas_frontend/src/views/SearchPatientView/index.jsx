@@ -26,17 +26,16 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @typedef {Object} SearchPatientViewProps
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
-
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
  * @param {SearchPatientViewProps} props
  */
-export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
+export default function SearchPatientView({ searchPatientsApiCall, useStore, logoutUser }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
-  const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
   const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 
   const [queryReturnedEmpty, setQueryReturnedEmpty] = useState(false);
@@ -254,7 +253,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               </div>
               <IconButton
                 icon={logoutIcon}
-                onClick={doNothing}
+                onClick={() => {
+                  logoutUser();
+                  navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+                }}
                 style={{
                   position: "absolute",
                   top: "2rem",

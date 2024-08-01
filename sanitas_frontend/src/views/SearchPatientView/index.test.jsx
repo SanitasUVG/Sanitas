@@ -1,10 +1,23 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import * as cognitoModule from "src/cognito.mjs";
 import { createEmptyStore } from "src/store.mjs";
-import { describe, expect, test, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import SearchPatientView from ".";
 
 describe("Search Patient view UI tests", () => {
+  beforeAll(() => {
+    vi.spyOn(cognitoModule, "getSession").mockImplementation(() => {
+      return Promise.resolve({
+        isValid: () => true,
+      });
+    });
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
   test("Can't search if query is empty", () => {
     const apiCall = vi.fn();
     const useStore = createEmptyStore();

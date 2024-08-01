@@ -1,5 +1,16 @@
 import { Outlet } from "react-router-dom";
-import { registerUser } from "./cognito.mjs";
+import RequireAuth from "src/components/RequireAuth";
+import {
+  getSession,
+  logoutUser,
+  mockGetSession,
+  mockLogoutUser,
+  mockRegisterUser,
+  mockSingInUser,
+  registerUser,
+  signInUser,
+} from "./cognito.mjs";
+import { IS_PRODUCTION } from "./constants.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -21,6 +32,7 @@ import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { FamiliarHistory } from "./views/History/Familiar";
 import { SurgicalHistory } from "./views/History/Surgical";
+import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
@@ -29,10 +41,9 @@ import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 const useStore = createEmptyStore();
 
 export const NAV_PATHS = {
-  // SEARCH_PATIENT: "/",
-  // REGISTER_USER: "/register",
   SEARCH_PATIENT: "/search",
-  REGISTER_USER: "/",
+  REGISTER_USER: "/register",
+  LOGIN_USER: "/",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
@@ -114,18 +125,23 @@ const familiarHistoryView = (
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
-    element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
+    element: (
+      <RequireAuth getSession={IS_PRODUCTION ? getSession : mockGetSession} path={NAV_PATHS.LOGIN_USER}>
+        <SearchPatientView
+          searchPatientsApiCall={searchPatient}
+          useStore={useStore}
+          logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+        />
+      </RequireAuth>
+    ),
   },
   {
     path: NAV_PATHS.REGISTER_USER,
-    // element: (
-    //   <RegisterView
-    //     registerUser={(_email, _password) => {
-    //       console.log("Register user called");
-    //     }}
-    //   />
-    // ),
-    element: <RegisterView registerUser={registerUser} />,
+    element: <RegisterView registerUser={IS_PRODUCTION ? registerUser : mockRegisterUser} />,
+  },
+  {
+    path: NAV_PATHS.LOGIN_USER,
+    element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
