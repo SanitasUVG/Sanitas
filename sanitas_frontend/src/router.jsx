@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
-import { registerUser } from "./cognito.mjs";
+import RequireAuth from "src/components/RequireAuth";
+import { registerUser, signInUser } from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -83,19 +84,19 @@ const surgicalHistoryView = (
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
-    element: <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />,
-  },
-  {
-    path: NAV_PATHS.REGISTER_USER,
     element: (
-      <RegisterView
-        registerUser={registerUser}
-      />
+      <RequireAuth>
+        <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />
+      </RequireAuth>
     ),
   },
   {
+    path: NAV_PATHS.REGISTER_USER,
+    element: <RegisterView registerUser={registerUser} />,
+  },
+  {
     path: NAV_PATHS.LOGIN_USER,
-    element: <LoginView />,
+    element: <LoginView loginUser={signInUser} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
