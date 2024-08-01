@@ -218,7 +218,6 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
   const validateDisease = (disease) => {
     // Validation to ensure the selected disease exists in the state
     if (!familiarHistory[disease]) {
-      console.error("La enfermedad seleccionada no es válida:", disease);
       toast.error("Por favor, selecciona una enfermedad válida.");
       return false;
     }

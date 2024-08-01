@@ -559,14 +559,12 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 
   try {
     const response = await axios.put(url, payload);
-    console.log("Server Response:", JSON.stringify(response.data, null, 2));
     if (response.status === 200) {
       return { result: response.data };
     } else {
       return { error: `Unexpected status code: ${response.status}` };
     }
   } catch (error) {
-    console.log("Error during update:", error);
     if (error.response) {
       return { error: error.response.data };
     } else if (error.request) {
