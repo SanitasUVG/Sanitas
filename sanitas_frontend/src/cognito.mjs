@@ -4,7 +4,7 @@ const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "this-id-doesn't exist!";
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "invalid cliend id!";
 
 /** @type {null|CognitoUserPool} */
-const pool = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development"
+const pool = !IS_PRODUCTION
   ? null
   : new CognitoUserPool({
     UserPoolId: COGNITO_POOL_ID,
