@@ -1,7 +1,7 @@
 import React from "react";
-import { MemoryRouter } from "react-router-dom"; // Para emular la navegación
-import RequireAuth from "src/components/RequireAuth"; // Asegúrate de que la ruta es correcta
-import { colors } from "src/theme.mjs"; // Importa tu tema o colores
+import { MemoryRouter } from "react-router-dom";
+import { colors } from "src/theme.mjs";
+import RequireAuth from ".";
 
 export default {
   title: "Components/RequireAuth",
@@ -15,9 +15,13 @@ export default {
   ],
 };
 
+const getSessionErrMock = async () => {
+  return { error: "Error!" };
+};
+
 export const AccessDenied = () => {
   return (
-    <RequireAuth>
+    <RequireAuth getSession={getSessionErrMock}>
       <div style={{ color: colors.errorColor }}>Acceso Denegado</div>
     </RequireAuth>
   );

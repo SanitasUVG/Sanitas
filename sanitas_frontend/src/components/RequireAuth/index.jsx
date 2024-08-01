@@ -5,7 +5,7 @@ import { colors } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import Throbber from "../Throbber";
 
-const RequireAuth = ({ children, getSession }) => {
+export default function RequireAuth({ children, getSession }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const sessionResource = WrapPromise(getSession());
@@ -76,6 +76,4 @@ const RequireAuth = ({ children, getSession }) => {
       <Child />
     </Suspense>
   );
-};
-
-export default RequireAuth;
+}
