@@ -4,23 +4,29 @@ import { registerUser, signInUser } from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
+  getFamilyHistory,
   getGeneralPatientInformation,
   getStudentPatientInformation,
   getSurgicalHistory,
+  getTraumatologicalHistory,
   searchPatient,
   submitPatientData,
   updateCollaboratorInformation,
+  updateFamilyHistory,
   updateGeneralPatientInformation,
   updateStudentPatientInformation,
   updateSurgicalHistory,
+  updateTraumatologicalHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
+import { FamiliarHistory } from "./views/History/Familiar";
 import { SurgicalHistory } from "./views/History/Surgical";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
+import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 
 const useStore = createEmptyStore();
 
@@ -35,6 +41,8 @@ export const NAV_PATHS = {
 export const UPDATE_PATIENT_NAV_PATHS = {
   GENERAL_INFORMATION: "general",
   SURGICAL_HISTORY: "surgical",
+  TRAUMATOLOGICAL_HISTORY: "traumatological",
+  FAMILIAR_HISTORY: "familiar",
   // TODO: Add other Navigation routes...
 };
 
@@ -52,6 +60,12 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   },
   navigateToSurgical: (navigate) => {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.SURGICAL_HISTORY}`);
+  },
+  navigateToTraumatological: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.TRAUMATOLOGICAL_HISTORY}`);
+  },
+  navigateToFamiliar: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -74,6 +88,25 @@ const surgicalHistoryView = (
     getBirthdayPatientInfo={getGeneralPatientInformation}
     getSurgicalHistory={getSurgicalHistory}
     updateSurgicalHistory={updateSurgicalHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
+const traumatologicalHistoryView = (
+  <TraumatologicHistory
+    getBirthdayPatientInfo={getGeneralPatientInformation}
+    getTraumatologicHistory={getTraumatologicalHistory}
+    updateTraumatologicalHistory={updateTraumatologicalHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
+const familiarHistoryView = (
+  <FamiliarHistory
+    getFamiliarlHistory={getFamilyHistory}
+    updateFamiliarHistory={updateFamilyHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
@@ -121,6 +154,14 @@ export const ROUTES = [
       {
         path: UPDATE_PATIENT_NAV_PATHS.SURGICAL_HISTORY,
         element: surgicalHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.TRAUMATOLOGICAL_HISTORY,
+        element: traumatologicalHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
+        element: familiarHistoryView,
       },
       // TODO: Add more routes...
     ],

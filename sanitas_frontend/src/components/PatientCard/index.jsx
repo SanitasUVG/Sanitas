@@ -49,7 +49,7 @@ export default function PatientCard({
     mainContainer: {
       display: "flex",
       flexDirection: "column",
-      width: "70%",
+      width: "80%",
       height: "85%",
       overflowX: "hidden",
       overflowY: "auto",

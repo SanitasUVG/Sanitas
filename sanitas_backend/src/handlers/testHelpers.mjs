@@ -24,9 +24,9 @@ export const generateUniqueCUI = () => {
  * @memberof Backend
  * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
  * @param {string} [names="Flabio André"] - The names of the patient.
- * @param {string}  [lastNames="Galán Dona"] - The last names of the patient.
+ * @param {string} [lastNames="Galán Dona"] - The last names of the patient.
  * @param {boolean} [isWoman=false] - Whether or not the patient is a woman.
- * @param {boolean} [birthdate="1987-07-07"] - The birthdate of the patient.
+ * @param {string} [birthdate="1987-07-07"] - The birthdate of the patient.
  * @returns {Promise<number>} The id of the inserted patient.
  */
 export async function createTestPatient(
@@ -61,7 +61,7 @@ export async function createTestPatient(
  * Updates the student information of a given patient.
  * @param {number} id - The ID of the patient to update
  * @param {string} [carnet="22386"] - The student carnet.
- * @param {string} [career="22386"] - The career of the student.
+ * @param {string} [career="Lic. Computación"] - The career of the student.
  * @returns {Promise<StudentInfo>} The updated student info
  */
 export async function updateStudentInfo(id, carnet = "22386", career = "Lic. Computación") {
@@ -86,7 +86,7 @@ export async function updateStudentInfo(id, carnet = "22386", career = "Lic. Com
 export async function updatePatientSurgicalHistory(patientId, surgicalData) {
   surgicalData.patientId = patientId;
 
-  const response = await axios.put(`${LOCAL_API_URL}patient/surgical-history`, surgicalData);
+  const response = await axios.put(`${LOCAL_API_URL}/patient/surgical-history`, surgicalData);
 
   // Validate the response
   expect(response.status).toBe(200);

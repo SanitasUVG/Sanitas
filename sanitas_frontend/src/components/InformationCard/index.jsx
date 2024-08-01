@@ -3,25 +3,37 @@ import { colors, fonts } from "src/theme.mjs";
 
 /**
  * @typedef {Object} InformationCardProps
- * @property {'surgical' | 'appointment'} type - Distinguishes between surgical and appointment types to render appropriate information.
+ * @property {'surgical' | 'appointment' | 'family'} type - Distinguishes between surgical, appointment, and family types to render appropriate information.
  * @property {string} year - The year of the surgery or appointment.
  * @property {string} surgeryType - The type of surgery, only applicable if `type` is 'surgical'.
  * @property {string} date - The date of the appointment, only applicable if `type` is 'appointment'.
  * @property {string} reason - The reason for the consultation, applicable only if `type` is 'appointment'.
+ * @property {string} disease - The disease, only applicable if `type` is 'family'.
+ * @property {string} relative - The relative, only applicable if `type` is 'family'.
  * @property {React.MouseEventHandler<HTMLDivElement>} onClick - The callback function to be executed when the card is clicked.
  *
- * Renders a card component that displays either surgical or appointment details based on the `type` prop.
+ * Renders a card component that displays either surgical, appointment, or family details based on the `type` prop.
  * The card is interactive and changes its style on hover. It supports click interactions that trigger the provided `onClick` callback.
  *
  * The surgical card displays the year and type of surgery with optional truncation of long text.
  * The appointment card shows the date and reason for the consultation, also with optional truncation.
+ * The family card displays the disease and relative.
  *
  * Styles are applied directly through inline styles, and hover effects are managed with internal state.
  *
  * @param {InformationCardProps} props - The properties passed to the card component.
- * @returns {JSX.Element} The React component rendering the card with either surgical or appointment information.
+ * @returns {JSX.Element} The React component rendering the card with either surgical, appointment, or family information.
  */
-export default function InformationCard({ type, year, surgeryType, date, reason, onClick }) {
+export default function InformationCard({
+  type,
+  year,
+  surgeryType,
+  date,
+  reason,
+  disease,
+  relative,
+  onClick,
+}) {
   const [hover, setHover] = useState(false);
 
   const cardStyle = {
@@ -50,15 +62,10 @@ export default function InformationCard({ type, year, surgeryType, date, reason,
     return text || "";
   };
 
-  return (
-    <div
-      style={cardStyle}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={onClick}
-    >
-      {type === "surgical"
-        ? (
+  const renderContent = () => {
+    switch (type) {
+      case "surgical":
+        return (
           <>
             <p>
               <span style={labelStyle}>Año:</span> <span style={contentStyle}>{year}</span>
@@ -68,8 +75,9 @@ export default function InformationCard({ type, year, surgeryType, date, reason,
               <span style={contentStyle}>{truncateText(surgeryType)}</span>
             </p>
           </>
-        )
-        : (
+        );
+      case "appointment":
+        return (
           <>
             <p>
               <span style={labelStyle}>Fecha:</span> <span style={contentStyle}>{date}</span>
@@ -79,7 +87,31 @@ export default function InformationCard({ type, year, surgeryType, date, reason,
               <span style={contentStyle}>{truncateText(reason)}</span>
             </p>
           </>
-        )}
+        );
+      case "family":
+        return (
+          <>
+            <p>
+              <span style={labelStyle}>Enfermedad:</span> <span style={contentStyle}>{disease}</span>
+            </p>
+            <p>
+              <span style={labelStyle}>Familiar:</span> <span style={contentStyle}>{relative}</span>
+            </p>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div
+      style={cardStyle}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={onClick}
+    >
+      {renderContent()}
     </div>
   );
 }
