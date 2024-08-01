@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
+import { getSession, logoutUser } from "src/cognito.mjs";
 import BaseButton from "src/components/Button/Base/index";
 import IconButton from "src/components/Button/Icon";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -34,6 +35,8 @@ import useWindowSize from "src/utils/useWindowSize";
  * @param {SearchPatientViewProps} props
  */
 export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
+  getSession();
+
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const [patients, setPatients] = useStore((store) => [store.patients, store.setPatients]);
@@ -254,7 +257,10 @@ export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
               </div>
               <IconButton
                 icon={logoutIcon}
-                onClick={doNothing}
+                onClick={() => {
+                  logoutUser();
+                  navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+                }}
                 style={{
                   position: "absolute",
                   top: "2rem",
