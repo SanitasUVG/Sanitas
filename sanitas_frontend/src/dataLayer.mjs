@@ -349,7 +349,11 @@ export const getTraumatologicalHistory = async (id) => {
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-export const updateTraumatologicalHistory = async (patientId, traumatologicalEvents, currentVersion) => {
+export const updateTraumatologicalHistory = async (
+  patientId,
+  traumatologicalEvents,
+  currentVersion,
+) => {
   const url = `${BASE_URL}/patient/traumatological-history`;
 
   const payload = {
@@ -547,6 +551,7 @@ export const getFamilyHistory = async (id) => {
  */
 export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
   const url = `${BASE_URL}/patient/family-history`;
+
   const payload = {
     patientId: patientId,
     medicalHistory: familyHistoryDetails,
