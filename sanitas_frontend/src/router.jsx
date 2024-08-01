@@ -44,7 +44,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
   FAMILIAR_HISTORY: "familiar",
-  NON_PATHOLOGICAL_HISTORY: "non-pathological",
+  NONPATHOLOGICAL_HISTORY: "non-pathological",
   // TODO: Add other Navigation routes...
 };
 
@@ -70,7 +70,8 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
   },
   navigateToNonPathological: (navigate) => {
-    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NON_PATHOLOGICAL_HISTORY}`);
+    console.log("navigate function:", navigate);
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -117,7 +118,7 @@ const familiarHistoryView = (
   />
 );
 
-const nonPathologicalHistory = (
+const nonPathologicalHistoryView = (
   <NonPathologicalHistory
     getNonPathologicalHistory={getFamilyHistory}
     updateNonPathologicalHistory={updateFamilyHistory}
@@ -177,8 +178,8 @@ export const ROUTES = [
         element: familiarHistoryView,
       },
       {
-        path: UPDATE_PATIENT_NAV_PATHS.NON_PATHOLOGICAL_HISTORY,
-        element: nonPathologicalHistory,
+        path: UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY,
+        element: nonPathologicalHistoryView,
       },
       // TODO: Add more routes...
     ],

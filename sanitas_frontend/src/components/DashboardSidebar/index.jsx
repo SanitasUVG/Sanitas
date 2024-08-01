@@ -215,7 +215,7 @@ export default function DashboardSidebar({
         <TextIconButton
           icon={glassicon}
           text="No patológicos"
-          onClick={navigateToNonPathological}
+          onClick={wrapWithNavigate(navigateToNonPathological)}
         />
       </div>
     </div>
