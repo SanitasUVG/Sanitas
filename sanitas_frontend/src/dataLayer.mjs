@@ -1,5 +1,6 @@
 import axios from "axios";
-import { getSession } from "./cognito.mjs";
+import { getSession, mockGetSession } from "./cognito.mjs";
+import { IS_PRODUCTION } from "./constants.mjs";
 import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
@@ -23,7 +24,7 @@ const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
  * @type {SearchPatientApiFunction}
  */
 export async function searchPatient(query, type) {
-  const sessionResponse = await getSession();
+  const sessionResponse = IS_PRODUCTION ? await getSession() : await mockGetSession();
   if (sessionResponse.error) {
     return { error: sessionResponse.error };
   } else if (!sessionResponse.result.isValid()) {

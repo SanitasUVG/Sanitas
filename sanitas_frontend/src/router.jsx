@@ -10,6 +10,7 @@ import {
   registerUser,
   signInUser,
 } from "./cognito.mjs";
+import { IS_PRODUCTION } from "./constants.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -38,7 +39,6 @@ import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 
 const useStore = createEmptyStore();
-const IS_PRODUCTION = process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "development";
 
 export const NAV_PATHS = {
   SEARCH_PATIENT: "/search",
