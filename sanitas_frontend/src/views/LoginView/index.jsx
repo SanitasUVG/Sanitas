@@ -167,6 +167,7 @@ export default function LoginView({ loginUser }) {
                 placeholder="Ingrese su contraseña"
                 style={inputStyles}
                 value={password}
+                type="password"
                 onChange={(ev) => setPassword(ev.target.value)}
               />
               <p
