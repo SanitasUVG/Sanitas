@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSession } from "./cognito.mjs";
 import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
@@ -22,6 +23,7 @@ const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
  * @type {SearchPatientApiFunction}
  */
 export async function searchPatient(query, type) {
+  let sessionToken = await getSession();
   try {
     let response;
     try {
@@ -33,6 +35,7 @@ export async function searchPatient(query, type) {
         },
         {
           headers: {
+            Authorization: sessionToken.idToken.jwtToken,
             "Content-Type": "application/json",
           },
         },
