@@ -1,4 +1,5 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserSession } from "amazon-cognito-identity-js";
+import { IS_PRODUCTION } from "./constants.mjs";
 
 const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "this-id-doesn't exist!";
 const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "invalid cliend id!";
