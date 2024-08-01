@@ -31,7 +31,7 @@ export async function searchPatient(query, type) {
     return { error: "Invalid session!" };
   }
 
-  const token = sessionResponse.result.idToken.jwtToken;
+  const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
   try {
     let response;
     try {
