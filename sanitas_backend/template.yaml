@@ -391,6 +391,24 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # Esta es una configuración de Lambda function asociada con el código fuente:
+  # update-allergic-history-patient.mjs
+  updateAllergicHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateAllergicHistory/update-allergic-history-patient.updateAllergicHistoryHandler
+      Description: Updates the allergic history for a specific patient
+        by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/allergic-history
+            Method: PUT
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   # Esta es una configuración de Lambda function asociada con el cÃ³digo fuente:
   # get-allergic-history-patient.mjs
   GetAllergicHistoryFunction:
@@ -404,7 +422,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /patient/allergic-history/{patientId}
+            Path: /patient/allergic-history/{id}
             Method: GET
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction

@@ -510,10 +510,10 @@ export function mapToAPISurgicalHistory(dbData) {
  * It handles the transformation of nested data where applicable.
  *
  * @param {DBData} dbData - The raw database data containing fields for various allergic conditions of a patient.
- * @returns {AllergicMedicalHistoryAPI}  A structured object containing the patientId and a detailed allergicMedicalHistory,
+ * @returns {AllergicMedicalHistoryAPI} A structured object containing the patientId and a detailed allergicHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
-export function mapToAPIAllergicMedicalHistory(dbData) {
+export function mapToAPIAllergicHistory(dbData) {
   const formatResponse = (data) => {
     if (!data) return { version: 1, data: [] };
     if (typeof data === "string") {
@@ -526,18 +526,25 @@ export function mapToAPIAllergicMedicalHistory(dbData) {
     return data;
   };
 
-  const allergicHistory = {
-    medicamento: formatResponse(dbData.medicamento_data),
-    comida: formatResponse(dbData.comida_data),
-    polvo: formatResponse(dbData.polvo_data),
-    polen: formatResponse(dbData.polen_data),
-    cambioDeClima: formatResponse(dbData.cambio_de_clima_data),
-    animales: formatResponse(dbData.animales_data),
-    otros: formatResponse(dbData.otros_data),
-  };
+  const allergicHistory = {};
+  const keys = Object.keys(dbData);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (key !== "id_paciente") {
+      allergicHistory[key.replace("_data", "")] = formatResponse(dbData[key]);
+    }
+  }
 
   return {
     patientId: dbData.id_paciente,
-    allergicHistory,
+    allergicHistory: {
+      medicamento: formatResponse(dbData.medicamento_data),
+      comida: formatResponse(dbData.comida_data),
+      polvo: formatResponse(dbData.polvo_data),
+      polen: formatResponse(dbData.polen_data),
+      cambioDeClima: formatResponse(dbData.cambio_de_clima_data),
+      animales: formatResponse(dbData.animales_data),
+      otros: formatResponse(dbData.otros_data),
+    },
   };
 }
