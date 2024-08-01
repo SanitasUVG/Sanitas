@@ -185,11 +185,17 @@ export default function RegisterView({ registerUser }) {
               ¿Ya tienes cuenta?{" "}
               <a
                 style={{
+                  cursor: "pointer",
                   fontWeight: "bold",
                   color: colors.titleText,
+                  textDecoration: "none",
+                  paddingLeft: "0.5rem",
                 }}
+                onClick={() => navigate(NAV_PATHS.LOGIN_USER, { replace: true })}
+                onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
+                onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
               >
-                Ingresa aquí
+                Ingresa aquí.
               </a>
             </p>
             <p
