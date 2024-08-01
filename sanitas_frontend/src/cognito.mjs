@@ -1,5 +1,4 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserPool } from "amazon-cognito-identity-js";
-import { func } from "prop-types";
 
 // FIXME: CHANGE THE DEFAULT STRINGS FOR EMPTY STRINGS BEFORE PUBLISHING!
 const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "us-east-2_qXDWDnKQf";
@@ -25,22 +24,16 @@ const pool = process.env.NODE_ENV === "test"
 /**
  * @type CognitoRegisterUserCallback
  */
-export async function registerUser(email, password) {
-  try {
-    const result = await new Promise((res, rej) => {
-      pool.signUp(email, password, [], null, (err, data) => {
-        if (err) {
-          rej(err);
-        } else {
-          res(data);
-        }
-      });
+export function registerUser(email, password) {
+  return new Promise((res, _rej) => {
+    pool.signUp(email, password, [], null, (error, data) => {
+      if (error) {
+        res({ error });
+      } else {
+        res({ result: data });
+      }
     });
-
-    return { result };
-  } catch (error) {
-    return { error };
-  }
+  });
 }
 
 /**
