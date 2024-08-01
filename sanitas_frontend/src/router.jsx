@@ -116,7 +116,7 @@ export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
     element: (
-      <RequireAuth getSession={getSession}>
+      <RequireAuth getSession={getSession} path={NAV_PATHS.LOGIN_USER}>
         <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />
       </RequireAuth>
     ),

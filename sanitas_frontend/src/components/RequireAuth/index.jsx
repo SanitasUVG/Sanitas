@@ -1,11 +1,10 @@
 import React, { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { NAV_PATHS } from "src/router";
 import { colors } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import Throbber from "../Throbber";
 
-export default function RequireAuth({ children, getSession }) {
+export default function RequireAuth({ children, getSession, path }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const sessionResource = WrapPromise(getSession());
@@ -22,7 +21,7 @@ export default function RequireAuth({ children, getSession }) {
       }, 2000);
 
       setTimeout(() => {
-        navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+        navigate(path, { replace: true });
       }, 4000);
     } else {
       setIsRedirecting(false);
