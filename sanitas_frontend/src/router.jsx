@@ -1,6 +1,15 @@
 import { Outlet } from "react-router-dom";
 import RequireAuth from "src/components/RequireAuth";
-import { getSession, registerUser, signInUser } from "./cognito.mjs";
+import {
+  getSession,
+  logoutUser,
+  mockGetSession,
+  mockLogoutUser,
+  mockRegisterUser,
+  mockSingInUser,
+  registerUser,
+  signInUser,
+} from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -29,6 +38,7 @@ import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 
 const useStore = createEmptyStore();
+const IS_PRODUCTION = process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "development";
 
 export const NAV_PATHS = {
   SEARCH_PATIENT: "/search",
@@ -116,18 +126,22 @@ export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
     element: (
-      <RequireAuth getSession={getSession} path={NAV_PATHS.LOGIN_USER}>
-        <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />
+      <RequireAuth getSession={IS_PRODUCTION ? getSession : mockGetSession} path={NAV_PATHS.LOGIN_USER}>
+        <SearchPatientView
+          searchPatientsApiCall={searchPatient}
+          useStore={useStore}
+          logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+        />
       </RequireAuth>
     ),
   },
   {
     path: NAV_PATHS.REGISTER_USER,
-    element: <RegisterView registerUser={registerUser} />,
+    element: <RegisterView registerUser={IS_PRODUCTION ? registerUser : mockRegisterUser} />,
   },
   {
     path: NAV_PATHS.LOGIN_USER,
-    element: <LoginView loginUser={signInUser} />,
+    element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,

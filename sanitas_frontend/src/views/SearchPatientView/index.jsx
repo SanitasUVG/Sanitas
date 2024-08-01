@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
-import { getSession, logoutUser } from "src/cognito.mjs";
 import BaseButton from "src/components/Button/Base/index";
 import IconButton from "src/components/Button/Icon";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -27,14 +26,14 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @typedef {Object} SearchPatientViewProps
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
-
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
  * @param {SearchPatientViewProps} props
  */
-export default function SearchPatientView({ searchPatientsApiCall, useStore }) {
+export default function SearchPatientView({ searchPatientsApiCall, useStore, logoutUser }) {
   const { query, type } = useStore((store) => store.searchQuery);
   const setSearchQuery = useStore((store) => store.setSearchQuery);
   const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);

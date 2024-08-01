@@ -1,11 +1,10 @@
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from "amazon-cognito-identity-js";
+import { AuthenticationDetails, CognitoUser, CognitoUserPool, CognitoUserSession } from "amazon-cognito-identity-js";
 
-// FIXME: CHANGE THE DEFAULT STRINGS FOR EMPTY STRINGS BEFORE PUBLISHING!
-const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "us-east-2_qXDWDnKQf";
-const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "6q1gvfb8ohm7k6qmkm8sik1n8r";
+const COGNITO_POOL_ID = process.env.COGNITO_POOL_ID ?? "this-id-doesn't exist!";
+const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID ?? "invalid cliend id!";
 
 /** @type {null|CognitoUserPool} */
-const pool = process.env.NODE_ENV === "test"
+const pool = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development"
   ? null
   : new CognitoUserPool({
     UserPoolId: COGNITO_POOL_ID,
@@ -22,7 +21,7 @@ const pool = process.env.NODE_ENV === "test"
  */
 
 /**
- * @type CognitoRegisterUserCallback
+ * @type {CognitoRegisterUserCallback}
  */
 export function registerUser(email, password) {
   return new Promise((res, _rej) => {
@@ -37,6 +36,15 @@ export function registerUser(email, password) {
 }
 
 /**
+ * Mock the register user cognito function for development...
+ *
+ * @type {CognitoLoginUserCallback}
+ */
+export async function mockRegisterUser(email, password) {
+  return { result: {} };
+}
+
+/**
  * Logs in a user inside the cognito API.
  * @callback CognitoLoginUserCallback
  *
@@ -44,6 +52,10 @@ export function registerUser(email, password) {
  * @param {string} email - The user's email.
  * @param {string} password - The user's password.
  * @returns {Promise<import("./dataLayer.mjs").Result<*,*>>} The session data if authentication is successful.
+ */
+
+/**
+ * @type {CognitoLoginUserCallback}
  */
 export async function signInUser(email, password) {
   try {
@@ -70,9 +82,21 @@ export async function signInUser(email, password) {
 }
 
 /**
- * Obtiene la sesión del usuario actual desde el pool de Cognito.
- * @returns {Promise<{result?: import("amazon-cognito-identity-js").CognitoUserSession, error?: Error}>}
- * Un objeto con la sesión de usuario si se encuentra, o un error si no.
+ * Mocks a user login in.
+ *
+ * @type {CognitoLoginUserCallback}
+ */
+export async function mockSingInUser(email, password) {
+  return { result: {} };
+}
+
+/**
+ * Gets the user session
+ * @callback CognitoGetSessionCallback
+ * @returns {Promise<import("./dataLayer.mjs").Result<import("amazon-cognito-identity-js").CognitoUserSession,*>>} An object with the user session.
+ */
+/**
+ * @type {CognitoGetSessionCallback}
  */
 export async function getSession() {
   return new Promise((res, _rej) => {
@@ -92,7 +116,20 @@ export async function getSession() {
 }
 
 /**
- * Cierra la sesión del usuario actual.
+ * @type {CognitoGetSessionCallback}
+ */
+export async function mockGetSession() {
+  return { result: { isValid: () => true } };
+}
+
+/**
+ * Logs out the user from it's session.
+ *
+ * @callback CognitoLogoutUserCallback
+ */
+
+/**
+ * @type {CognitoLogoutUserCallback}
  */
 export function logoutUser() {
   const user = pool.getCurrentUser();
@@ -100,3 +137,8 @@ export function logoutUser() {
     user.signOut();
   }
 }
+
+/**
+ * @type {CognitoLogoutUserCallback}
+ */
+export function mockLogoutUser() {}
