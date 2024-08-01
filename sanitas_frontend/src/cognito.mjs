@@ -69,6 +69,11 @@ export async function signInUser(email, password) {
   }
 }
 
+/**
+ * Obtiene la sesión del usuario actual desde el pool de Cognito.
+ * @returns {Promise<{result?: import("amazon-cognito-identity-js").CognitoUserSession, error?: Error}>}
+ * Un objeto con la sesión de usuario si se encuentra, o un error si no.
+ */
 export async function getSession() {
   return new Promise((res, _rej) => {
     const user = pool.getCurrentUser();
@@ -86,6 +91,9 @@ export async function getSession() {
   });
 }
 
+/**
+ * Cierra la sesión del usuario actual.
+ */
 export function logoutUser() {
   const user = pool.getCurrentUser();
   if (user) {
