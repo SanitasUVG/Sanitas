@@ -70,18 +70,18 @@ export async function signInUser(email, password) {
 }
 
 export async function getSession() {
-  return await new Promise((resolve, reject) => {
+  return new Promise((res, _rej) => {
     const user = pool.getCurrentUser();
     if (user) {
-      user.getSession((err, session) => {
-        if (err) {
-          reject(err);
+      user.getSession((error, session) => {
+        if (error) {
+          res({ error });
         } else {
-          resolve(session);
+          res({ result: session });
         }
       });
     } else {
-      reject(new Error("No user found"));
+      res({ error: new Error("No user found") });
     }
   });
 }

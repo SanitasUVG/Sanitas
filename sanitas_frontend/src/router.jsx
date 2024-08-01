@@ -32,8 +32,8 @@ const useStore = createEmptyStore();
 
 export const NAV_PATHS = {
   SEARCH_PATIENT: "/search",
-  REGISTER_USER: "/",
-  LOGIN_USER: "/login",
+  REGISTER_USER: "/register",
+  LOGIN_USER: "/",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
