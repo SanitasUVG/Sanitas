@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import RequireAuth from "src/components/RequireAuth";
-import { registerUser, signInUser } from "./cognito.mjs";
+import { getSession, registerUser, signInUser } from "./cognito.mjs";
 import {
   checkCui,
   getCollaboratorInformation,
@@ -116,7 +116,7 @@ export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
     element: (
-      <RequireAuth>
+      <RequireAuth getSession={getSession}>
         <SearchPatientView searchPatientsApiCall={searchPatient} useStore={useStore} />
       </RequireAuth>
     ),

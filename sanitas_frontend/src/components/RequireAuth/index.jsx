@@ -1,64 +1,63 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSession } from "src/cognito.mjs";
 import { NAV_PATHS } from "src/router";
 import { colors } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import Throbber from "../Throbber";
 
-const RequireAuth = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+const RequireAuth = ({ children, getSession }) => {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const sessionResource = WrapPromise(getSession());
 
   const Child = () => {
     const response = sessionResource.read();
+    const session = response.result;
 
-    if (response.error) {
-      setIsLoggedIn(false);
+    const sessionIsValid = response.error ? false : session.isValid();
+
+    if (!sessionIsValid) {
+      setTimeout(() => {
+        setIsRedirecting(true);
+      }, 2000);
+
+      setTimeout(() => {
+        navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+      }, 4000);
     } else {
-      console.log(response.result.isValid());
-      setIsLoggedIn(response.result.isValid());
+      setIsRedirecting(false);
     }
 
-    useEffect(() => {
-      if (isLoggedIn === false) {
-        setTimeout(() => {
-          setIsRedirecting(true);
-        }, 2000);
-
-        setTimeout(() => {
-          navigate(NAV_PATHS.LOGIN_USER, { replace: true });
-        }, 4000);
-      } else {
-        setIsRedirecting(false);
-      }
-    }, [isLoggedIn]);
-
-    return !isLoggedIn
+    return !sessionIsValid
       ? (
         <div
           style={{
             width: "100vw",
             height: "100vh",
-            display: "flex",
-            flexDirection: "column",
+            display: "grid",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {isRedirecting
-            ? (
-              <>
-                <Throbber loadingMessage="Redirigiendo al inicio de sesión..."></Throbber>
-              </>
-            )
-            : (
-              <h1 style={{ color: colors.primaryBackground }}>
-                Acceso denegado. Por favor, inicie sesión.
-              </h1>
-            )}
+          <div
+            style={{
+              opacity: isRedirecting ? 1 : 0,
+              gridColumn: "1/2",
+              gridRow: "1/2",
+            }}
+          >
+            <Throbber loadingMessage="Redirigiendo al inicio de sesión..."></Throbber>
+          </div>
+          <h1
+            style={{
+              opacity: !isRedirecting ? 1 : 0,
+              color: colors.primaryBackground,
+              gridColumn: "1/2",
+              gridRow: "1/2",
+            }}
+          >
+            Acceso denegado. Por favor, inicie sesión.
+          </h1>
         </div>
       )
       : <>{children}</>;
