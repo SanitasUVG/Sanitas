@@ -1,7 +1,7 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { mapToAPIAllergicMedicalHistory } from "utils/index.mjs";
+import { mapToAPIAllergicHistory } from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create allergic history for a specific patient.
@@ -108,7 +108,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 
     const updatedRecord = result.rows[0];
     logger.info({ updatedRecord }, "Successfully updated allergic history");
-    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicMedicalHistory(updatedRecord)).build();
+    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicHistory(updatedRecord)).build();
   } catch (error) {
     logger.error({ error }, "An error occurred while updating allergic history!");
 
