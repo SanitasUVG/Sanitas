@@ -48,8 +48,12 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response.status).toBe(200);
 
     const allergicHistory = response.data.allergicHistory;
-    expect(id).toBe(patientId);
+    expect(response.data.patientId).toBe(patientId);
     expect(allergicHistory).toBeDefined();
+    expect(allergicHistory.medicamento.data[0].name).toBe("Penicillin");
+    expect(allergicHistory.polvo.data[0].source).toBe("Dust");
+    expect(allergicHistory.cambioDeClima.data[0].region).toBe("High Altitude");
+    expect(allergicHistory.animales.data[0].type).toBe("Cats");
   }, 20000);
 
   test("Retrieve empty allergic history for non-existent patient", async () => {
