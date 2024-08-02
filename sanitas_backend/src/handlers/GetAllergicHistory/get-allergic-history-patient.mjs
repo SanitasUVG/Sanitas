@@ -55,9 +55,9 @@ export const getAllergicHistoryHandler = async (event, context) => {
       }).build();
     }
 
-    const allergicHistory = result.rows[0];
+    const medicalHistory = result.rows[0];
     logger.info({ allergicHistory }, "Successfully retrieved allergic history");
-    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicHistory(allergicHistory)).build();
+    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicHistory(medicalHistory)).build();
   } catch (error) {
     logger.error({ error }, "An error occurred while retrieving allergic history!");
 

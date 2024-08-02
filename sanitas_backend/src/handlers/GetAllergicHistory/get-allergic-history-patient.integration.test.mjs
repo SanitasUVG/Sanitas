@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL, updatePatientAllergicHistory } from "../testHelpers.mjs";
+import { createTestPatient, LOCAL_API_URL, updatePatientmedicalHistory } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/allergic-history/`;
 
@@ -9,7 +9,7 @@ describe("Get Allergic Medical History integration tests", () => {
 
   beforeAll(async () => {
     patientId = await createTestPatient();
-    await updatePatientAllergicHistory(patientId, {
+    await updatePatientmedicalHistory(patientId, {
       medicamento: {
         version: 1,
         data: [{ name: "Penicillin", severity: "high" }],
@@ -47,13 +47,13 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
 
-    const allergicHistory = response.data.allergicHistory;
+    const medicalHistory = response.data.medicalHistory;
     expect(response.data.patientId).toBe(patientId);
-    expect(allergicHistory).toBeDefined();
-    expect(allergicHistory.medicamento.data[0].name).toBe("Penicillin");
-    expect(allergicHistory.polvo.data[0].source).toBe("Dust");
-    expect(allergicHistory.cambioDeClima.data[0].region).toBe("High Altitude");
-    expect(allergicHistory.animales.data[0].type).toBe("Cats");
+    expect(medicalHistory).toBeDefined();
+    expect(medicalHistory.medicamento.data[0].name).toBe("Penicillin");
+    expect(medicalHistory.polvo.data[0].source).toBe("Dust");
+    expect(medicalHistory.cambioDeClima.data[0].region).toBe("High Altitude");
+    expect(medicalHistory.animales.data[0].type).toBe("Cats");
   }, 20000);
 
   test("Retrieve empty allergic history for non-existent patient", async () => {
@@ -66,16 +66,16 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response.status).toBe(200);
 
     /** @type {import("utils/index.mjs").AllergicMedicalHistoryAPI} */
-    const allergicHistory = response.data.allergicHistory;
+    const medicalHistory = response.data.medicalHistory;
 
-    expect(allergicHistory).toBeDefined();
-    expect(allergicHistory.medicamento.data.length).toBe(0);
-    expect(allergicHistory.comida.data.length).toBe(0);
-    expect(allergicHistory.polvo.data.length).toBe(0);
-    expect(allergicHistory.polen.data.length).toBe(0);
-    expect(allergicHistory.cambioDeClima.data.length).toBe(0);
-    expect(allergicHistory.animales.data.length).toBe(0);
-    expect(allergicHistory.otros.data.length).toBe(0);
+    expect(medicalHistory).toBeDefined();
+    expect(medicalHistory.medicamento.data.length).toBe(0);
+    expect(medicalHistory.comida.data.length).toBe(0);
+    expect(medicalHistory.polvo.data.length).toBe(0);
+    expect(medicalHistory.polen.data.length).toBe(0);
+    expect(medicalHistory.cambioDeClima.data.length).toBe(0);
+    expect(medicalHistory.animales.data.length).toBe(0);
+    expect(medicalHistory.otros.data.length).toBe(0);
   }, 20000);
 
   test("Fail to retrieve allergic history due to missing patient ID in the request", async () => {
