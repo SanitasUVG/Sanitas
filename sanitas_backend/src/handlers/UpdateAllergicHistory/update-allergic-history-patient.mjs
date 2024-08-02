@@ -25,7 +25,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
     await client.connect();
     logger.info("Connected!");
 
-    const { patientId, allergicHistory } = JSON.parse(event.body);
+    const { patientId, medicalHistory } = JSON.parse(event.body);
 
     if (!patientId) {
       logger.error("No patientId provided!");
@@ -35,7 +35,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
         .build();
     }
 
-    logger.info({ patientId, allergicHistory }, "Received data for updating allergic history");
+    logger.info({ patientId, medicalHistory }, "Received data for updating allergic history");
 
     const upsertQuery = `
       INSERT INTO antecedentes_alergicos (

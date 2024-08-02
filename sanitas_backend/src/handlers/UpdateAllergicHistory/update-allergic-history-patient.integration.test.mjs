@@ -14,7 +14,7 @@ describe("Update Allergic Medical History integration tests", () => {
   test("Update existing allergic medical history", async () => {
     const allergicHistoryData = {
       patientId,
-      allergicHistory: {
+      medicalHistory: {
         medicamento: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
@@ -77,7 +77,7 @@ describe("Update Allergic Medical History integration tests", () => {
   test("Fail to update allergic medical history with invalid ID", async () => {
     const allergicHistoryData = {
       patientId: "9999999",
-      allergicHistory: {
+      medicalHistory: {
         medicamento: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
@@ -121,7 +121,7 @@ describe("Update Allergic Medical History integration tests", () => {
   test("Fail to update allergic medical history due to missing required fields", async () => {
     // Missing patientId
     const incompleteData = {
-      allergicHistory: {
+      medicalHistory: {
         medicamento: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
