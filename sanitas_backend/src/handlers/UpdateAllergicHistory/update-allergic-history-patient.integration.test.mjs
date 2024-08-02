@@ -51,26 +51,26 @@ describe("Update Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
     expect(response.data.patientId).toBe(patientId);
-    expect(response.data.allergicHistory.medicamento).toEqual(
-      allergicHistoryData.allergicHistory.medicamento,
+    expect(response.data.medicalHistory.medicamento).toEqual(
+      allergicHistoryData.medicalHistory.medicamento,
     );
-    expect(response.data.allergicHistory.comida).toEqual(
-      allergicHistoryData.allergicHistory.comida,
+    expect(response.data.medicalHistory.comida).toEqual(
+      allergicHistoryData.medicalHistory.comida,
     );
-    expect(response.data.allergicHistory.polvo).toEqual(
-      allergicHistoryData.allergicHistory.polvo,
+    expect(response.data.medicalHistory.polvo).toEqual(
+      allergicHistoryData.medicalHistory.polvo,
     );
-    expect(response.data.allergicHistory.polen).toEqual(
-      allergicHistoryData.allergicHistory.polen,
+    expect(response.data.medicalHistory.polen).toEqual(
+      allergicHistoryData.medicalHistory.polen,
     );
-    expect(response.data.allergicHistory.cambioDeClima).toEqual(
-      allergicHistoryData.allergicHistory.cambioDeClima,
+    expect(response.data.medicalHistory.cambioDeClima).toEqual(
+      allergicHistoryData.medicalHistory.cambioDeClima,
     );
-    expect(response.data.allergicHistory.animales).toEqual(
-      allergicHistoryData.allergicHistory.animales,
+    expect(response.data.medicalHistory.animales).toEqual(
+      allergicHistoryData.medicalHistory.animales,
     );
-    expect(response.data.allergicHistory.otros).toEqual(
-      allergicHistoryData.allergicHistory.otros,
+    expect(response.data.medicalHistory.otros).toEqual(
+      allergicHistoryData.medicalHistory.otros,
     );
   });
 

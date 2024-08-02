@@ -40,58 +40,37 @@ export const updateAllergicHistoryHandler = async (event, context) => {
     const upsertQuery = `
       INSERT INTO antecedentes_alergicos (
         id_paciente,
-        medicamento,
         medicamento_data,
-        comida,
         comida_data,
-        polvo,
         polvo_data,
-        polen,
         polen_data,
-        cambio_de_clima,
         cambio_de_clima_data,
-        animales,
         animales_data,
-        otros,
         otros_data
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+        $1, $2, $3, $4, $5, $6, $7, $8
       )
       ON CONFLICT (id_paciente) DO UPDATE
-      SET medicamento = EXCLUDED.medicamento,
-          medicamento_data = EXCLUDED.medicamento_data,
-          comida = EXCLUDED.comida,
+      SET medicamento_data = EXCLUDED.medicamento_data,
           comida_data = EXCLUDED.comida_data,
-          polvo = EXCLUDED.polvo,
           polvo_data = EXCLUDED.polvo_data,
-          polen = EXCLUDED.polen,
           polen_data = EXCLUDED.polen_data,
-          cambio_de_clima = EXCLUDED.cambio_de_clima,
           cambio_de_clima_data = EXCLUDED.cambio_de_clima_data,
-          animales = EXCLUDED.animales,
           animales_data = EXCLUDED.animales_data,
-          otros = EXCLUDED.otros,
           otros_data = EXCLUDED.otros_data
       RETURNING *;
     `;
 
     const values = [
       patientId,
-      allergicHistory.medicamento || false,
-      JSON.stringify(allergicHistory.medicamentoData || {}),
-      allergicHistory.comida || false,
-      JSON.stringify(allergicHistory.comidaData || {}),
-      allergicHistory.polvo || false,
-      JSON.stringify(allergicHistory.polvoData || {}),
-      allergicHistory.polen || false,
-      JSON.stringify(allergicHistory.polenData || {}),
-      allergicHistory.cambioDeClima || false,
-      JSON.stringify(allergicHistory.cambioDeClimaData || {}),
-      allergicHistory.animales || false,
-      JSON.stringify(allergicHistory.animalesData || {}),
-      allergicHistory.otros || false,
-      JSON.stringify(allergicHistory.otrosData || {}),
+      JSON.stringify(medicalHistory.medicamento),
+      JSON.stringify(medicalHistory.comida),
+      JSON.stringify(medicalHistory.polvo),
+      JSON.stringify(medicalHistory.polen),
+      JSON.stringify(medicalHistory.cambioDeClima),
+      JSON.stringify(medicalHistory.animales),
+      JSON.stringify(medicalHistory.otros),
     ];
 
     logger.info({ values }, "Executing upsert query with values");

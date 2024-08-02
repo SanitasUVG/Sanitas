@@ -106,6 +106,13 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
  * @property {null|MedicalConditionData} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
  * @property {null|MedicalConditionData} medicalHistory.renalDiseases - Medical history data for renal diseases.
  * @property {null|MedicalConditionData} medicalHistory.others - Medical history data for other conditions.
+ * @property {null|MedicalConditionData} medicalHistory.medicamento - Allergic history data for medications.
+ * @property {null|MedicalConditionData} medicalHistory.comida - Allergic history data for food.
+ * @property {null|MedicalConditionData} medicalHistory.polvo - Allergic history data for dust.
+ * @property {null|MedicalConditionData} medicalHistory.polen - Allergic history data for pollen.
+ * @property {null|MedicalConditionData} medicalHistory.cambioDeClima - Allergic history data for weather changes.
+ * @property {null|MedicalConditionData} medicalHistory.animales - Allergic history data for animals.
+ * @property {null|MedicalConditionData} medicalHistory.otros - Allergic history data for other conditions.
  */
 
 /**

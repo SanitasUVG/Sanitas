@@ -342,22 +342,6 @@ Resources:
             Method: GET
 
   # This is a Lambda function config associated with the source code:
-  # update-traumatological-history.mjs
-  updateTraumatologicalHistoryFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      # yamllint disable-line rule:line-length
-      Handler: src/handlers/UpdateTraumatologicalHistory/update-traumatological-history-patient.updateTraumatologicalHistoryHandler
-      Description: Updates the traumatological history for a specific
-        patient by ID.
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /patient/traumatological-history
-            Method: PUT
-
-  # This is a Lambda function config associated with the source code:
   # get-patient.mjs
   getStudentFunction:
     Type: AWS::Serverless::Function
@@ -373,6 +357,22 @@ Resources:
             Method: GET
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # update-traumatological-history.mjs
+  updateTraumatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateTraumatologicalHistory/update-traumatological-history-patient.updateTraumatologicalHistoryHandler
+      Description: Updates the traumatological history for a specific
+        patient by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/traumatological-history
+            Method: PUT
 
   # This is a Lambda function config associated with the source code:
   # get-collaborator.mjs

@@ -476,7 +476,7 @@ export function mapToAPISurgicalHistory(dbData) {
 }
 
 /**
- * @typedef {Object} DBData
+ * @typedef {Object} DBAllergicData
  * @property {number} id_paciente - The unique identifier of the patient.
  * @property {null|MedicalConditionData} medicamento_data - Allergic medical history data for medication.
  * @property {null|MedicalConditionData} comida_data - Allergic medical history data for food.
@@ -489,19 +489,19 @@ export function mapToAPISurgicalHistory(dbData) {
 
 /**
  * @typedef {Object} AllergicMedicalHistory
- * @property {null|MedicalConditionData} allergicHistory.medicamento - Allergic medical history data for medication.
- * @property {null|MedicalConditionData} allergicHistory.comida - Allergic medical history data for food.
- * @property {null|MedicalConditionData} allergicHistory.polvo - Allergic medical history data for dust.
- * @property {null|MedicalConditionData} allergicHistory.polen - Allergic medical history data for pollen.
- * @property {null|MedicalConditionData} allergicHistory.cambioDeClima - Allergic medical history data for climate change.
- * @property {null|MedicalConditionData} allergicHistory.animales - Allergic medical history data for animals.
- * @property {null|MedicalConditionData} allergicHistory.otros - Allergic medical history data for other allergies.
+ * @property  {null|Object} medicalHistory.medicamento - Allergic medical history data for medication.
+ * @property  {null|Object} medicalHistory.comida - Allergic medical history data for food.
+ * @property  {null|Object} medicalHistory.polvo - Allergic medical history data for dust.
+ * @property  {null|Object} medicalHistory.polen - Allergic medical history data for pollen.
+ * @property  {null|Object} medicalHistory.cambioDeClima - Allergic medical history data for climate change.
+ * @property  {null|Object} medicalHistory.animales - Allergic medical history data for animals.
+ * @property  {null|Object} medicalHistory.otros - Allergic medical history data for other allergies.
  */
 
 /**
  * @typedef {Object} AllergicMedicalHistoryAPI
  * @property {number} patientId - The unique identifier of the patient.
- * @property {AllergicMedicalHistory} allergicHistory - An object containing formatted allergic medical history data.
+ * @property {AllergicMedicalHistory} medicalHistory - An object containing formatted allergic medical history data.
  */
 
 /**
@@ -509,7 +509,7 @@ export function mapToAPISurgicalHistory(dbData) {
  * This function checks if each allergic condition data exists; if not, it returns a default structure with an empty array.
  * It handles the transformation of nested data where applicable.
  *
- * @param {DBData} dbData - The raw database data containing fields for various allergic conditions of a patient.
+ * @param {DBAllergicData} dbData - The raw database data containing fields for various allergic conditions of a patient.
  * @returns {AllergicMedicalHistory} A structured object containing the patientId and a detailed allergicHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
