@@ -7,8 +7,8 @@ Transform:
 Parameters:
   PostgresURL:
     Type: String
-    Default: 'postgresql://backend:backend@hostpc:6969/sanitas'
-    Description: 'The Postgres DB URL to connect during lambdas execution'
+    Default: "postgresql://backend:backend@hostpc:6969/sanitas"
+    Description: "The Postgres DB URL to connect during lambdas execution"
     NoEcho: true
   CognitoUserPoolName:
     Type: String
@@ -391,6 +391,42 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # get-nonpatological-history-patient.mjs
+  getNonPatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetNonPatologicalHistory/get-nonpatological-history-patient.getNonPatologicalHistoryHandler
+      Description: Function to get non patological history data from.
+        patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/nonpatological-history/{id}
+            Method: GET
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # update-nonpatological-history-patient.mjs
+  updateNonPatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateNonPatologicalHistory/update-nonpatological-history-patient.updateNonPathologicalHistoryHandler
+      Description: Function to put non patological history data from.
+        patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/nonpatological-history
+            Method: PUT
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
@@ -439,9 +475,9 @@ Resources:
     Properties:
       ResourceGroupName:
         Ref: ApplicationResourceGroup
-      AutoConfigurationEnabled: 'true'
+      AutoConfigurationEnabled: "true"
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage
     # yamllint disable-line rule:line-length
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
