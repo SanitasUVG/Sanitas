@@ -14,7 +14,7 @@ export const updateNonPathologicalHistoryHandler = async (event, context) => {
   try {
     const url = process.env.POSTGRES_URL;
     logger.info({ url }, "Connecting to DB...");
-    client = await getPgClient(url);
+    client = getPgClient(url);
     await client.connect();
     logger.info("Connected!");
 
@@ -37,6 +37,7 @@ export const updateNonPathologicalHistoryHandler = async (event, context) => {
           drogas_data = EXCLUDED.drogas_data
       RETURNING *;
     `;
+
     const values = [
       patientId,
       medicalHistory.bloodType,
