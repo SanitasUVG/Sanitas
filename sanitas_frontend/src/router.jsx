@@ -41,9 +41,9 @@ import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
 const useStore = createEmptyStore();
 
 export const NAV_PATHS = {
-  SEARCH_PATIENT: "/search",
+  SEARCH_PATIENT: "/",
   REGISTER_USER: "/register",
-  LOGIN_USER: "/",
+  LOGIN_USER: "/login",
   ADD_PATIENT: "/new",
   UPDATE_PATIENT: "/update",
 };
