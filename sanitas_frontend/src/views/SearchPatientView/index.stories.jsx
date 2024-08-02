@@ -1,5 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { mockLogoutUser } from "src/cognito.mjs";
 import { createEmptyStore } from "src/store.mjs";
 import SearchPatientView from ".";
 
@@ -48,6 +49,7 @@ Default.args = {
     return result;
   },
   useStore: createEmptyStore(),
+  logoutUser: mockLogoutUser,
 };
 
 export const UserError = Template.bind({});
@@ -64,6 +66,7 @@ UserError.args = {
     return { error };
   },
   useStore: createEmptyStore(),
+  logoutUser: mockLogoutUser,
 };
 
 export const ServerError = Template.bind({});
@@ -80,4 +83,5 @@ ServerError.args = {
     return { error };
   },
   useStore: createEmptyStore(),
+  logoutUser: mockLogoutUser,
 };

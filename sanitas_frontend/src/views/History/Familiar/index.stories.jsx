@@ -22,13 +22,16 @@ const dummyPatientId = 12345;
 const mockGetFamiliarHistoryWithData = async (id) => ({
   result: {
     medicalHistory: {
-      surgeries: {
-        data: [
-          { surgeryType: "Appendectomy", surgeryYear: "2019", complications: "None" },
-          { surgeryType: "Gallbladder removal", surgeryYear: "2018", complications: "Infection" },
-        ],
-        version: 1,
-      },
+      hypertension: { data: ["Father"], version: 1 },
+      diabetesMellitus: { data: ["Mother"], version: 1 },
+      hypothyroidism: { data: [], version: 1 },
+      asthma: { data: [], version: 1 },
+      convulsions: { data: [], version: 1 },
+      myocardialInfarction: { data: [], version: 1 },
+      cancer: { data: [], version: 1 },
+      cardiacDiseases: { data: [], version: 1 },
+      renalDiseases: { data: [], version: 1 },
+      others: { data: [], version: 1 },
     },
   },
 });
@@ -36,14 +39,19 @@ const mockGetFamiliarHistoryWithData = async (id) => ({
 const mockGetFamiliarHistoryEmpty = async (id) => ({
   result: {
     medicalHistory: {
-      surgeries: {
-        data: [],
-        version: 1,
-      },
+      hypertension: { data: [], version: 1 },
+      diabetesMellitus: { data: [], version: 1 },
+      hypothyroidism: { data: [], version: 1 },
+      asthma: { data: [], version: 1 },
+      convulsions: { data: [], version: 1 },
+      myocardialInfarction: { data: [], version: 1 },
+      cancer: { data: [], version: 1 },
+      cardiacDiseases: { data: [], version: 1 },
+      renalDiseases: { data: [], version: 1 },
+      others: { data: [], version: 1 },
     },
   },
 });
-
 const mockGetFamiliarHistoryError = async (id) => ({
   error: {
     response: {
@@ -55,7 +63,7 @@ const mockGetFamiliarHistoryError = async (id) => ({
 });
 
 const mockUpdateFamiliarHistory = async (id, history, version) => ({
-  result: { medicalHistory: { surgeries: { data: history, version: version + 1 } } },
+  result: { medicalHistory: history },
 });
 
 const store = createEmptyStore({
@@ -64,7 +72,7 @@ const store = createEmptyStore({
 
 export const WithData = {
   args: {
-    getFamiliarlHistory: mockGetFamiliarHistoryWithData,
+    getFamiliarHistory: mockGetFamiliarHistoryWithData,
     updateFamiliarHistory: mockUpdateFamiliarHistory,
     sidebarConfig: {
       userInformation: {
@@ -78,7 +86,7 @@ export const WithData = {
 
 export const EmptyData = {
   args: {
-    getFamiliarlHistory: mockGetFamiliarHistoryEmpty,
+    getFamiliarHistory: mockGetFamiliarHistoryEmpty,
     updateFamiliarHistory: mockUpdateFamiliarHistory,
     sidebarConfig: {
       userInformation: {
@@ -92,7 +100,7 @@ export const EmptyData = {
 
 export const ErrorState = {
   args: {
-    getFamiliarlHistory: mockGetFamiliarHistoryError,
+    getFamiliarHistory: mockGetFamiliarHistoryError,
     updateFamiliarHistory: mockUpdateFamiliarHistory,
     sidebarConfig: {
       userInformation: {

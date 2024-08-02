@@ -390,7 +390,7 @@ function SurgicalView({ id, birthdayResource, surgicalHistoryResource, updateSur
               placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
               style={{
                 width: "95%",
-                height: "15%",
+                height: "10%",
                 fontFamily: fonts.textFont,
                 fontSize: "1rem",
               }}

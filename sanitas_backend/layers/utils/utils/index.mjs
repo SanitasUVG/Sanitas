@@ -474,3 +474,87 @@ export function mapToAPISurgicalHistory(dbData) {
     medicalHistory,
   };
 }
+
+/**
+ * @typedef {Object} SmokingData
+ * @property {number} version - Version number of the smoking data format.
+ * @property {Array} data - Detailed data about smoking habits.
+ */
+
+/**
+ * @typedef {Object} DrinkingData
+ * @property {number} version - Version number of the drinking data format.
+ * @property {Array} data - Detailed data about alcohol consumption.
+ */
+
+/**
+ * @typedef {Object} DrugUseData
+ * @property {number} version - Version number of the drug use data format.
+ * @property {Array} data - Detailed data about drug use.
+ */
+
+/**
+ * @typedef {Object} NonPathologicalMedicalHistory
+ * @property {number} id_paciente - The patient ID.
+ * @property {string} tipo_sangre - The blood type of the patient.
+ * @property {string} fuma_data - JSON string containing smoking history data.
+ * @property {string} bebidas_alcoholicas_data - JSON string containing alcohol consumption data.
+ * @property {string} drogas_data - JSON string containing drug use data.
+ */
+
+/**
+ * @typedef {Object} APIFormattedNonPathologicalHistory
+ * @property {number} patientId - The patient ID.
+ * @property {Object} medicalHistory - Formatted medical history data.
+ * @property {SmokingData} medicalHistory.smoker - Details about smoking habits.
+ * @property {DrinkingData} medicalHistory.drink - Details about alcohol consumption.
+ * @property {DrugUseData} medicalHistory.drugs - Details about drug use.
+ * @property {string} medicalHistory.bloodType - The blood type of the patient.
+ */
+
+/**
+ * Maps database non-pathological history data to the API format.
+ * @param {NonPathologicalMedicalHistory} dbData - The non-pathological history data from the database.
+ * @returns {APIFormattedNonPathologicalHistory} The non-pathological history formatted for the API.
+ */
+export function mapToAPINonPathologicalHistory(dbData) {
+  const formatResponse = (data) => {
+    if (!data) return { version: 1, data: [] };
+    if (typeof data === "string") {
+      try {
+        return JSON.parse(data);
+      } catch (error) {
+        return { version: 1, data: [] };
+      }
+    }
+    return data;
+  };
+
+  const nonPathologicalHistory = {};
+
+  const keys = Object.keys(dbData);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    switch (key) {
+      case "fuma_data":
+        nonPathologicalHistory.smoker = formatResponse(dbData[key]);
+        break;
+      case "bebidas_alcoholicas_data":
+        nonPathologicalHistory.drink = formatResponse(dbData[key]);
+        break;
+      case "drogas_data":
+        nonPathologicalHistory.drugs = formatResponse(dbData[key]);
+        break;
+      case "tipo_sangre":
+        nonPathologicalHistory.bloodType = dbData[key];
+        break;
+      default:
+        break;
+    }
+  }
+
+  return {
+    patientId: dbData.id_paciente,
+    medicalHistory: nonPathologicalHistory,
+  };
+}
