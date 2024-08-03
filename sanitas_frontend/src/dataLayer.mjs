@@ -5,6 +5,7 @@ import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
 const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
+const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 
 /**
  * @template Res - The result value type
@@ -36,7 +37,7 @@ export async function searchPatient(query, type) {
     let response;
     try {
       response = await axios.post(
-        BASE_URL + "/patient/search",
+        PROTECTED_URL + "/patient/search",
         {
           requestSearch: query,
           searchType: type,

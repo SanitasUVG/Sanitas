@@ -481,3 +481,6 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage
     # yamllint disable-line rule:line-length
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  SecureWebEndpoint:
+    Description: Cognito secured API
+    value: !Ref SanitasAPI
