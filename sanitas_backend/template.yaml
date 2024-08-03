@@ -483,4 +483,5 @@ Outputs:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
   SecureWebEndpoint:
     Description: Cognito secured API
-    Value: !Ref SanitasAPI
+    # yamllint disable-line rule:line-length
+    Value: !Sub "https://${SanitasAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
