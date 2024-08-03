@@ -37,6 +37,7 @@ const mockGetPersonalHistoryWithData = async (id) => ({
   },
 });
 
+const mockGetBirthdayPatientInfo = vi.fn(() => Promise.resolve({ result: { birthdate: "1990-01-01" } }));
 const mockUpdatePersonalHistory = vi.fn(() => Promise.resolve({ success: true }));
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
@@ -51,6 +52,7 @@ describe("PersonalHistory Component Tests", () => {
     render(
       <Wrapper>
         <PersonalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
           getPersonalHistory={mockGetPersonalHistoryWithData}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
@@ -91,6 +93,7 @@ describe("PersonalHistory Component Tests", () => {
     render(
       <Wrapper>
         <PersonalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
           getPersonalHistory={mockGetPersonalHistoryEmpty}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
