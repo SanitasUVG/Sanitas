@@ -430,7 +430,7 @@ Resources:
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: Staging
+      StageName: Prod
       TracingEnabled: true
       Cors:
         AllowMethods: "'OPTIONS,POST,GET,PUT'"
