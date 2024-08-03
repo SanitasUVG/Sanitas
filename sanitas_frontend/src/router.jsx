@@ -17,6 +17,7 @@ import {
   getCollaboratorInformation,
   getFamilyHistory,
   getGeneralPatientInformation,
+  getNonPathologicalHistory,
   getStudentPatientInformation,
   getSurgicalHistory,
   getTraumatologicalHistory,
@@ -25,6 +26,7 @@ import {
   updateCollaboratorInformation,
   updateFamilyHistory,
   updateGeneralPatientInformation,
+  updateNonPathologicalHistory,
   updateStudentPatientInformation,
   updateSurgicalHistory,
   updateTraumatologicalHistory,
@@ -131,8 +133,8 @@ const familiarHistoryView = (
 
 const nonPathologicalHistoryView = (
   <NonPathologicalHistory
-    getNonPathologicalHistory={getFamilyHistory}
-    updateNonPathologicalHistory={updateFamilyHistory}
+    getNonPathologicalHistory={getNonPathologicalHistory}
+    updateNonPathologicalHistory={updateNonPathologicalHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
@@ -142,7 +144,10 @@ export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
     element: (
-      <RequireAuth getSession={IS_PRODUCTION ? getSession : mockGetSession} path={NAV_PATHS.LOGIN_USER}>
+      <RequireAuth
+        getSession={IS_PRODUCTION ? getSession : mockGetSession}
+        path={NAV_PATHS.LOGIN_USER}
+      >
         <SearchPatientView
           searchPatientsApiCall={searchPatient}
           useStore={useStore}
