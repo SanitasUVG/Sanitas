@@ -14,141 +14,44 @@ vi.mock("react-toastify", () => {
   };
 });
 
-describe("PersonalHistory Component Tests", () => {
-  const mockGetBirthdayPatientInfo = vi.fn(() => Promise.resolve({ result: { birthdate: "1990-01-01" } }));
-  const mockGetPersonalHistory = vi.fn(() =>
-    Promise.resolve({
-      result: {
-        medicalHistory: {
-          hypertension: {
-            version: 1,
-            data: [{
-              medicine: "Medicina random 1",
-              dose: "5ml",
-              frequency: "3 veces al día",
-            }, {
-              medicine: "Medicina random 2",
-              dose: "10ml",
-              frequency: "Una vez al día",
-            }],
-          },
-          diabetesMellitus: {
-            version: 1,
-            data: [
-              {
-                medicine: "Medicina random 4",
-                dose: "2 pastillas",
-                frequency: "Cada 8 horas",
-              },
-            ],
-          },
-          hypothyroidism: {
-            version: 1,
-            data: [
-              {
-                medicine: "Medicina random 4",
-                dose: "2 pastillas",
-                frequency: "Cada 8 horas",
-              },
-            ],
-          },
-          asthma: {
-            version: 1,
-            data: [
-              {
-                medicine: "Medicina random 4",
-                dose: "2 pastillas",
-                frequency: "Cada 8 horas",
-              },
-            ],
-          },
-          convulsions: {
-            version: 1,
-            data: [
-              {
-                medicine: "Medicina random 4",
-                dose: "2 pastillas",
-                frequency: "Cada 8 horas",
-              },
-            ],
-          },
-          myocardialInfarction: {
-            version: 1,
-            data: [2012, 2016],
-          },
-          cancer: {
-            version: 1,
-            data: [
-              {
-                typeOfCancer: "Breast",
-                treatment: "Operation",
-              },
-            ],
-          },
-          cardiacDiseases: {
-            version: 1,
-            data: [
-              {
-                typeOfDisease: "Hypertrophy",
-                medicine: "Medicina random 5",
-                dose: "5ml",
-                frequency: "1 vez al día",
-              },
-              {
-                typeOfDisease: "Hypertrophy 2",
-                medicine: "Medicina random 5",
-                dose: "5ml",
-                frequency: "1 vez al día",
-              },
-            ],
-          },
-          renalDiseases: {
-            version: 1,
-            data: [
-              {
-                typeOfDisease: "Hypertrophy 2",
-                medicine: "Medicina random 5",
-                dose: "5ml",
-                frequency: "1 vez al día",
-              },
-              {
-                typeOfDisease: "Hypertrophy 2",
-                medicine: "Medicina random 5",
-                dose: "5ml",
-                frequency: "1 vez al día",
-              },
-            ],
-          },
-          others: {
-            version: 1,
-            data: [
-              {
-                typeOfDisease: "Hypertrophy 2",
-                medicine: "Medicina random 5",
-                dose: "5ml",
-                frequency: "1 vez al día",
-              },
-            ],
-          },
-        },
+const mockGetPersonalHistoryWithData = async (id) => ({
+  result: {
+    medicalHistory: {
+      hypertension: {
+        data: [{ typeOfDisease: "hiper", medicine: "ibuprofeno", dose: "10", frequency: "21" }],
+        version: 1,
       },
-    })
-  );
-  const mockUpdatePersonalHistory = vi.fn(() => Promise.resolve({ success: true }));
-  const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
+      diabetesMellitus: {
+        data: [{ typeOfDisease: "dia", medicine: "azucar", dose: "12", frequency: "23" }],
+        version: 1,
+      },
+      hypothyroidism: { data: [], version: 1 },
+      asthma: { data: [], version: 1 },
+      convulsions: { data: [], version: 1 },
+      myocardialInfarction: { data: [], version: 1 },
+      cancer: { data: [], version: 1 },
+      cardiacDiseases: { data: [], version: 1 },
+      renalDiseases: { data: [], version: 1 },
+      others: { data: [], version: 1 },
+    },
+  },
+});
 
-  const sidebarConfig = {
-    userInformation: { displayName: "User Testing" },
-  };
+const mockUpdatePersonalHistory = vi.fn(() => Promise.resolve({ success: true }));
+const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-  const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
+const sidebarConfig = {
+  userInformation: { displayName: "User Testing" },
+};
 
+const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
+
+describe("PersonalHistory Component Tests", () => {
   test("opens new form on button click", async () => {
     render(
       <Wrapper>
         <PersonalHistory
-          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-          getPersonalHistory={mockGetPersonalHistory}
+          getPersonalHistory={mockGetPersonalHistoryWithData}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
           useStore={mockUseStore}
@@ -156,22 +59,39 @@ describe("PersonalHistory Component Tests", () => {
       </Wrapper>,
     );
 
-    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
-    await waitFor(() => expect(mockGetPersonalHistory).toHaveBeenCalled());
+    await waitFor(() => screen.getByText("Agregar antecedente personal"));
 
-    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
+    const addButton = screen.getByText("Agregar antecedente personal");
     fireEvent.click(addButton);
     await waitFor(() => {
       expect(screen.getByText("Guardar")).toBeInTheDocument();
     });
   });
 
-  test("cancels new surgical record form on button click", async () => {
+  test("displays empty state message when there is no data", async () => {
+    const mockGetPersonalHistoryEmpty = vi.fn(() =>
+      Promise.resolve({
+        result: {
+          medicalHistory: {
+            hypertension: { data: [], version: 1 },
+            diabetesMellitus: { data: [], version: 1 },
+            hypothyroidism: { data: [], version: 1 },
+            asthma: { data: [], version: 1 },
+            convulsions: { data: [], version: 1 },
+            myocardialInfarction: { data: [], version: 1 },
+            cancer: { data: [], version: 1 },
+            cardiacDiseases: { data: [], version: 1 },
+            renalDiseases: { data: [], version: 1 },
+            others: { data: [], version: 1 },
+          },
+        },
+      })
+    );
+
     render(
       <Wrapper>
         <PersonalHistory
-          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-          getPersonalHistory={mockGetPersonalHistory}
+          getPersonalHistory={mockGetPersonalHistoryEmpty}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
           useStore={mockUseStore}
@@ -179,28 +99,30 @@ describe("PersonalHistory Component Tests", () => {
       </Wrapper>,
     );
 
-    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
-    await waitFor(() => expect(mockGetPersonalHistory).toHaveBeenCalled());
-
-    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
-    fireEvent.click(addButton);
-    await waitFor(() => {
-      expect(screen.getByText("Guardar")).toBeInTheDocument();
-    });
-
-    const cancelButton = screen.getByText("Cancelar");
-    fireEvent.click(cancelButton);
-    await waitFor(() => {
-      expect(screen.queryByText("Guardar")).not.toBeInTheDocument();
-    });
+    await waitFor(() =>
+      screen.getByText(
+        "¡Parece que no hay antecedentes personales! Agrega uno en el botón de arriba.",
+      )
+    );
   });
 
-  test("shows an error message when trying to save with empty fields", async () => {
+  test("displays error message when there is an error fetching data", async () => {
+    const mockGetPersonalHistoryError = vi.fn(() =>
+      Promise.resolve({
+        error: {
+          response: {
+            status: 400,
+            statusText: "Bad Request",
+            data: "Invalid request parameters.",
+          },
+        },
+      })
+    );
+
     render(
       <Wrapper>
         <PersonalHistory
-          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-          getPersonalHistory={mockGetPersonalHistory}
+          getPersonalHistory={mockGetPersonalHistoryError}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
           useStore={mockUseStore}
@@ -208,21 +130,37 @@ describe("PersonalHistory Component Tests", () => {
       </Wrapper>,
     );
 
-    await waitFor(() => expect(mockGetBirthdayPatientInfo).toHaveBeenCalled());
-    await waitFor(() => expect(mockGetPersonalHistory).toHaveBeenCalled());
+    await waitFor(() => screen.getByText("Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!"));
+  });
 
-    const addButton = await screen.findByText("Agregar antecedente quirúrgico");
-    fireEvent.click(addButton);
+  test("adds a new personal history record", async () => {
+    render(
+      <Wrapper>
+        <PersonalHistory
+          getPersonalHistory={mockGetPersonalHistoryWithData}
+          updatePersonalHistory={mockUpdatePersonalHistory}
+          sidebarConfig={sidebarConfig}
+          useStore={mockUseStore}
+        />
+      </Wrapper>,
+    );
 
-    await waitFor(() => {
-      expect(screen.getByText("Guardar")).toBeInTheDocument();
-    });
+    await waitFor(() => screen.getByText("Agregar antecedente personal"));
+    fireEvent.click(screen.getByText("Agregar antecedente personal"));
 
-    const saveButton = screen.getByText("Guardar");
-    fireEvent.click(saveButton);
+    await waitFor(() => screen.getByText("Guardar"));
 
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Complete todos los campos requeridos.");
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Ingrese el tratamiento administrado",
+      ),
+      {
+        target: "Ibuprofeno",
+      },
+    );
+
+    fireEvent.click(screen.getByText("Guardar"));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Historial personal guardado con éxito."));
   });
 });

@@ -251,8 +251,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
   const handleSelectDiseaseCard = (diseaseKey, entry) => {
     setSelectedPersonal({
       disease: diseaseKey,
-      relative: entry.who,
-      typeOfDisease: entry.typeOfDisease || "",
+      ...entry,
     });
     setAddingNew(false);
   };
@@ -310,8 +309,6 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
         };
         break;
     }
-
-    console.log(newEntry);
 
     toast.info("Guardando antecedente quirúrgico...");
 
@@ -431,39 +428,32 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
               }
 
               let displayedDisease = translateDisease(diseaseKey);
-
               if (
-                diseaseKey === "cancer"
-                || diseaseKey === "cardiacDiseases"
-                || diseaseKey === "renalDiseases"
-                || diseaseKey === "others"
+                diseaseKey === "myocardialInfarction"
               ) {
                 return data.map((entry, index) => {
-                  let details = entry.who;
-                  if (diseaseKey === "others") {
-                    displayedDisease = entry.disease;
-                  }
                   return (
                     <InformationCard
                       key={`${diseaseKey}-${index}`}
-                      type="family"
+                      type="personalMiocadio"
                       disease={displayedDisease}
-                      relative={details}
+                      year={entry.surgeryYear}
                       onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
                     />
                   );
                 });
               } else {
-                let displayedRelatives = data.join(", ");
-                return (
-                  <InformationCard
-                    key={diseaseKey}
-                    type="family"
-                    disease={displayedDisease}
-                    relative={displayedRelatives}
-                    onClick={() => handleSelectDiseaseCard(diseaseKey, { who: displayedRelatives })}
-                  />
-                );
+                return data.map((entry, index) => {
+                  return (
+                    <InformationCard
+                      key={`${diseaseKey}-${index}`}
+                      type="personal"
+                      disease={displayedDisease}
+                      surgeryType={entry.medicine ? entry.medicine : entry.treatment}
+                      onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+                    />
+                  );
+                });
               }
             })
           )}
@@ -520,33 +510,6 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
             {selectedPersonal.disease && (
               <>
                 {selectedPersonal.disease === "cancer" && (
-                  // <>
-                  //   <p
-                  //     style={{
-                  //       fontFamily: fonts.textFont,
-                  //       fontSize: fontSize.textSize,
-                  //       paddingTop: "1.5rem",
-                  //       paddingBottom: "0.5rem",
-                  //     }}
-                  //   >
-                  //     {selectedPersonal.disease === "cancer"
-                  //       ? "Tipo de Cáncer:"
-                  //       : selectedPersonal.disease === "others"
-                  //       ? "¿Qué enfermedad?"
-                  //       : "Tipo de enfermedad:"}
-                  //   </p>
-                  //   <BaseInput
-                  //     value={selectedPersonal.typeOfDisease || ""}
-                  //     onChange={(e) => setSelectedPersonal({ ...selectedPersonal, typeOfDisease: e.target.value })}
-                  //     placeholder={selectedPersonal.disease === "cancer"
-                  //       ? "Especifique el tipo de cáncer"
-                  //       : selectedPersonal.disease === "others"
-                  //       ? "Escriba la enfermedad"
-                  //       : "Especifique el tipo de enfermedad (no obligatorio)"}
-                  //     readOnly={!addingNew}
-                  //     style={{ width: "90%", height: "2.5rem" }}
-                  //   />
-                  // </>
                   <React.Fragment>
                     <p
                       style={{
@@ -597,33 +560,6 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                 )}
 
                 {selectedPersonal.disease === "myocardialInfarction" && (
-                  // <>
-                  //   <p
-                  //     style={{
-                  //       fontFamily: fonts.textFont,
-                  //       fontSize: fontSize.textSize,
-                  //       paddingTop: "1.5rem",
-                  //       paddingBottom: "0.5rem",
-                  //     }}
-                  //   >
-                  //     {selectedPersonal.disease === "cancer"
-                  //       ? "Tipo de Cáncer:"
-                  //       : selectedPersonal.disease === "others"
-                  //       ? "¿Qué enfermedad?"
-                  //       : "Tipo de enfermedad:"}
-                  //   </p>
-                  //   <BaseInput
-                  //     value={selectedPersonal.typeOfDisease || ""}
-                  //     onChange={(e) => setSelectedPersonal({ ...selectedPersonal, typeOfDisease: e.target.value })}
-                  //     placeholder={selectedPersonal.disease === "cancer"
-                  //       ? "Especifique el tipo de cáncer"
-                  //       : selectedPersonal.disease === "others"
-                  //       ? "Escriba la enfermedad"
-                  //       : "Especifique el tipo de enfermedad (no obligatorio)"}
-                  //     readOnly={!addingNew}
-                  //     style={{ width: "90%", height: "2.5rem" }}
-                  //   />
-                  // </>
                   <React.Fragment>
                     <p
                       style={{
@@ -651,27 +587,8 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                 {selectedPersonal.disease !== "cancer"
                   && selectedPersonal.disease !== "myocardialInfarction"
                   && (
-                    // <>
-                    //   <p
-                    //     style={{
-                    //       fontFamily: fonts.textFont,
-                    //       fontSize: fontSize.textSize,
-                    //       paddingTop: "1.5rem",
-                    //       paddingBottom: "0.5rem",
-                    //     }}
-                    //   >
-                    //     ¿Quién?
-                    //   </p>
-                    //   <BaseInput
-                    //     value={selectedPersonal.relative || ""}
-                    //     onChange={(e) => setSelectedPersonal({ ...selectedPersonal, relative: e.target.value })}
-                    //     placeholder="Ingrese el parentesco del personal afectado. (Ej. Madre, Padre, Hermano...)"
-                    //     readOnly={!addingNew}
-                    //     style={{ width: "90%", height: "2.5rem" }}
-                    //   />
-                    // </>
                     <React.Fragment>
-                      {selectedPersonal.disease === "hypertension" && (
+                      {selectedPersonal.disease !== "hypertension" && (
                         <React.Fragment>
                           <p
                             style={{

@@ -7,9 +7,9 @@ export default {
   component: PersonalHistory,
   decorators: [
     (Story) => (
-      <MemoryRouter initialEntries={["/surgical-history"]}>
+      <MemoryRouter initialEntries={["/personal-history"]}>
         <Routes>
-          <Route path="/surgical-history" element={<Story />} />
+          <Route path="/personal-history" element={<Story />} />
         </Routes>
       </MemoryRouter>
     ),
@@ -19,17 +19,25 @@ export default {
 
 const dummyPatientId = 12345;
 
-const mockGetBirthdayPatientInfo = async (id) => ({
-  result: { birthdate: "2000-02-11" },
-});
-
 const mockGetPersonalHistoryWithData = async (id) => ({
   result: {
     medicalHistory: {
-      surgeries: {
-        data: [{ surgeryType: "Appendectomy", surgeryYear: "2019", complications: "None" }],
+      hypertension: {
+        data: [{ typeOfDisease: "hiper", medicine: "ibuprofeno", dose: "10", frequency: "21" }],
         version: 1,
       },
+      diabetesMellitus: {
+        data: [{ typeOfDisease: "dia", medicine: "azucar", dose: "12", frequency: "23" }],
+        version: 1,
+      },
+      hypothyroidism: { data: [], version: 1 },
+      asthma: { data: [], version: 1 },
+      convulsions: { data: [], version: 1 },
+      myocardialInfarction: { data: [], version: 1 },
+      cancer: { data: [], version: 1 },
+      cardiacDiseases: { data: [], version: 1 },
+      renalDiseases: { data: [], version: 1 },
+      others: { data: [], version: 1 },
     },
   },
 });
@@ -37,14 +45,19 @@ const mockGetPersonalHistoryWithData = async (id) => ({
 const mockGetPersonalHistoryEmpty = async (id) => ({
   result: {
     medicalHistory: {
-      surgeries: {
-        data: [],
-        version: 1,
-      },
+      hypertension: { data: [], version: 1 },
+      diabetesMellitus: { data: [], version: 1 },
+      hypothyroidism: { data: [], version: 1 },
+      asthma: { data: [], version: 1 },
+      convulsions: { data: [], version: 1 },
+      myocardialInfarction: { data: [], version: 1 },
+      cancer: { data: [], version: 1 },
+      cardiacDiseases: { data: [], version: 1 },
+      renalDiseases: { data: [], version: 1 },
+      others: { data: [], version: 1 },
     },
   },
 });
-
 const mockGetPersonalHistoryError = async (id) => ({
   error: {
     response: {
@@ -56,7 +69,7 @@ const mockGetPersonalHistoryError = async (id) => ({
 });
 
 const mockUpdatePersonalHistory = async (id, history, version) => ({
-  result: { medicalHistory: { surgeries: { data: history, version: version + 1 } } },
+  result: { medicalHistory: history },
 });
 
 const store = createEmptyStore({
@@ -65,7 +78,6 @@ const store = createEmptyStore({
 
 export const WithData = {
   args: {
-    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryWithData,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
@@ -80,7 +92,6 @@ export const WithData = {
 
 export const EmptyData = {
   args: {
-    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryEmpty,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
@@ -95,7 +106,6 @@ export const EmptyData = {
 
 export const ErrorState = {
   args: {
-    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryError,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
