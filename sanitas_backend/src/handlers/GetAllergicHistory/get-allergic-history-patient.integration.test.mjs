@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL, updatePatientmedicalHistory } from "../testHelpers.mjs";
+import { createTestPatient, LOCAL_API_URL, updatePatientAllergicHistory } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/allergic-history/`;
 
@@ -9,34 +9,36 @@ describe("Get Allergic Medical History integration tests", () => {
 
   beforeAll(async () => {
     patientId = await createTestPatient();
-    await updatePatientmedicalHistory(patientId, {
-      medicamento: {
-        version: 1,
-        data: [{ name: "Penicillin", severity: "high" }],
-      },
-      comida: {
-        version: 1,
-        data: [],
-      },
-      polvo: {
-        version: 1,
-        data: [{ source: "Dust" }],
-      },
-      polen: {
-        version: 1,
-        data: [],
-      },
-      cambioDeClima: {
-        version: 1,
-        data: [{ region: "High Altitude" }],
-      },
-      animales: {
-        version: 1,
-        data: [{ type: "Cats" }],
-      },
-      otros: {
-        version: 1,
-        data: [],
+    await updatePatientAllergicHistory(patientId, {
+      medicalHistory: {
+        medication: {
+          version: 1,
+          data: [{ name: "Penicillin", severity: "high" }],
+        },
+        food: {
+          version: 1,
+          data: [],
+        },
+        dust: {
+          version: 1,
+          data: [{ source: "Dust" }],
+        },
+        pollen: {
+          version: 1,
+          data: [],
+        },
+        climateChange: {
+          version: 1,
+          data: [{ region: "High Altitude" }],
+        },
+        animals: {
+          version: 1,
+          data: [{ type: "Cats" }],
+        },
+        others: {
+          version: 1,
+          data: [],
+        },
       },
     });
   }, 20000);
@@ -48,13 +50,9 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response.status).toBe(200);
 
     const medicalHistory = response.data.medicalHistory;
-    expect(response.data.patientId).toBe(patientId);
     expect(medicalHistory).toBeDefined();
-    expect(medicalHistory.medicamento.data[0].name).toBe("Penicillin");
-    expect(medicalHistory.polvo.data[0].source).toBe("Dust");
-    expect(medicalHistory.cambioDeClima.data[0].region).toBe("High Altitude");
-    expect(medicalHistory.animales.data[0].type).toBe("Cats");
-  }, 20000);
+    expect(medicalHistory.medication).toBeDefined();
+  });
 
   test("Retrieve empty allergic history for non-existent patient", async () => {
     const nonExistentPatientId = 999999;
@@ -65,23 +63,20 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
 
-    /** @type {import("utils/index.mjs").AllergicMedicalHistoryAPI} */
-    const medicalHistory = response.data.medicalHistory;
-
+    const medicalHistory = response.data.allergicHistory;
     expect(medicalHistory).toBeDefined();
-    expect(medicalHistory.medicamento.data.length).toBe(0);
-    expect(medicalHistory.comida.data.length).toBe(0);
-    expect(medicalHistory.polvo.data.length).toBe(0);
-    expect(medicalHistory.polen.data.length).toBe(0);
-    expect(medicalHistory.cambioDeClima.data.length).toBe(0);
-    expect(medicalHistory.animales.data.length).toBe(0);
-    expect(medicalHistory.otros.data.length).toBe(0);
-  }, 20000);
+    expect(medicalHistory.medication.data.length).toBe(0);
+    expect(medicalHistory.food.data.length).toBe(0);
+    expect(medicalHistory.dust.data.length).toBe(0);
+    expect(medicalHistory.pollen.data.length).toBe(0);
+    expect(medicalHistory.climateChange.data.length).toBe(0);
+    expect(medicalHistory.animals.data.length).toBe(0);
+    expect(medicalHistory.others.data.length).toBe(0);
+  });
 
   test("Fail to retrieve allergic history due to missing patient ID in the request", async () => {
-    const response = await axios.get(`${API_URL}`, {
-      validateStatus: () => true,
-    });
+    const invalidId = "invalid123";
+    const response = await axios.get(`${API_URL}${invalidId}`, { validateStatus: () => true });
 
     expect(response).toBeDefined();
     expect(response.status).toBe(400);

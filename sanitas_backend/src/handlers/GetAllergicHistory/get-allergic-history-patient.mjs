@@ -15,7 +15,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
   const responseBuilder = createResponse().addCORSHeaders("GET");
 
   if (event.httpMethod !== "GET") {
-    return responseBuilder.setStatusCode(405).setBody({ error: "Method Not Allowed" }).build();
+    return responseBuilder
+      .setStatusCode(405)
+      .setBody({ error: "Method Not Allowed" })
+      .build();
   }
 
   let client;
@@ -39,25 +42,38 @@ export const getAllergicHistoryHandler = async (event, context) => {
     logger.info({ patientId }, "Received request for allergic history");
 
     const query = `
-      SELECT *
-      FROM antecedentes_alergicos
-      WHERE id_paciente = $1;
-    `;
+        SELECT id_paciente,
+        medicamento_data,
+        comida_data,
+        polvo_data,
+        polen_data,
+        cambio_de_clima_data,
+        animales_data,
+        otros_data
+        FROM antecedentes_alergicos
+        WHERE id_paciente = $1;
+      `;
 
     const result = await client.query(query, [patientId]);
 
     if (result.rowCount === 0) {
       logger.warn("No allergic history found for the provided ID. Returning default value.");
       const defaultAllergicHistory = genDefaultAllergicHistory();
-      return responseBuilder.setStatusCode(200).setBody({
-        patientId,
-        allergicHistory: defaultAllergicHistory,
-      }).build();
+      return responseBuilder
+        .setStatusCode(200)
+        .setBody({
+          patientId,
+          allergicHistory: defaultAllergicHistory,
+        })
+        .build();
     }
 
     const medicalHistory = result.rows[0];
-    logger.info({ allergicHistory }, "Successfully retrieved allergic history");
-    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicHistory(medicalHistory)).build();
+    logger.info({ medicalHistory }, "Successfully retrieved allergic history");
+    return responseBuilder
+      .setStatusCode(200)
+      .setBody(mapToAPIAllergicHistory(medicalHistory))
+      .build();
   } catch (error) {
     logger.error({ error }, "An error occurred while retrieving allergic history!");
 
