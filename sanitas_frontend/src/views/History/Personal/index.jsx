@@ -519,7 +519,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                         fontSize: fontSize.textSize,
                       }}
                     >
-                      Tipo
+                      Tipo:
                     </p>
                     <BaseInput
                       value={selectedPersonal.typeOfDisease ? selectedPersonal.typeOfDisease : ""}
@@ -542,7 +542,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                         fontSize: fontSize.textSize,
                       }}
                     >
-                      Tratamiento
+                      Tratamiento:
                     </p>
                     <BaseInput
                       value={selectedPersonal.treatment ? selectedPersonal.treatment : ""}
@@ -588,33 +588,38 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                   && selectedPersonal.disease !== "myocardialInfarction"
                   && (
                     <React.Fragment>
-                      {selectedPersonal.disease !== "hypertension" && (
-                        <React.Fragment>
-                          <p
-                            style={{
-                              paddingBottom: "0.5rem",
-                              paddingTop: "1.5rem",
-                              fontFamily: fonts.textFont,
-                              fontSize: fontSize.textSize,
-                            }}
-                          >
-                            ¿Qué enfermedad?
-                          </p>
-                          <BaseInput
-                            value={selectedPersonal.typeOfDisease ? selectedPersonal.typeOfDisease : ""}
-                            onChange={(e) =>
-                              setSelectedPersonal({ ...selectedPersonal, typeOfDisease: e.target.value })}
-                            readOnly={!addingNew}
-                            placeholder="Ingrese el tipo de enfermedad"
-                            style={{
-                              width: "95%",
-                              height: "10%",
-                              fontFamily: fonts.textFont,
-                              fontSize: "1rem",
-                            }}
-                          />
-                        </React.Fragment>
-                      )}
+                      {selectedPersonal.disease !== "hypertension"
+                        && selectedPersonal.disease !== "asthma"
+                        && selectedPersonal.disease !== "convulsions"
+                        && selectedPersonal.disease !== "diabetesMellitus"
+                        && selectedPersonal.disease !== "hypothyroidism"
+                        && (
+                          <React.Fragment>
+                            <p
+                              style={{
+                                paddingBottom: "0.5rem",
+                                paddingTop: "1.5rem",
+                                fontFamily: fonts.textFont,
+                                fontSize: fontSize.textSize,
+                              }}
+                            >
+                              ¿Qué enfermedad?
+                            </p>
+                            <BaseInput
+                              value={selectedPersonal.typeOfDisease ? selectedPersonal.typeOfDisease : ""}
+                              onChange={(e) =>
+                                setSelectedPersonal({ ...selectedPersonal, typeOfDisease: e.target.value })}
+                              readOnly={!addingNew}
+                              placeholder="Ingrese el tipo de enfermedad"
+                              style={{
+                                width: "95%",
+                                height: "10%",
+                                fontFamily: fonts.textFont,
+                                fontSize: "1rem",
+                              }}
+                            />
+                          </React.Fragment>
+                        )}
 
                       <p
                         style={{
@@ -624,7 +629,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                           fontSize: fontSize.textSize,
                         }}
                       >
-                        Medicamento
+                        Medicamento:
                       </p>
                       <BaseInput
                         value={selectedPersonal.medicine ? selectedPersonal.medicine : ""}
@@ -647,7 +652,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                           fontSize: fontSize.textSize,
                         }}
                       >
-                        Dosis
+                        Dosis:
                       </p>
                       <BaseInput
                         value={selectedPersonal.dose ? selectedPersonal.dose : ""}
@@ -670,7 +675,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
                           fontSize: fontSize.textSize,
                         }}
                       >
-                        Frecuencia
+                        Frecuencia:
                       </p>
                       <BaseInput
                         value={selectedPersonal.frequency ? selectedPersonal.frequency : ""}

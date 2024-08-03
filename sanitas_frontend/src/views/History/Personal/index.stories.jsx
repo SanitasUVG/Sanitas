@@ -19,6 +19,10 @@ export default {
 
 const dummyPatientId = 12345;
 
+const mockGetBirthdayPatientInfo = async (id) => ({
+  result: { birthdate: "2000-02-11" },
+});
+
 const mockGetPersonalHistoryWithData = async (id) => ({
   result: {
     medicalHistory: {
@@ -78,6 +82,7 @@ const store = createEmptyStore({
 
 export const WithData = {
   args: {
+    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryWithData,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
@@ -92,6 +97,7 @@ export const WithData = {
 
 export const EmptyData = {
   args: {
+    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryEmpty,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
@@ -106,6 +112,7 @@ export const EmptyData = {
 
 export const ErrorState = {
   args: {
+    getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
     getPersonalHistory: mockGetPersonalHistoryError,
     updatePersonalHistory: mockUpdatePersonalHistory,
     sidebarConfig: {
