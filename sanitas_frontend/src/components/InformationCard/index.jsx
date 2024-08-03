@@ -99,6 +99,29 @@ export default function InformationCard({
             </p>
           </>
         );
+      case "personal":
+        return (
+          <>
+            <p>
+              <span style={labelStyle}>Enfermedad:</span> <span style={contentStyle}>{disease}</span>
+            </p>
+            <p>
+              <span style={labelStyle}>Medicamento/Tratamiento:</span>{" "}
+              <span style={contentStyle}>{truncateText(surgeryType)}</span>
+            </p>
+          </>
+        );
+      case "personalMiocadio":
+        return (
+          <>
+            <p>
+              <span style={labelStyle}>Enfermedad:</span> <span style={contentStyle}>{disease}</span>
+            </p>
+            <p>
+              <span style={labelStyle}>Año:</span> <span style={contentStyle}>{year}</span>
+            </p>
+          </>
+        );
       default:
         return null;
     }

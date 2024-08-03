@@ -16,6 +16,7 @@ import {
   getCollaboratorInformation,
   getFamilyHistory,
   getGeneralPatientInformation,
+  getPersonalHistory,
   getStudentPatientInformation,
   getSurgicalHistory,
   getTraumatologicalHistory,
@@ -24,6 +25,7 @@ import {
   updateCollaboratorInformation,
   updateFamilyHistory,
   updateGeneralPatientInformation,
+  updatePersonalHistory,
   updateStudentPatientInformation,
   updateSurgicalHistory,
   updateTraumatologicalHistory,
@@ -31,6 +33,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { FamiliarHistory } from "./views/History/Familiar";
+import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
@@ -53,6 +56,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
   FAMILIAR_HISTORY: "familiar",
+  PERSONAL_HISTORY: "personal",
   // TODO: Add other Navigation routes...
 };
 
@@ -76,6 +80,9 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   },
   navigateToFamiliar: (navigate) => {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
+  },
+  navigateToPersonal: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -117,6 +124,16 @@ const familiarHistoryView = (
   <FamiliarHistory
     getFamiliarHistory={getFamilyHistory}
     updateFamiliarHistory={updateFamilyHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
+const personalHistoryView = (
+  <PersonalHistory
+    getBirthdayPatientInfo={getGeneralPatientInformation}
+    getPersonalHistory={getPersonalHistory}
+    updatePersonalHistory={updatePersonalHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
   />
@@ -176,6 +193,10 @@ export const ROUTES = [
       {
         path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
         element: familiarHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY,
+        element: personalHistoryView,
       },
       // TODO: Add more routes...
     ],
