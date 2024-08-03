@@ -44,13 +44,13 @@ jobs:
         id: get_url_step
         run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
           --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e
-          's/\"$//') >> $GITHUB_OUTPUT
+          's/\/\"$//') >> $GITHUB_OUTPUT
       - name: Saving Cognito Pool ID
         id: get_pool_id
         run: echo id=$(sam list resources --stack-name sanitas-backend
           --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPool")
-          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\/\"$//')
-          >> $GITHUB_OUTPUT
+          | .PhysicalResourceId' | sed -e 's/^\"//' -e 's/\"$//') >>
+          $GITHUB_OUTPUT
       - name: Saving Cognito Client ID
         id: get_client_id
         run: echo id=$(sam list resources --stack-name sanitas-backend
