@@ -125,6 +125,7 @@ describe("PersonalHistory Component Tests", () => {
     render(
       <Wrapper>
         <PersonalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
           getPersonalHistory={mockGetPersonalHistoryError}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
@@ -140,6 +141,7 @@ describe("PersonalHistory Component Tests", () => {
     render(
       <Wrapper>
         <PersonalHistory
+          getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
           getPersonalHistory={mockGetPersonalHistoryWithData}
           updatePersonalHistory={mockUpdatePersonalHistory}
           sidebarConfig={sidebarConfig}
