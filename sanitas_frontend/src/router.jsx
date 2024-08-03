@@ -16,6 +16,7 @@ import {
   getCollaboratorInformation,
   getFamilyHistory,
   getGeneralPatientInformation,
+  getPersonalHistory,
   getStudentPatientInformation,
   getSurgicalHistory,
   getTraumatologicalHistory,
@@ -24,6 +25,7 @@ import {
   updateCollaboratorInformation,
   updateFamilyHistory,
   updateGeneralPatientInformation,
+  updatePersonalHistory,
   updateStudentPatientInformation,
   updateSurgicalHistory,
   updateTraumatologicalHistory,
@@ -31,6 +33,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { FamiliarHistory } from "./views/History/Familiar";
+import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
@@ -122,6 +125,16 @@ const familiarHistoryView = (
   />
 );
 
+const personalHistoryView = (
+  <PersonalHistory
+    getBirthdayPatientInfo={getGeneralPatientInformation}
+    getPersonalHistory={getPersonalHistory}
+    updatePersonalHistory={updatePersonalHistory}
+    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+    useStore={useStore}
+  />
+);
+
 export const ROUTES = [
   {
     path: NAV_PATHS.SEARCH_PATIENT,
@@ -141,7 +154,20 @@ export const ROUTES = [
   },
   {
     path: NAV_PATHS.LOGIN_USER,
-    element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
+    // element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
+    // element: (
+    //   <RegisterView
+    //     registerUser={(_email, _password) => {
+    //       console.log("Register user called");
+    //     }}
+    //   />
+    // ),
+    element: (
+      personalHistoryView
+      // <RegisterView
+      //   registerUser={registerUser}
+      // />
+    ),
   },
   {
     path: NAV_PATHS.ADD_PATIENT,

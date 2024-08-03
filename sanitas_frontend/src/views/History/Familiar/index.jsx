@@ -469,7 +469,6 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
                 }}
               />
             </div>
-
             {selectedFamiliar.disease && (
               <>
                 {selectedFamiliar.disease !== "others" && (
