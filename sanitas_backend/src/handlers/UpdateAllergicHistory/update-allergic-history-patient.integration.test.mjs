@@ -15,31 +15,31 @@ describe("Update Allergic Medical History integration tests", () => {
     const allergicHistoryData = {
       patientId,
       medicalHistory: {
-        medicamento: {
+        medication: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
         },
-        comida: {
+        food: {
           version: 1,
           data: [],
         },
-        polvo: {
+        dust: {
           version: 1,
           data: [{ source: "Dust" }],
         },
-        polen: {
+        pollen: {
           version: 1,
           data: [],
         },
-        cambioDeClima: {
+        climateChange: {
           version: 1,
           data: [{ region: "High Altitude" }],
         },
-        animales: {
+        animals: {
           version: 1,
           data: [{ type: "Cats" }],
         },
-        otros: {
+        others: {
           version: 1,
           data: [],
         },
@@ -51,26 +51,26 @@ describe("Update Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
     expect(response.data.patientId).toBe(patientId);
-    expect(response.data.medicalHistory.medicamento).toEqual(
-      allergicHistoryData.medicalHistory.medicamento,
+    expect(response.data.medicalHistory.medication).toEqual(
+      allergicHistoryData.medicalHistory.medication,
     );
-    expect(response.data.medicalHistory.comida).toEqual(
-      allergicHistoryData.medicalHistory.comida,
+    expect(response.data.medicalHistory.food).toEqual(
+      allergicHistoryData.medicalHistory.food,
     );
-    expect(response.data.medicalHistory.polvo).toEqual(
-      allergicHistoryData.medicalHistory.polvo,
+    expect(response.data.medicalHistory.dust).toEqual(
+      allergicHistoryData.medicalHistory.dust,
     );
-    expect(response.data.medicalHistory.polen).toEqual(
-      allergicHistoryData.medicalHistory.polen,
+    expect(response.data.medicalHistory.pollen).toEqual(
+      allergicHistoryData.medicalHistory.pollen,
     );
-    expect(response.data.medicalHistory.cambioDeClima).toEqual(
-      allergicHistoryData.medicalHistory.cambioDeClima,
+    expect(response.data.medicalHistory.climateChange).toEqual(
+      allergicHistoryData.medicalHistory.climateChange,
     );
-    expect(response.data.medicalHistory.animales).toEqual(
-      allergicHistoryData.medicalHistory.animales,
+    expect(response.data.medicalHistory.animals).toEqual(
+      allergicHistoryData.medicalHistory.animals,
     );
-    expect(response.data.medicalHistory.otros).toEqual(
-      allergicHistoryData.medicalHistory.otros,
+    expect(response.data.medicalHistory.others).toEqual(
+      allergicHistoryData.medicalHistory.others,
     );
   });
 
@@ -78,31 +78,31 @@ describe("Update Allergic Medical History integration tests", () => {
     const allergicHistoryData = {
       patientId: "9999999",
       medicalHistory: {
-        medicamento: {
+        medication: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
         },
-        comida: {
+        food: {
           version: 1,
           data: [],
         },
-        polvo: {
+        dust: {
           version: 1,
           data: [{ source: "Dust" }],
         },
-        polen: {
+        pollen: {
           version: 1,
           data: [],
         },
-        cambioDeClima: {
+        climateChange: {
           version: 1,
           data: [{ region: "High Altitude" }],
         },
-        animales: {
+        animals: {
           version: 1,
           data: [{ type: "Cats" }],
         },
-        otros: {
+        others: {
           version: 1,
           data: [],
         },
@@ -122,7 +122,7 @@ describe("Update Allergic Medical History integration tests", () => {
     // Missing patientId
     const incompleteData = {
       medicalHistory: {
-        medicamento: {
+        medication: {
           version: 1,
           data: [{ name: "Penicillin", severity: "high" }],
         },

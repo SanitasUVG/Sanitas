@@ -64,13 +64,13 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 
     const values = [
       patientId,
-      JSON.stringify(medicalHistory.medicamento),
-      JSON.stringify(medicalHistory.comida),
-      JSON.stringify(medicalHistory.polvo),
-      JSON.stringify(medicalHistory.polen),
-      JSON.stringify(medicalHistory.cambioDeClima),
-      JSON.stringify(medicalHistory.animales),
-      JSON.stringify(medicalHistory.otros),
+      JSON.stringify(medicalHistory.medication),
+      JSON.stringify(medicalHistory.food),
+      JSON.stringify(medicalHistory.dust),
+      JSON.stringify(medicalHistory.pollen),
+      JSON.stringify(medicalHistory.climateChange),
+      JSON.stringify(medicalHistory.animals),
+      JSON.stringify(medicalHistory.others),
     ];
 
     logger.info({ values }, "Executing upsert query with values");

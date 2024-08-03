@@ -144,31 +144,31 @@ export const genDefaultPersonalHistory = () => ({
  * @returns {import("./index.mjs").AllergicMedicalHistory}
  */
 export const genDefaultAllergicHistory = () => ({
-  medicamento: {
+  medication: {
     version: 1,
     data: [],
   },
-  comida: {
+  food: {
     version: 1,
     data: [],
   },
-  polvo: {
+  dust: {
     version: 1,
     data: [],
   },
-  polen: {
+  pollen: {
     version: 1,
     data: [],
   },
-  cambioDeClima: {
+  climateChange: {
     version: 1,
     data: [],
   },
-  animales: {
+  animals: {
     version: 1,
     data: [],
   },
-  otros: {
+  others: {
     version: 1,
     data: [],
   },

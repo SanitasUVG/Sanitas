@@ -258,6 +258,13 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
  * @property {null|MedicalConditionData} enfermedades_cardiacas_data - Medical history data for cardiac diseases.
  * @property {null|MedicalConditionData} enfermedades_renales_data - Medical history data for renal diseases.
  * @property {null|MedicalConditionData} otros_data - Medical history data for other conditions not listed separately.
+ * @property {null|MedicalConditionData} medicamento_data - Allergic medical history data for medication.
+ * @property {null|MedicalConditionData} comida_data - Allergic medical history data for food.
+ * @property {null|MedicalConditionData} polvo_data - Allergic medical history data for dust.
+ * @property {null|MedicalConditionData} polen_data - Allergic medical history data for pollen.
+ * @property {null|MedicalConditionData} cambio_de_clima_data - Allergic medical history data for climate change.
+ * @property {null|MedicalConditionData} animales_data - Allergic medical history data for animals.
+ * @property {null|MedicalConditionData} otros_data - Allergic medical history data for other allergies.
  */
 
 /**
@@ -476,26 +483,14 @@ export function mapToAPISurgicalHistory(dbData) {
 }
 
 /**
- * @typedef {Object} DBAllergicData
- * @property {number} id_paciente - The unique identifier of the patient.
- * @property {null|MedicalConditionData} medicamento_data - Allergic medical history data for medication.
- * @property {null|MedicalConditionData} comida_data - Allergic medical history data for food.
- * @property {null|MedicalConditionData} polvo_data - Allergic medical history data for dust.
- * @property {null|MedicalConditionData} polen_data - Allergic medical history data for pollen.
- * @property {null|MedicalConditionData} cambio_de_clima_data - Allergic medical history data for climate change.
- * @property {null|MedicalConditionData} animales_data - Allergic medical history data for animals.
- * @property {null|MedicalConditionData} otros_data - Allergic medical history data for other allergies.
- */
-
-/**
  * @typedef {Object} AllergicMedicalHistory
- * @property  {null|Object} medicalHistory.medicamento - Allergic medical history data for medication.
- * @property  {null|Object} medicalHistory.comida - Allergic medical history data for food.
- * @property  {null|Object} medicalHistory.polvo - Allergic medical history data for dust.
- * @property  {null|Object} medicalHistory.polen - Allergic medical history data for pollen.
- * @property  {null|Object} medicalHistory.cambioDeClima - Allergic medical history data for climate change.
- * @property  {null|Object} medicalHistory.animales - Allergic medical history data for animals.
- * @property  {null|Object} medicalHistory.otros - Allergic medical history data for other allergies.
+ * @property  {null|Object} medicalHistory.medication - Allergic medical history data for medication.
+ * @property  {null|Object} medicalHistory.food - Allergic medical history data for food.
+ * @property  {null|Object} medicalHistory.dust - Allergic medical history data for dust.
+ * @property  {null|Object} medicalHistory.pollen - Allergic medical history data for pollen.
+ * @property  {null|Object} medicalHistory.climateChange - Allergic medical history data for climate change.
+ * @property  {null|Object} medicalHistory.animals - Allergic medical history data for animals.
+ * @property  {null|Object} medicalHistory.others - Allergic medical history data for other allergies.
  */
 
 /**
@@ -509,7 +504,7 @@ export function mapToAPISurgicalHistory(dbData) {
  * This function checks if each allergic condition data exists; if not, it returns a default structure with an empty array.
  * It handles the transformation of nested data where applicable.
  *
- * @param {DBAllergicData} dbData - The raw database data containing fields for various allergic conditions of a patient.
+ * @param {DBData} dbData - The raw database data containing fields for various allergic conditions of a patient.
  * @returns {AllergicMedicalHistory} A structured object containing the patientId and a detailed allergicHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
@@ -526,25 +521,25 @@ export function mapToAPIAllergicHistory(dbData) {
     return data;
   };
 
-  const allergicHistory = {};
+  const medicalHistory = {};
   const keys = Object.keys(dbData);
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
     if (key !== "id_paciente") {
-      allergicHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
+      medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
     }
   }
 
   return {
     patientId: dbData.id_paciente,
-    allergicHistory: {
-      medicamento: formatResponse(dbData.medicamento_data),
-      comida: formatResponse(dbData.comida_data),
-      polvo: formatResponse(dbData.polvo_data),
-      polen: formatResponse(dbData.polen_data),
-      cambioDeClima: formatResponse(dbData.cambio_de_clima_data),
-      animales: formatResponse(dbData.animales_data),
-      otros: formatResponse(dbData.otros_data),
+    medicalHistory: {
+      medication: formatResponse(dbData.medicamento_data),
+      food: formatResponse(dbData.comida_data),
+      dust: formatResponse(dbData.polvo_data),
+      pollen: formatResponse(dbData.polen_data),
+      climateChange: formatResponse(dbData.cambio_de_clima_data),
+      animals: formatResponse(dbData.animales_data),
+      others: formatResponse(dbData.otros_data),
     },
   };
 }
