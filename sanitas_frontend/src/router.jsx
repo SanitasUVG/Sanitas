@@ -56,6 +56,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
   SURGICAL_HISTORY: "surgical",
   TRAUMATOLOGICAL_HISTORY: "traumatological",
   FAMILIAR_HISTORY: "familiar",
+  PERSONAL_HISTORY: "personal",
   // TODO: Add other Navigation routes...
 };
 
@@ -79,6 +80,9 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
   },
   navigateToFamiliar: (navigate) => {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
+  },
+  navigateToPersonal: (navigate) => {
+    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
 };
@@ -154,20 +158,7 @@ export const ROUTES = [
   },
   {
     path: NAV_PATHS.LOGIN_USER,
-    // element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
-    // element: (
-    //   <RegisterView
-    //     registerUser={(_email, _password) => {
-    //       console.log("Register user called");
-    //     }}
-    //   />
-    // ),
-    element: (
-      personalHistoryView
-      // <RegisterView
-      //   registerUser={registerUser}
-      // />
-    ),
+    element: <LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />,
   },
   {
     path: NAV_PATHS.ADD_PATIENT,
@@ -202,6 +193,10 @@ export const ROUTES = [
       {
         path: UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY,
         element: familiarHistoryView,
+      },
+      {
+        path: UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY,
+        element: personalHistoryView,
       },
       // TODO: Add more routes...
     ],

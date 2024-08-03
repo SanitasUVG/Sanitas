@@ -339,6 +339,7 @@ function PersonalView({ id, birthdayResource, personalHistoryResource, updatePer
         setAddingNew(false);
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error al conectar con el servidor");
     }
   };
