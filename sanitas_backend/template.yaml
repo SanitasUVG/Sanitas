@@ -463,6 +463,12 @@ Resources:
           Name: email
           Required: true
 
+  CognitoDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Doman: sanitas-uvg
+      UserPoolId: !Ref CognitoUserPool
+
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
