@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {Object} BaseInputProps
  * @property {'text' | 'number' | 'date' | 'email' | 'password'} type - The type of the input specifying the allowed types of inputs.

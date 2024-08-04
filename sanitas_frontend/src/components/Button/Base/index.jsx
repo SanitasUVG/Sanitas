@@ -61,7 +61,7 @@ export default function BaseButton({ text, onClick, style = {} }) {
 			style={defaultStyle}
 		>
 			<span style={textStyle}>{text}</span>
-			<img src={arrowRight} style={iconStyle} />
+			<img src={arrowRight} style={iconStyle} alt="Right button arrow" />
 		</button>
 	);
 }

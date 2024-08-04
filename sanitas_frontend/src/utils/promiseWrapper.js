@@ -32,11 +32,11 @@ export default function WrapPromise(promise) {
 	const read = () => {
 		if (status === "pending") {
 			throw suspender;
-		} 
+		}
 		if (status === "error") {
 			throw response;
 		}
-			return response;
+		return response;
 	};
 
 	return { read };
@@ -55,7 +55,7 @@ export function WrapPromiseErrorMock() {
 }
 
 /**
-	* Pretends a promise is taking `msTimeout` amount of time before failing.
+ * Pretends a promise is taking `msTimeout` amount of time before failing.
  * @param {number} msTimeout - The number of ms to simulate before failing.
  */
 export function WrapPromisePrendingMock(msTimeout) {
@@ -68,8 +68,8 @@ export function WrapPromisePrendingMock(msTimeout) {
 	const read = () => {
 		if (status === "pending") {
 			throw promise;
-		} 
-			throw "MOCK ERROR";
+		}
+		throw "MOCK ERROR";
 	};
 
 	return { read };

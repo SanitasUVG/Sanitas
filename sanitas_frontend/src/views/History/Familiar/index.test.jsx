@@ -14,7 +14,7 @@ vi.mock("react-toastify", () => {
 	};
 });
 
-const mockGetFamiliarHistoryWithData = async (id) => ({
+const mockGetFamiliarHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
 			hypertension: { data: ["Padre"], version: 1 },

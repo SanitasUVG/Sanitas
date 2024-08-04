@@ -194,9 +194,12 @@ export default function RegisterView({ registerUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.LOGIN_USER, { replace: true })
 								}
-								onMouseEnter={(e) => { e.target.style.textDecoration = "underline"; }
-								}
-								onMouseLeave={(e) => { e.target.style.textDecoration = "none"; }}
+								onMouseEnter={(e) => {
+									e.target.style.textDecoration = "underline";
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.textDecoration = "none";
+								}}
 							>
 								Ingresa aquí.
 							</a>
@@ -216,6 +219,7 @@ export default function RegisterView({ registerUser }) {
 
 					<img
 						src={logoSanitas}
+						alt="Sanitas logo"
 						style={{
 							width: "4rem",
 							position: "absolute",

@@ -199,7 +199,7 @@ function SurgicalView({
 			}
 		}
 		setYearOptions(options);
-	}, [birthYear]);
+	}, [birthYear, currentYear]);
 
 	// Event handlers for adding, editing, and saving surgical history records
 	const handleOpenNewForm = () => {
@@ -318,7 +318,7 @@ function SurgicalView({
 				) : (
 					surgicalHistory.data.map((surgery, index) => (
 						<InformationCard
-							key={index}
+							key={`${surgery.surgeryYear}-${surgery.surgeryType}-${index}`}
 							type="surgical"
 							year={surgery.surgeryYear}
 							surgeryType={surgery.surgeryType}

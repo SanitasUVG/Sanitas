@@ -222,9 +222,12 @@ export default function LoginView({ loginUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
 								}
-								onMouseEnter={(e) => { e.target.style.textDecoration = "underline"; }
-								}
-								onMouseLeave={(e) => { e.target.style.textDecoration = "none"; }}
+								onMouseEnter={(e) => {
+									e.target.style.textDecoration = "underline";
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.textDecoration = "none";
+								}}
 							>
 								Crea una aquí.
 							</a>
@@ -254,7 +257,7 @@ export default function LoginView({ loginUser }) {
 						}}
 					/>
 				</div>
-			</div >
+			</div>
 		);
 	};
 	const LoadingView = () => {

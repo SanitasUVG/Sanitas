@@ -147,7 +147,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	let errorMessage = "";
 	if (familiarHistoryResult.error) {
 		const error = familiarHistoryResult.error;
-		if (error && error.response) {
+		if (error?.response) {
 			const { status } = error.response;
 			if (status < 500) {
 				errorMessage =
@@ -210,10 +210,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
 	// No familiar data in API
 	const noFamiliarData = Object.keys(familiarHistory).every(
-		(key) =>
-			familiarHistory[key] &&
-			familiarHistory[key].data &&
-			familiarHistory[key].data.length === 0,
+		(key) => familiarHistory[key]?.data?.length === 0,
 	);
 
 	// Handlers for different actions within the component
@@ -261,8 +258,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	// Handles the saving of new or modified family medical history
 	const handleSaveNewFamiliar = async () => {
 		if (
-			!selectedFamiliar.disease ||
-			!familiarHistory[selectedFamiliar.disease]
+			!(selectedFamiliar.disease && familiarHistory[selectedFamiliar.disease])
 		) {
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return;
@@ -313,7 +309,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 				setSelectedFamiliar({});
 				setAddingNew(false);
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Error al conectar con el servidor");
 		}
 	};
@@ -399,7 +395,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 					</p>
 				) : (
 					Object.entries(familiarHistory).map(
-						([diseaseKey, { data = [], version }]) => {
+						([diseaseKey, { data = [], version: _version }]) => {
 							if (data.length === 0) {
 								return null;
 							}
@@ -427,22 +423,22 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										/>
 									);
 								});
-							} else {
-								const displayedRelatives = data.join(", ");
-								return (
-									<InformationCard
-										key={diseaseKey}
-										type="family"
-										disease={displayedDisease}
-										relative={displayedRelatives}
-										onClick={() =>
-											handleSelectDiseaseCard(diseaseKey, {
-												who: displayedRelatives,
-											})
-										}
-									/>
-								);
 							}
+
+							const displayedRelatives = data.join(", ");
+							return (
+								<InformationCard
+									key={diseaseKey}
+									type="family"
+									disease={displayedDisease}
+									relative={displayedRelatives}
+									onClick={() =>
+										handleSelectDiseaseCard(diseaseKey, {
+											who: displayedRelatives,
+										})
+									}
+								/>
+							);
 						},
 					)
 				)}

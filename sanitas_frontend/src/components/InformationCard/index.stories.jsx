@@ -1,4 +1,3 @@
-
 import InformationCard from ".";
 
 export default {

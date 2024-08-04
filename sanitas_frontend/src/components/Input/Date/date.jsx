@@ -1,5 +1,3 @@
-
-
 /**
  * @typedef {Object} DateInputProps
  * @property {string} value - The current value of the date input, expected to be in 'YYYY-MM-DD' format.

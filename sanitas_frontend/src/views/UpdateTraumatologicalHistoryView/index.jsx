@@ -165,7 +165,8 @@ function TraumatologicView({
 	const birthYearData = birthYearResult.result;
 	const traumatologicHistoryData = traumatologicHistoryResult.result;
 
-	const sortedData = traumatologicHistoryData?.medicalHistory.traumas.data || [];
+	const sortedData =
+		traumatologicHistoryData?.medicalHistory.traumas.data || [];
 	sortedData.sort((a, b) => Number.parseInt(b.year) - Number.parseInt(a.year));
 
 	const [traumatologicHistory, setTraumatologicHistory] = useState({
@@ -202,8 +203,7 @@ function TraumatologicView({
 
 	const handleSaveNewTrauma = async () => {
 		if (
-			!selectedTrauma.whichBone ||
-			!selectedTrauma.year ||
+			!(selectedTrauma.whichBone && selectedTrauma.year) ||
 			selectedTrauma.treatment === undefined
 		) {
 			toast.error("Complete todos los campos requeridos.");

@@ -1,4 +1,3 @@
-
 import { MemoryRouter } from "react-router-dom";
 import { mockLogoutUser } from "src/cognito.mjs";
 import { createEmptyStore } from "src/store.mjs";

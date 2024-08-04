@@ -1,4 +1,3 @@
-
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import RequireAuth from ".";

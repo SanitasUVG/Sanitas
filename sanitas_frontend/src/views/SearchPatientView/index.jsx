@@ -112,10 +112,6 @@ export default function SearchPatientView({
 		navigate(NAV_PATHS.ADD_PATIENT, { state: { cui: query } });
 	};
 
-	const doNothing = () => {
-		// This function does nothing
-	};
-
 	return (
 		<div
 			style={{
@@ -555,7 +551,7 @@ const PatientSection = ({
 						fontFamily: fonts.textFont,
 					},
 				}}
-			></PatientCard>
+			/>
 		</Suspense>
 	);
 };

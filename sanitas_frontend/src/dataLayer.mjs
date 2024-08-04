@@ -30,7 +30,7 @@ export async function searchPatient(query, type) {
 		: await mockGetSession();
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
-	} 
+	}
 	if (!sessionResponse.result.isValid()) {
 		return { error: "Invalid session!" };
 	}
@@ -39,7 +39,8 @@ export async function searchPatient(query, type) {
 	try {
 		let response;
 		try {
-			response = await axios.post(`${PROTECTED_URL}/patient/search`,
+			response = await axios.post(
+				`${PROTECTED_URL}/patient/search`,
 				{
 					requestSearch: query,
 					searchType: type,
@@ -337,8 +338,8 @@ export const getTraumatologicalHistory = async (id) => {
 		const response = await axios.get(url);
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
-		} 
-			return { result: response.data };
+		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return {
@@ -347,8 +348,8 @@ export const getTraumatologicalHistory = async (id) => {
 		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -385,19 +386,18 @@ export const updateTraumatologicalHistory = async (
 
 	try {
 		const response = await axios.put(url, payload);
-		if (response.status === 200) {
-			return { result: response.data };
-		} else {
+		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
 		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
-		} else if (error.request) {
-			return { error: "No response received" };
-		} else {
-			return { error: error.message };
 		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -414,19 +414,19 @@ export const getSurgicalHistory = async (id) => {
 		const response = await axios.get(url);
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
-		} 
-			const version = response.data.medicalHistory.surgeries.version;
-			return { result: response.data, version };
+		}
+		const version = response.data.medicalHistory.surgeries.version;
+		return { result: response.data, version };
 	} catch (error) {
 		if (error.response) {
 			return {
 				error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
 			};
-		} 
+		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -464,16 +464,16 @@ export const updateSurgicalHistory = async (
 		const response = await axios.put(url, payload);
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
-		} 
-			return { result: response.data };
+		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
 		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -490,8 +490,8 @@ export const getPersonalHistory = async (id) => {
 		const response = await axios.get(url);
 		if (response.status === 200) {
 			return { result: response.data };
-		} 
-			return { error: `Received unexpected status code: ${response.status}` };
+		}
+		return { error: `Received unexpected status code: ${response.status}` };
 	} catch (error) {
 		if (error.response) {
 			return {
@@ -500,8 +500,8 @@ export const getPersonalHistory = async (id) => {
 		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -529,16 +529,16 @@ export const updatePersonalHistory = async (
 		const response = await axios.put(url, payload);
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
-		} 
-			return { result: response.data };
+		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
-		} 
+		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -604,8 +604,8 @@ export const getFamilyHistory = async (id) => {
 		const response = await axios.get(url);
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
-		} 
-			return { result: response.data };
+		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return {
@@ -614,8 +614,8 @@ export const getFamilyHistory = async (id) => {
 		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };
 
@@ -640,15 +640,15 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 		const response = await axios.put(url, payload);
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
-		} 
-			return { result: response.data };
+		}
+		return { result: response.data };
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
 		}
 		if (error.request) {
 			return { error: "No response received" };
-		} 
-			return { error: error.message };
+		}
+		return { error: error.message };
 	}
 };

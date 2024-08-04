@@ -158,7 +158,7 @@ function PersonalView({
 	let errorMessage = "";
 	if (personalHistoryResult.error) {
 		const error = personalHistoryResult.error;
-		if (error && error.response) {
+		if (error?.response) {
 			const { status } = error.response;
 			if (status < 500) {
 				errorMessage =
@@ -221,10 +221,7 @@ function PersonalView({
 
 	// No personal data in API
 	const noPersonalData = Object.keys(personalHistory).every(
-		(key) =>
-			personalHistory[key] &&
-			personalHistory[key].data &&
-			personalHistory[key].data.length === 0,
+		(key) => personalHistory[key]?.data?.length === 0,
 	);
 
 	const currentYear = new Date().getFullYear();
@@ -242,7 +239,7 @@ function PersonalView({
 			}
 		}
 		setYearOptions(options);
-	}, [birthYear]);
+	}, [birthYear, currentYear]);
 
 	// Handlers for different actions within the component
 	const handleOpenNewForm = () => {
@@ -288,8 +285,7 @@ function PersonalView({
 	// Handles the saving of new or modified family medical history
 	const handleSaveNewPersonal = async () => {
 		if (
-			!selectedPersonal.disease ||
-			!personalHistory[selectedPersonal.disease]
+			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
 		) {
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return;
@@ -442,7 +438,7 @@ function PersonalView({
 					</p>
 				) : (
 					Object.entries(personalHistory).map(
-						([diseaseKey, { data = [], version }]) => {
+						([diseaseKey, { data = [], version: _version }]) => {
 							if (data.length === 0) {
 								return null;
 							}
@@ -460,21 +456,21 @@ function PersonalView({
 										/>
 									);
 								});
-							} else {
-								return data.map((entry, index) => {
-									return (
-										<InformationCard
-											key={`${diseaseKey}-${index}`}
-											type="personal"
-											disease={displayedDisease}
-											surgeryType={
-												entry.medicine ? entry.medicine : entry.treatment
-											}
-											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-										/>
-									);
-								});
 							}
+
+							return data.map((entry, index) => {
+								return (
+									<InformationCard
+										key={`${diseaseKey}-${index}`}
+										type="personal"
+										disease={displayedDisease}
+										surgeryType={
+											entry.medicine ? entry.medicine : entry.treatment
+										}
+										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+									/>
+								);
+							});
 						},
 					)
 				)}

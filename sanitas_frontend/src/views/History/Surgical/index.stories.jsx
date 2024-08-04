@@ -1,4 +1,3 @@
-
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { SurgicalHistory } from ".";

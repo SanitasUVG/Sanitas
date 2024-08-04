@@ -1,4 +1,3 @@
-
 import Throbber from ".";
 
 export default {

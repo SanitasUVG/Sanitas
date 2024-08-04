@@ -78,7 +78,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 				}
 			}
 			if (patientData.sex === null) {
-				setUpdateError(`El campo de género es obligatorio.`);
+				setUpdateError("El campo de género es obligatorio.");
 				return false;
 			}
 			return true;

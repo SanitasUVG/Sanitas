@@ -1,5 +1,4 @@
-
-import { useEffect, } from "react";
+import { useEffect } from "react";
 import BaseButton from "src/components/Button/Base";
 import { colors, fonts } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";
@@ -84,7 +83,7 @@ export default function PatientCard({
 	const result = patientsResources.read();
 	if (result.error) {
 		let errorMessage = "";
-		if (result.error && result.error.cause) {
+		if (result.error?.cause) {
 			const { response } = result.error.cause;
 			if (response?.status < 500) {
 				errorMessage =
@@ -127,7 +126,7 @@ export default function PatientCard({
 
 	useEffect(() => {
 		setQueryReturnedEmpty(patientInfo.length <= 0);
-	}, [patientInfo]);
+	}, [patientInfo, setQueryReturnedEmpty]);
 
 	return (
 		<div style={defaultStyles.mainContainer}>
