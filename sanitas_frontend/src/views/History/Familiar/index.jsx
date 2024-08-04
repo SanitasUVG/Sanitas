@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -269,7 +269,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		}
 
 		// Prepare new entry for saving
-		let newEntry = [
+		const newEntry = [
 			"cancer",
 			"cardiacDiseases",
 			"renalDiseases",
@@ -413,7 +413,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 								diseaseKey === "others"
 							) {
 								return data.map((entry, index) => {
-									let details = entry.who;
+									const details = entry.who;
 									if (diseaseKey === "others") {
 										displayedDisease = entry.disease;
 									}
@@ -428,7 +428,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 									);
 								});
 							} else {
-								let displayedRelatives = data.join(", ");
+								const displayedRelatives = data.join(", ");
 								return (
 									<InformationCard
 										key={diseaseKey}

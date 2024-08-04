@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import BaseButton from "src/components/Button/Base/index";
@@ -69,7 +69,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 				setUpdateError("El CUI debe contener exactamente 13 caracteres.");
 				return false;
 			}
-			for (let field of fields) {
+			for (const field of fields) {
 				if (!patientData[field]) {
 					setUpdateError(
 						`El campo ${field} es obligatorio y no puede estar vacío.`,

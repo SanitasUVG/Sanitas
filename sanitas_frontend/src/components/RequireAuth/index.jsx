@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";

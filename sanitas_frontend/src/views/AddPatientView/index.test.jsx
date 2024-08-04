@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
-import * as store from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import { AddPatientView } from "../AddPatientView";
 

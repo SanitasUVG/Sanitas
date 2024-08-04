@@ -1,10 +1,9 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
-import InformationCard from "src/components/InformationCard";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
@@ -166,7 +165,7 @@ function TraumatologicView({
 	const birthYearData = birthYearResult.result;
 	const traumatologicHistoryData = traumatologicHistoryResult.result;
 
-	let sortedData = traumatologicHistoryData?.medicalHistory.traumas.data || [];
+	const sortedData = traumatologicHistoryData?.medicalHistory.traumas.data || [];
 	sortedData.sort((a, b) => Number.parseInt(b.year) - Number.parseInt(a.year));
 
 	const [traumatologicHistory, setTraumatologicHistory] = useState({

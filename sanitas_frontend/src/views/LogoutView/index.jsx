@@ -2,7 +2,6 @@ import logoSanitas from "src/assets/images/logoSanitas.png";
 import backgroundImage from "src/assets/images/UVGBackground.jpg";
 import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import BaseButton from "src/components/Button/Base";
-import { BaseInput } from "src/components/Input";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";

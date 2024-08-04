@@ -1,5 +1,5 @@
-import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, } from "react";
 import BaseButton from "src/components/Button/Base";
 import { colors, fonts } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";

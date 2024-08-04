@@ -1,17 +1,13 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Fragment, Suspense, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import BaseButton from "src/components/Button/Base";
+import { Suspense, useState } from "react";
 import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
-import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-import { delay } from "src/utils";
 import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
 
@@ -125,8 +121,8 @@ function UpdateColaboratorInformationSection({
 	};
 
 	const GenInputStyle = (labelRow, labelColumn) => {
-		let gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		let gridRow = `${labelRow} / ${labelRow + 1}`;
+		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
+		const gridRow = `${labelRow} / ${labelRow + 1}`;
 
 		return { gridColumn, gridRow };
 	};
@@ -306,8 +302,8 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	};
 
 	const GenInputStyle = (labelRow, labelColumn) => {
-		let gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		let gridRow = `${labelRow} / ${labelRow + 1}`;
+		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
+		const gridRow = `${labelRow} / ${labelRow + 1}`;
 
 		return { gridColumn, gridRow };
 	};

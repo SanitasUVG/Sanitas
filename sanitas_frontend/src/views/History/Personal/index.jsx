@@ -447,7 +447,7 @@ function PersonalView({
 								return null;
 							}
 
-							let displayedDisease = translateDisease(diseaseKey);
+							const displayedDisease = translateDisease(diseaseKey);
 							if (diseaseKey === "myocardialInfarction") {
 								return data.map((entry, index) => {
 									return (

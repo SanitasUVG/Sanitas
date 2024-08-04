@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -173,7 +173,7 @@ function SurgicalView({
 	const birthYearData = birthYearResult.result;
 	const surgicalHistoryData = surgicalHistoryResult.result;
 
-	let sortedData = surgicalHistoryData?.medicalHistory.surgeries.data || [];
+	const sortedData = surgicalHistoryData?.medicalHistory.surgeries.data || [];
 	sortedData.sort(
 		(a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear),
 	);

@@ -2,7 +2,6 @@ import {
 	AuthenticationDetails,
 	CognitoUser,
 	CognitoUserPool,
-	CognitoUserSession,
 } from "amazon-cognito-identity-js";
 import { IS_PRODUCTION } from "./constants.mjs";
 

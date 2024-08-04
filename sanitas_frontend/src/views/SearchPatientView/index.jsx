@@ -1,6 +1,5 @@
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
-import settingsIcon from "@tabler/icons/outline/settings.svg";
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";

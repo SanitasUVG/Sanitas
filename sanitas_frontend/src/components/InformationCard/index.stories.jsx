@@ -1,4 +1,4 @@
-import React from "react";
+
 import InformationCard from ".";
 
 export default {

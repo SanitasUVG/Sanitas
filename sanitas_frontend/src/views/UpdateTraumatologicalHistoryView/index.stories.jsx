@@ -1,4 +1,4 @@
-import React from "react";
+
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { TraumatologicHistory } from ".";
