@@ -148,7 +148,7 @@ export const updatePatientHandler = async (event, context) => {
 			"¡Se produjo un error al actualizar los datos del paciente!",
 		);
 
-		let statusCode = 400;
+		const statusCode = 400;
 		let errorMessage =
 			"Se produjo un error al actualizar los datos del paciente.";
 

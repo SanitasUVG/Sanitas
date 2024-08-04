@@ -86,7 +86,7 @@ export const searchPatientHandler = async (event, context) => {
 		await client.connect();
 
 		let sqlQuery = "";
-		let queryParams = [];
+		const queryParams = [];
 
 		switch (searchType) {
 			case "Carnet":
@@ -108,7 +108,7 @@ export const searchPatientHandler = async (event, context) => {
 				logger.info({ sqlQuery, queryParams }, "Querying by CUI");
 				break;
 			case "Nombres":
-				let request_search_processed = requestSearch
+				const request_search_processed = requestSearch
 					.normalize("NFD")
 					.replace(/[\u0300-\u036f]/g, "")
 					.toLowerCase();

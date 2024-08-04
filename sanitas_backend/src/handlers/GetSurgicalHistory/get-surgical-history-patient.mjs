@@ -41,9 +41,9 @@ export const getSurgicalHistoryHandler = async (event, context) => {
 				.build();
 		}
 
-		let query =
+		const query =
 			"SELECT * FROM antecedentes_quirurgicos WHERE id_paciente = $1;";
-		let args = [id];
+		const args = [id];
 		logger.info({ query, args }, "Querying DB...");
 		const dbResponse = await client.query(query, args);
 		logger.info("Query done!");

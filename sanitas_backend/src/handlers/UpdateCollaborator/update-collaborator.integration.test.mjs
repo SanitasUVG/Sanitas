@@ -5,8 +5,8 @@ import { LOCAL_API_URL } from "../testHelpers.mjs";
 const API_URL = `${LOCAL_API_URL}/patient/collaborator/`;
 
 describe("Collaborator Handler", () => {
-	let collaboratorId = 2;
-	let fakeCollaboratorId = 9999;
+	const collaboratorId = 2;
+	const fakeCollaboratorId = 9999;
 
 	it("should return 403 if no ID is provided", async () => {
 		try {

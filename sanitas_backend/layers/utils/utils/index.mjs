@@ -512,7 +512,7 @@ export function mapToAPIPersonalHistory(dbData) {
  * @returns {TraumatologicHistory} Formatted response object with API-friendly field names.
  */
 export function mapToAPITraumatologicHistory(dbData) {
-	let {
+	const {
 		id_paciente: patientId,
 		antecedente_traumatologico_data: traumatologicData,
 	} = dbData;
@@ -537,7 +537,7 @@ export function mapToAPITraumatologicHistory(dbData) {
  * @returns {import('./defaultValues.mjs').APISurgicalHistory} The surgical history formatted for the API.
  */
 export function mapToAPISurgicalHistory(dbData) {
-	let { id_paciente: patientId, antecedente_quirurgico_data: medicalHistory } =
+	const { id_paciente: patientId, antecedente_quirurgico_data: medicalHistory } =
 		dbData;
 
 	return {

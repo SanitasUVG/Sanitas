@@ -1,12 +1,12 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { describe, expect, } from "@jest/globals";
 import axios from "axios";
 import { LOCAL_API_URL } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}/patient/student/`;
 
 describe("Student Handler", () => {
-	let studentId = 1;
-	let fakestudentId = 9999;
+	const studentId = 1;
+	const fakestudentId = 9999;
 
 	it("should return 403 if no CARNET is provided", async () => {
 		try {
