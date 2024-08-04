@@ -108,15 +108,15 @@ describe("Update Allergic Medical History integration tests", () => {
         },
       },
     };
-
+  
     const response = await axios.put(API_URL, allergicHistoryData, {
       validateStatus: () => true,
     });
-
+  
     expect(response).toBeDefined();
     expect(response.status).toBe(404);
     expect(response.data.error).toBe("No allergic history found for the provided ID.");
-  });
+  });  
 
   test("Fail to update allergic medical history due to missing required fields", async () => {
     // Missing patientId
