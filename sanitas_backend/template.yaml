@@ -438,6 +438,7 @@ Resources:
         AllowOrigin: "'*'"
       Auth:
         DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt CognitoUserPool.Arn
