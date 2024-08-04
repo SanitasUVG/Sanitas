@@ -387,7 +387,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
 		const [patientData, setPatientData] = useState({
 			...response.result,
-			birthdate: formatDate(response.result.birthdate),
+			birthdate: formatDate(response.result?.birthdate),
 		});
 
 		if (response.error) {
