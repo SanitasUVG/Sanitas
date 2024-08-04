@@ -41,7 +41,7 @@ describe("Get Allergic Medical History integration tests", () => {
         },
       },
     });
-  }, 20000);
+  }, 10000);
 
   test("Retrieve existing allergic history with valid patient ID", async () => {
     const response = await axios.get(`${API_URL}${patientId}`);
@@ -49,10 +49,10 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
 
-    const medicalHistory = response.data.medicalHistory;
-    expect(medicalHistory).toBeDefined();
-    expect(medicalHistory.medication).toBeDefined();
-  });
+    const allergicHistory = response.data.medicalHistory;
+    expect(allergicHistory).toBeDefined();
+    expect(allergicHistory.medication).toBeDefined();
+  }, 10000);
 
   test("Retrieve default allergic history for non-existent patient", async () => {
     const nonExistentPatientId = 999999; // Assuming this ID does not exist
@@ -86,5 +86,5 @@ describe("Get Allergic Medical History integration tests", () => {
 
     const { error } = response.data;
     expect(error).toBe("Invalid request: No valid patientId supplied!");
-  });
+  }, 10000);
 });
