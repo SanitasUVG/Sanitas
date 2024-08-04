@@ -575,7 +575,6 @@ export function mapToAPINonPathologicalHistory(dbData) {
 		medicalHistory: nonPathologicalHistory,
 	};
 }
-
 /**
  * @typedef {Object} AllergicMedicalHistory
  * @property  {null|MedicalConditionData} medicalHistory.medication - Allergic medical history data for medication.
