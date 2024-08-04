@@ -234,7 +234,6 @@ export async function updatePatientNonPathologicalHistory(
 		nonPathologicalHistoryData,
 	);
 }
-
 /**
  * Updates the allergic medical history for a specific patient using a PUT request.
  * This helper function is designed to set up test conditions by populating allergic medical history data.

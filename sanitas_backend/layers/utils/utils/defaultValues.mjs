@@ -170,7 +170,6 @@ export const genDefaultNonPathologicalHistory = () => ({
 		data: [],
 	},
 });
-
 /**
  * Generates the default value for an allergic medical history in the DB.
  * @returns {import("./index.mjs").AllergicMedicalHistory}
