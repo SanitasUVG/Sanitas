@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
+import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput } from "src/components/Input/index";
@@ -10,13 +11,19 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
+
 export function NonPathologicalHistory({
   getNonPathologicalHistory,
+  getBloodTypePatientInfo,
   updateNonPathologicalHistory,
   sidebarConfig,
   useStore,
 }) {
   const id = useStore((s) => s.selectedPatientId);
+  const bloodTypeResource = WrapPromise(getBloodTypePatientInfo(id));
   const nonPathologicalHistoryResource = WrapPromise(getNonPathologicalHistory(id));
 
   const LoadingView = () => {
@@ -100,6 +107,7 @@ export function NonPathologicalHistory({
               <NonPathologicalView
                 id={id}
                 nonPathologicalHistoryResource={nonPathologicalHistoryResource}
+                bloodTypeResource={bloodTypeResource}
                 updateNonPathologicalHistory={updateNonPathologicalHistory}
               />
             </Suspense>
@@ -110,20 +118,53 @@ export function NonPathologicalHistory({
   );
 }
 
-function NonPathologicalView({ id, nonPathologicalHistoryResource, updateNonPathologicalHistory }) {
-  const [smokingStatus, setSmokingStatus] = useState(false);
-  const [cigarettesPerDay, setCigarettesPerDay] = useState("");
-  const [smokingYears, setSmokingYears] = useState("");
-  const [alcoholConsumption, setAlcoholConsumption] = useState(false);
-  const [drinksPerMonth, setDrinksPerMonth] = useState("");
-  const [drugUse, setDrugUse] = useState(false);
-  const [drugType, setDrugType] = useState("");
-  const [drugFrequency, setDrugFrequency] = useState("");
+function NonPathologicalView({
+  id,
+  nonPathologicalHistoryResource,
+  bloodTypeResource,
+  updateNonPathologicalHistory,
+}) {
+  const [isEditable, setIsEditable] = useState(false);
 
-  const nonPathologicalHistoryResult = nonPathologicalHistoryResource.read();
+  const nonPathologicalHistoryData = nonPathologicalHistoryResource.read();
+  const bloodTypeResult = bloodTypeResource.read();
+
+  const [smokingStatus, setSmokingStatus] = useState(
+    () => nonPathologicalHistoryData?.smoker?.data?.[0]?.smokes ?? false,
+  );
+  const [cigarettesPerDay, setCigarettesPerDay] = useState(
+    () => nonPathologicalHistoryData?.smoker?.data?.[0]?.cigarettesPerDay ?? "",
+  );
+  const [smokingYears, setSmokingYears] = useState(
+    () => nonPathologicalHistoryData?.smoker?.data?.[0]?.years ?? "",
+  );
+  const [alcoholConsumption, setAlcoholConsumption] = useState(
+    () => nonPathologicalHistoryData?.drink?.data?.[0]?.drinks ?? false,
+  );
+  const [drinksPerMonth, setDrinksPerMonth] = useState(
+    () => nonPathologicalHistoryData?.drink?.data?.[0]?.drinksPerMonth ?? "",
+  );
+  const [drugUse, setDrugUse] = useState(
+    () => nonPathologicalHistoryData?.drugs?.data?.[0]?.usesDrugs ?? false,
+  );
+  const [drugType, setDrugType] = useState(
+    () => nonPathologicalHistoryData?.drugs?.data?.[0]?.type ?? "",
+  );
+  const [drugFrequency, setDrugFrequency] = useState(
+    () => nonPathologicalHistoryData?.drugs?.data?.[0]?.frequency ?? "",
+  );
+
+  const isFirstTime = !nonPathologicalHistoryData
+    || ((!nonPathologicalHistoryData.smoker?.data
+      || nonPathologicalHistoryData.smoker.data.length === 0)
+      && (!nonPathologicalHistoryData.drink?.data
+        || nonPathologicalHistoryData.drink.data.length === 0)
+      && (!nonPathologicalHistoryData.drugs?.data
+        || nonPathologicalHistoryData.drugs.data.length === 0));
+
   let errorMessage = "";
-  if (nonPathologicalHistoryResult.error) {
-    const error = nonPathologicalHistoryResult.error;
+  if (nonPathologicalHistoryData.error) {
+    const error = nonPathologicalHistoryData.error;
     if (error && error.response) {
       const { status } = error.response;
       if (status < 500) {
@@ -136,8 +177,107 @@ function NonPathologicalView({ id, nonPathologicalHistoryResource, updateNonPath
     }
   }
 
-  const handleSaveNonPathological = async () => {};
-  const handleCancel = () => {};
+  if (bloodTypeResult.error) {
+    const error = bloodTypeResult.error;
+    if (error && error.response) {
+      const { status } = error.response;
+      if (status < 500) {
+        errorMessage = "Ha ocurrido un error en la búsqueda del tipo de sangre, ¡Por favor vuelve a intentarlo!";
+      } else {
+        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+      }
+    } else {
+      errorMessage =
+        "Ha ocurrido un error procesando tu solicitud para obtener el tipo de sangre, por favor vuelve a intentarlo.";
+    }
+  }
+
+  const [nonPathologicalHistory, setNonPathologicalHistory] = useState({
+    smokingStatus: {
+      data: nonPathologicalHistoryData?.smoker?.data?.[0]?.status ?? false,
+      version: nonPathologicalHistoryData?.smoker?.version ?? 1,
+    },
+    cigarettesPerDay: {
+      data: nonPathologicalHistoryData?.smoker?.data?.[0]?.cigarettesPerDay ?? "",
+      version: nonPathologicalHistoryData?.smoker?.version ?? 1,
+    },
+    smokingYears: {
+      data: nonPathologicalHistoryData?.smoker?.data?.[0]?.years ?? "",
+      version: nonPathologicalHistoryData?.smoker?.version ?? 1,
+    },
+    alcoholConsumption: {
+      data: nonPathologicalHistoryData?.drink?.data?.[0]?.status ?? false,
+      version: nonPathologicalHistoryData?.drink?.version ?? 1,
+    },
+    drinksPerMonth: {
+      data: nonPathologicalHistoryData?.drink?.data?.[0]?.drinksPerMonth ?? "",
+      version: nonPathologicalHistoryData?.drink?.version ?? 1,
+    },
+    drugUse: {
+      data: nonPathologicalHistoryData?.drugs?.data?.[0]?.status ?? false,
+      version: nonPathologicalHistoryData?.drugs?.version ?? 1,
+    },
+    drugType: {
+      data: nonPathologicalHistoryData?.drugs?.data?.[0]?.type ?? "",
+      version: nonPathologicalHistoryData?.drugs?.version ?? 1,
+    },
+    drugFrequency: {
+      data: nonPathologicalHistoryData?.drugs?.data?.[0]?.frequency ?? "",
+      version: nonPathologicalHistoryData?.drugs?.version ?? 1,
+    },
+  });
+
+  const handleSaveNonPathological = async () => {
+    const updateDetails = {
+      bloodType: bloodTypeResult?.result?.bloodType,
+      smoker: {
+        version: nonPathologicalHistory.smokingStatus.version,
+        data: [
+          {
+            smokes: smokingStatus,
+            cigarettesPerDay: parseInt(cigarettesPerDay),
+            years: parseInt(smokingYears),
+          },
+        ],
+      },
+      drink: {
+        version: nonPathologicalHistory.alcoholConsumption.version,
+        data: [
+          {
+            drinks: alcoholConsumption,
+            drinksPerMonth: parseInt(drinksPerMonth),
+          },
+        ],
+      },
+      drugs: {
+        version: nonPathologicalHistory.drugUse.version,
+        data: [
+          {
+            usesDrugs: drugUse,
+            drugType: drugType,
+            frequency: parseInt(drugFrequency),
+          },
+        ],
+      },
+    };
+
+    toast.info("Guardando antecedente quirúrgico...");
+
+    const result = await updateNonPathologicalHistory(id, updateDetails);
+    if (!result.error) {
+      toast.success("Antecedentes no patológicos actualizados con éxito.");
+      console.log("Updated successfully");
+      // Aquí puedes manejar la lógica post-actualización, como cerrar un modal o actualizar un estado.
+    } else {
+      toast.error("Error al actualizar los antecedentes no patológicos: " + result.error);
+      console.error("Failed to update", result.error);
+      // Manejar error aquí
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditable(false);
+  };
 
   return (
     <div
@@ -175,6 +315,49 @@ function NonPathologicalView({ id, nonPathologicalHistoryResource, updateNonPath
           )
           : (
             <>
+              {isFirstTime && (
+                <div
+                  style={{
+                    paddingTop: "1rem",
+                    textAlign: "center",
+                    color: colors.titleText,
+                    fontWeight: "bold",
+                    fontFamily: fonts.textFont,
+                    fontSize: fontSize.textSize,
+                  }}
+                >
+                  Por favor ingresa tus datos, parece que es tu primera vez aquí.
+                </div>
+              )}
+
+              <div
+                style={{
+                  borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+                  padding: "2rem 0 2rem 1rem",
+                }}
+              >
+                <p
+                  style={{
+                    paddingBottom: "0.5rem",
+                    fontFamily: fonts.textFont,
+                    fontSize: fontSize.textSize,
+                  }}
+                >
+                  Tipo de sangre:
+                </p>
+                <BaseInput
+                  type="text"
+                  value={bloodTypeResult?.result?.bloodType ?? ""}
+                  readOnly
+                  placeholder="Tipo de sangre"
+                  style={{
+                    width: "20rem",
+                    height: "2.5rem",
+                    fontFamily: fonts.textFont,
+                    fontSize: "1rem",
+                  }}
+                />
+              </div>
               <div
                 style={{
                   paddingLeft: "1rem",
@@ -423,32 +606,34 @@ function NonPathologicalView({ id, nonPathologicalHistoryResource, updateNonPath
                   </div>
                 )}
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingTop: "2rem",
-                  gap: "1rem",
-                }}
-              >
-                <BaseButton
-                  text="Guardar"
-                  onClick={handleSaveNonPathological}
-                  style={{ width: "30%", height: "3rem" }}
-                />
-                <BaseButton
-                  text="Cancelar"
-                  onClick={handleCancel}
+              {isFirstTime && (
+                <div
                   style={{
-                    width: "30%",
-                    height: "3rem",
-                    backgroundColor: "#fff",
-                    color: colors.primaryBackground,
-                    border: `1.5px solid ${colors.primaryBackground}`,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingTop: "2rem",
+                    gap: "1rem",
                   }}
-                />
-              </div>
+                >
+                  <BaseButton
+                    text="Guardar"
+                    onClick={handleSaveNonPathological}
+                    style={{ width: "30%", height: "3rem" }}
+                  />
+                  <BaseButton
+                    text="Cancelar"
+                    onClick={handleCancel}
+                    style={{
+                      width: "30%",
+                      height: "3rem",
+                      backgroundColor: "#fff",
+                      color: colors.primaryBackground,
+                      border: `1.5px solid ${colors.primaryBackground}`,
+                    }}
+                  />
+                </div>
+              )}
             </>
           )}
       </div>
