@@ -502,7 +502,7 @@ Resources:
   CognitoDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Doman: sanitas-uvg
+      Domain: sanitas-uvg
       UserPoolId: !Ref CognitoUserPool
 
   CognitoUserPoolClient:
