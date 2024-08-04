@@ -222,7 +222,7 @@ export async function updatePatientNonPathologicalHistory(
 	nonPathologicalHistoryData,
 ) {
 	nonPathologicalHistoryData.patientId = patientId;
-	const response = await axios.put(
+	await axios.put(
 		`${LOCAL_API_URL}patient/nonpatological-history`,
 		nonPathologicalHistoryData,
 	);

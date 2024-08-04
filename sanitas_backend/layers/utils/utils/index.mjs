@@ -218,69 +218,6 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
  */
 
 /**
-
-*@typedef { Object } APICollaborator
-*@property { number } id
-*@property { string } codigo
-*@property { string } area
-*@property { number } patientId
-  * /
-
-/**
-
-Maps a DBCollaborator to an APICollaborator.
-@param {DBCollaborator} dbCollaborator The collaborator received from the DB.
-@returns {APICollaborator} The collaborator object the API must return.
-*/
-export function mapToAPICollaboratorInfo(dbCollaborator) {
-	const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
-
-	return {
-		id,
-		code,
-		area,
-		patientId,
-	};
-}
-
-/**
- * @typedef {Object} DBStudentInfo
- * @property {string} id_paciente
- * @property {string} carnet
- * @property {string} carrera
- */
-
-/**
- * @typedef {Object} APIStudentInfo
- * @property {string} patientId
- * @property {string} carnet
- * @property {string} career
- */
-
-/**
- * Maps a DB Student info into an API student info.
- * @param {DBStudentInfo} dbStudentInfo - The DB student information.
- * @returns {APIStudentInfo} The API formatted student information.
- */
-export function mapToAPIStudentInfo(dbStudentInfo) {
-	const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
-
-	return {
-		patientId,
-		carnet,
-		career,
-	};
-}
-
-/**
- * @typedef {Object} DBCollaborator
- * @property {number} id
- * @property {string} codigo
- * @property {string} area
- * @property {number} id_paciente
- */
-
-/**
  * @typedef {Object} APICollaborator
  * @property {number} id
  * @property {string} codigo
@@ -362,7 +299,7 @@ export function mapToAPIFamilyHistory(dbData) {
 		if (typeof data === "string") {
 			try {
 				return JSON.parse(data);
-			} catch (error) {
+			} catch (_error) {
 				return { version: 1, data: [] };
 			}
 		}
@@ -433,7 +370,7 @@ export function mapToAPIPersonalHistory(dbData) {
 		if (typeof data === "string") {
 			try {
 				return JSON.parse(data);
-			} catch (error) {
+			} catch (_error) {
 				return { version: 1, data: [] };
 			}
 		}
@@ -537,8 +474,10 @@ export function mapToAPITraumatologicHistory(dbData) {
  * @returns {import('./defaultValues.mjs').APISurgicalHistory} The surgical history formatted for the API.
  */
 export function mapToAPISurgicalHistory(dbData) {
-	const { id_paciente: patientId, antecedente_quirurgico_data: medicalHistory } =
-		dbData;
+	const {
+		id_paciente: patientId,
+		antecedente_quirurgico_data: medicalHistory,
+	} = dbData;
 
 	return {
 		patientId,
@@ -594,7 +533,7 @@ export function mapToAPINonPathologicalHistory(dbData) {
 		if (typeof data === "string") {
 			try {
 				return JSON.parse(data);
-			} catch (error) {
+			} catch (_error) {
 				return { version: 1, data: [] };
 			}
 		}

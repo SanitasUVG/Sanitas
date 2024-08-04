@@ -21,12 +21,12 @@ export const getNonPatologicalHistoryHandler = async (event, context) => {
 	try {
 		const url = process.env.POSTGRES_URL;
 		logger.info({ url }, "Connecting to DB...");
-		client = await getPgClient(url);
+		client = getPgClient(url);
 		await client.connect();
 		logger.info("Connected!");
 
 		const id = Number.parseInt(event.pathParameters?.id, 10);
-		if (isNaN(id)) {
+		if (Number.isNaN(id)) {
 			logger.error("Invalid ID received!", { id: event.pathParameters?.id });
 			return responseBuilder
 				.setStatusCode(400)

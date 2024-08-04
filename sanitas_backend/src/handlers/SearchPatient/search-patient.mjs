@@ -107,9 +107,10 @@ export const searchPatientHandler = async (event, context) => {
 				queryParams.push(requestSearch);
 				logger.info({ sqlQuery, queryParams }, "Querying by CUI");
 				break;
-			case "Nombres":
+			case "Nombres": {
 				const request_search_processed = requestSearch
 					.normalize("NFD")
+					// biome-ignore lint/suspicious/noMisleadingCharacterClass: It detects all accents correctly.
 					.replace(/[\u0300-\u036f]/g, "")
 					.toLowerCase();
 
@@ -121,6 +122,7 @@ export const searchPatientHandler = async (event, context) => {
 				queryParams.push(`%${request_search_processed}%`);
 				logger.info({ sqlQuery, queryParams }, "Querying by names or surnames");
 				break;
+			}
 			default:
 				return responseBuilder
 					.setStatusCode(400)
