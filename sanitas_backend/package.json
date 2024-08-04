@@ -10,6 +10,7 @@
     "pino-lambda": "^4.4.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@types/aws-lambda": "^8.10.138",
     "aws-sdk-client-mock": "^2.0.0",
     "axios": "^1.6.8",
@@ -17,8 +18,9 @@
   },
   "scripts": {
     "test": "npm install && node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "lint": "oxlint -D correctness .",
-    "format": "dprint fmt"
+    "lint": "biome lint --error-on-warnings ./src/ ./layers/",
+    "format": "biome format --write ./src/ ./layers/",
+    "format:check": "biome format ./src/ ./layers/"
   },
   "jest": {
     "testMatch": [
