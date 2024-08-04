@@ -452,6 +452,12 @@ Resources:
           MinimumLength: 8
       UsernameAttributes:
         - email
+      AutoVerifiedAttributes:
+        - email
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_LINK
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
       Schema:
         - AttributeDataType: String
           Name: email
