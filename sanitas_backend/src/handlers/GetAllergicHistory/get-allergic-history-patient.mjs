@@ -54,7 +54,7 @@ export const getAllergicHistoryHandler = async (event, context) => {
       return responseBuilder
         .setStatusCode(200)
         .setBody({
-          patientId: IDBDatabase,
+          patientId,
           medicalHistory: genDefaultAllergicHistory(),
         })
         .build();
