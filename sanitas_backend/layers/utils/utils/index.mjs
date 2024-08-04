@@ -66,51 +66,51 @@
  * @returns {APIPatient} The patient object the API must return.
  */
 export function mapToAPIPatient(dbPatient) {
-  const {
-    id,
-    cui,
-    es_mujer: isWoman,
-    correo: email,
-    nombres: names,
-    apellidos: lastNames,
+	const {
+		id,
+		cui,
+		es_mujer: isWoman,
+		correo: email,
+		nombres: names,
+		apellidos: lastNames,
 
-    nombre_contacto1: contactName1,
-    parentesco_contacto1: contactKinship1,
-    telefono_contacto1: contactPhone1,
+		nombre_contacto1: contactName1,
+		parentesco_contacto1: contactKinship1,
+		telefono_contacto1: contactPhone1,
 
-    nombre_contacto2: contactName2,
-    parentesco_contacto2: contactKinship2,
-    telefono_contacto2: contactPhone2,
+		nombre_contacto2: contactName2,
+		parentesco_contacto2: contactKinship2,
+		telefono_contacto2: contactPhone2,
 
-    tipo_sangre: bloodType,
-    direccion: address,
-    id_seguro: insuranceId,
-    fecha_nacimiento: birthdate,
-    telefono: phone,
-  } = dbPatient;
+		tipo_sangre: bloodType,
+		direccion: address,
+		id_seguro: insuranceId,
+		fecha_nacimiento: birthdate,
+		telefono: phone,
+	} = dbPatient;
 
-  return {
-    id,
-    cui,
-    email,
-    isWoman,
-    names,
-    lastNames,
+	return {
+		id,
+		cui,
+		email,
+		isWoman,
+		names,
+		lastNames,
 
-    contactName1,
-    contactKinship1,
-    contactPhone1,
+		contactName1,
+		contactKinship1,
+		contactPhone1,
 
-    contactName2,
-    contactKinship2,
-    contactPhone2,
+		contactName2,
+		contactKinship2,
+		contactPhone2,
 
-    bloodType,
-    address,
-    insuranceId,
-    birthdate,
-    phone,
-  };
+		bloodType,
+		address,
+		insuranceId,
+		birthdate,
+		phone,
+	};
 }
 
 /**
@@ -137,43 +137,47 @@ export function mapToAPIPatient(dbPatient) {
  * @returns {ResponseBuilder}
  */
 export function createResponse() {
-  /** @type ResponseBuilder */
-  const builder = {
-    status: 500,
-    headers: {},
-    body: "",
+	/** @type ResponseBuilder */
+	const builder = {
+		status: 500,
+		headers: {},
+		body: "",
 
-    setStatusCode: (status) => {
-      builder.status = status;
-      return builder;
-    },
+		setStatusCode: (status) => {
+			builder.status = status;
+			return builder;
+		},
 
-    setBody: (bodyObj) => {
-      builder.body = JSON.stringify(bodyObj);
-      return builder;
-    },
+		setBody: (bodyObj) => {
+			builder.body = JSON.stringify(bodyObj);
+			return builder;
+		},
 
-    addHeader: (header, value) => {
-      builder.headers[header] = value;
-      return builder;
-    },
+		addHeader: (header, value) => {
+			builder.headers[header] = value;
+			return builder;
+		},
 
-    addCORSHeaders: (allowMethods = "GET", allowOrigin = "*", allowHeaders = "Content-Type") => {
-      builder.addHeader("Access-Control-Allow-Headers", allowHeaders);
-      builder.addHeader("Access-Control-Allow-Origin", allowOrigin);
-      builder.addHeader("Access-Control-Allow-Methods", allowMethods);
+		addCORSHeaders: (
+			allowMethods = "GET",
+			allowOrigin = "*",
+			allowHeaders = "Content-Type",
+		) => {
+			builder.addHeader("Access-Control-Allow-Headers", allowHeaders);
+			builder.addHeader("Access-Control-Allow-Origin", allowOrigin);
+			builder.addHeader("Access-Control-Allow-Methods", allowMethods);
 
-      return builder;
-    },
+			return builder;
+		},
 
-    build: () => ({
-      statusCode: builder.status,
-      headers: builder.headers,
-      body: builder.body,
-    }),
-  };
+		build: () => ({
+			statusCode: builder.status,
+			headers: builder.headers,
+			body: builder.body,
+		}),
+	};
 
-  return builder;
+	return builder;
 }
 
 /**
@@ -196,13 +200,13 @@ export function createResponse() {
  * @returns {APIStudentInfo} The API formatted student information.
  */
 export function mapToAPIStudentInfo(dbStudentInfo) {
-  const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
+	const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
 
-  return {
-    patientId,
-    carnet,
-    career,
-  };
+	return {
+		patientId,
+		carnet,
+		career,
+	};
 }
 
 /**
@@ -227,14 +231,14 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
  * @returns {APICollaborator} The collaborator object the API must return.
  */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-  const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
+	const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
 
-  return {
-    id,
-    code,
-    area,
-    patientId,
-  };
+	return {
+		id,
+		code,
+		area,
+		patientId,
+	};
 }
 
 /**
@@ -297,43 +301,43 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
 export function mapToAPIFamilyHistory(dbData) {
-  const formatResponse = (data) => {
-    if (!data) return { version: 1, data: [] };
-    if (typeof data === "string") {
-      try {
-        return JSON.parse(data);
-      } catch (error) {
-        return { version: 1, data: [] };
-      }
-    }
-    return data;
-  };
+	const formatResponse = (data) => {
+		if (!data) return { version: 1, data: [] };
+		if (typeof data === "string") {
+			try {
+				return JSON.parse(data);
+			} catch (_error) {
+				return { version: 1, data: [] };
+			}
+		}
+		return data;
+	};
 
-  const medicalHistory = {};
+	const medicalHistory = {};
 
-  const keys = Object.keys(dbData);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    if (key !== "id_paciente") {
-      medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
-    }
-  }
+	const keys = Object.keys(dbData);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		if (key !== "id_paciente") {
+			medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
+		}
+	}
 
-  return {
-    patientId: dbData.id_paciente,
-    medicalHistory: {
-      hypertension: formatResponse(dbData.hipertension_arterial_data),
-      diabetesMellitus: formatResponse(dbData.diabetes_mellitus_data),
-      hypothyroidism: formatResponse(dbData.hipotiroidismo_data),
-      asthma: formatResponse(dbData.asma_data),
-      convulsions: formatResponse(dbData.convulsiones_data),
-      myocardialInfarction: formatResponse(dbData.infarto_agudo_miocardio_data),
-      cancer: formatResponse(dbData.cancer_data),
-      cardiacDiseases: formatResponse(dbData.enfermedades_cardiacas_data),
-      renalDiseases: formatResponse(dbData.enfermedades_renales_data),
-      others: formatResponse(dbData.otros_data),
-    },
-  };
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: {
+			hypertension: formatResponse(dbData.hipertension_arterial_data),
+			diabetesMellitus: formatResponse(dbData.diabetes_mellitus_data),
+			hypothyroidism: formatResponse(dbData.hipotiroidismo_data),
+			asthma: formatResponse(dbData.asma_data),
+			convulsions: formatResponse(dbData.convulsiones_data),
+			myocardialInfarction: formatResponse(dbData.infarto_agudo_miocardio_data),
+			cancer: formatResponse(dbData.cancer_data),
+			cardiacDiseases: formatResponse(dbData.enfermedades_cardiacas_data),
+			renalDiseases: formatResponse(dbData.enfermedades_renales_data),
+			others: formatResponse(dbData.otros_data),
+		},
+	};
 }
 
 // NOTE: We should not use "object" normally but this types will have to be changed when doing the JSDoc refactoring...
@@ -368,43 +372,43 @@ export function mapToAPIFamilyHistory(dbData) {
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
 export function mapToAPIPersonalHistory(dbData) {
-  const formatResponse = (data) => {
-    if (!data) return { version: 1, data: [] };
-    if (typeof data === "string") {
-      try {
-        return JSON.parse(data);
-      } catch (error) {
-        return { version: 1, data: [] };
-      }
-    }
-    return data;
-  };
+	const formatResponse = (data) => {
+		if (!data) return { version: 1, data: [] };
+		if (typeof data === "string") {
+			try {
+				return JSON.parse(data);
+			} catch (_error) {
+				return { version: 1, data: [] };
+			}
+		}
+		return data;
+	};
 
-  const medicalHistory = {};
+	const medicalHistory = {};
 
-  const keys = Object.keys(dbData);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    if (key !== "id_paciente") {
-      medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
-    }
-  }
+	const keys = Object.keys(dbData);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		if (key !== "id_paciente") {
+			medicalHistory[key.replace("_data", "")] = dbData[key] ? dbData[key] : {};
+		}
+	}
 
-  return {
-    patientId: dbData.id_paciente,
-    medicalHistory: {
-      hypertension: formatResponse(dbData.hipertension_arterial_data),
-      diabetesMellitus: formatResponse(dbData.diabetes_mellitus_data),
-      hypothyroidism: formatResponse(dbData.hipotiroidismo_data),
-      asthma: formatResponse(dbData.asma_data),
-      convulsions: formatResponse(dbData.convulsiones_data),
-      myocardialInfarction: formatResponse(dbData.infarto_agudo_miocardio_data),
-      cancer: formatResponse(dbData.cancer_data),
-      cardiacDiseases: formatResponse(dbData.enfermedades_cardiacas_data),
-      renalDiseases: formatResponse(dbData.enfermedades_renales_data),
-      others: formatResponse(dbData.otros_data),
-    },
-  };
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: {
+			hypertension: formatResponse(dbData.hipertension_arterial_data),
+			diabetesMellitus: formatResponse(dbData.diabetes_mellitus_data),
+			hypothyroidism: formatResponse(dbData.hipotiroidismo_data),
+			asthma: formatResponse(dbData.asma_data),
+			convulsions: formatResponse(dbData.convulsiones_data),
+			myocardialInfarction: formatResponse(dbData.infarto_agudo_miocardio_data),
+			cancer: formatResponse(dbData.cancer_data),
+			cardiacDiseases: formatResponse(dbData.enfermedades_cardiacas_data),
+			renalDiseases: formatResponse(dbData.enfermedades_renales_data),
+			others: formatResponse(dbData.otros_data),
+		},
+	};
 }
 
 /**
@@ -452,14 +456,17 @@ export function mapToAPIPersonalHistory(dbData) {
  * @returns {TraumatologicHistory} Formatted response object with API-friendly field names.
  */
 export function mapToAPITraumatologicHistory(dbData) {
-  let { id_paciente: patientId, antecedente_traumatologico_data: traumatologicData } = dbData;
+	const {
+		id_paciente: patientId,
+		antecedente_traumatologico_data: traumatologicData,
+	} = dbData;
 
-  return {
-    patientId: patientId,
-    medicalHistory: {
-      traumas: traumatologicData,
-    },
-  };
+	return {
+		patientId: patientId,
+		medicalHistory: {
+			traumas: traumatologicData,
+		},
+	};
 }
 
 /**
@@ -474,12 +481,99 @@ export function mapToAPITraumatologicHistory(dbData) {
  * @returns {import('./defaultValues.mjs').APISurgicalHistory} The surgical history formatted for the API.
  */
 export function mapToAPISurgicalHistory(dbData) {
-  let { id_paciente: patientId, antecedente_quirurgico_data: medicalHistory } = dbData;
+	const {
+		id_paciente: patientId,
+		antecedente_quirurgico_data: medicalHistory,
+	} = dbData;
 
-  return {
-    patientId,
-    medicalHistory,
-  };
+	return {
+		patientId,
+		medicalHistory,
+	};
+}
+
+/**
+ * @typedef {Object} SmokingData
+ * @property {number} version - Version number of the smoking data format.
+ * @property {Array} data - Detailed data about smoking habits.
+ */
+
+/**
+ * @typedef {Object} DrinkingData
+ * @property {number} version - Version number of the drinking data format.
+ * @property {Array} data - Detailed data about alcohol consumption.
+ */
+
+/**
+ * @typedef {Object} DrugUseData
+ * @property {number} version - Version number of the drug use data format.
+ * @property {Array} data - Detailed data about drug use.
+ */
+
+/**
+ * @typedef {Object} NonPathologicalMedicalHistory
+ * @property {number} id_paciente - The patient ID.
+ * @property {string} tipo_sangre - The blood type of the patient.
+ * @property {string} fuma_data - JSON string containing smoking history data.
+ * @property {string} bebidas_alcoholicas_data - JSON string containing alcohol consumption data.
+ * @property {string} drogas_data - JSON string containing drug use data.
+ */
+
+/**
+ * @typedef {Object} APIFormattedNonPathologicalHistory
+ * @property {number} patientId - The patient ID.
+ * @property {Object} medicalHistory - Formatted medical history data.
+ * @property {SmokingData} medicalHistory.smoker - Details about smoking habits.
+ * @property {DrinkingData} medicalHistory.drink - Details about alcohol consumption.
+ * @property {DrugUseData} medicalHistory.drugs - Details about drug use.
+ * @property {string} medicalHistory.bloodType - The blood type of the patient.
+ */
+
+/**
+ * Maps database non-pathological history data to the API format.
+ * @param {NonPathologicalMedicalHistory} dbData - The non-pathological history data from the database.
+ * @returns {APIFormattedNonPathologicalHistory} The non-pathological history formatted for the API.
+ */
+export function mapToAPINonPathologicalHistory(dbData) {
+	const formatResponse = (data) => {
+		if (!data) return { version: 1, data: [] };
+		if (typeof data === "string") {
+			try {
+				return JSON.parse(data);
+			} catch (_error) {
+				return { version: 1, data: [] };
+			}
+		}
+		return data;
+	};
+
+	const nonPathologicalHistory = {};
+
+	const keys = Object.keys(dbData);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		switch (key) {
+			case "fuma_data":
+				nonPathologicalHistory.smoker = formatResponse(dbData[key]);
+				break;
+			case "bebidas_alcoholicas_data":
+				nonPathologicalHistory.drink = formatResponse(dbData[key]);
+				break;
+			case "drogas_data":
+				nonPathologicalHistory.drugs = formatResponse(dbData[key]);
+				break;
+			case "tipo_sangre":
+				nonPathologicalHistory.bloodType = dbData[key];
+				break;
+			default:
+				break;
+		}
+	}
+
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: nonPathologicalHistory,
+	};
 }
 
 /**
