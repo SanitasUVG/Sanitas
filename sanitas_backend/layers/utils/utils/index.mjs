@@ -589,43 +589,43 @@ export function mapToAPISurgicalHistory(dbData) {
  * @returns {APIFormattedNonPathologicalHistory} The non-pathological history formatted for the API.
  */
 export function mapToAPINonPathologicalHistory(dbData) {
-  const formatResponse = (data) => {
-    if (!data) return { version: 1, data: [] };
-    if (typeof data === "string") {
-      try {
-        return JSON.parse(data);
-      } catch (error) {
-        return { version: 1, data: [] };
-      }
-    }
-    return data;
-  };
+	const formatResponse = (data) => {
+		if (!data) return { version: 1, data: [] };
+		if (typeof data === "string") {
+			try {
+				return JSON.parse(data);
+			} catch (error) {
+				return { version: 1, data: [] };
+			}
+		}
+		return data;
+	};
 
-  const nonPathologicalHistory = {};
+	const nonPathologicalHistory = {};
 
-  const keys = Object.keys(dbData);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    switch (key) {
-      case "fuma_data":
-        nonPathologicalHistory.smoker = formatResponse(dbData[key]);
-        break;
-      case "bebidas_alcoholicas_data":
-        nonPathologicalHistory.drink = formatResponse(dbData[key]);
-        break;
-      case "drogas_data":
-        nonPathologicalHistory.drugs = formatResponse(dbData[key]);
-        break;
-      case "tipo_sangre":
-        nonPathologicalHistory.bloodType = dbData[key];
-        break;
-      default:
-        break;
-    }
-  }
+	const keys = Object.keys(dbData);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		switch (key) {
+			case "fuma_data":
+				nonPathologicalHistory.smoker = formatResponse(dbData[key]);
+				break;
+			case "bebidas_alcoholicas_data":
+				nonPathologicalHistory.drink = formatResponse(dbData[key]);
+				break;
+			case "drogas_data":
+				nonPathologicalHistory.drugs = formatResponse(dbData[key]);
+				break;
+			case "tipo_sangre":
+				nonPathologicalHistory.bloodType = dbData[key];
+				break;
+			default:
+				break;
+		}
+	}
 
-  return {
-    patientId: dbData.id_paciente,
-    medicalHistory: nonPathologicalHistory,
-  };
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: nonPathologicalHistory,
+	};
 }

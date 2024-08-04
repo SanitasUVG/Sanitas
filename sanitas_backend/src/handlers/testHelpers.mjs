@@ -217,10 +217,13 @@ export async function updatePatientTraumatologicHistory(
  * @param {NonPathologicalHistory} nonPathologicalHistoryData - The non-pathological history data to be updated.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
-export async function updatePatientNonPathologicalHistory(patientId, nonPathologicalHistoryData) {
-  nonPathologicalHistoryData.patientId = patientId;
-  const response = await axios.put(
-    `${LOCAL_API_URL}patient/nonpatological-history`,
-    nonPathologicalHistoryData,
-  );
+export async function updatePatientNonPathologicalHistory(
+	patientId,
+	nonPathologicalHistoryData,
+) {
+	nonPathologicalHistoryData.patientId = patientId;
+	const response = await axios.put(
+		`${LOCAL_API_URL}patient/nonpatological-history`,
+		nonPathologicalHistoryData,
+	);
 }

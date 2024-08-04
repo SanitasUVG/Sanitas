@@ -156,17 +156,17 @@ export const genDefaultPersonalHistory = () => ({
  * @returns {DefaultNonPathologicalHistory} The default non-pathological medical history with predefined empty or neutral values.
  */
 export const genDefaultNonPathologicalHistory = () => ({
-  bloodType: "-",
-  smoker: {
-    version: 1,
-    data: [],
-  },
-  drink: {
-    version: 1,
-    data: [],
-  },
-  drugs: {
-    version: 1,
-    data: [],
-  },
+	bloodType: "-",
+	smoker: {
+		version: 1,
+		data: [],
+	},
+	drink: {
+		version: 1,
+		data: [],
+	},
+	drugs: {
+		version: 1,
+		data: [],
+	},
 });
