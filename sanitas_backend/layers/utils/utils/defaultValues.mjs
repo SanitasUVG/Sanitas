@@ -138,3 +138,35 @@ export const genDefaultPersonalHistory = () => ({
 		data: [],
 	},
 });
+
+/**
+ * @typedef {Object} DefaultNonPathologicalHistory
+ * @property {string} bloodType - The default blood type value.
+ * @property {Object} smoker - Details about smoking habits.
+ * @property {number} smoker.version - Version number of the smoker data format.
+ * @property {Array} smoker.data - Data about smoking habits.
+ * @property {Object} drink - Details about alcohol consumption.
+ * @property {number} drink.version - Version number of the drink data format.
+ * @property {Array} drink.data - Data about alcohol consumption.
+ * @property {Object} drugs - Details about drug use.
+ * @property {number} drugs.version - Version number of the drugs data format.
+ * @property {Array} drugs.data - Data about drug use.
+ *
+ * Generates the default value for a non-pathological medical history.
+ * @returns {DefaultNonPathologicalHistory} The default non-pathological medical history with predefined empty or neutral values.
+ */
+export const genDefaultNonPathologicalHistory = () => ({
+  bloodType: "-",
+  smoker: {
+    version: 1,
+    data: [],
+  },
+  drink: {
+    version: 1,
+    data: [],
+  },
+  drugs: {
+    version: 1,
+    data: [],
+  },
+});

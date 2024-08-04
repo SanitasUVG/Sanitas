@@ -196,3 +196,31 @@ export async function updatePatientTraumatologicHistory(
 	);
 	expect(response.status).toBe(200);
 }
+
+/**
+ * @typedef {Object} NonPathologicalMedicalHistory
+ * @property {string} bloodType - The blood type of the patient.
+ * @property {Object} smoker - Smoking history data.
+ * @property {Object} drink - Drinking history data.
+ * @property {Object} drugs - Drug use history data.
+ */
+
+/**
+ * @typedef {Object} NonPathologicalHistory
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {NonPathologicalMedicalHistory} medicalHistory - Contains detailed non-pathological history of the patient.
+ */
+
+/**
+ * Updates or creates non-pathological history for a patient.
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {NonPathologicalHistory} nonPathologicalHistoryData - The non-pathological history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientNonPathologicalHistory(patientId, nonPathologicalHistoryData) {
+  nonPathologicalHistoryData.patientId = patientId;
+  const response = await axios.put(
+    `${LOCAL_API_URL}patient/nonpatological-history`,
+    nonPathologicalHistoryData,
+  );
+}
