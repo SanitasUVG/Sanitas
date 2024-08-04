@@ -44,7 +44,7 @@ export default function RequireAuth({ children, getSession, path }) {
 						gridRow: "1/2",
 					}}
 				>
-					<Throbber loadingMessage="Redirigiendo al inicio de sesión..."></Throbber>
+					<Throbber loadingMessage="Redirigiendo al inicio de sesión..." />
 				</div>
 				<h1
 					style={{
@@ -65,7 +65,7 @@ export default function RequireAuth({ children, getSession, path }) {
 	const Loading = () => {
 		return (
 			<div style={{ width: "100%", height: "100%" }}>
-				<Throbber loadingMessage="Cargando..."></Throbber>
+				<Throbber loadingMessage="Cargando..." />
 			</div>
 		);
 	};

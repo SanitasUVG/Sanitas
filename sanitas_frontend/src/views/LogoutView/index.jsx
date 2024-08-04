@@ -9,16 +9,6 @@ import useWindowSize from "src/utils/useWindowSize";
 export default function LogoutView() {
 	const { width, height } = useWindowSize();
 
-	/** @type React.CSSStyleDeclaration */
-	const inputStyles = {
-		width: "100%",
-		paddingTop: adjustHeight(height, "0.8rem"),
-		paddingBottom: adjustHeight(height, "0.8rem"),
-		paddingRight: adjustWidth(width, "0.8rem"),
-		paddingLeft: adjustWidth(width, "0.8rem"),
-
-		fontSize: fontSize.textSize,
-	};
 	return (
 		<div
 			style={{
@@ -37,7 +27,7 @@ export default function LogoutView() {
 			<div
 				style={{
 					background: "white",
-					padding: adjustHeight(height, "4rem") + " 8vw 0 8vw",
+					padding: `${adjustHeight(height, "4rem")} 8vw 0 8vw`,
 					display: "flex",
 					flexDirection: "column",
 					gap: adjustHeight(height, "3rem"),
@@ -118,6 +108,7 @@ export default function LogoutView() {
 
 				<img
 					src={logoSanitas}
+					alt="Sanitas logo"
 					style={{
 						width: adjustWidth(width, "6rem"),
 						position: "absolute",

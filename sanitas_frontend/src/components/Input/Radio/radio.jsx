@@ -74,7 +74,7 @@ export default function RadioInput({
 				style={defaultStyles.input}
 			/>
 			<span style={defaultStyles.outerSpan}>
-				<span style={defaultStyles.innerSpan}></span>
+				<span style={defaultStyles.innerSpan} />
 			</span>
 			{label}
 		</label>

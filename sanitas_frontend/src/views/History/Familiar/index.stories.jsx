@@ -19,7 +19,7 @@ export default {
 
 const dummyPatientId = 12345;
 
-const mockGetFamiliarHistoryWithData = async (id) => ({
+const mockGetFamiliarHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
 			hypertension: { data: ["Father"], version: 1 },
@@ -36,7 +36,7 @@ const mockGetFamiliarHistoryWithData = async (id) => ({
 	},
 });
 
-const mockGetFamiliarHistoryEmpty = async (id) => ({
+const mockGetFamiliarHistoryEmpty = async (_id) => ({
 	result: {
 		medicalHistory: {
 			hypertension: { data: [], version: 1 },
@@ -52,7 +52,7 @@ const mockGetFamiliarHistoryEmpty = async (id) => ({
 		},
 	},
 });
-const mockGetFamiliarHistoryError = async (id) => ({
+const mockGetFamiliarHistoryError = async (_id) => ({
 	error: {
 		response: {
 			status: 400,
@@ -62,7 +62,7 @@ const mockGetFamiliarHistoryError = async (id) => ({
 	},
 });
 
-const mockUpdateFamiliarHistory = async (id, history, version) => ({
+const mockUpdateFamiliarHistory = async (_id, history, _version) => ({
 	result: { medicalHistory: history },
 });
 

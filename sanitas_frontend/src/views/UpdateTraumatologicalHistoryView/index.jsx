@@ -150,7 +150,7 @@ function TraumatologicView({
 	let errorMessage = "";
 	if (birthYearResult.error || traumatologicHistoryResult.error) {
 		const error = birthYearResult.error || traumatologicHistoryResult.error;
-		if (error && error.response) {
+		if (error?.response) {
 			const { status } = error.response;
 			errorMessage =
 				status < 500
@@ -188,7 +188,7 @@ function TraumatologicView({
 			}
 		}
 		setYearOptions(options);
-	}, [birthYear]);
+	}, [birthYear, currentYear]);
 
 	const handleOpenNewForm = () => {
 		setSelectedTrauma({
@@ -313,7 +313,7 @@ function TraumatologicView({
 					<div style={{ maxHeight: "400px", overflowY: "auto" }}>
 						{traumatologicHistory.data.map((trauma, index) => (
 							<div
-								key={index}
+								key={`${trauma.whichBone}-${trauma.year}-${trauma.treatment}-${index}`}
 								style={{
 									display: "flex",
 									flexDirection: "row",

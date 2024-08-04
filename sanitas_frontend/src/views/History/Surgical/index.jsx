@@ -156,7 +156,7 @@ function SurgicalView({
 	let errorMessage = "";
 	if (birthYearResult.error || surgicalHistoryResult.error) {
 		const error = birthYearResult.error || surgicalHistoryResult.error;
-		if (error && error.response) {
+		if (error?.response) {
 			const { status } = error.response;
 			if (status < 500) {
 				errorMessage =
@@ -214,8 +214,7 @@ function SurgicalView({
 	// Save the new surgery record to the database
 	const handleSaveNewSurgery = async () => {
 		if (
-			!selectedSurgery.surgeryType ||
-			!selectedSurgery.surgeryYear ||
+			!(selectedSurgery.surgeryType && selectedSurgery.surgeryYear) ||
 			selectedSurgery.complications === undefined
 		) {
 			toast.error("Complete todos los campos requeridos.");
@@ -434,7 +433,7 @@ function SurgicalView({
 									onClick={handleSaveNewSurgery}
 									style={{ width: "30%", height: "3rem" }}
 								/>
-								<div style={{ width: "1rem" }}></div>
+								<div style={{ width: "1rem" }} />
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}

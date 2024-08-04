@@ -24,7 +24,7 @@ export default {
 };
 
 /** @type {{args: import(".").RegisterViewProps}} */
-export const Default = {
+export const Normal = {
 	args: {
 		registerUser: async (_email, _password) => {
 			await delay(1000);
@@ -35,7 +35,7 @@ export const Default = {
 };
 
 /** @type {{args: import(".").RegisterViewProps}} */
-export const Error = {
+export const ErrorCase = {
 	args: {
 		registerUser: async (_email, _password) => {
 			await delay(1000);

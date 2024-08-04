@@ -39,38 +39,35 @@ const examplePatientData = {
 const mockGetGeneralPatientInformation = async (id) => {
 	if (id === examplePatientData.id) {
 		return { result: examplePatientData };
-	} else {
-		return {
-			error: new Error(
-				"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
-			),
-		};
 	}
+	return {
+		error: new Error(
+			"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
+		),
+	};
 };
 const mockGetStudentPatientInformation = async (id) => {
 	if (id === examplePatientData.id) {
 		return {
 			result: { patientId: id, carnet: "22386", career: "Lic. Computación" },
 		};
-	} else {
-		return {
-			error: new Error(
-				"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
-			),
-		};
 	}
+	return {
+		error: new Error(
+			"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
+		),
+	};
 };
 
 const mockGetCollaboratorInformation = async (id) => {
 	if (id === examplePatientData.id) {
 		return { result: { patientId: id, code: "C001", area: "Administracion" } };
-	} else {
-		return {
-			error: new Error(
-				"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
-			),
-		};
 	}
+	return {
+		error: new Error(
+			"Error al buscar el paciente. Asegúrese de que el ID es correcto.",
+		),
+	};
 };
 
 const correctStore = createEmptyStore({

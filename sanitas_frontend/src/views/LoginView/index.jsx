@@ -76,7 +76,7 @@ export default function LoginView({ loginUser }) {
 				<div
 					style={{
 						background: "white",
-						padding: adjustHeight(height, "4rem") + " 8vw 0 8vw",
+						padding: `${adjustHeight(height, "4rem")}·8vw·0·8vw`,
 						display: "flex",
 						flexDirection: "column",
 						gap: adjustHeight(height, "3rem"),
@@ -222,10 +222,9 @@ export default function LoginView({ loginUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
 								}
-								onMouseEnter={(e) =>
-									(e.target.style.textDecoration = "underline")
+								onMouseEnter={(e) => { e.target.style.textDecoration = "underline"; }
 								}
-								onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
+								onMouseLeave={(e) => { e.target.style.textDecoration = "none"; }}
 							>
 								Crea una aquí.
 							</a>
@@ -246,6 +245,7 @@ export default function LoginView({ loginUser }) {
 
 					<img
 						src={logoSanitas}
+						alt="Sanitas logo"
 						style={{
 							width: adjustWidth(width, "6rem"),
 							position: "absolute",
@@ -254,7 +254,7 @@ export default function LoginView({ loginUser }) {
 						}}
 					/>
 				</div>
-			</div>
+			</div >
 		);
 	};
 	const LoadingView = () => {

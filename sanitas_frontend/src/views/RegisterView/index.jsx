@@ -194,10 +194,9 @@ export default function RegisterView({ registerUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.LOGIN_USER, { replace: true })
 								}
-								onMouseEnter={(e) =>
-									(e.target.style.textDecoration = "underline")
+								onMouseEnter={(e) => { e.target.style.textDecoration = "underline"; }
 								}
-								onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
+								onMouseLeave={(e) => { e.target.style.textDecoration = "none"; }}
 							>
 								Ingresa aquí.
 							</a>

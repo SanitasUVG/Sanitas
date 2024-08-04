@@ -64,7 +64,7 @@ export default function SearchPatientView({
 		let value = e.target.value;
 		if (type === "Nombres") {
 			value = value.replace(/\d/g, "");
-		} else if (type != "Nombres") {
+		} else if (type !== "Nombres") {
 			value = value.replace(/\D/g, "");
 		}
 
@@ -240,7 +240,7 @@ export default function SearchPatientView({
 									<BaseButton
 										text="Buscar Paciente"
 										onClick={async () => {
-											setDefaultView(defaultView ? false : true);
+											setDefaultView(!defaultView);
 											await searchBtnClick();
 										}}
 										disabled={emptyQuery}

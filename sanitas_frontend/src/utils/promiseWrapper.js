@@ -6,22 +6,6 @@
 
 import { delay } from ".";
 
-function a() {
-	return new Promise((res, rej) => {
-		// blablabla programando blablab
-		try {
-			res(data);
-		} catch (error) {
-			rej(error);
-		}
-	});
-}
-
-async function b() {
-	// blablabla programando blablab
-	return data;
-}
-
 /**
  * Function used to wrap a promise for use with suspense.
  * If you want to use the `SuspenseResource` returned by this function please do so according to:
@@ -48,11 +32,11 @@ export default function WrapPromise(promise) {
 	const read = () => {
 		if (status === "pending") {
 			throw suspender;
-		} else if (status === "error") {
+		} 
+		if (status === "error") {
 			throw response;
-		} else {
-			return response;
 		}
+			return response;
 	};
 
 	return { read };
@@ -71,6 +55,7 @@ export function WrapPromiseErrorMock() {
 }
 
 /**
+	* Pretends a promise is taking `msTimeout` amount of time before failing.
  * @param {number} msTimeout - The number of ms to simulate before failing.
  */
 export function WrapPromisePrendingMock(msTimeout) {
@@ -83,9 +68,8 @@ export function WrapPromisePrendingMock(msTimeout) {
 	const read = () => {
 		if (status === "pending") {
 			throw promise;
-		} else {
+		} 
 			throw "MOCK ERROR";
-		}
 	};
 
 	return { read };

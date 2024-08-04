@@ -19,11 +19,11 @@ export default {
 
 const dummyPatientId = 12345;
 
-const mockGetBirthdayPatientInfo = async (id) => ({
+const mockGetBirthdayPatientInfo = async (_id) => ({
 	result: { birthdate: "2000-02-11" },
 });
 
-const mockGetTraumatologicHistoryWithData = async (id) => ({
+const mockGetTraumatologicHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
 			traumas: {
@@ -34,7 +34,7 @@ const mockGetTraumatologicHistoryWithData = async (id) => ({
 	},
 });
 
-const mockGetTraumatologicHistoryEmpty = async (id) => ({
+const mockGetTraumatologicHistoryEmpty = async (_id) => ({
 	result: {
 		medicalHistory: {
 			traumas: {
@@ -45,7 +45,7 @@ const mockGetTraumatologicHistoryEmpty = async (id) => ({
 	},
 });
 
-const mockGetTraumatologicHistoryError = async (id) => ({
+const mockGetTraumatologicHistoryError = async (_id) => ({
 	error: {
 		response: {
 			status: 400,
@@ -55,7 +55,7 @@ const mockGetTraumatologicHistoryError = async (id) => ({
 	},
 });
 
-const mockUpdateTraumatologicHistory = async (id, history, version) => ({
+const mockUpdateTraumatologicHistory = async (_id, history, version) => ({
 	result: {
 		medicalHistory: { traumas: { data: history, version: version + 1 } },
 	},

@@ -45,7 +45,7 @@ export function registerUser(email, password) {
  *
  * @type {CognitoLoginUserCallback}
  */
-export async function mockRegisterUser(email, password) {
+export async function mockRegisterUser(_email, _password) {
 	return { result: {} };
 }
 
@@ -91,7 +91,7 @@ export async function signInUser(email, password) {
  *
  * @type {CognitoLoginUserCallback}
  */
-export async function mockSingInUser(email, password) {
+export async function mockSingInUser(_email, _password) {
 	return { result: {} };
 }
 

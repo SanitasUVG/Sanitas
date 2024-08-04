@@ -83,7 +83,7 @@ export default function SearchInput({
 	return (
 		<div style={defaultStyles.container}>
 			<span style={defaultStyles.img}>
-				<img src={userSearch} />
+				<img src={userSearch} alt="Search icon" />
 			</span>
 			<input
 				ref={inputRef}
@@ -92,16 +92,17 @@ export default function SearchInput({
 				onChange={onChange}
 				placeholder={placeholder}
 				name="searchInput"
+				tabIndex="0"
 				style={defaultStyles.input}
 			/>
 			<span
 				onClick={clearInput}
-				tabIndex="0"
 				onKeyDown={handleIconKeyDown}
 				style={defaultStyles.img}
 			>
 				<img
 					src={deleteSearch}
+					alt="Cancel search icon"
 					style={{ visibility: isNotEmpty ? "visible" : "hidden" }}
 				/>
 			</span>

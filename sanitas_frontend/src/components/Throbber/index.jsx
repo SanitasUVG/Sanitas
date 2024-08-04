@@ -12,7 +12,7 @@ import useWindowSize from "src/utils/useWindowSize";
  * @param {ThrobberProps} props
  */
 export default ({ loadingMessage }) => {
-	const { width, height } = useWindowSize();
+	const { width } = useWindowSize();
 
 	return (
 		<div
