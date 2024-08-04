@@ -3,7 +3,7 @@
  * @param {number} ms
  */
 export const delay = (ms) => {
-  return new Promise((res) => setTimeout(res, ms));
+	return new Promise((res) => setTimeout(res, ms));
 };
 
 /**
@@ -12,11 +12,11 @@ export const delay = (ms) => {
  * @returns {Function} With a signature equivalent to `console.error`
  */
 export const logError = (message) => {
-  return (obj) => {
-    /* eslint-disable no-console*/
-    console.error(message, obj);
-    /* eslint-enable no-console*/
-  };
+	return (obj) => {
+		/* eslint-disable no-console*/
+		console.error(message, obj);
+		/* eslint-enable no-console*/
+	};
 };
 
 /**
@@ -25,12 +25,12 @@ export const logError = (message) => {
  * @returns {boolean} True if the lambda throws, false otherwise.
  */
 export const lambdaThrows = (lambda) => {
-  try {
-    lambda();
-    return false;
-  } catch {
-    return true;
-  }
+	try {
+		lambda();
+		return false;
+	} catch {
+		return true;
+	}
 };
 
 /**
@@ -45,24 +45,24 @@ export const lambdaThrows = (lambda) => {
  * adjustWidth(1400, "10rem 20rem");
  */
 export const adjustWidth = (width, remValues) => {
-  let scaleFactor;
-  if (width >= 1538) {
-    scaleFactor = 1.0;
-  } else if (width >= 1440) {
-    scaleFactor = 0.93;
-  } else if (width >= 1280) {
-    scaleFactor = 0.83;
-  } else {
-    scaleFactor = 1.0;
-  }
+	let scaleFactor;
+	if (width >= 1538) {
+		scaleFactor = 1.0;
+	} else if (width >= 1440) {
+		scaleFactor = 0.93;
+	} else if (width >= 1280) {
+		scaleFactor = 0.83;
+	} else {
+		scaleFactor = 1.0;
+	}
 
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
+	return remValues
+		.split(" ")
+		.map((rem) => {
+			const value = Number.parseFloat(rem) * scaleFactor;
+			return `${value.toFixed(3)}rem`;
+		})
+		.join(" ");
 };
 
 /**
@@ -77,22 +77,22 @@ export const adjustWidth = (width, remValues) => {
  * adjustHeight(850, "10rem 20rem");
  */
 export const adjustHeight = (height, remValues) => {
-  let scaleFactor;
-  if (height >= 950) {
-    scaleFactor = 1.0;
-  } else if (height >= 900) {
-    scaleFactor = 0.94;
-  } else if (height >= 800) {
-    scaleFactor = 0.84;
-  } else {
-    scaleFactor = 1.0;
-  }
+	let scaleFactor;
+	if (height >= 950) {
+		scaleFactor = 1.0;
+	} else if (height >= 900) {
+		scaleFactor = 0.94;
+	} else if (height >= 800) {
+		scaleFactor = 0.84;
+	} else {
+		scaleFactor = 1.0;
+	}
 
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
+	return remValues
+		.split(" ")
+		.map((rem) => {
+			const value = Number.parseFloat(rem) * scaleFactor;
+			return `${value.toFixed(3)}rem`;
+		})
+		.join(" ");
 };
