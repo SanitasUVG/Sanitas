@@ -54,8 +54,8 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(medicalHistory.medication).toBeDefined();
   });
 
-  test("Retrieve empty allergic history for non-existent patient", async () => {
-    const nonExistentPatientId = 999999;
+  test("Retrieve default allergic history for non-existent patient", async () => {
+    const nonExistentPatientId = 999999; // Assuming this ID does not exist
     const response = await axios.get(`${API_URL}${nonExistentPatientId}`, {
       validateStatus: () => true,
     });
@@ -63,15 +63,18 @@ describe("Get Allergic Medical History integration tests", () => {
     expect(response).toBeDefined();
     expect(response.status).toBe(200);
 
-    const medicalHistory = response.data.allergicHistory;
-    expect(medicalHistory).toBeDefined();
-    expect(medicalHistory.medication.data.length).toBe(0);
-    expect(medicalHistory.food.data.length).toBe(0);
-    expect(medicalHistory.dust.data.length).toBe(0);
-    expect(medicalHistory.pollen.data.length).toBe(0);
-    expect(medicalHistory.climateChange.data.length).toBe(0);
-    expect(medicalHistory.animals.data.length).toBe(0);
-    expect(medicalHistory.others.data.length).toBe(0);
+    /** @type {import("utils/index.mjs").AllergicMedicalHistoryAPI} */
+    const allergicHistory = response.data;
+
+    expect(allergicHistory).toBeDefined();
+    expect(allergicHistory.patientId).toBe(nonExistentPatientId);
+    expect(allergicHistory.medicalHistory.medication.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.food.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.dust.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.pollen.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.climateChange.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.animals.data.length).toBe(0);
+    expect(allergicHistory.medicalHistory.others.data.length).toBe(0);
   });
 
   test("Fail to retrieve allergic history due to missing patient ID in the request", async () => {
@@ -80,6 +83,8 @@ describe("Get Allergic Medical History integration tests", () => {
 
     expect(response).toBeDefined();
     expect(response.status).toBe(400);
-    expect(response.data.error).toBe("Invalid input: Missing patientId.");
+
+    const { error } = response.data;
+    expect(error).toBe("Invalid request: No valid patientId supplied!");
   });
 });

@@ -484,13 +484,13 @@ export function mapToAPISurgicalHistory(dbData) {
 
 /**
  * @typedef {Object} AllergicMedicalHistory
- * @property  {null|Object} medicalHistory.medication - Allergic medical history data for medication.
- * @property  {null|Object} medicalHistory.food - Allergic medical history data for food.
- * @property  {null|Object} medicalHistory.dust - Allergic medical history data for dust.
- * @property  {null|Object} medicalHistory.pollen - Allergic medical history data for pollen.
- * @property  {null|Object} medicalHistory.climateChange - Allergic medical history data for climate change.
- * @property  {null|Object} medicalHistory.animals - Allergic medical history data for animals.
- * @property  {null|Object} medicalHistory.others - Allergic medical history data for other allergies.
+ * @property  {null|MedicalConditionData} medicalHistory.medication - Allergic medical history data for medication.
+ * @property  {null|MedicalConditionData} medicalHistory.food - Allergic medical history data for food.
+ * @property  {null|MedicalConditionData} medicalHistory.dust - Allergic medical history data for dust.
+ * @property  {null|MedicalConditionData} medicalHistory.pollen - Allergic medical history data for pollen.
+ * @property  {null|MedicalConditionData} medicalHistory.climateChange - Allergic medical history data for climate change.
+ * @property  {null|MedicalConditionData} medicalHistory.animals - Allergic medical history data for animals.
+ * @property  {null|MedicalConditionData} medicalHistory.others - Allergic medical history data for other allergies.
  */
 
 /**
