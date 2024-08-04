@@ -133,6 +133,8 @@ export function TraumatologicHistory({
  * @param {TraumatologicViewProps} props - Specific props for the TraumatologicView component.
  * @returns {JSX.Element} - A detailed view for managing traumatologic history with interactivity to add or edit records.
  */
+// TODO: Simplify so the linter doesn't trigger
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 function TraumatologicView({
 	id,
 	birthdayResource,

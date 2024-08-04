@@ -183,73 +183,8 @@ export const getGeneralPatientInformation = async (id) => {
 	const url = `${BASE_URL}/patient/general/${id}`;
 
 	try {
-		const response = await axios.get(url);
-		const r = response.data;
-
-		if (!r.id) {
-			throw new Error("Received patient has no `id`!");
-		}
-
-		if (!r.names) {
-			throw new Error("Received patient has no `names`!");
-		}
-
-		if (!r.lastNames) {
-			throw new Error("Received patient has no `lastNames`!");
-		}
-
-		if (r.isWoman === undefined) {
-			throw new Error("Received patient has no `isWoman`!");
-		}
-
-		if (r.email === undefined) {
-			throw new Error("Received patient has no `email`!");
-		}
-
-		if (r.contactName1 === undefined) {
-			throw new Error("Received patient has no `contactName1`!");
-		}
-
-		if (r.contactKinship1 === undefined) {
-			throw new Error("Received patient has no `contactKinship1`!");
-		}
-
-		if (r.contactPhone1 === undefined) {
-			throw new Error("Received patient has no `contactPhone1`!");
-		}
-
-		if (r.contactName2 === undefined) {
-			throw new Error("Received patient has no `contactName2`!");
-		}
-
-		if (r.contactKinship2 === undefined) {
-			throw new Error("Received patient has no `contactKinship2`!");
-		}
-
-		if (r.contactPhone2 === undefined) {
-			throw new Error("Received patient has no `contactPhone2`!");
-		}
-
-		if (r.bloodType === undefined) {
-			throw new Error("Received patient has no `bloodType`!");
-		}
-
-		if (r.address === undefined) {
-			throw new Error("Received patient has no `address`!");
-		}
-
-		if (r.insuranceId === undefined) {
-			throw new Error("Received patient has no `insuranceId`!");
-		}
-
-		if (!r.birthdate) {
-			throw new Error("Received patient has no `birthdate`!");
-		}
-
-		if (r.phone === undefined) {
-			throw new Error("Received patient has no `phone`!");
-		}
-		return { result: r };
+		const { data: result } = await axios.get(url);
+		return { result };
 	} catch (error) {
 		return { error };
 	}

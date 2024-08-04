@@ -183,7 +183,7 @@ export default function RegisterView({ registerUser }) {
 							}}
 						>
 							¿Ya tienes cuenta?{" "}
-							<a
+							<span
 								style={{
 									cursor: "pointer",
 									fontWeight: "bold",
@@ -194,6 +194,9 @@ export default function RegisterView({ registerUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.LOGIN_USER, { replace: true })
 								}
+								onKeyUp={() =>
+									navigate(NAV_PATHS.LOGIN_USER, { replace: true })
+								}
 								onMouseEnter={(e) => {
 									e.target.style.textDecoration = "underline";
 								}}
@@ -202,7 +205,7 @@ export default function RegisterView({ registerUser }) {
 								}}
 							>
 								Ingresa aquí.
-							</a>
+							</span>
 						</p>
 						<p
 							style={{

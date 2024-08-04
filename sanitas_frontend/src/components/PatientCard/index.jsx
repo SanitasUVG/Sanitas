@@ -81,6 +81,13 @@ export default function PatientCard({
 	};
 
 	const result = patientsResources.read();
+
+	useEffect(() => {
+		if (result.result) {
+			setQueryReturnedEmpty(result.result.length <= 0);
+		}
+	}, [setQueryReturnedEmpty, result]);
+
 	if (result.error) {
 		let errorMessage = "";
 		if (result.error?.cause) {
@@ -123,10 +130,6 @@ export default function PatientCard({
 	}
 
 	const patientInfo = result.result;
-
-	useEffect(() => {
-		setQueryReturnedEmpty(patientInfo.length <= 0);
-	}, [patientInfo, setQueryReturnedEmpty]);
 
 	return (
 		<div style={defaultStyles.mainContainer}>

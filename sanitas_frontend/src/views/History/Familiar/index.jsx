@@ -137,6 +137,8 @@ export function FamiliarHistory({
  * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
  * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
  */
+// TODO: Simplify View to avoid ignoring rule
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This view is really complex, maybe later we should simplify it's logic
 function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	// State hooks to manage the selected familiar disease and whether adding a new entry
 	const [selectedFamiliar, setSelectedFamiliar] = useState({});
@@ -408,14 +410,14 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 								diseaseKey === "renalDiseases" ||
 								diseaseKey === "others"
 							) {
-								return data.map((entry, index) => {
+								return data.map((entry, _index) => {
 									const details = entry.who;
 									if (diseaseKey === "others") {
 										displayedDisease = entry.disease;
 									}
 									return (
 										<InformationCard
-											key={`${diseaseKey}-${index}`}
+											key={`${diseaseKey}-${entry.who}`}
 											type="family"
 											disease={displayedDisease}
 											relative={details}

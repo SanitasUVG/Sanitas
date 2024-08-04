@@ -376,12 +376,19 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	const generalInformationResource = WrapPromise(getData(patientId));
 	// const generalInformationResource = WrapPromise(getData2());
 
+	// TODO: Simplify so the linter doesn't trigger.
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
 
 		const response = generalInformationResource.read();
+
+		const [patientData, setPatientData] = useState({
+			...response.result,
+			birthdate: formatDate(response.result.birthdate),
+		});
 
 		if (response.error) {
 			return (
@@ -397,11 +404,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				</div>
 			);
 		}
-
-		const [patientData, setPatientData] = useState({
-			...response.result,
-			birthdate: formatDate(response.result.birthdate),
-		});
 
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();

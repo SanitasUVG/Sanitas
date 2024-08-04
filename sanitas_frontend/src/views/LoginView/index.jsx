@@ -211,7 +211,7 @@ export default function LoginView({ loginUser }) {
 							}}
 						>
 							¿No tienes cuenta?
-							<a
+							<span
 								style={{
 									cursor: "pointer",
 									fontWeight: "bold",
@@ -222,6 +222,9 @@ export default function LoginView({ loginUser }) {
 								onClick={() =>
 									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
 								}
+								onKeyUp={() =>
+									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
+								}
 								onMouseEnter={(e) => {
 									e.target.style.textDecoration = "underline";
 								}}
@@ -230,7 +233,7 @@ export default function LoginView({ loginUser }) {
 								}}
 							>
 								Crea una aquí.
-							</a>
+							</span>
 						</p>
 
 						<p

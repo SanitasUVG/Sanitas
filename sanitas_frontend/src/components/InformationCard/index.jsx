@@ -142,6 +142,7 @@ export default function InformationCard({
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
 			onClick={onClick}
+			onKeyUp={onClick}
 		>
 			{renderContent()}
 		</div>

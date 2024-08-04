@@ -140,6 +140,8 @@ export function PersonalHistory({
  * @param {PersonalViewProps} props - The props used in the PersonalView component.
  * @returns {JSX.Element} - A section of the UI that lets users interact with the personal history data.
  */
+// TODO: Simplify so the linter doesn't trigger
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 function PersonalView({
 	id,
 	birthdayResource,
@@ -283,6 +285,7 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This function isn't that complex it's just large.
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -445,10 +448,10 @@ function PersonalView({
 
 							const displayedDisease = translateDisease(diseaseKey);
 							if (diseaseKey === "myocardialInfarction") {
-								return data.map((entry, index) => {
+								return data.map((entry, _index) => {
 									return (
 										<InformationCard
-											key={`${diseaseKey}-${index}`}
+											key={`${diseaseKey}-${entry.surgeryYear}`}
 											type="personalMiocadio"
 											disease={displayedDisease}
 											year={entry.surgeryYear}
@@ -458,10 +461,10 @@ function PersonalView({
 								});
 							}
 
-							return data.map((entry, index) => {
+							return data.map((entry, _index) => {
 								return (
 									<InformationCard
-										key={`${diseaseKey}-${index}`}
+										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
 										type="personal"
 										disease={displayedDisease}
 										surgeryType={
