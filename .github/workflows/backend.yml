@@ -7,8 +7,8 @@ on:  # yamllint disable-line rule:truthy
       - edited
       - synchronize
 jobs:
-  lintingAndTesting:
-    name: Lint
+  linting:
+    name: Backend checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,8 +22,12 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Installing dependencies
+        run: npm install
+      - name: Formatting
+        run: npm run format:check
       - name: Linting
-        run: npm install && npm run lint
+        run: npm run lint
 
 # TODO: Integration tests can't be run automatically
 # so they're commented out.

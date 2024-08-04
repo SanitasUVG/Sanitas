@@ -49,175 +49,175 @@ import TextIconButton from "../Button/TextIcon";
  * @param {DashboardSidebarProps} props
  */
 export default function DashboardSidebar({
-  navigateToGeneral,
-  navigateToAppointments,
-  navigateToPersonal,
-  navigateToFamiliar,
-  navigateToAllergies,
-  navigateToObstetrics,
-  navigateToNonPathological,
-  navigateToPsiquiatric,
-  navigateToSurgical,
-  navigateToTraumatological,
-  userInformation,
-  onGoBack,
+	navigateToGeneral,
+	navigateToAppointments,
+	navigateToPersonal,
+	navigateToFamiliar,
+	navigateToAllergies,
+	navigateToObstetrics,
+	navigateToNonPathological,
+	navigateToPsiquiatric,
+	navigateToSurgical,
+	navigateToTraumatological,
+	userInformation,
+	onGoBack,
 }) {
-  const navigate = useNavigate();
-  const wrapWithNavigate = (func) => {
-    /**
-     * @type {import("react").MouseEventHandler}
-     */
-    return (e) => {
-      func(navigate, e);
-    };
-  };
+	const navigate = useNavigate();
+	const wrapWithNavigate = (func) => {
+		/**
+		 * @type {import("react").MouseEventHandler}
+		 */
+		return (e) => {
+			func(navigate, e);
+		};
+	};
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: colors.secondaryBackground,
-        padding: "1rem",
-        borderRadius: "0.625rem",
-        width: "100%",
-        height: "100%",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "end",
-          justifyContent: "end",
-          paddingRight: "1rem",
-          width: "100%",
-        }}
-      >
-        <IconButton
-          icon={returnicon}
-          onClick={wrapWithNavigate(onGoBack)}
-          style={{
-            width: "2.1rem",
-            height: "3rem",
-          }}
-        />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          paddingTop: "2rem",
-          paddingBottom: "2rem",
-          width: "100%",
-        }}
-      >
-        <img
-          style={{
-            width: "6rem",
-            height: "3rem",
-            flexGrow: 0,
-          }}
-          src={SanitasLogo}
-          alt="Logo Sanitas"
-        />
-        <div
-          style={{
-            paddingLeft: "0.8rem",
-            flexGrow: 1,
-          }}
-        >
-          <h1
-            style={{
-              fontFamily: fonts.titleFont,
-              fontWeight: "bold",
-              fontSize: "1.1rem",
-              paddingRight: "0.5rem",
-              paddingTop: "0.4rem",
-            }}
-          >
-            {userInformation.displayName}
-          </h1>
-          <h2
-            style={{
-              fontFamily: fonts.titleFont,
-              fontWeight: "normal",
-              fontSize: "0.9rem",
-            }}
-          >
-            {userInformation.title}
-          </h2>
-        </div>
-      </div>
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				backgroundColor: colors.secondaryBackground,
+				padding: "1rem",
+				borderRadius: "0.625rem",
+				width: "100%",
+				height: "100%",
+			}}
+		>
+			<div
+				style={{
+					display: "flex",
+					alignItems: "end",
+					justifyContent: "end",
+					paddingRight: "1rem",
+					width: "100%",
+				}}
+			>
+				<IconButton
+					icon={returnicon}
+					onClick={wrapWithNavigate(onGoBack)}
+					style={{
+						width: "2.1rem",
+						height: "3rem",
+					}}
+				/>
+			</div>
+			<div
+				style={{
+					display: "flex",
+					paddingTop: "2rem",
+					paddingBottom: "2rem",
+					width: "100%",
+				}}
+			>
+				<img
+					style={{
+						width: "6rem",
+						height: "3rem",
+						flexGrow: 0,
+					}}
+					src={SanitasLogo}
+					alt="Logo Sanitas"
+				/>
+				<div
+					style={{
+						paddingLeft: "0.8rem",
+						flexGrow: 1,
+					}}
+				>
+					<h1
+						style={{
+							fontFamily: fonts.titleFont,
+							fontWeight: "bold",
+							fontSize: "1.1rem",
+							paddingRight: "0.5rem",
+							paddingTop: "0.4rem",
+						}}
+					>
+						{userInformation.displayName}
+					</h1>
+					<h2
+						style={{
+							fontFamily: fonts.titleFont,
+							fontWeight: "normal",
+							fontSize: "0.9rem",
+						}}
+					>
+						{userInformation.title}
+					</h2>
+				</div>
+			</div>
 
-      <TextIconButton
-        icon={usericon}
-        text="General"
-        onClick={wrapWithNavigate(navigateToGeneral)}
-      />
-      <TextIconButton
-        icon={stethoscopeicon}
-        text="Citas"
-        onClick={wrapWithNavigate(navigateToAppointments)}
-      />
+			<TextIconButton
+				icon={usericon}
+				text="General"
+				onClick={wrapWithNavigate(navigateToGeneral)}
+			/>
+			<TextIconButton
+				icon={stethoscopeicon}
+				text="Citas"
+				onClick={wrapWithNavigate(navigateToAppointments)}
+			/>
 
-      <h3
-        style={{
-          color: colors.darkerGrey,
-          fontSize: fontSize.textSize,
-          fontWeight: "normal",
-          paddingBottom: "1rem",
-          paddingTop: "1rem",
-          borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-        }}
-      >
-        Antecedentes
-      </h3>
+			<h3
+				style={{
+					color: colors.darkerGrey,
+					fontSize: fontSize.textSize,
+					fontWeight: "normal",
+					paddingBottom: "1rem",
+					paddingTop: "1rem",
+					borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+				}}
+			>
+				Antecedentes
+			</h3>
 
-      <div
-        style={{
-          paddingTop: "1rem",
-        }}
-      >
-        <TextIconButton
-          icon={familyicon}
-          text="Familiares"
-          onClick={wrapWithNavigate(navigateToFamiliar)}
-        />
-        <TextIconButton
-          icon={userloveicon}
-          text="Personales"
-          onClick={wrapWithNavigate(navigateToPersonal)}
-        />
-        <TextIconButton
-          icon={flowericon}
-          text="Alérgicos"
-          onClick={wrapWithNavigate(navigateToAllergies)}
-        />
-        <TextIconButton
-          icon={facemaskicon}
-          text="Quirúrgicos"
-          onClick={wrapWithNavigate(navigateToSurgical)}
-        />
-        <TextIconButton
-          icon={boneicon}
-          text="Traumatológicos"
-          onClick={wrapWithNavigate(navigateToTraumatological)}
-        />
-        <TextIconButton
-          icon={brainicon}
-          text="Psiquiátricos"
-          onClick={wrapWithNavigate(navigateToPsiquiatric)}
-        />
-        <TextIconButton
-          icon={womanicon}
-          text="Ginecoobstétricos"
-          onClick={wrapWithNavigate(navigateToObstetrics)}
-        />
-        <TextIconButton
-          icon={glassicon}
-          text="No patológicos"
-          onClick={navigateToNonPathological}
-        />
-      </div>
-    </div>
-  );
+			<div
+				style={{
+					paddingTop: "1rem",
+				}}
+			>
+				<TextIconButton
+					icon={familyicon}
+					text="Familiares"
+					onClick={wrapWithNavigate(navigateToFamiliar)}
+				/>
+				<TextIconButton
+					icon={userloveicon}
+					text="Personales"
+					onClick={wrapWithNavigate(navigateToPersonal)}
+				/>
+				<TextIconButton
+					icon={flowericon}
+					text="Alérgicos"
+					onClick={wrapWithNavigate(navigateToAllergies)}
+				/>
+				<TextIconButton
+					icon={facemaskicon}
+					text="Quirúrgicos"
+					onClick={wrapWithNavigate(navigateToSurgical)}
+				/>
+				<TextIconButton
+					icon={boneicon}
+					text="Traumatológicos"
+					onClick={wrapWithNavigate(navigateToTraumatological)}
+				/>
+				<TextIconButton
+					icon={brainicon}
+					text="Psiquiátricos"
+					onClick={wrapWithNavigate(navigateToPsiquiatric)}
+				/>
+				<TextIconButton
+					icon={womanicon}
+					text="Ginecoobstétricos"
+					onClick={wrapWithNavigate(navigateToObstetrics)}
+				/>
+				<TextIconButton
+					icon={glassicon}
+					text="No patológicos"
+					onClick={navigateToNonPathological}
+				/>
+			</div>
+		</div>
+	);
 }

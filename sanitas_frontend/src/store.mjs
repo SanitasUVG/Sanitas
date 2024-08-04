@@ -31,26 +31,26 @@ import { create } from "zustand";
  * @returns {UseStoreHook} The `useStore` hook
  */
 export const createEmptyStore = (defaultStoreValues) => {
-  return create((set) => ({
-    searchQuery: {
-      query: "",
-      // NOTE: This is the default search term
-      type: "Carnet",
-    },
+	return create((set) => ({
+		searchQuery: {
+			query: "",
+			// NOTE: This is the default search term
+			type: "Carnet",
+		},
 
-    setSearchQuery: (query, type) =>
-      set((state) => ({
-        searchQuery: { ...state.searchQuery, query, type },
-      })),
+		setSearchQuery: (query, type) =>
+			set((state) => ({
+				searchQuery: { ...state.searchQuery, query, type },
+			})),
 
-    patients: [],
-    setPatients: (patients) => set({ patients }),
+		patients: [],
+		setPatients: (patients) => set({ patients }),
 
-    selectedPatientId: 0,
-    setSelectedPatientId: (newId) => {
-      set({ selectedPatientId: newId });
-    },
+		selectedPatientId: 0,
+		setSelectedPatientId: (newId) => {
+			set({ selectedPatientId: newId });
+		},
 
-    ...defaultStoreValues,
-  }));
+		...defaultStoreValues,
+	}));
 };

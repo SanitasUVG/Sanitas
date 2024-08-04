@@ -12,35 +12,35 @@ import { useEffect, useState } from "react";
  * @returns {WindowSize} The current window size with properties `width` and `height`.
  */
 function useWindowSize() {
-  // Initialize state with undefined width/height so server and client renders match
-  const [windowSize, setWindowSize] = useState({
-    width: undefined,
-    height: undefined,
-  });
+	// Initialize state with undefined width/height so server and client renders match
+	const [windowSize, setWindowSize] = useState({
+		width: undefined,
+		height: undefined,
+	});
 
-  useEffect(() => {
-    /**
-     * Handles the window resize event by setting the new window size in the state.
-     */
-    function handleResize() {
-      // Set window width/height to state
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    }
+	useEffect(() => {
+		/**
+		 * Handles the window resize event by setting the new window size in the state.
+		 */
+		function handleResize() {
+			// Set window width/height to state
+			setWindowSize({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		}
 
-    // Add event listener
-    window.addEventListener("resize", handleResize);
+		// Add event listener
+		window.addEventListener("resize", handleResize);
 
-    // Call handler right away so state gets updated with initial window size
-    handleResize();
+		// Call handler right away so state gets updated with initial window size
+		handleResize();
 
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // Empty array ensures that effect is only run on mount and unmount
+		// Remove event listener on cleanup
+		return () => window.removeEventListener("resize", handleResize);
+	}, []); // Empty array ensures that effect is only run on mount and unmount
 
-  return windowSize;
+	return windowSize;
 }
 
 export default useWindowSize;
