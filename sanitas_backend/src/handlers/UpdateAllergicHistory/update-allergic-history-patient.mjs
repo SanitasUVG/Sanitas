@@ -14,7 +14,10 @@ export const updateAllergicHistoryHandler = async (event, context) => {
   const responseBuilder = createResponse().addCORSHeaders("PUT");
 
   if (event.httpMethod !== "PUT") {
-    return responseBuilder.setStatusCode(405).setBody({ error: "Method Not Allowed" }).build();
+    return responseBuilder
+      .setStatusCode(405)
+      .setBody({ error: "Method Not Allowed" })
+      .build();
   }
 
   let client;
@@ -35,7 +38,10 @@ export const updateAllergicHistoryHandler = async (event, context) => {
         .build();
     }
 
-    logger.info({ patientId, medicalHistory }, "Received data for updating allergic history");
+    logger.info(
+      { patientId, medicalHistory },
+      "Received data for updating allergic history",
+    );
 
     const upsertQuery = `
       INSERT INTO antecedentes_alergicos (
@@ -87,9 +93,15 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 
     const updatedRecord = result.rows[0];
     logger.info({ updatedRecord }, "Successfully updated allergic history");
-    return responseBuilder.setStatusCode(200).setBody(mapToAPIAllergicHistory(updatedRecord)).build();
+    return responseBuilder
+      .setStatusCode(200)
+      .setBody(mapToAPIAllergicHistory(updatedRecord))
+      .build();
   } catch (error) {
-    logger.error({ error }, "An error occurred while updating allergic history!");
+    logger.error(
+      { error },
+      "An error occurred while updating allergic history!",
+    );
 
     if (error.code === "23503") {
       return responseBuilder

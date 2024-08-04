@@ -13,9 +13,9 @@ export const LOCAL_API_URL = "http://localhost:3000/";
  * @returns {string} The randomly generated CUI.
  */
 export const generateUniqueCUI = () => {
-	const timestamp = Date.now();
-	const randomNum = Math.floor(Math.random() * 10000);
-	return `${timestamp}${randomNum}`;
+  const timestamp = Date.now();
+  const randomNum = Math.floor(Math.random() * 10000);
+  return `${timestamp}${randomNum}`;
 };
 
 /**
@@ -30,25 +30,25 @@ export const generateUniqueCUI = () => {
  * @returns {Promise<number>} The id of the inserted patient.
  */
 export async function createTestPatient(
-	cui = generateUniqueCUI(),
-	names = "Flabio André",
-	lastNames = "Galán Dona",
-	isWoman = false,
-	birthdate = "1987-07-07",
+  cui = generateUniqueCUI(),
+  names = "Flabio André",
+  lastNames = "Galán Dona",
+  isWoman = false,
+  birthdate = "1987-07-07",
 ) {
-	const patientData = {
-		cui,
-		names,
-		lastNames,
-		isWoman,
-		birthdate,
-	};
-	const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
+  const patientData = {
+    cui,
+    names,
+    lastNames,
+    isWoman,
+    birthdate,
+  };
+  const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
 
-	expect(response).toBeDefined();
-	expect(response.status).toBe(200);
+  expect(response).toBeDefined();
+  expect(response.status).toBe(200);
 
-	return response.data;
+  return response.data;
 }
 
 /**
@@ -65,19 +65,19 @@ export async function createTestPatient(
  * @returns {Promise<StudentInfo>} The updated student info
  */
 export async function updateStudentInfo(
-	id,
-	carnet = "22386",
-	career = "Lic. Computación",
+  id,
+  carnet = "22386",
+  career = "Lic. Computación",
 ) {
-	const payload = {
-		patientId: id,
-		carnet,
-		career,
-	};
-	const response = await axios.put(`${LOCAL_API_URL}/patient/student`, payload);
+  const payload = {
+    patientId: id,
+    carnet,
+    career,
+  };
+  const response = await axios.put(`${LOCAL_API_URL}/patient/student`, payload);
 
-	expect(response.status).toBe(200);
-	return response.data;
+  expect(response.status).toBe(200);
+  return response.data;
 }
 
 /**
@@ -88,15 +88,15 @@ export async function updateStudentInfo(
  * @returns {Promise<void>}
  */
 export async function updatePatientSurgicalHistory(patientId, surgicalData) {
-	surgicalData.patientId = patientId;
+  surgicalData.patientId = patientId;
 
-	const response = await axios.put(
-		`${LOCAL_API_URL}/patient/surgical-history`,
-		surgicalData,
-	);
+  const response = await axios.put(
+    `${LOCAL_API_URL}/patient/surgical-history`,
+    surgicalData,
+  );
 
-	// Validate the response
-	expect(response.status).toBe(200);
+  // Validate the response
+  expect(response.status).toBe(200);
 }
 
 /**
@@ -131,14 +131,14 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
-	familyHistoryData.patientId = patientId;
+  familyHistoryData.patientId = patientId;
 
-	const response = await axios.put(
-		`${LOCAL_API_URL}patient/family-history`,
-		familyHistoryData,
-	);
+  const response = await axios.put(
+    `${LOCAL_API_URL}patient/family-history`,
+    familyHistoryData,
+  );
 
-	expect(response.status).toBe(200);
+  expect(response.status).toBe(200);
 }
 /**
  * Updates the personal medical history for a specific patient using a PUT request.
@@ -149,17 +149,17 @@ export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 export async function updatePatientPersonalHistory(
-	patientId,
-	personalHistoryData,
+  patientId,
+  personalHistoryData,
 ) {
-	personalHistoryData.patientId = patientId;
+  personalHistoryData.patientId = patientId;
 
-	const response = await axios.put(
-		`${LOCAL_API_URL}patient/personal-history`,
-		personalHistoryData,
-	);
+  const response = await axios.put(
+    `${LOCAL_API_URL}patient/personal-history`,
+    personalHistoryData,
+  );
 
-	expect(response.status).toBe(200);
+  expect(response.status).toBe(200);
 }
 
 /**
@@ -192,16 +192,16 @@ export async function updatePatientPersonalHistory(
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 export async function updatePatientTraumatologicHistory(
-	patientId,
-	traumatologicHistoryData,
+  patientId,
+  traumatologicHistoryData,
 ) {
-	traumatologicHistoryData.patientId = patientId;
+  traumatologicHistoryData.patientId = patientId;
 
-	const response = await axios.put(
-		`${LOCAL_API_URL}patient/traumatological-history`,
-		traumatologicHistoryData,
-	);
-	expect(response.status).toBe(200);
+  const response = await axios.put(
+    `${LOCAL_API_URL}patient/traumatological-history`,
+    traumatologicHistoryData,
+  );
+  expect(response.status).toBe(200);
 }
 
 /**
@@ -225,14 +225,14 @@ export async function updatePatientTraumatologicHistory(
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 export async function updatePatientNonPathologicalHistory(
-	patientId,
-	nonPathologicalHistoryData,
+  patientId,
+  nonPathologicalHistoryData,
 ) {
-	nonPathologicalHistoryData.patientId = patientId;
-	await axios.put(
-		`${LOCAL_API_URL}patient/nonpatological-history`,
-		nonPathologicalHistoryData,
-	);
+  nonPathologicalHistoryData.patientId = patientId;
+  await axios.put(
+    `${LOCAL_API_URL}patient/nonpatological-history`,
+    nonPathologicalHistoryData,
+  );
 }
 /**
  * Updates the allergic medical history for a specific patient using a PUT request.
@@ -242,10 +242,16 @@ export async function updatePatientNonPathologicalHistory(
  * @param {MedicalHistory} allergicHistoryData - The allergic medical history data to be updated.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
-export async function updatePatientAllergicHistory(patientId, allergicHistoryData) {
-	allergicHistoryData.patientId = patientId;
-  
-	const response = await axios.put(`${LOCAL_API_URL}patient/allergic-history`, allergicHistoryData);
-  
-	expect(response.status).toBe(200);
-  }
+export async function updatePatientAllergicHistory(
+  patientId,
+  allergicHistoryData,
+) {
+  allergicHistoryData.patientId = patientId;
+
+  const response = await axios.put(
+    `${LOCAL_API_URL}patient/allergic-history`,
+    allergicHistoryData,
+  );
+
+  expect(response.status).toBe(200);
+}

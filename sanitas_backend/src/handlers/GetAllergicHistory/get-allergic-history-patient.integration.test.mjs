@@ -1,6 +1,10 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL, updatePatientAllergicHistory } from "../testHelpers.mjs";
+import {
+  createTestPatient,
+  LOCAL_API_URL,
+  updatePatientAllergicHistory,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/allergic-history/`;
 
@@ -79,7 +83,9 @@ describe("Get Allergic Medical History integration tests", () => {
 
   test("Fail to retrieve allergic history due to missing patient ID in the request", async () => {
     const invalidId = "invalid123";
-    const response = await axios.get(`${API_URL}${invalidId}`, { validateStatus: () => true });
+    const response = await axios.get(`${API_URL}${invalidId}`, {
+      validateStatus: () => true,
+    });
 
     expect(response).toBeDefined();
     expect(response.status).toBe(400);

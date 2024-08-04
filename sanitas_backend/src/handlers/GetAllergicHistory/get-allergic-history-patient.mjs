@@ -19,7 +19,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
   const responseBuilder = createResponse().addCORSHeaders("GET");
 
   if (event.httpMethod !== "GET") {
-    return responseBuilder.setStatusCode(405).setBody({ error: "Method Not Allowed" }).build();
+    return responseBuilder
+      .setStatusCode(405)
+      .setBody({ error: "Method Not Allowed" })
+      .build();
   }
 
   let client;
@@ -66,7 +69,9 @@ export const getAllergicHistoryHandler = async (event, context) => {
     logger.error("An error occurred while fetching allergic history!", error);
     return responseBuilder
       .setStatusCode(500)
-      .setBody({ error: "Failed to get allergic history due to an internal error." })
+      .setBody({
+        error: "Failed to get allergic history due to an internal error.",
+      })
       .build();
   } finally {
     if (client) {
