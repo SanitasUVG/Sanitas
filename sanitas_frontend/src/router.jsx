@@ -83,7 +83,6 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.FAMILIAR_HISTORY}`);
   },
   navigateToNonPathological: (navigate) => {
-    console.log("navigate function:", navigate);
     navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`);
   },
   // TODO: Add other Navigation routes...
@@ -134,6 +133,7 @@ const familiarHistoryView = (
 const nonPathologicalHistoryView = (
   <NonPathologicalHistory
     getNonPathologicalHistory={getNonPathologicalHistory}
+    getBloodTypePatientInfo={getGeneralPatientInformation}
     updateNonPathologicalHistory={updateNonPathologicalHistory}
     sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
     useStore={useStore}
