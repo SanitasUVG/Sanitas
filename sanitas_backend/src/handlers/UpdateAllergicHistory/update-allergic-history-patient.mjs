@@ -10,40 +10,40 @@ import { mapToAPIAllergicHistory } from "utils/index.mjs";
  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
  */
 export const updateAllergicHistoryHandler = async (event, context) => {
-  withRequest(event, context);
-  const responseBuilder = createResponse().addCORSHeaders("PUT");
+	withRequest(event, context);
+	const responseBuilder = createResponse().addCORSHeaders("PUT");
 
-  if (event.httpMethod !== "PUT") {
-    return responseBuilder
-      .setStatusCode(405)
-      .setBody({ error: "Method Not Allowed" })
-      .build();
-  }
+	if (event.httpMethod !== "PUT") {
+		return responseBuilder
+			.setStatusCode(405)
+			.setBody({ error: "Method Not Allowed" })
+			.build();
+	}
 
-  let client;
-  try {
-    const url = process.env.POSTGRES_URL;
-    logger.info({ url }, "Connecting to DB...");
-    client = getPgClient(url);
-    await client.connect();
-    logger.info("Connected!");
+	let client;
+	try {
+		const url = process.env.POSTGRES_URL;
+		logger.info({ url }, "Connecting to DB...");
+		client = getPgClient(url);
+		await client.connect();
+		logger.info("Connected!");
 
-    const { patientId, medicalHistory } = JSON.parse(event.body);
+		const { patientId, medicalHistory } = JSON.parse(event.body);
 
-    if (!patientId) {
-      logger.error("No patientId provided!");
-      return responseBuilder
-        .setStatusCode(400)
-        .setBody({ error: "Invalid input: Missing patientId." })
-        .build();
-    }
+		if (!patientId) {
+			logger.error("No patientId provided!");
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ error: "Invalid input: Missing patientId." })
+				.build();
+		}
 
-    logger.info(
-      { patientId, medicalHistory },
-      "Received data for updating allergic history",
-    );
+		logger.info(
+			{ patientId, medicalHistory },
+			"Received data for updating allergic history",
+		);
 
-    const upsertQuery = `
+		const upsertQuery = `
       INSERT INTO antecedentes_alergicos (
         id_paciente,
         medicamento_data,
@@ -68,58 +68,58 @@ export const updateAllergicHistoryHandler = async (event, context) => {
       RETURNING *;
     `;
 
-    const values = [
-      patientId,
-      JSON.stringify(medicalHistory.medication),
-      JSON.stringify(medicalHistory.food),
-      JSON.stringify(medicalHistory.dust),
-      JSON.stringify(medicalHistory.pollen),
-      JSON.stringify(medicalHistory.climateChange),
-      JSON.stringify(medicalHistory.animals),
-      JSON.stringify(medicalHistory.others),
-    ];
+		const values = [
+			patientId,
+			JSON.stringify(medicalHistory.medication),
+			JSON.stringify(medicalHistory.food),
+			JSON.stringify(medicalHistory.dust),
+			JSON.stringify(medicalHistory.pollen),
+			JSON.stringify(medicalHistory.climateChange),
+			JSON.stringify(medicalHistory.animals),
+			JSON.stringify(medicalHistory.others),
+		];
 
-    logger.info({ values }, "Executing upsert query with values");
+		logger.info({ values }, "Executing upsert query with values");
 
-    const result = await client.query(upsertQuery, values);
+		const result = await client.query(upsertQuery, values);
 
-    if (result.rowCount === 0) {
-      logger.error("No changes were made in the DB!");
-      return responseBuilder
-        .setStatusCode(404)
-        .setBody({ message: "Failed to update allergic history." })
-        .build();
-    }
+		if (result.rowCount === 0) {
+			logger.error("No changes were made in the DB!");
+			return responseBuilder
+				.setStatusCode(404)
+				.setBody({ message: "Failed to update allergic history." })
+				.build();
+		}
 
-    const updatedRecord = result.rows[0];
-    logger.info({ updatedRecord }, "Successfully updated allergic history");
-    return responseBuilder
-      .setStatusCode(200)
-      .setBody(mapToAPIAllergicHistory(updatedRecord))
-      .build();
-  } catch (error) {
-    logger.error(
-      { error },
-      "An error occurred while updating allergic history!",
-    );
+		const updatedRecord = result.rows[0];
+		logger.info({ updatedRecord }, "Successfully updated allergic history");
+		return responseBuilder
+			.setStatusCode(200)
+			.setBody(mapToAPIAllergicHistory(updatedRecord))
+			.build();
+	} catch (error) {
+		logger.error(
+			{ error },
+			"An error occurred while updating allergic history!",
+		);
 
-    if (error.code === "23503") {
-      return responseBuilder
-        .setStatusCode(404)
-        .setBody({ error: "No allergic history found for the provided ID." })
-        .build();
-    }
+		if (error.code === "23503") {
+			return responseBuilder
+				.setStatusCode(404)
+				.setBody({ error: "No allergic history found for the provided ID." })
+				.build();
+		}
 
-    return responseBuilder
-      .setStatusCode(500)
-      .setBody({
-        error: "Failed to update allergic history due to an internal error.",
-        details: error.message,
-      })
-      .build();
-  } finally {
-    if (client) {
-      await client.end();
-    }
-  }
+		return responseBuilder
+			.setStatusCode(500)
+			.setBody({
+				error: "Failed to update allergic history due to an internal error.",
+				details: error.message,
+			})
+			.build();
+	} finally {
+		if (client) {
+			await client.end();
+		}
+	}
 };
