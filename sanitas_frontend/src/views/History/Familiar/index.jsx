@@ -256,7 +256,21 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
       return;
     }
 
-    // Prepare new entry for saving
+    if (selectedFamiliar.disease === "others" && !selectedFamiliar.typeOfDisease) {
+      toast.error("Por favor, proporciona detalles sobre la enfermedad en 'Otros'.");
+      return;
+    }
+
+    if (!selectedFamiliar.relative) {
+      toast.error("Por favor, indica el familiar asociado a la enfermedad.");
+      return;
+    }
+
+    if (selectedFamiliar.disease === "cancer" && !selectedFamiliar.typeOfDisease) {
+      toast.error("Por favor, especifica el tipo de cáncer.");
+      return;
+    }
+
     let newEntry = ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
         selectedFamiliar.disease,
       )
@@ -265,11 +279,10 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
         typeOfDisease: selectedFamiliar.typeOfDisease || "",
         disease: selectedFamiliar.disease === "others" ? selectedFamiliar.typeOfDisease : undefined,
       }
-      : selectedFamiliar.relative;
+      : { who: selectedFamiliar.relative };
 
-    toast.info("Guardando antecedente quirúrgico...");
+    toast.info("Guardando antecedente familiar...");
 
-    // Update the data for the current disease
     const updatedData = [...familiarHistory[selectedFamiliar.disease].data, newEntry];
     const updatedHistory = {
       ...familiarHistory[selectedFamiliar.disease],
