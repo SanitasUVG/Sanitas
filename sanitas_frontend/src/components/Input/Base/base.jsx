@@ -25,6 +25,7 @@ export default function BaseInput({
   placeholder,
   style = {},
   onClick = () => {},
+  ...props
 }) {
   const defaultStyle = {
     backgroundColor: "#FFFFFF",
@@ -33,7 +34,6 @@ export default function BaseInput({
     padding: "6px 10px",
     outline: "none",
     borderRadius: "5px",
-
     ...style,
   };
 
@@ -46,6 +46,7 @@ export default function BaseInput({
       onClick={onClick}
       placeholder={placeholder}
       style={defaultStyle}
+      {...props}
     />
   );
 }
