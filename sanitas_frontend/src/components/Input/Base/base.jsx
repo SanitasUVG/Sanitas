@@ -16,36 +16,35 @@
  */
 
 export default function BaseInput({
-
-  type,
-  value,
-  readOnly = false,
-  onChange,
-  placeholder,
-  style = {},
-  onClick = () => {},
-  ...props
+	type,
+	value,
+	readOnly = false,
+	onChange,
+	placeholder,
+	style = {},
+	onClick = () => {},
+	...props
 }) {
-  const defaultStyle = {
-    backgroundColor: "#FFFFFF",
-    color: "#000000",
-    border: "1px solid #5B6670",
-    padding: "6px 10px",
-    outline: "none",
-    borderRadius: "5px",
-    ...style,
-  };
+	const defaultStyle = {
+		backgroundColor: "#FFFFFF",
+		color: "#000000",
+		border: "1px solid #5B6670",
+		padding: "6px 10px",
+		outline: "none",
+		borderRadius: "5px",
+		...style,
+	};
 
-  return (
-    <input
-      type={type}
-      value={value}
-      readOnly={readOnly}
-      onChange={onChange}
-      onClick={onClick}
-      placeholder={placeholder}
-      style={defaultStyle}
-      {...props}
-    />
-  );
+	return (
+		<input
+			type={type}
+			value={value}
+			readOnly={readOnly}
+			onChange={onChange}
+			onClick={onClick}
+			placeholder={placeholder}
+			style={defaultStyle}
+			{...props}
+		/>
+	);
 }
