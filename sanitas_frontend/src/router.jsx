@@ -1,4 +1,3 @@
-import { element } from "prop-types";
 import { Outlet } from "react-router-dom";
 import RequireAuth from "src/components/RequireAuth";
 import {
@@ -13,25 +12,25 @@ import {
 } from "./cognito.mjs";
 import { IS_PRODUCTION } from "./constants.mjs";
 import {
-  checkCui,
-  getCollaboratorInformation,
-  getFamilyHistory,
-  getPersonalHistory,
-  getGeneralPatientInformation,
-  getNonPathologicalHistory,
-  getStudentPatientInformation,
-  getSurgicalHistory,
-  getTraumatologicalHistory,
-  searchPatient,
-  submitPatientData,
-  updateCollaboratorInformation,
-  updateFamilyHistory,
-  updateGeneralPatientInformation,
-  updateNonPathologicalHistory,
-  updatePersonalHistory,
-  updateStudentPatientInformation,
-  updateSurgicalHistory,
-  updateTraumatologicalHistory,
+	checkCui,
+	getCollaboratorInformation,
+	getFamilyHistory,
+	getPersonalHistory,
+	getGeneralPatientInformation,
+	getNonPathologicalHistory,
+	getStudentPatientInformation,
+	getSurgicalHistory,
+	getTraumatologicalHistory,
+	searchPatient,
+	submitPatientData,
+	updateCollaboratorInformation,
+	updateFamilyHistory,
+	updateGeneralPatientInformation,
+	updateNonPathologicalHistory,
+	updatePersonalHistory,
+	updateStudentPatientInformation,
+	updateSurgicalHistory,
+	updateTraumatologicalHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -56,18 +55,17 @@ export const NAV_PATHS = {
 };
 
 export const UPDATE_PATIENT_NAV_PATHS = {
-  GENERAL_INFORMATION: "general",
-  SURGICAL_HISTORY: "surgical",
-  TRAUMATOLOGICAL_HISTORY: "traumatological",
-  FAMILIAR_HISTORY: "familiar",
-  PERSONAL_HISTORY: "personal",
-  NONPATHOLOGICAL_HISTORY: "non-pathological",
-  // TODO: Add other Navigation routes...
+	GENERAL_INFORMATION: "general",
+	SURGICAL_HISTORY: "surgical",
+	TRAUMATOLOGICAL_HISTORY: "traumatological",
+	FAMILIAR_HISTORY: "familiar",
+	PERSONAL_HISTORY: "personal",
+	NONPATHOLOGICAL_HISTORY: "non-pathological",
+	// TODO: Add other Navigation routes...
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
-
 	userInformation: {
 		displayName: "Pedrito Pérez",
 		title: "Test username",
@@ -100,9 +98,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY}`,
 		);
 	},
-  navigateToNonPathological: (navigate) => {
-    navigate(`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`);
-  },
+	navigateToNonPathological: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`,
+		);
+	},
 	// TODO: Add other Navigation routes...
 };
 
@@ -159,13 +159,13 @@ const personalHistoryView = (
 );
 
 const nonPathologicalHistoryView = (
-  <NonPathologicalHistory
-    getNonPathologicalHistory={getNonPathologicalHistory}
-    getBloodTypePatientInfo={getGeneralPatientInformation}
-    updateNonPathologicalHistory={updateNonPathologicalHistory}
-    sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-    useStore={useStore}
-  />
+	<NonPathologicalHistory
+		getNonPathologicalHistory={getNonPathologicalHistory}
+		getBloodTypePatientInfo={getGeneralPatientInformation}
+		updateNonPathologicalHistory={updateNonPathologicalHistory}
+		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+		useStore={useStore}
+	/>
 );
 
 export const ROUTES = [
@@ -236,10 +236,10 @@ export const ROUTES = [
 				path: UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY,
 				element: personalHistoryView,
 			},
-      {
-        path: UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY,
-        element: nonPathologicalHistoryView,
-      },
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY,
+				element: nonPathologicalHistoryView,
+			},
 			// TODO: Add more routes...
 		],
 	},

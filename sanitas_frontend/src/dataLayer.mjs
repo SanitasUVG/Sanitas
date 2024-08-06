@@ -596,24 +596,19 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
  * it returns the error message or the error response from the server.
  */
 export const getNonPathologicalHistory = async (patientId) => {
-  const url = `${BASE_URL}/patient/nonpatological-history/${patientId}`;
+	const url = `${BASE_URL}/patient/nonpatological-history/${patientId}`;
 
-  try {
-    const response = await axios.get(url);
-    if (response.status === 200) {
-      return { result: response.data };
-    } else {
-      return { error: `Unexpected status code: ${response.status}` };
-    }
-  } catch (error) {
-    if (error.response) {
-      return { error: error.response.data };
-    } else if (error.request) {
-      return { error: "No response received" };
-    } else {
-      return { error: error.message };
-    }
-  }
+	try {
+		const response = await axios.get(url);
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
 };
 
 /**
@@ -625,28 +620,27 @@ export const getNonPathologicalHistory = async (patientId) => {
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-export const updateNonPathologicalHistory = async (patientId, nonPathologicalHistoryDetails) => {
-  const url = `${BASE_URL}/patient/nonpatological-history`;
+export const updateNonPathologicalHistory = async (
+	patientId,
+	nonPathologicalHistoryDetails,
+) => {
+	const url = `${BASE_URL}/patient/nonpatological-history`;
 
-  const payload = {
-    patientId: patientId,
-    medicalHistory: nonPathologicalHistoryDetails,
-  };
+	const payload = {
+		patientId: patientId,
+		medicalHistory: nonPathologicalHistoryDetails,
+	};
 
-  try {
-    const response = await axios.put(url, payload);
-    if (response.status === 200) {
-      return { result: response.data };
-    } else {
-      return { error: `Unexpected status code: ${response.status}` };
-    }
-  } catch (error) {
-    if (error.response) {
-      return { error: error.response.data };
-    } else if (error.request) {
-      return { error: "No response received" };
-    } else {
-      return { error: error.message };
-    }
-  }
+	try {
+		const response = await axios.put(url, payload);
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
 };
