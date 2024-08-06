@@ -176,19 +176,33 @@ function NonPathologicalView({
   } = nonPathologicalHistoryResult.result?.medicalHistory || {};
 
   // State hooks for managing the input values.
-  const [smokingStatus, setSmokingStatus] = useState(smoker.data[0].smokes);
-  const [cigarettesPerDay, setCigarettesPerDay] = useState(
-    smoker.data[0].cigarettesPerDay.toString(),
+  const [smokingStatus, setSmokingStatus] = useState(
+    smoker.data.length > 0 ? smoker.data[0].smokes : false,
   );
-  const [smokingYears, setSmokingYears] = useState(smoker.data[0].years.toString());
-  const [alcoholConsumption, setAlcoholConsumption] = useState(drink.data[0].drinks);
-  const [drinksPerMonth, setDrinksPerMonth] = useState(drink.data[0].drinksPerMonth.toString());
-  const [drugUse, setDrugUse] = useState(drugs.data[0].usesDrugs);
-  const [drugType, setDrugType] = useState(drugs.data[0].drugType);
-  const [drugFrequency, setDrugFrequency] = useState(drugs.data[0].frequency.toString());
+  const [cigarettesPerDay, setCigarettesPerDay] = useState(
+    smoker.data.length > 0 && smoker.data[0].cigarettesPerDay != null
+      ? smoker.data[0].cigarettesPerDay.toString()
+      : "",
+  );
+  const [smokingYears, setSmokingYears] = useState(
+    smoker.data.length > 0 && smoker.data[0].years != null ? smoker.data[0].years.toString() : "",
+  );
 
-  // Edit mode state to toggle between view and edit modes.
-  const [isEditable, setIsEditable] = useState(false);
+  const [alcoholConsumption, setAlcoholConsumption] = useState(
+    drink.data.length > 0 ? drink.data[0].drinks : false,
+  );
+  const [drinksPerMonth, setDrinksPerMonth] = useState(
+    drink.data.length > 0 && drink.data[0].drinksPerMonth != null
+      ? drink.data[0].drinksPerMonth.toString()
+      : "",
+  );
+  const [drugUse, setDrugUse] = useState(drugs.data.length > 0 ? drugs.data[0].usesDrugs : false);
+  const [drugType, setDrugType] = useState(drugs.data.length > 0 ? drugs.data[0].drugType : "");
+  const [drugFrequency, setDrugFrequency] = useState(
+    drugs.data.length > 0 && drugs.data[0].frequency != null
+      ? drugs.data[0].frequency.toString()
+      : "",
+  );
 
   // Error handling based on the response status.
   let errorMessage = "";
@@ -205,7 +219,6 @@ function NonPathologicalView({
       errorMessage = "Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
     }
   }
-
   if (bloodTypeResult.error) {
     const error = bloodTypeResult.error;
     if (error && error.response) {
@@ -223,22 +236,11 @@ function NonPathologicalView({
 
   const nonPathologicalHistoryData = nonPathologicalHistoryResult.result;
 
-  // Memoizing the initial state for resetting or initial rendering.
-  const initialState = useMemo(
-    () => ({
-      smoker: smoker.data[0] || { smokes: false, cigarettesPerDay: "", years: "" },
-      drink: drink.data[0] || { drinks: false, drinksPerMonth: "" },
-      drugs: drugs.data[0] || { usesDrugs: false, drugType: "", frequency: "" },
-    }),
-    [nonPathologicalHistoryData],
-  );
-
-  const [nonPathologicalHistory, setNonPathologicalHistory] = useState(initialState);
-
   // Checking if it is the user's first time to display a different UI.
-  const isFirstTime = Object.values(nonPathologicalHistory).every(
-    (category) => category && Object.keys(category).length === 0,
-  );
+  const isFirstTime = !smoker.data.length && !drink.data.length && !drugs.data.length;
+
+  // Edit mode state to toggle between view and edit modes.
+  const [isEditable, setIsEditable] = useState(isFirstTime);
 
   // Function to handle cancellation of edits.
   const handleCancel = () => {
@@ -290,7 +292,7 @@ function NonPathologicalView({
           {
             usesDrugs: drugUse,
             drugType: drugType,
-            frequency: parseInt(drugFrequency),
+            frequency: drugFrequency,
           },
         ],
       },
@@ -301,11 +303,36 @@ function NonPathologicalView({
     const result = await updateNonPathologicalHistory(id, updateDetails);
     if (!result.error) {
       toast.success("Antecedentes no patológicos actualizados con éxito.");
-      setNonPathologicalHistory(updateDetails);
       setIsEditable(false);
       triggerReload();
     } else {
       toast.error("Error al actualizar los antecedentes no patológicos: " + result.error);
+    }
+  };
+
+  // Handler for smoking state
+  const handleSmokingChange = (newStatus) => {
+    setSmokingStatus(newStatus);
+    if (!newStatus) {
+      setCigarettesPerDay("");
+      setSmokingYears("");
+    }
+  };
+
+  // Handler for alcohol consumption
+  const handleAlcoholChange = (newStatus) => {
+    setAlcoholConsumption(newStatus);
+    if (!newStatus) {
+      setDrinksPerMonth("");
+    }
+  };
+
+  // Handler for drug use
+  const handleDrugUseChange = (newStatus) => {
+    setDrugUse(newStatus);
+    if (!newStatus) {
+      setDrugType("");
+      setDrugFrequency("");
     }
   };
 
@@ -435,14 +462,14 @@ function NonPathologicalView({
                   <RadioInput
                     name="smoking"
                     checked={smokingStatus}
-                    onChange={() => setSmokingStatus(true)}
+                    onChange={() => handleSmokingChange(true)}
                     label="Sí"
                     disabled={!isEditable}
                   />
                   <RadioInput
                     name="smoking"
                     checked={!smokingStatus}
-                    onChange={() => setSmokingStatus(false)}
+                    onChange={() => handleSmokingChange(false)}
                     label="No"
                     disabled={!isEditable}
                   />
@@ -532,14 +559,14 @@ function NonPathologicalView({
                   <RadioInput
                     name="alcoholConsumption"
                     checked={alcoholConsumption}
-                    onChange={() => setAlcoholConsumption(true)}
+                    onChange={() => handleAlcoholChange(true)}
                     label="Sí"
                     disabled={!isEditable}
                   />
                   <RadioInput
                     name="alcoholConsumption"
                     checked={!alcoholConsumption}
-                    onChange={() => setAlcoholConsumption(false)}
+                    onChange={() => handleAlcoholChange(false)}
                     label="No"
                     disabled={!isEditable}
                   />
@@ -603,14 +630,14 @@ function NonPathologicalView({
                   <RadioInput
                     name="drugUse"
                     checked={drugUse}
-                    onChange={() => setDrugUse(true)}
+                    onChange={() => handleDrugUseChange(true)}
                     label="Sí"
                     disabled={!isEditable}
                   />
                   <RadioInput
                     name="drugUse"
                     checked={!drugUse}
-                    onChange={() => setDrugUse(false)}
+                    onChange={() => handleDrugUseChange(false)}
                     label="No"
                     disabled={!isEditable}
                   />
@@ -654,11 +681,10 @@ function NonPathologicalView({
                           ¿Con qué frecuencia?
                         </p>
                         <BaseInput
-                          type="number"
+                          type="text"
                           value={drugFrequency}
                           onChange={(e) => setDrugFrequency(e.target.value)}
                           placeholder="Ingrese la frecuencia del consumo"
-                          min="1"
                           readOnly={!isEditable}
                           style={{
                             width: "20rem",
