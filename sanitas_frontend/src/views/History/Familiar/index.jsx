@@ -137,466 +137,521 @@ export function FamiliarHistory({
  * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
  * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
  */
-// TODO: Simplify View to avoid ignoring rule
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This view is really complex, maybe later we should simplify it's logic
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity:  Is the main function of the view
 function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
-  // State hooks to manage the selected familiar disease and whether adding a new entry
-  const [selectedFamiliar, setSelectedFamiliar] = useState({});
-  const [addingNew, setAddingNew] = useState(false);
+	// State hooks to manage the selected familiar disease and whether adding a new entry
+	const [selectedFamiliar, setSelectedFamiliar] = useState({});
+	const [addingNew, setAddingNew] = useState(false);
 
-  // Read the data from the resource and handle any potential errors
-  const familiarHistoryResult = familiarHistoryResource.read();
-  let errorMessage = "";
-  if (familiarHistoryResult.error) {
-    const error = familiarHistoryResult.error;
-    if (error && error.response) {
-      const { status } = error.response;
-      if (status < 500) {
-        errorMessage = "Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
-      } else {
-        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-      }
-    } else {
-      errorMessage = "Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
-    }
-  }
+	// Read the data from the resource and handle any potential errors
+	const familiarHistoryResult = familiarHistoryResource.read();
+	let errorMessage = "";
+	if (familiarHistoryResult.error) {
+		const error = familiarHistoryResult.error;
+		if (error?.response) {
+			const { status } = error.response;
+			if (status < 500) {
+				errorMessage =
+					"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+			} else {
+				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+			}
+		} else {
+			errorMessage =
+				"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
+		}
+	}
 
-  // Extract the familiar history data and establish initial state
-  const familiarHistoryData = familiarHistoryResult.result;
-  const [familiarHistory, setFamiliarHistory] = useState({
-    hypertension: {
-      data: familiarHistoryData?.medicalHistory.hypertension.data || [],
-      version: familiarHistoryData?.medicalHistory.hypertension.version || 1,
-    },
-    diabetesMellitus: {
-      data: familiarHistoryData?.medicalHistory.diabetesMellitus.data || [],
-      version: familiarHistoryData?.medicalHistory.diabetesMellitus.version || 1,
-    },
-    hypothyroidism: {
-      data: familiarHistoryData?.medicalHistory.hypothyroidism.data || [],
-      version: familiarHistoryData?.medicalHistory.hypothyroidism.version || 1,
-    },
-    asthma: {
-      data: familiarHistoryData?.medicalHistory.asthma.data || [],
-      version: familiarHistoryData?.medicalHistory.asthma.version || 1,
-    },
-    convulsions: {
-      data: familiarHistoryData?.medicalHistory.convulsions.data || [],
-      version: familiarHistoryData?.medicalHistory.convulsions.version || 1,
-    },
-    myocardialInfarction: {
-      data: familiarHistoryData?.medicalHistory.myocardialInfarction.data || [],
-      version: familiarHistoryData?.medicalHistory.myocardialInfarction.version || 1,
-    },
-    cancer: {
-      data: familiarHistoryData?.medicalHistory.cancer.data || [],
-      version: familiarHistoryData?.medicalHistory.cancer.version || 1,
-    },
-    cardiacDiseases: {
-      data: familiarHistoryData?.medicalHistory.cardiacDiseases.data || [],
-      version: familiarHistoryData?.medicalHistory.cardiacDiseases.version || 1,
-    },
-    renalDiseases: {
-      data: familiarHistoryData?.medicalHistory.renalDiseases.data || [],
-      version: familiarHistoryData?.medicalHistory.renalDiseases.version || 1,
-    },
-    others: {
-      data: familiarHistoryData?.medicalHistory.others.data || [],
-      version: familiarHistoryData?.medicalHistory.others.version || 1,
-    },
-  });
+	// Extract the familiar history data and establish initial state
+	const familiarHistoryData = familiarHistoryResult.result;
+	const [familiarHistory, setFamiliarHistory] = useState({
+		hypertension: {
+			data: familiarHistoryData?.medicalHistory.hypertension.data || [],
+			version: familiarHistoryData?.medicalHistory.hypertension.version || 1,
+		},
+		diabetesMellitus: {
+			data: familiarHistoryData?.medicalHistory.diabetesMellitus.data || [],
+			version:
+				familiarHistoryData?.medicalHistory.diabetesMellitus.version || 1,
+		},
+		hypothyroidism: {
+			data: familiarHistoryData?.medicalHistory.hypothyroidism.data || [],
+			version: familiarHistoryData?.medicalHistory.hypothyroidism.version || 1,
+		},
+		asthma: {
+			data: familiarHistoryData?.medicalHistory.asthma.data || [],
+			version: familiarHistoryData?.medicalHistory.asthma.version || 1,
+		},
+		convulsions: {
+			data: familiarHistoryData?.medicalHistory.convulsions.data || [],
+			version: familiarHistoryData?.medicalHistory.convulsions.version || 1,
+		},
+		myocardialInfarction: {
+			data: familiarHistoryData?.medicalHistory.myocardialInfarction.data || [],
+			version:
+				familiarHistoryData?.medicalHistory.myocardialInfarction.version || 1,
+		},
+		cancer: {
+			data: familiarHistoryData?.medicalHistory.cancer.data || [],
+			version: familiarHistoryData?.medicalHistory.cancer.version || 1,
+		},
+		cardiacDiseases: {
+			data: familiarHistoryData?.medicalHistory.cardiacDiseases.data || [],
+			version: familiarHistoryData?.medicalHistory.cardiacDiseases.version || 1,
+		},
+		renalDiseases: {
+			data: familiarHistoryData?.medicalHistory.renalDiseases.data || [],
+			version: familiarHistoryData?.medicalHistory.renalDiseases.version || 1,
+		},
+		others: {
+			data: familiarHistoryData?.medicalHistory.others.data || [],
+			version: familiarHistoryData?.medicalHistory.others.version || 1,
+		},
+	});
 
-  // No familiar data in API
-  const noFamiliarData = Object.keys(familiarHistory).every(
-    (key) => familiarHistory[key] && familiarHistory[key].data && familiarHistory[key].data.length === 0,
-  );
+	// No familiar data in API
+	const noFamiliarData = Object.keys(familiarHistory).every(
+		(key) =>
+			familiarHistory[key]?.data && familiarHistory[key].data.length === 0,
+	);
 
-  // Handlers for different actions within the component
-  const handleOpenNewForm = () => {
-    const initialDisease = "hypertension";
-    setSelectedFamiliar({ disease: initialDisease });
-    setAddingNew(true);
-    validateDisease(initialDisease);
-  };
+	// Handlers for different actions within the component
+	const handleOpenNewForm = () => {
+		const initialDisease = "hypertension";
+		setSelectedFamiliar({ disease: initialDisease });
+		setAddingNew(true);
+		validateDisease(initialDisease);
+	};
 
-  const validateDisease = (disease) => {
-    // Validation to ensure the selected disease exists in the state
-    if (!familiarHistory[disease]) {
-      toast.error("Por favor, selecciona una enfermedad válida.");
-      return false;
-    }
-    return true;
-  };
+	const validateDisease = (disease) => {
+		// Validation to ensure the selected disease exists in the state
+		if (!familiarHistory[disease]) {
+			toast.error("Por favor, selecciona una enfermedad válida.");
+			return false;
+		}
+		return true;
+	};
 
-  // Handler for selecting a disease card, setting state to show details without adding new data
-  const handleSelectDiseaseCard = (diseaseKey, entry) => {
-    setSelectedFamiliar({
-      disease: diseaseKey,
-      relative: entry.who,
-      typeOfDisease: entry.typeOfDisease || "",
-    });
-    setAddingNew(false);
-  };
+	// Handler for selecting a disease card, setting state to show details without adding new data
+	const handleSelectDiseaseCard = (diseaseKey, entry) => {
+		setSelectedFamiliar({
+			disease: diseaseKey,
+			relative: entry.who,
+			typeOfDisease: entry.typeOfDisease || "",
+		});
+		setAddingNew(false);
+	};
 
-  const handleCancel = () => {
-    setSelectedFamiliar({});
-    setAddingNew(false);
-  };
+	const handleCancel = () => {
+		setSelectedFamiliar({});
+		setAddingNew(false);
+	};
 
-  // Changes the disease selection from the dropdown, resetting other fields
-  const handleDiseaseChange = (e) => {
-    const disease = e.target.value;
-    setSelectedFamiliar({
-      disease: disease,
-      relative: "",
-      typeOfDisease: "",
-    });
-  };
+	// Changes the disease selection from the dropdown, resetting other fields
+	const handleDiseaseChange = (e) => {
+		const disease = e.target.value;
+		setSelectedFamiliar({
+			disease: disease,
+			relative: "",
+			typeOfDisease: "",
+		});
+	};
 
-  // Handles the saving of new or modified family medical history
-  const handleSaveNewFamiliar = async () => {
-    if (!selectedFamiliar.disease || !familiarHistory[selectedFamiliar.disease]) {
-      toast.error("Por favor, selecciona una enfermedad válida.");
-      return;
-    }
+	const isValidDiseaseSelection = () => {
+		if (
+			!(selectedFamiliar.disease && familiarHistory[selectedFamiliar.disease])
+		) {
+			toast.error("Por favor, selecciona una enfermedad válida.");
+			return false;
+		}
+		if (
+			selectedFamiliar.disease === "others" &&
+			!selectedFamiliar.typeOfDisease
+		) {
+			toast.error(
+				"Por favor, proporciona detalles sobre la enfermedad en 'Otros'.",
+			);
+			return false;
+		}
+		if (!selectedFamiliar.relative) {
+			toast.error("Por favor, indica el familiar asociado a la enfermedad.");
+			return false;
+		}
+		if (
+			selectedFamiliar.disease === "cancer" &&
+			!selectedFamiliar.typeOfDisease
+		) {
+			toast.error("Por favor, especifica el tipo de cáncer.");
+			return false;
+		}
+		return true;
+	};
 
-    if (selectedFamiliar.disease === "others" && !selectedFamiliar.typeOfDisease) {
-      toast.error("Por favor, proporciona detalles sobre la enfermedad en 'Otros'.");
-      return;
-    }
+	const prepareNewEntry = () => {
+		return ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
+			selectedFamiliar.disease,
+		)
+			? {
+					who: selectedFamiliar.relative,
+					typeOfDisease: selectedFamiliar.typeOfDisease || "",
+					disease:
+						selectedFamiliar.disease === "others"
+							? selectedFamiliar.typeOfDisease
+							: undefined,
+				}
+			: selectedFamiliar.relative;
+	};
 
-    if (!selectedFamiliar.relative) {
-      toast.error("Por favor, indica el familiar asociado a la enfermedad.");
-      return;
-    }
+	const updateFamiliarHistoryState = async (newEntry) => {
+		toast.info("Guardando antecedente quirúrgico...");
 
-    if (selectedFamiliar.disease === "cancer" && !selectedFamiliar.typeOfDisease) {
-      toast.error("Por favor, especifica el tipo de cáncer.");
-      return;
-    }
+		const updatedData = [
+			...familiarHistory[selectedFamiliar.disease].data,
+			newEntry,
+		];
+		const updatedHistory = {
+			...familiarHistory[selectedFamiliar.disease],
+			data: updatedData,
+		};
 
-    let newEntry = ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
-        selectedFamiliar.disease,
-      )
-      ? {
-        who: selectedFamiliar.relative,
-        typeOfDisease: selectedFamiliar.typeOfDisease || "",
-        disease: selectedFamiliar.disease === "others" ? selectedFamiliar.typeOfDisease : undefined,
-      }
-      : { who: selectedFamiliar.relative };
+		const updatedFamiliarHistory = {
+			...familiarHistory,
+			[selectedFamiliar.disease]: updatedHistory,
+		};
 
-    toast.info("Guardando antecedente familiar...");
+		try {
+			const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
 
-    const updatedData = [...familiarHistory[selectedFamiliar.disease].data, newEntry];
-    const updatedHistory = {
-      ...familiarHistory[selectedFamiliar.disease],
-      data: updatedData,
-    };
+			if (response.error) {
+				toast.error(`Error al guardar la información: ${response.error}`);
+			} else {
+				toast.success("Historial familiar guardado con éxito.");
+				setFamiliarHistory(updatedFamiliarHistory);
+				setSelectedFamiliar({});
+				setAddingNew(false);
+			}
+		} catch (_error) {
+			toast.error("Error al conectar con el servidor");
+		}
+	};
 
-    const updatedFamiliarHistory = {
-      ...familiarHistory,
-      [selectedFamiliar.disease]: updatedHistory,
-    };
+	// Handles the saving of new or modified family medical history
+	const handleSaveNewFamiliar = async () => {
+		if (!isValidDiseaseSelection()) return;
 
-    try {
-      const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
+		const newEntry = prepareNewEntry();
+		await updateFamiliarHistoryState(newEntry);
+	};
 
-      if (response.error) {
-        toast.error(`Error al guardar la información: ${response.error}`);
-      } else {
-        toast.success("Historial familiar guardado con éxito.");
-        setFamiliarHistory(updatedFamiliarHistory);
-        setSelectedFamiliar({});
-        setAddingNew(false);
-      }
-    } catch (error) {
-      toast.error("Error al conectar con el servidor");
-    }
-  };
+	// Definitions of disease options for the dropdown
+	const diseaseOptions = [
+		{ label: "Hipertensión arterial", value: "hypertension" },
+		{ label: "Diabetes Mellitus", value: "diabetesMellitus" },
+		{ label: "Hipotiroidismo", value: "hypothyroidism" },
+		{ label: "Asma", value: "asthma" },
+		{ label: "Convulsiones", value: "convulsions" },
+		{ label: "Infarto Agudo de Miocardio", value: "myocardialInfarction" },
+		{ label: "Cáncer", value: "cancer" },
+		{ label: "Enfermedades cardiacas", value: "cardiacDiseases" },
+		{ label: "Enfermedades renales", value: "renalDiseases" },
+		{ label: "Otros", value: "others" },
+	];
 
-  // Definitions of disease options for the dropdown
-  const diseaseOptions = [
-    { label: "Hipertensión arterial", value: "hypertension" },
-    { label: "Diabetes Mellitus", value: "diabetesMellitus" },
-    { label: "Hipotiroidismo", value: "hypothyroidism" },
-    { label: "Asma", value: "asthma" },
-    { label: "Convulsiones", value: "convulsions" },
-    { label: "Infarto Agudo de Miocardio", value: "myocardialInfarction" },
-    { label: "Cáncer", value: "cancer" },
-    { label: "Enfermedades cardiacas", value: "cardiacDiseases" },
-    { label: "Enfermedades renales", value: "renalDiseases" },
-    { label: "Otros", value: "others" },
-  ];
+	// Function to translate disease keys into more readable format
+	const translateDisease = (diseaseKey) => {
+		const translations = {
+			hypertension: "Hipertensión arterial",
+			diabetesMellitus: "Diabetes Mellitus",
+			hypothyroidism: "Hipotiroidismo",
+			asthma: "Asma",
+			convulsions: "Convulsiones",
+			myocardialInfarction: "Infarto Agudo de Miocardio",
+			cancer: "Cáncer",
+			cardiacDiseases: "Enfermedades cardiacas",
+			renalDiseases: "Enfermedades renales",
+			others: "Otros",
+		};
 
-  // Function to translate disease keys into more readable format
-  const translateDisease = (diseaseKey) => {
-    const translations = {
-      hypertension: "Hipertensión arterial",
-      diabetesMellitus: "Diabetes Mellitus",
-      hypothyroidism: "Hipotiroidismo",
-      asthma: "Asma",
-      convulsions: "Convulsiones",
-      myocardialInfarction: "Infarto Agudo de Miocardio",
-      cancer: "Cáncer",
-      cardiacDiseases: "Enfermedades cardiacas",
-      renalDiseases: "Enfermedades renales",
-      others: "Otros",
-    };
+		return translations[diseaseKey] || diseaseKey;
+	};
 
-    return translations[diseaseKey] || diseaseKey;
-  };
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				width: "100%",
+				height: "100%",
+				gap: "1.5rem",
+			}}
+		>
+			<div
+				style={{
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
+					padding: "1rem",
+					height: "65vh",
+					flex: 1,
+					overflowY: "auto",
+				}}
+			>
+				<div style={{ paddingBottom: "0.5rem" }}>
+					<BaseButton
+						text="Agregar antecedente familiar"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        height: "100%",
-        gap: "1.5rem",
-      }}
-    >
-      <div
-        style={{
-          border: `1px solid ${colors.primaryBackground}`,
-          borderRadius: "10px",
-          padding: "1rem",
-          height: "65vh",
-          flex: 1,
-          overflowY: "auto",
-        }}
-      >
-        <div style={{ paddingBottom: "0.5rem" }}>
-          <BaseButton
-            text="Agregar antecedente familiar"
-            onClick={handleOpenNewForm}
-            style={{ width: "100%", height: "3rem" }}
-          />
-        </div>
+				{errorMessage && (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				)}
 
-        {errorMessage && (
-          <div
-            style={{
-              color: "red",
-              paddingTop: "1rem",
-              textAlign: "center",
-              fontFamily: fonts.titleFont,
-              fontSize: fontSize.textSize,
-            }}
-          >
-            {errorMessage}
-          </div>
-        )}
+				{noFamiliarData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay antecedentes familiares! Agrega uno en el botón
+						de arriba.
+					</p>
+				) : (
+					Object.entries(familiarHistory).map(([diseaseKey, { data = [] }]) => {
+						if (data.length === 0) {
+							return null;
+						}
 
-        {noFamiliarData && !errorMessage
-          ? (
-            <p style={{ textAlign: "center", paddingTop: "20px" }}>
-              ¡Parece que no hay antecedentes familiares! Agrega uno en el botón de arriba.
-            </p>
-          )
-          : (
-            Object.entries(familiarHistory).map(([diseaseKey, { data = [], version }]) => {
-              if (data.length === 0) {
-                return null;
-              }
+						let displayedDisease = translateDisease(diseaseKey);
 
-              let displayedDisease = translateDisease(diseaseKey);
+						if (
+							diseaseKey === "cancer" ||
+							diseaseKey === "cardiacDiseases" ||
+							diseaseKey === "renalDiseases" ||
+							diseaseKey === "others"
+						) {
+							return data.map((entry) => {
+								const details = entry.who;
+								const uniqueKey = `${entry.disease}-${entry.date}`;
+								if (diseaseKey === "others") {
+									displayedDisease = entry.disease;
+								}
+								return (
+									<InformationCard
+										key={uniqueKey}
+										type="family"
+										disease={displayedDisease}
+										relative={details}
+										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+									/>
+								);
+							});
+						}
 
-              if (
-                diseaseKey === "cancer"
-                || diseaseKey === "cardiacDiseases"
-                || diseaseKey === "renalDiseases"
-                || diseaseKey === "others"
-              ) {
-                return data.map((entry, index) => {
-                  let details = entry.who;
-                  if (diseaseKey === "others") {
-                    displayedDisease = entry.disease;
-                  }
-                  return (
-                    <InformationCard
-                      key={`${diseaseKey}-${index}`}
-                      type="family"
-                      disease={displayedDisease}
-                      relative={details}
-                      onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-                    />
-                  );
-                });
-              } else {
-                let displayedRelatives = data.join(", ");
-                return (
-                  <InformationCard
-                    key={diseaseKey}
-                    type="family"
-                    disease={displayedDisease}
-                    relative={displayedRelatives}
-                    onClick={() => handleSelectDiseaseCard(diseaseKey, { who: displayedRelatives })}
-                  />
-                );
-              }
-            })
-          )}
-      </div>
+						// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
+						else {
+							const displayedRelatives = data.join(", ");
+							return (
+								<InformationCard
+									key={diseaseKey}
+									type="family"
+									disease={displayedDisease}
+									relative={displayedRelatives}
+									onClick={() =>
+										handleSelectDiseaseCard(diseaseKey, {
+											who: displayedRelatives,
+										})
+									}
+								/>
+							);
+						}
+					})
+				)}
+			</div>
 
-      {addingNew || selectedFamiliar.disease
-        ? (
-          <div
-            style={{
-              border: `0.063rem solid ${colors.primaryBackground}`,
-              borderRadius: "0.625rem",
-              padding: "1rem",
-              height: "65vh",
-              flex: 1.5,
-              width: "100%",
-              paddingLeft: "2rem",
-              flexGrow: 1,
-              overflowY: "auto",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <p
-                style={{
-                  paddingBottom: "0.5rem",
-                  paddingTop: "1.5rem",
-                  fontFamily: fonts.textFont,
-                  fontSize: fontSize.textSize,
-                  fontWeight: "bold",
-                }}
-              >
-                Seleccione la enfermedad:
-              </p>
-              <DropdownMenu
-                options={diseaseOptions}
-                value={selectedFamiliar.disease || ""}
-                readOnly={!addingNew}
-                onChange={handleDiseaseChange}
-                style={{
-                  container: { width: "80%" },
-                  select: {},
-                  option: {},
-                  indicator: {},
-                }}
-              />
-            </div>
+			{addingNew || selectedFamiliar.disease ? (
+				<div
+					style={{
+						border: `0.063rem solid ${colors.primaryBackground}`,
+						borderRadius: "0.625rem",
+						padding: "1rem",
+						height: "65vh",
+						flex: 1.5,
+						width: "100%",
+						paddingLeft: "2rem",
+						flexGrow: 1,
+						overflowY: "auto",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "center",
+							width: "100%",
+						}}
+					>
+						<p
+							style={{
+								paddingBottom: "0.5rem",
+								paddingTop: "1.5rem",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								fontWeight: "bold",
+							}}
+						>
+							Seleccione la enfermedad:
+						</p>
+						<DropdownMenu
+							options={diseaseOptions}
+							value={selectedFamiliar.disease || ""}
+							readOnly={!addingNew}
+							onChange={handleDiseaseChange}
+							style={{
+								container: { width: "80%" },
+								select: {},
+								option: {},
+								indicator: {},
+							}}
+						/>
+					</div>
 
-            {selectedFamiliar.disease && (
-              <>
-                {selectedFamiliar.disease !== "others" && (
-                  <>
-                    <p
-                      style={{
-                        fontFamily: fonts.textFont,
-                        fontSize: fontSize.textSize,
-                        paddingTop: "1.5rem",
-                        paddingBottom: "0.5rem",
-                      }}
-                    >
-                      ¿Quién padece de {translateDisease(selectedFamiliar.disease)}?
-                    </p>
-                    <BaseInput
-                      value={selectedFamiliar.relative || ""}
-                      onChange={(e) => setSelectedFamiliar({ ...selectedFamiliar, relative: e.target.value })}
-                      readOnly={!addingNew}
-                      placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-                      style={{ width: "90%", height: "2.5rem" }}
-                    />
-                  </>
-                )}
-                {["cancer", "others", "cardiacDiseases", "renalDiseases"].includes(
-                  selectedFamiliar.disease,
-                ) && (
-                  <>
-                    <p
-                      style={{
-                        fontFamily: fonts.textFont,
-                        fontSize: fontSize.textSize,
-                        paddingTop: "1.5rem",
-                        paddingBottom: "0.5rem",
-                      }}
-                    >
-                      {selectedFamiliar.disease === "cancer"
-                        ? "Tipo de Cáncer:"
-                        : selectedFamiliar.disease === "others"
-                        ? "¿Qué enfermedad?"
-                        : "Tipo de enfermedad:"}
-                    </p>
-                    <BaseInput
-                      value={selectedFamiliar.typeOfDisease || ""}
-                      onChange={(e) => setSelectedFamiliar({ ...selectedFamiliar, typeOfDisease: e.target.value })}
-                      placeholder={selectedFamiliar.disease === "cancer"
-                        ? "Especifique el tipo de cáncer"
-                        : selectedFamiliar.disease === "others"
-                        ? "Escriba la enfermedad"
-                        : "Especifique el tipo de enfermedad (no obligatorio)"}
-                      readOnly={!addingNew}
-                      style={{ width: "90%", height: "2.5rem" }}
-                    />
-                  </>
-                )}
+					{selectedFamiliar.disease && (
+						<>
+							{selectedFamiliar.disease !== "others" && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										¿Quién padece de{" "}
+										{translateDisease(selectedFamiliar.disease)}?
+									</p>
+									<BaseInput
+										value={selectedFamiliar.relative || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												relative: e.target.value,
+											})
+										}
+										readOnly={!addingNew}
+										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+										style={{ width: "90%", height: "2.5rem" }}
+									/>
+								</>
+							)}
+							{[
+								"cancer",
+								"others",
+								"cardiacDiseases",
+								"renalDiseases",
+							].includes(selectedFamiliar.disease) && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										{selectedFamiliar.disease === "cancer"
+											? "Tipo de Cáncer:"
+											: selectedFamiliar.disease === "others"
+												? "¿Qué enfermedad?"
+												: "Tipo de enfermedad:"}
+									</p>
+									<BaseInput
+										value={selectedFamiliar.typeOfDisease || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												typeOfDisease: e.target.value,
+											})
+										}
+										placeholder={
+											selectedFamiliar.disease === "cancer"
+												? "Especifique el tipo de cáncer"
+												: selectedFamiliar.disease === "others"
+													? "Escriba la enfermedad"
+													: "Especifique el tipo de enfermedad (no obligatorio)"
+										}
+										readOnly={!addingNew}
+										style={{ width: "90%", height: "2.5rem" }}
+									/>
+								</>
+							)}
 
-                {selectedFamiliar.disease === "others" && (
-                  <>
-                    <p
-                      style={{
-                        fontFamily: fonts.textFont,
-                        fontSize: fontSize.textSize,
-                        paddingTop: "1.5rem",
-                        paddingBottom: "0.5rem",
-                      }}
-                    >
-                      ¿Quién?
-                    </p>
-                    <BaseInput
-                      value={selectedFamiliar.relative || ""}
-                      onChange={(e) => setSelectedFamiliar({ ...selectedFamiliar, relative: e.target.value })}
-                      placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-                      readOnly={!addingNew}
-                      style={{ width: "90%", height: "2.5rem" }}
-                    />
-                  </>
-                )}
+							{selectedFamiliar.disease === "others" && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										¿Quién?
+									</p>
+									<BaseInput
+										value={selectedFamiliar.relative || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												relative: e.target.value,
+											})
+										}
+										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+										readOnly={!addingNew}
+										style={{ width: "90%", height: "2.5rem" }}
+									/>
+								</>
+							)}
 
-                {addingNew && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingTop: "2rem",
-                      gap: "1rem",
-                    }}
-                  >
-                    <BaseButton
-                      text="Guardar"
-                      onClick={handleSaveNewFamiliar}
-                      style={{ width: "30%", height: "3rem" }}
-                    />
-                    <BaseButton
-                      text="Cancelar"
-                      onClick={handleCancel}
-                      style={{
-                        width: "30%",
-                        height: "3rem",
-                        backgroundColor: "#fff",
-                        color: colors.primaryBackground,
-                        border: `1.5px solid ${colors.primaryBackground}`,
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )
-        : null}
-    </div>
-  );
+							{addingNew && (
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										paddingTop: "2rem",
+										gap: "1rem",
+									}}
+								>
+									<BaseButton
+										text="Guardar"
+										onClick={handleSaveNewFamiliar}
+										style={{ width: "30%", height: "3rem" }}
+									/>
+									<BaseButton
+										text="Cancelar"
+										onClick={handleCancel}
+										style={{
+											width: "30%",
+											height: "3rem",
+											backgroundColor: "#fff",
+											color: colors.primaryBackground,
+											border: `1.5px solid ${colors.primaryBackground}`,
+										}}
+									/>
+								</div>
+							)}
+						</>
+					)}
+				</div>
+			) : null}
+		</div>
+	);
 }

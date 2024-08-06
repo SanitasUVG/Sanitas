@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
@@ -26,121 +26,129 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @returns {JSX.Element} The NonPathologicalHistory component visual structure.
  */
 export function NonPathologicalHistory({
-  getNonPathologicalHistory,
-  getBloodTypePatientInfo,
-  updateNonPathologicalHistory,
-  sidebarConfig,
-  useStore,
+	getNonPathologicalHistory,
+	getBloodTypePatientInfo,
+	updateNonPathologicalHistory,
+	sidebarConfig,
+	useStore,
 }) {
-  const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
+	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
-  // Fetching patient ID from global state
-  const id = useStore((s) => s.selectedPatientId);
+	// Fetching patient ID from global state
+	const id = useStore((s) => s.selectedPatientId);
 
-  // Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
-  const bloodTypeResource = useMemo(() => WrapPromise(getBloodTypePatientInfo(id)), [id, reload]);
-  const nonPathologicalHistoryResource = useMemo(
-    () => WrapPromise(getNonPathologicalHistory(id)),
-    [id, reload],
-  );
+	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 
-  // Triggers a state change to force reloading of data
-  const triggerReload = () => {
-    setReload((prev) => !prev);
-  };
+	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
+	const bloodTypeResource = useMemo(
+		() => WrapPromise(getBloodTypePatientInfo(id)),
+		[id, reload, getBloodTypePatientInfo],
+	);
+	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
+	const nonPathologicalHistoryResource = useMemo(
+		() => WrapPromise(getNonPathologicalHistory(id)),
+		[id, reload, getNonPathologicalHistory],
+	);
 
-  // Suspense fallback component
-  const LoadingView = () => {
-    return <Throbber loadingMessage="Cargando información de los antecedentes no patológicos..." />;
-  };
+	// Triggers a state change to force reloading of data
+	const triggerReload = () => {
+		setReload((prev) => !prev);
+	};
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: colors.primaryBackground,
-        height: "100vh",
-        padding: "2rem",
-      }}
-    >
-      <div
-        style={{
-          width: "25%",
-        }}
-      >
-        <DashboardSidebar {...sidebarConfig} />
-      </div>
+	// Suspense fallback component
+	const LoadingView = () => {
+		return (
+			<Throbber loadingMessage="Cargando información de los antecedentes no patológicos..." />
+		);
+	};
 
-      <div
-        style={{
-          paddingLeft: "2rem",
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: colors.secondaryBackground,
-            padding: "3.125rem",
-            height: "100%",
-            borderRadius: "10px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <h1
-              style={{
-                color: colors.titleText,
-                fontFamily: fonts.titleFont,
-                fontSize: fontSize.titleSize,
-              }}
-            >
-              Antecedentes No Patológicos
-            </h1>
-            <h3
-              style={{
-                fontFamily: fonts.textFont,
-                fontWeight: "normal",
-                fontSize: fontSize.subtitleSize,
-                paddingTop: "0.5rem",
-                paddingBottom: "3rem",
-              }}
-            >
-              Registro de antecedentes no patológicos
-            </h3>
-          </div>
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				backgroundColor: colors.primaryBackground,
+				height: "100vh",
+				padding: "2rem",
+			}}
+		>
+			<div
+				style={{
+					width: "25%",
+				}}
+			>
+				<DashboardSidebar {...sidebarConfig} />
+			</div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-align",
-              alignItems: "space-between",
-              width: "100%",
-              gap: "2rem",
-            }}
-          >
-            <Suspense fallback={<LoadingView />}>
-              <NonPathologicalView
-                id={id}
-                nonPathologicalHistoryResource={nonPathologicalHistoryResource}
-                bloodTypeResource={bloodTypeResource}
-                updateNonPathologicalHistory={updateNonPathologicalHistory}
-                triggerReload={triggerReload}
-              />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+			<div
+				style={{
+					paddingLeft: "2rem",
+					height: "100%",
+					width: "100%",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: colors.secondaryBackground,
+						padding: "3.125rem",
+						height: "100%",
+						borderRadius: "10px",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<h1
+							style={{
+								color: colors.titleText,
+								fontFamily: fonts.titleFont,
+								fontSize: fontSize.titleSize,
+							}}
+						>
+							Antecedentes No Patológicos
+						</h1>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingTop: "0.5rem",
+								paddingBottom: "3rem",
+							}}
+						>
+							Registro de antecedentes no patológicos
+						</h3>
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-align",
+							alignItems: "space-between",
+							width: "100%",
+							gap: "2rem",
+						}}
+					>
+						<Suspense fallback={<LoadingView />}>
+							<NonPathologicalView
+								id={id}
+								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
+								bloodTypeResource={bloodTypeResource}
+								updateNonPathologicalHistory={updateNonPathologicalHistory}
+								triggerReload={triggerReload}
+							/>
+						</Suspense>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 /**
@@ -157,578 +165,639 @@ export function NonPathologicalHistory({
  * @param {NonPathologicalViewProps} props - Props passed to NonPathologicalView component.
  * @returns {JSX.Element} - Rendered view for managing non-pathological history.
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Is the main function of the view
 function NonPathologicalView({
-  id,
-  nonPathologicalHistoryResource,
-  bloodTypeResource,
-  updateNonPathologicalHistory,
-  triggerReload,
+	id,
+	nonPathologicalHistoryResource,
+	bloodTypeResource,
+	updateNonPathologicalHistory,
+	triggerReload,
 }) {
-  // Reading the results from the provided resources.
-  const nonPathologicalHistoryResult = nonPathologicalHistoryResource.read();
-  const bloodTypeResult = bloodTypeResource.read();
+	// Reading the results from the provided resources.
+	const nonPathologicalHistoryResult = nonPathologicalHistoryResource.read();
+	const bloodTypeResult = bloodTypeResource.read();
 
-  // Extracting data from the fetched results, defaulting to predefined values if not found.
-  const {
-    smoker = { data: [{ smokes: false, cigarettesPerDay: "", years: "" }] },
-    drink = { data: [{ drinks: false, drinksPerMonth: "" }] },
-    drugs = { data: [{ usesDrugs: false, drugType: "", frequency: "" }] },
-  } = nonPathologicalHistoryResult.result?.medicalHistory || {};
+	// Extracting data from the fetched results, defaulting to predefined values if not found.
+	const {
+		smoker = { data: [{ smokes: false, cigarettesPerDay: "", years: "" }] },
+		drink = { data: [{ drinks: false, drinksPerMonth: "" }] },
+		drugs = { data: [{ usesDrugs: false, drugType: "", frequency: "" }] },
+	} = nonPathologicalHistoryResult.result?.medicalHistory || {};
 
-  // State hooks for managing the input values.
-  const [smokingStatus, setSmokingStatus] = useState(
-    smoker.data.length > 0 ? smoker.data[0].smokes : false,
-  );
-  const [cigarettesPerDay, setCigarettesPerDay] = useState(
-    smoker.data.length > 0 && smoker.data[0].cigarettesPerDay != null
-      ? smoker.data[0].cigarettesPerDay.toString()
-      : "",
-  );
-  const [smokingYears, setSmokingYears] = useState(
-    smoker.data.length > 0 && smoker.data[0].years != null ? smoker.data[0].years.toString() : "",
-  );
+	// State hooks for managing the input values.
+	const [smokingStatus, setSmokingStatus] = useState(
+		smoker.data.length > 0 ? smoker.data[0].smokes : false,
+	);
+	const [cigarettesPerDay, setCigarettesPerDay] = useState(
+		smoker.data.length > 0 && smoker.data[0].cigarettesPerDay != null
+			? smoker.data[0].cigarettesPerDay.toString()
+			: "",
+	);
+	const [smokingYears, setSmokingYears] = useState(
+		smoker.data.length > 0 && smoker.data[0].years != null
+			? smoker.data[0].years.toString()
+			: "",
+	);
 
-  const [alcoholConsumption, setAlcoholConsumption] = useState(
-    drink.data.length > 0 ? drink.data[0].drinks : false,
-  );
-  const [drinksPerMonth, setDrinksPerMonth] = useState(
-    drink.data.length > 0 && drink.data[0].drinksPerMonth != null
-      ? drink.data[0].drinksPerMonth.toString()
-      : "",
-  );
-  const [drugUse, setDrugUse] = useState(drugs.data.length > 0 ? drugs.data[0].usesDrugs : false);
-  const [drugType, setDrugType] = useState(drugs.data.length > 0 ? drugs.data[0].drugType : "");
-  const [drugFrequency, setDrugFrequency] = useState(
-    drugs.data.length > 0 && drugs.data[0].frequency != null
-      ? drugs.data[0].frequency.toString()
-      : "",
-  );
+	const [alcoholConsumption, setAlcoholConsumption] = useState(
+		drink.data.length > 0 ? drink.data[0].drinks : false,
+	);
+	const [drinksPerMonth, setDrinksPerMonth] = useState(
+		drink.data.length > 0 && drink.data[0].drinksPerMonth != null
+			? drink.data[0].drinksPerMonth.toString()
+			: "",
+	);
+	const [drugUse, setDrugUse] = useState(
+		drugs.data.length > 0 ? drugs.data[0].usesDrugs : false,
+	);
+	const [drugType, setDrugType] = useState(
+		drugs.data.length > 0 ? drugs.data[0].drugType : "",
+	);
+	const [drugFrequency, setDrugFrequency] = useState(
+		drugs.data.length > 0 && drugs.data[0].frequency != null
+			? drugs.data[0].frequency.toString()
+			: "",
+	);
 
-  // Error handling based on the response status.
-  let errorMessage = "";
-  if (nonPathologicalHistoryResult.error) {
-    const error = nonPathologicalHistoryResult.error;
-    if (error && error.response) {
-      const { status } = error.response;
-      if (status < 500) {
-        errorMessage = "Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
-      } else {
-        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-      }
-    } else {
-      errorMessage = "Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
-    }
-  }
-  if (bloodTypeResult.error) {
-    const error = bloodTypeResult.error;
-    if (error && error.response) {
-      const { status } = error.response;
-      if (status < 500) {
-        errorMessage = "Ha ocurrido un error en la búsqueda del tipo de sangre, ¡Por favor vuelve a intentarlo!";
-      } else {
-        errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-      }
-    } else {
-      errorMessage =
-        "Ha ocurrido un error procesando tu solicitud para obtener el tipo de sangre, por favor vuelve a intentarlo.";
-    }
-  }
+	// Error handling based on the response status.
+	let errorMessage = "";
+	if (nonPathologicalHistoryResult.error) {
+		const error = nonPathologicalHistoryResult.error;
+		if (error?.response) {
+			const { status } = error.response;
+			if (status < 500) {
+				errorMessage =
+					"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+			} else {
+				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+			}
+		} else {
+			errorMessage =
+				"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
+		}
+	}
+	if (bloodTypeResult.error) {
+		const error = bloodTypeResult.error;
+		if (error?.response) {
+			const { status } = error.response;
+			if (status < 500) {
+				errorMessage =
+					"Ha ocurrido un error en la búsqueda del tipo de sangre, ¡Por favor vuelve a intentarlo!";
+			} else {
+				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+			}
+		} else {
+			errorMessage =
+				"Ha ocurrido un error procesando tu solicitud para obtener el tipo de sangre, por favor vuelve a intentarlo.";
+		}
+	}
 
-  const nonPathologicalHistoryData = nonPathologicalHistoryResult.result;
+	const nonPathologicalHistoryData = nonPathologicalHistoryResult.result;
 
-  // Checking if it is the user's first time to display a different UI.
-  const isFirstTime = !smoker.data.length && !drink.data.length && !drugs.data.length;
+	// Checking if it is the user's first time to display a different UI.
+	// biome-ignore lint/complexity/useSimplifiedLogicExpression: Changes the logic
+	const isFirstTime =
+		!smoker.data.length && !drink.data.length && !drugs.data.length;
 
-  // Edit mode state to toggle between view and edit modes.
-  const [isEditable, setIsEditable] = useState(isFirstTime);
+	// Edit mode state to toggle between view and edit modes.
+	const [isEditable, setIsEditable] = useState(isFirstTime);
 
-  // Function to handle cancellation of edits.
-  const handleCancel = () => {
-    setIsEditable(false);
-  };
+	const validateSmokingDetails = () => {
+		if (
+			smokingStatus &&
+			(cigarettesPerDay === "" || Number.parseInt(cigarettesPerDay) < 1)
+		) {
+			toast.error(
+				"Por favor, ingrese la cantidad de cigarrillos al día (mayor que cero).",
+			);
+			return false;
+		}
+		if (
+			smokingStatus &&
+			(smokingYears === "" || Number.parseInt(smokingYears) < 1)
+		) {
+			toast.error("Por favor, ingrese cuántos años ha fumado.");
+			return false;
+		}
+		return true;
+	};
 
-  // Function to handle saving the changes to the server.
-  const handleSaveNonPathological = async () => {
-    if (smokingStatus && (cigarettesPerDay === "" || parseInt(cigarettesPerDay) < 1)) {
-      toast.error("Por favor, ingrese la cantidad de cigarrillos al día (mayor que cero).");
-      return;
-    }
-    if (smokingStatus && (smokingYears === "" || parseInt(smokingYears) < 1)) {
-      toast.error("Por favor, ingrese cuántos años ha fumado.");
-      return;
-    }
-    if (alcoholConsumption && (drinksPerMonth === "" || parseInt(drinksPerMonth) < 1)) {
-      toast.error("Por favor, ingrese cuántas bebidas alcohólicas consume al mes (mayor que cero).");
-      return;
-    }
-    if (drugUse && (drugType === "" || drugFrequency === "" || parseInt(drugFrequency) < 1)) {
-      toast.error("Por favor, complete los detalles del consumo de drogas (mayor que cero).");
-      return;
-    }
-    const updateDetails = {
-      bloodType: bloodTypeResult?.result?.bloodType,
-      smoker: {
-        version: nonPathologicalHistoryData?.medicalHistory.smoker.version || 1,
-        data: [
-          {
-            smokes: smokingStatus,
-            cigarettesPerDay: parseInt(cigarettesPerDay),
-            years: parseInt(smokingYears),
-          },
-        ],
-      },
-      drink: {
-        version: nonPathologicalHistoryData?.medicalHistory.drink.version || 1,
-        data: [
-          {
-            drinks: alcoholConsumption,
-            drinksPerMonth: parseInt(drinksPerMonth),
-          },
-        ],
-      },
-      drugs: {
-        version: nonPathologicalHistoryData?.medicalHistory.drugs.version || 1,
-        data: [
-          {
-            usesDrugs: drugUse,
-            drugType: drugType,
-            frequency: drugFrequency,
-          },
-        ],
-      },
-    };
+	const validateAlcoholConsumption = () => {
+		if (
+			alcoholConsumption &&
+			(drinksPerMonth === "" || Number.parseInt(drinksPerMonth) < 1)
+		) {
+			toast.error(
+				"Por favor, ingrese cuántas bebidas alcohólicas consume al mes (mayor que cero).",
+			);
+			return false;
+		}
+		return true;
+	};
 
-    toast.info("Guardando antecedente quirúrgico...");
+	const validateDrugUse = () => {
+		if (
+			drugUse &&
+			(drugType === "" ||
+				drugFrequency === "" ||
+				Number.parseInt(drugFrequency) < 1)
+		) {
+			toast.error(
+				"Por favor, complete los detalles del consumo de drogas (mayor que cero).",
+			);
+			return false;
+		}
+		return true;
+	};
 
-    const result = await updateNonPathologicalHistory(id, updateDetails);
-    if (!result.error) {
-      toast.success("Antecedentes no patológicos actualizados con éxito.");
-      setIsEditable(false);
-      triggerReload();
-    } else {
-      toast.error("Error al actualizar los antecedentes no patológicos: " + result.error);
-    }
-  };
+	// Function to handle saving the changes to the server.
+	const handleSaveNonPathological = async () => {
+		if (!validateSmokingDetails()) return;
+		if (!validateAlcoholConsumption()) return;
+		if (!validateDrugUse()) return;
 
-  // Handler for smoking state
-  const handleSmokingChange = (newStatus) => {
-    setSmokingStatus(newStatus);
-    if (!newStatus) {
-      setCigarettesPerDay("");
-      setSmokingYears("");
-    }
-  };
+		const updateDetails = {
+			bloodType: bloodTypeResult?.result?.bloodType,
+			smoker: {
+				version: nonPathologicalHistoryData?.medicalHistory.smoker.version || 1,
+				data: [
+					{
+						smokes: smokingStatus,
+						cigarettesPerDay: Number.parseInt(cigarettesPerDay),
+						years: Number.parseInt(smokingYears),
+					},
+				],
+			},
+			drink: {
+				version: nonPathologicalHistoryData?.medicalHistory.drink.version || 1,
+				data: [
+					{
+						drinks: alcoholConsumption,
+						drinksPerMonth: Number.parseInt(drinksPerMonth),
+					},
+				],
+			},
+			drugs: {
+				version: nonPathologicalHistoryData?.medicalHistory.drugs.version || 1,
+				data: [
+					{
+						usesDrugs: drugUse,
+						drugType: drugType,
+						frequency: drugFrequency,
+					},
+				],
+			},
+		};
 
-  // Handler for alcohol consumption
-  const handleAlcoholChange = (newStatus) => {
-    setAlcoholConsumption(newStatus);
-    if (!newStatus) {
-      setDrinksPerMonth("");
-    }
-  };
+		toast.info("Guardando antecedente quirúrgico...");
 
-  // Handler for drug use
-  const handleDrugUseChange = (newStatus) => {
-    setDrugUse(newStatus);
-    if (!newStatus) {
-      setDrugType("");
-      setDrugFrequency("");
-    }
-  };
+		const result = await updateNonPathologicalHistory(id, updateDetails);
+		if (!result.error) {
+			toast.success("Antecedentes no patológicos actualizados con éxito.");
+			setIsEditable(false);
+			triggerReload();
+		} else {
+			toast.error(
+				`Error al actualizar los antecedentes no patológicos: ${result.error}`,
+			);
+		}
+	};
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        height: "100%",
-        gap: "1.5rem",
-      }}
-    >
-      <div
-        style={{
-          border: `1px solid ${colors.primaryBackground}`,
-          borderRadius: "10px",
-          padding: "1rem",
-          height: "65vh",
-          flex: 1,
-          overflowY: "auto",
-        }}
-      >
-        {errorMessage
-          ? (
-            <div
-              style={{
-                color: "red",
-                paddingTop: "1rem",
-                textAlign: "center",
-                fontFamily: fonts.titleFont,
-                fontSize: fontSize.textSize,
-              }}
-            >
-              {errorMessage}
-            </div>
-          )
-          : (
-            <>
-              {isFirstTime && (
-                <div
-                  style={{
-                    paddingTop: "1rem",
-                    textAlign: "center",
-                    color: colors.titleText,
-                    fontWeight: "bold",
-                    fontFamily: fonts.textFont,
-                    fontSize: fontSize.textSize,
-                  }}
-                >
-                  Por favor ingresa tus datos, parece que es tu primera vez aquí.
-                </div>
-              )}
-              <div
-                style={{
-                  borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-                  padding: "2rem 0 2rem 1rem",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "start", flexDirection: "column" }}>
-                  <p
-                    style={{
-                      marginRight: "1rem",
-                      paddingBottom: "0.5rem",
-                      fontFamily: fonts.textFont,
-                      fontSize: fontSize.textSize,
-                    }}
-                  >
-                    Tipo de sangre:
-                  </p>
-                  <BaseInput
-                    type="text"
-                    value={bloodTypeResult?.result?.bloodType ?? ""}
-                    readOnly
-                    placeholder="Tipo de sangre"
-                    style={{
-                      width: "20rem",
-                      height: "2.5rem",
-                      fontFamily: fonts.textFont,
-                      fontSize: "1rem",
-                    }}
-                  />
-                </div>
-                {!isFirstTime
-                  && (isEditable
-                    ? (
-                      <div style={{ display: "flex", gap: "1rem" }}>
-                        <IconButton icon={CheckIcon} onClick={handleSaveNonPathological} />
-                        <IconButton
-                          icon={CancelIcon}
-                          onClick={() => {
-                            setIsEditable(false);
-                          }}
-                        />
-                      </div>
-                    )
-                    : <IconButton icon={EditIcon} onClick={() => setIsEditable(true)} />)}
-              </div>
-              <div
-                style={{
-                  paddingLeft: "1rem",
-                  borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-                }}
-              >
-                <p
-                  style={{
-                    paddingBottom: "0.5rem",
-                    paddingTop: "2rem",
-                    fontFamily: fonts.textFont,
-                    fontSize: fontSize.textSize,
-                  }}
-                >
-                  ¿Fuma?
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    alignItems: "center",
-                    paddingBottom: "2rem",
-                  }}
-                >
-                  <RadioInput
-                    name="smoking"
-                    checked={smokingStatus}
-                    onChange={() => handleSmokingChange(true)}
-                    label="Sí"
-                    disabled={!isEditable}
-                  />
-                  <RadioInput
-                    name="smoking"
-                    checked={!smokingStatus}
-                    onChange={() => handleSmokingChange(false)}
-                    label="No"
-                    disabled={!isEditable}
-                  />
-                </div>
-                {smokingStatus && (
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", gap: "1rem", paddingBottom: "2rem" }}>
-                      <div>
-                        <p
-                          style={{
-                            paddingBottom: "0.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                          }}
-                        >
-                          ¿Cuántos cigarrillos al día?
-                        </p>
-                        <BaseInput
-                          type="number"
-                          value={cigarettesPerDay}
-                          onChange={(e) => setCigarettesPerDay(e.target.value)}
-                          placeholder="Ingrese cuántos cigarrillos al día"
-                          min="1"
-                          readOnly={!isEditable}
-                          style={{
-                            width: "20rem",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <p
-                          style={{
-                            paddingBottom: "0.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                          }}
-                        >
-                          ¿Desde hace cuántos años?
-                        </p>
-                        <BaseInput
-                          type="number"
-                          value={smokingYears}
-                          onChange={(e) => setSmokingYears(e.target.value)}
-                          placeholder="Ingrese desde hace cuántos años"
-                          min="1"
-                          readOnly={!isEditable}
-                          style={{
-                            width: "20rem",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+	// Handler for smoking state
+	const handleSmokingChange = (newStatus) => {
+		setSmokingStatus(newStatus);
+		if (!newStatus) {
+			setCigarettesPerDay("");
+			setSmokingYears("");
+		}
+	};
 
-              <div
-                style={{
-                  paddingLeft: "1rem",
-                  borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-                }}
-              >
-                <p
-                  style={{
-                    paddingBottom: "0.5rem",
-                    paddingTop: "2rem",
-                    fontFamily: fonts.textFont,
-                    fontSize: fontSize.textSize,
-                  }}
-                >
-                  ¿Consumes bebidas alcohólicas?
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    alignItems: "center",
-                    paddingBottom: "2rem",
-                  }}
-                >
-                  <RadioInput
-                    name="alcoholConsumption"
-                    checked={alcoholConsumption}
-                    onChange={() => handleAlcoholChange(true)}
-                    label="Sí"
-                    disabled={!isEditable}
-                  />
-                  <RadioInput
-                    name="alcoholConsumption"
-                    checked={!alcoholConsumption}
-                    onChange={() => handleAlcoholChange(false)}
-                    label="No"
-                    disabled={!isEditable}
-                  />
-                </div>
-                {alcoholConsumption && (
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", gap: "1rem", paddingBottom: "2rem" }}>
-                      <div>
-                        <p
-                          style={{
-                            paddingBottom: "0.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                          }}
-                        >
-                          ¿Cuántas bebidas alcohólicas consumes al mes?
-                        </p>
-                        <BaseInput
-                          type="number"
-                          value={drinksPerMonth}
-                          onChange={(e) => setDrinksPerMonth(e.target.value)}
-                          placeholder="Ingrese cuántas bebidas al mes"
-                          min="1"
-                          readOnly={!isEditable}
-                          style={{
-                            width: "20rem",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+	// Handler for alcohol consumption
+	const handleAlcoholChange = (newStatus) => {
+		setAlcoholConsumption(newStatus);
+		if (!newStatus) {
+			setDrinksPerMonth("");
+		}
+	};
 
-              <div
-                style={{
-                  paddingLeft: "1rem",
-                }}
-              >
-                <p
-                  style={{
-                    paddingBottom: "0.5rem",
-                    paddingTop: "2rem",
-                    fontFamily: fonts.textFont,
-                    fontSize: fontSize.textSize,
-                  }}
-                >
-                  ¿Consumes alguna droga?
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    alignItems: "center",
-                    paddingBottom: "2rem",
-                  }}
-                >
-                  <RadioInput
-                    name="drugUse"
-                    checked={drugUse}
-                    onChange={() => handleDrugUseChange(true)}
-                    label="Sí"
-                    disabled={!isEditable}
-                  />
-                  <RadioInput
-                    name="drugUse"
-                    checked={!drugUse}
-                    onChange={() => handleDrugUseChange(false)}
-                    label="No"
-                    disabled={!isEditable}
-                  />
-                </div>
-                {drugUse && (
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", gap: "1rem", paddingBottom: "2rem" }}>
-                      <div>
-                        <p
-                          style={{
-                            paddingBottom: "0.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                          }}
-                        >
-                          ¿Cuál?
-                        </p>
-                        <BaseInput
-                          type="text"
-                          value={drugType}
-                          onChange={(e) => setDrugType(e.target.value)}
-                          placeholder="Ingrese el tipo de droga"
-                          min="1"
-                          readOnly={!isEditable}
-                          style={{
-                            width: "20rem",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <p
-                          style={{
-                            paddingBottom: "0.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                          }}
-                        >
-                          ¿Con qué frecuencia?
-                        </p>
-                        <BaseInput
-                          type="text"
-                          value={drugFrequency}
-                          onChange={(e) => setDrugFrequency(e.target.value)}
-                          placeholder="Ingrese la frecuencia del consumo"
-                          readOnly={!isEditable}
-                          style={{
-                            width: "20rem",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {isFirstTime && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingTop: "2rem",
-                    gap: "1rem",
-                  }}
-                >
-                  <BaseButton
-                    text="Guardar"
-                    onClick={handleSaveNonPathological}
-                    style={{ width: "30%", height: "3rem" }}
-                  />
-                  <BaseButton
-                    text="Cancelar"
-                    onClick={handleCancel}
-                    style={{
-                      width: "30%",
-                      height: "3rem",
-                      backgroundColor: "#fff",
-                      color: colors.primaryBackground,
-                      border: `1.5px solid ${colors.primaryBackground}`,
-                    }}
-                  />
-                </div>
-              )}
-            </>
-          )}
-      </div>
-    </div>
-  );
+	// Handler for drug use
+	const handleDrugUseChange = (newStatus) => {
+		setDrugUse(newStatus);
+		if (!newStatus) {
+			setDrugType("");
+			setDrugFrequency("");
+		}
+	};
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				width: "100%",
+				height: "100%",
+				gap: "1.5rem",
+			}}
+		>
+			<div
+				style={{
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
+					padding: "1rem",
+					height: "65vh",
+					flex: 1,
+					overflowY: "auto",
+				}}
+			>
+				{errorMessage ? (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				) : (
+					<>
+						{isFirstTime && (
+							<div
+								style={{
+									paddingTop: "1rem",
+									textAlign: "center",
+									color: colors.titleText,
+									fontWeight: "bold",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								Por favor ingresa tus datos, parece que es tu primera vez aquí.
+							</div>
+						)}
+						<div
+							style={{
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+								padding: "2rem 0 2rem 1rem",
+								display: "flex",
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "space-between",
+							}}
+						>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "start",
+									flexDirection: "column",
+								}}
+							>
+								<p
+									style={{
+										marginRight: "1rem",
+										paddingBottom: "0.5rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Tipo de sangre:
+								</p>
+								<BaseInput
+									type="text"
+									value={bloodTypeResult?.result?.bloodType ?? ""}
+									readOnly
+									placeholder="Tipo de sangre"
+									style={{
+										width: "20rem",
+										height: "2.5rem",
+										fontFamily: fonts.textFont,
+										fontSize: "1rem",
+									}}
+								/>
+							</div>
+							{!isFirstTime &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNonPathological}
+										/>
+										<IconButton
+											icon={CancelIcon}
+											onClick={() => {
+												setIsEditable(false);
+											}}
+										/>
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
+						<div
+							style={{
+								paddingLeft: "1rem",
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+							}}
+						>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "2rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								¿Fuma?
+							</p>
+							<div
+								style={{
+									display: "flex",
+									gap: "1rem",
+									alignItems: "center",
+									paddingBottom: "2rem",
+								}}
+							>
+								<RadioInput
+									name="smoking"
+									checked={smokingStatus}
+									onChange={() => handleSmokingChange(true)}
+									label="Sí"
+									disabled={!isEditable}
+								/>
+								<RadioInput
+									name="smoking"
+									checked={!smokingStatus}
+									onChange={() => handleSmokingChange(false)}
+									label="No"
+									disabled={!isEditable}
+								/>
+							</div>
+							{smokingStatus && (
+								<div style={{ display: "flex", flexDirection: "column" }}>
+									<div
+										style={{
+											display: "flex",
+											gap: "1rem",
+											paddingBottom: "2rem",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Cuántos cigarrillos al día?
+											</p>
+											<BaseInput
+												type="number"
+												value={cigarettesPerDay}
+												onChange={(e) => setCigarettesPerDay(e.target.value)}
+												placeholder="Ingrese cuántos cigarrillos al día"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Desde hace cuántos años?
+											</p>
+											<BaseInput
+												type="number"
+												value={smokingYears}
+												onChange={(e) => setSmokingYears(e.target.value)}
+												placeholder="Ingrese desde hace cuántos años"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+
+						<div
+							style={{
+								paddingLeft: "1rem",
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+							}}
+						>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "2rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								¿Consumes bebidas alcohólicas?
+							</p>
+							<div
+								style={{
+									display: "flex",
+									gap: "1rem",
+									alignItems: "center",
+									paddingBottom: "2rem",
+								}}
+							>
+								<RadioInput
+									name="alcoholConsumption"
+									checked={alcoholConsumption}
+									onChange={() => handleAlcoholChange(true)}
+									label="Sí"
+									disabled={!isEditable}
+								/>
+								<RadioInput
+									name="alcoholConsumption"
+									checked={!alcoholConsumption}
+									onChange={() => handleAlcoholChange(false)}
+									label="No"
+									disabled={!isEditable}
+								/>
+							</div>
+							{alcoholConsumption && (
+								<div style={{ display: "flex", flexDirection: "column" }}>
+									<div
+										style={{
+											display: "flex",
+											gap: "1rem",
+											paddingBottom: "2rem",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Cuántas bebidas alcohólicas consumes al mes?
+											</p>
+											<BaseInput
+												type="number"
+												value={drinksPerMonth}
+												onChange={(e) => setDrinksPerMonth(e.target.value)}
+												placeholder="Ingrese cuántas bebidas al mes"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+
+						<div
+							style={{
+								paddingLeft: "1rem",
+							}}
+						>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "2rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								¿Consumes alguna droga?
+							</p>
+							<div
+								style={{
+									display: "flex",
+									gap: "1rem",
+									alignItems: "center",
+									paddingBottom: "2rem",
+								}}
+							>
+								<RadioInput
+									name="drugUse"
+									checked={drugUse}
+									onChange={() => handleDrugUseChange(true)}
+									label="Sí"
+									disabled={!isEditable}
+								/>
+								<RadioInput
+									name="drugUse"
+									checked={!drugUse}
+									onChange={() => handleDrugUseChange(false)}
+									label="No"
+									disabled={!isEditable}
+								/>
+							</div>
+							{drugUse && (
+								<div style={{ display: "flex", flexDirection: "column" }}>
+									<div
+										style={{
+											display: "flex",
+											gap: "1rem",
+											paddingBottom: "2rem",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Cuál?
+											</p>
+											<BaseInput
+												type="text"
+												value={drugType}
+												onChange={(e) => setDrugType(e.target.value)}
+												placeholder="Ingrese el tipo de droga"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Con qué frecuencia?
+											</p>
+											<BaseInput
+												type="text"
+												value={drugFrequency}
+												onChange={(e) => setDrugFrequency(e.target.value)}
+												placeholder="Ingrese la frecuencia del consumo"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+						{isFirstTime && (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingTop: "2rem",
+								}}
+							>
+								<BaseButton
+									text="Guardar"
+									onClick={handleSaveNonPathological}
+									style={{ width: "30%", height: "3rem" }}
+								/>
+							</div>
+						)}
+					</>
+				)}
+			</div>
+		</div>
+	);
 }
