@@ -10,24 +10,24 @@
  * adjustWidth(1400, "10rem 20rem");
  */
 export const adjustWidth = (width, remValues) => {
-  let scaleFactor;
-  if (width >= 1538) {
-    scaleFactor = 1.0;
-  } else if (width >= 1440) {
-    scaleFactor = 0.93;
-  } else if (width >= 1280) {
-    scaleFactor = 0.83;
-  } else {
-    scaleFactor = 1.0;
-  }
+	let scaleFactor;
+	if (width >= 1538) {
+		scaleFactor = 1.0;
+	} else if (width >= 1440) {
+		scaleFactor = 0.93;
+	} else if (width >= 1280) {
+		scaleFactor = 0.83;
+	} else {
+		scaleFactor = 1.0;
+	}
 
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
+	return remValues
+		.split(" ")
+		.map((rem) => {
+			const value = Number.parseFloat(rem) * scaleFactor;
+			return `${value.toFixed(3)}rem`;
+		})
+		.join(" ");
 };
 
 /**
@@ -42,22 +42,22 @@ export const adjustWidth = (width, remValues) => {
  * adjustHeight(850, "10rem 20rem");
  */
 export const adjustHeight = (height, remValues) => {
-  let scaleFactor;
-  if (height >= 950) {
-    scaleFactor = 1.0;
-  } else if (height >= 900) {
-    scaleFactor = 0.94;
-  } else if (height >= 800) {
-    scaleFactor = 0.84;
-  } else {
-    scaleFactor = 1.0;
-  }
+	let scaleFactor;
+	if (height >= 950) {
+		scaleFactor = 1.0;
+	} else if (height >= 900) {
+		scaleFactor = 0.94;
+	} else if (height >= 800) {
+		scaleFactor = 0.84;
+	} else {
+		scaleFactor = 1.0;
+	}
 
-  return remValues
-    .split(" ")
-    .map((rem) => {
-      const value = Number.parseFloat(rem) * scaleFactor;
-      return `${value.toFixed(3)}rem`;
-    })
-    .join(" ");
+	return remValues
+		.split(" ")
+		.map((rem) => {
+			const value = Number.parseFloat(rem) * scaleFactor;
+			return `${value.toFixed(3)}rem`;
+		})
+		.join(" ");
 };

@@ -65,8 +65,6 @@
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system;};
       requiredPkgs = with pkgs; [
-        dprint
-        oxlint
         jq
       ];
       frontendRequiredPkgs = with pkgs; [
@@ -169,13 +167,6 @@
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff format --dialect postgres";
                 };
-                jsformat = {
-                  enable = true;
-                  name = "dprint";
-                  description = "Javascript formatter";
-                  files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.dprint}/bin/dprint fmt --allow-no-files";
-                };
                 yamlFormatter = {
                   enable = true;
                   name = "yamlfmt";
@@ -196,13 +187,6 @@
                   description = "A multidialect SQL linter and formatter";
                   files = "\.sql$";
                   entry = "${pkgs.sqlfluff}/bin/sqlfluff lint --dialect postgres";
-                };
-                jslinter = {
-                  enable = true;
-                  name = "oxclint JSLinter";
-                  description = "Javascript linter written in rust";
-                  files = "\.[mc]?jsx?$";
-                  entry = "${pkgs.oxlint}/bin/oxlint --max-warnings=0 -D correctness";
                 };
               };
             };

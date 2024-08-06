@@ -7,7 +7,7 @@ const { Client } = pg;
  * @returns {pg.Client} The PG client.
  */
 export function getPgClient(connectionString) {
-  return new Client({
-    connectionString,
-  });
+	return new Client({
+		connectionString,
+	});
 }

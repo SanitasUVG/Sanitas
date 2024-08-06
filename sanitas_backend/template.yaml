@@ -430,7 +430,7 @@ Resources:
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: Staging
+      StageName: Prod
       TracingEnabled: true
       Cors:
         AllowMethods: "'OPTIONS,POST,GET,PUT'"
@@ -438,6 +438,7 @@ Resources:
         AllowOrigin: "'*'"
       Auth:
         DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt CognitoUserPool.Arn
@@ -451,10 +452,22 @@ Resources:
           MinimumLength: 8
       UsernameAttributes:
         - email
+      AutoVerifiedAttributes:
+        - email
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_LINK
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
       Schema:
         - AttributeDataType: String
           Name: email
           Required: true
+
+  CognitoDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: sanitas-uvg
+      UserPoolId: !Ref CognitoUserPool
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -481,3 +494,7 @@ Outputs:
     Description: API Gateway endpoint URL for Prod stage
     # yamllint disable-line rule:line-length
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  SecureWebEndpoint:
+    Description: Cognito secured API
+    # yamllint disable-line rule:line-length
+    Value: !Sub "https://${SanitasAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

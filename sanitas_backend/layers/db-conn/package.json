@@ -1,11 +1,11 @@
 {
-  "name": "db-conn",
-  "version": "1.0.0",
-  "description": "Wrapper for the db connection logic of the lambdas",
-  "dependencies": {
-    "db-conn": "file:db-conn"
-  },
-  "devDependencies": {},
-  "author": "ElrohirGT",
-  "license": "MIT"
+	"name": "db-conn",
+	"version": "1.0.0",
+	"description": "Wrapper for the db connection logic of the lambdas",
+	"dependencies": {
+		"db-conn": "file:db-conn"
+	},
+	"devDependencies": {},
+	"author": "ElrohirGT",
+	"license": "MIT"
 }

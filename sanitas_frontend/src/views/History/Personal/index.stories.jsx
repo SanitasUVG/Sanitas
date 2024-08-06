@@ -1,28 +1,52 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
-import { FamiliarHistory } from ".";
+import { PersonalHistory } from ".";
 
 export default {
-	component: FamiliarHistory,
+	component: PersonalHistory,
 	decorators: [
 		(Story) => (
-			<MemoryRouter initialEntries={["/familiar-history"]}>
+			<MemoryRouter initialEntries={["/personal-history"]}>
 				<Routes>
-					<Route path="/familiar-history" element={<Story />} />
+					<Route path="/personal-history" element={<Story />} />
 				</Routes>
 			</MemoryRouter>
 		),
 	],
-	title: "Views/FamiliarHistory",
+	title: "Views/PersonalHistory",
 };
 
 const dummyPatientId = 12345;
 
-const mockGetFamiliarHistoryWithData = async (_id) => ({
+const mockGetBirthdayPatientInfo = async (_id) => ({
+	result: { birthdate: "2000-02-11" },
+});
+
+const mockGetPersonalHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
-			hypertension: { data: ["Father"], version: 1 },
-			diabetesMellitus: { data: ["Mother"], version: 1 },
+			hypertension: {
+				data: [
+					{
+						typeOfDisease: "hiper",
+						medicine: "ibuprofeno",
+						dose: "10",
+						frequency: "21",
+					},
+				],
+				version: 1,
+			},
+			diabetesMellitus: {
+				data: [
+					{
+						typeOfDisease: "dia",
+						medicine: "azucar",
+						dose: "12",
+						frequency: "23",
+					},
+				],
+				version: 1,
+			},
 			hypothyroidism: { data: [], version: 1 },
 			asthma: { data: [], version: 1 },
 			convulsions: { data: [], version: 1 },
@@ -35,7 +59,7 @@ const mockGetFamiliarHistoryWithData = async (_id) => ({
 	},
 });
 
-const mockGetFamiliarHistoryEmpty = async (_id) => ({
+const mockGetPersonalHistoryEmpty = async (_id) => ({
 	result: {
 		medicalHistory: {
 			hypertension: { data: [], version: 1 },
@@ -51,7 +75,7 @@ const mockGetFamiliarHistoryEmpty = async (_id) => ({
 		},
 	},
 });
-const mockGetFamiliarHistoryError = async (_id) => ({
+const mockGetPersonalHistoryError = async (_id) => ({
 	error: {
 		response: {
 			status: 400,
@@ -61,7 +85,7 @@ const mockGetFamiliarHistoryError = async (_id) => ({
 	},
 });
 
-const mockUpdateFamiliarHistory = async (_id, history, _version) => ({
+const mockUpdatePersonalHistory = async (_id, history, _version) => ({
 	result: { medicalHistory: history },
 });
 
@@ -71,8 +95,9 @@ const store = createEmptyStore({
 
 export const WithData = {
 	args: {
-		getFamiliarHistory: mockGetFamiliarHistoryWithData,
-		updateFamiliarHistory: mockUpdateFamiliarHistory,
+		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
+		getPersonalHistory: mockGetPersonalHistoryWithData,
+		updatePersonalHistory: mockUpdatePersonalHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. John Smith",
@@ -85,8 +110,9 @@ export const WithData = {
 
 export const EmptyData = {
 	args: {
-		getFamiliarHistory: mockGetFamiliarHistoryEmpty,
-		updateFamiliarHistory: mockUpdateFamiliarHistory,
+		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
+		getPersonalHistory: mockGetPersonalHistoryEmpty,
+		updatePersonalHistory: mockUpdatePersonalHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. John Smith",
@@ -99,8 +125,9 @@ export const EmptyData = {
 
 export const ErrorState = {
 	args: {
-		getFamiliarHistory: mockGetFamiliarHistoryError,
-		updateFamiliarHistory: mockUpdateFamiliarHistory,
+		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
+		getPersonalHistory: mockGetPersonalHistoryError,
+		updatePersonalHistory: mockUpdatePersonalHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. John Smith",
