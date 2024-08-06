@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -24,103 +24,105 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @returns {JSX.Element} - The rendered component with sections for sidebar and familiar history management.
  */
 export function FamiliarHistory({
-  getFamiliarHistory,
-  updateFamiliarHistory,
-  sidebarConfig,
-  useStore,
+	getFamiliarHistory,
+	updateFamiliarHistory,
+	sidebarConfig,
+	useStore,
 }) {
-  const id = useStore((s) => s.selectedPatientId);
-  const familiarHistoryResource = WrapPromise(getFamiliarHistory(id));
+	const id = useStore((s) => s.selectedPatientId);
+	const familiarHistoryResource = WrapPromise(getFamiliarHistory(id));
 
-  const LoadingView = () => {
-    return <Throbber loadingMessage="Cargando información de los antecedentes familiares..." />;
-  };
+	const LoadingView = () => {
+		return (
+			<Throbber loadingMessage="Cargando información de los antecedentes familiares..." />
+		);
+	};
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: colors.primaryBackground,
-        height: "100vh",
-        padding: "2rem",
-      }}
-    >
-      <div
-        style={{
-          width: "25%",
-        }}
-      >
-        <DashboardSidebar {...sidebarConfig} />
-      </div>
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				backgroundColor: colors.primaryBackground,
+				height: "100vh",
+				padding: "2rem",
+			}}
+		>
+			<div
+				style={{
+					width: "25%",
+				}}
+			>
+				<DashboardSidebar {...sidebarConfig} />
+			</div>
 
-      <div
-        style={{
-          paddingLeft: "2rem",
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: colors.secondaryBackground,
-            padding: "3.125rem",
-            height: "100%",
-            borderRadius: "10px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <h1
-              style={{
-                color: colors.titleText,
-                fontFamily: fonts.titleFont,
-                fontSize: fontSize.titleSize,
-              }}
-            >
-              Antecedentes Familiares
-            </h1>
-            <h3
-              style={{
-                fontFamily: fonts.textFont,
-                fontWeight: "normal",
-                fontSize: fontSize.subtitleSize,
-                paddingTop: "0.5rem",
-                paddingBottom: "3rem",
-              }}
-            >
-              Registro de antecedentes familiares
-            </h3>
-          </div>
+			<div
+				style={{
+					paddingLeft: "2rem",
+					height: "100%",
+					width: "100%",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: colors.secondaryBackground,
+						padding: "3.125rem",
+						height: "100%",
+						borderRadius: "10px",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<h1
+							style={{
+								color: colors.titleText,
+								fontFamily: fonts.titleFont,
+								fontSize: fontSize.titleSize,
+							}}
+						>
+							Antecedentes Familiares
+						</h1>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingTop: "0.5rem",
+								paddingBottom: "3rem",
+							}}
+						>
+							Registro de antecedentes familiares
+						</h3>
+					</div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-align",
-              alignItems: "space-between",
-              width: "100%",
-              gap: "2rem",
-            }}
-          >
-            <Suspense fallback={<LoadingView />}>
-              <FamiliarView
-                id={id}
-                familiarHistoryResource={familiarHistoryResource}
-                updateFamiliarHistory={updateFamiliarHistory}
-              />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-align",
+							alignItems: "space-between",
+							width: "100%",
+							gap: "2rem",
+						}}
+					>
+						<Suspense fallback={<LoadingView />}>
+							<FamiliarView
+								id={id}
+								familiarHistoryResource={familiarHistoryResource}
+								updateFamiliarHistory={updateFamiliarHistory}
+							/>
+						</Suspense>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 /**
@@ -135,6 +137,8 @@ export function FamiliarHistory({
  * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
  * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
  */
+// TODO: Simplify View to avoid ignoring rule
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This view is really complex, maybe later we should simplify it's logic
 function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
   // State hooks to manage the selected familiar disease and whether adding a new entry
   const [selectedFamiliar, setSelectedFamiliar] = useState({});

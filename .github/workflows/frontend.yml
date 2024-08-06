@@ -7,8 +7,8 @@ on:  # yamllint disable-line rule:truthy
       - edited
       - synchronize
 jobs:
-  testAndLinting:
-    name: Lint
+  linting:
+    name: Frontend checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,7 +22,11 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Installing dependencies
+        run: yarn install
+      - name: Formatting
+        run: yarn run format:check
       - name: Linting
-        run: yarn && yarn run lint
+        run: yarn run lint
       - name: Testing
-        run: yarn && yarn test
+        run: yarn test

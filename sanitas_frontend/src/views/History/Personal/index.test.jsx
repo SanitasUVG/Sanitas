@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
-import { FamiliarHistory } from ".";
+import { PersonalHistory } from ".";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -14,11 +14,31 @@ vi.mock("react-toastify", () => {
 	};
 });
 
-const mockGetFamiliarHistoryWithData = async (_id) => ({
+const mockGetPersonalHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
-			hypertension: { data: ["Padre"], version: 1 },
-			diabetesMellitus: { data: ["Madre"], version: 1 },
+			hypertension: {
+				data: [
+					{
+						typeOfDisease: "hiper",
+						medicine: "ibuprofeno",
+						dose: "10",
+						frequency: "21",
+					},
+				],
+				version: 1,
+			},
+			diabetesMellitus: {
+				data: [
+					{
+						typeOfDisease: "dia",
+						medicine: "azucar",
+						dose: "12",
+						frequency: "23",
+					},
+				],
+				version: 1,
+			},
 			hypothyroidism: { data: [], version: 1 },
 			asthma: { data: [], version: 1 },
 			convulsions: { data: [], version: 1 },
@@ -31,7 +51,10 @@ const mockGetFamiliarHistoryWithData = async (_id) => ({
 	},
 });
 
-const mockUpdateFamiliarHistory = vi.fn(() =>
+const mockGetBirthdayPatientInfo = vi.fn(() =>
+	Promise.resolve({ result: { birthdate: "1990-01-01" } }),
+);
+const mockUpdatePersonalHistory = vi.fn(() =>
 	Promise.resolve({ success: true }),
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
@@ -42,22 +65,23 @@ const sidebarConfig = {
 
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
-describe("FamiliarHistory Component Tests", () => {
+describe("PersonalHistory Component Tests", () => {
 	test("opens new form on button click", async () => {
 		render(
 			<Wrapper>
-				<FamiliarHistory
-					getFamiliarHistory={mockGetFamiliarHistoryWithData}
-					updateFamiliarHistory={mockUpdateFamiliarHistory}
+				<PersonalHistory
+					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+					getPersonalHistory={mockGetPersonalHistoryWithData}
+					updatePersonalHistory={mockUpdatePersonalHistory}
 					sidebarConfig={sidebarConfig}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
 		);
 
-		await waitFor(() => screen.getByText("Agregar antecedente familiar"));
+		await waitFor(() => screen.getByText("Agregar antecedente personal"));
 
-		const addButton = screen.getByText("Agregar antecedente familiar");
+		const addButton = screen.getByText("Agregar antecedente personal");
 		fireEvent.click(addButton);
 		await waitFor(() => {
 			expect(screen.getByText("Guardar")).toBeInTheDocument();
@@ -65,7 +89,7 @@ describe("FamiliarHistory Component Tests", () => {
 	});
 
 	test("displays empty state message when there is no data", async () => {
-		const mockGetFamiliarHistoryEmpty = vi.fn(() =>
+		const mockGetPersonalHistoryEmpty = vi.fn(() =>
 			Promise.resolve({
 				result: {
 					medicalHistory: {
@@ -86,9 +110,10 @@ describe("FamiliarHistory Component Tests", () => {
 
 		render(
 			<Wrapper>
-				<FamiliarHistory
-					getFamiliarHistory={mockGetFamiliarHistoryEmpty}
-					updateFamiliarHistory={mockUpdateFamiliarHistory}
+				<PersonalHistory
+					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+					getPersonalHistory={mockGetPersonalHistoryEmpty}
+					updatePersonalHistory={mockUpdatePersonalHistory}
 					sidebarConfig={sidebarConfig}
 					useStore={mockUseStore}
 				/>
@@ -97,13 +122,13 @@ describe("FamiliarHistory Component Tests", () => {
 
 		await waitFor(() =>
 			screen.getByText(
-				"¡Parece que no hay antecedentes familiares! Agrega uno en el botón de arriba.",
+				"¡Parece que no hay antecedentes personales! Agrega uno en el botón de arriba.",
 			),
 		);
 	});
 
 	test("displays error message when there is an error fetching data", async () => {
-		const mockGetFamiliarHistoryError = vi.fn(() =>
+		const mockGetPersonalHistoryError = vi.fn(() =>
 			Promise.resolve({
 				error: {
 					response: {
@@ -117,9 +142,10 @@ describe("FamiliarHistory Component Tests", () => {
 
 		render(
 			<Wrapper>
-				<FamiliarHistory
-					getFamiliarHistory={mockGetFamiliarHistoryError}
-					updateFamiliarHistory={mockUpdateFamiliarHistory}
+				<PersonalHistory
+					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+					getPersonalHistory={mockGetPersonalHistoryError}
+					updatePersonalHistory={mockUpdatePersonalHistory}
 					sidebarConfig={sidebarConfig}
 					useStore={mockUseStore}
 				/>
@@ -133,29 +159,28 @@ describe("FamiliarHistory Component Tests", () => {
 		);
 	});
 
-	test("adds a new familiar history record", async () => {
+	test("adds a new personal history record", async () => {
 		render(
 			<Wrapper>
-				<FamiliarHistory
-					getFamiliarHistory={mockGetFamiliarHistoryWithData}
-					updateFamiliarHistory={mockUpdateFamiliarHistory}
+				<PersonalHistory
+					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+					getPersonalHistory={mockGetPersonalHistoryWithData}
+					updatePersonalHistory={mockUpdatePersonalHistory}
 					sidebarConfig={sidebarConfig}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
 		);
 
-		await waitFor(() => screen.getByText("Agregar antecedente familiar"));
-		fireEvent.click(screen.getByText("Agregar antecedente familiar"));
+		await waitFor(() => screen.getByText("Agregar antecedente personal"));
+		fireEvent.click(screen.getByText("Agregar antecedente personal"));
 
 		await waitFor(() => screen.getByText("Guardar"));
 
 		fireEvent.change(
-			screen.getByPlaceholderText(
-				"Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)",
-			),
+			screen.getByPlaceholderText("Ingrese el tratamiento administrado"),
 			{
-				target: { value: "Hermano" },
+				target: "Ibuprofeno",
 			},
 		);
 
@@ -163,7 +188,7 @@ describe("FamiliarHistory Component Tests", () => {
 
 		await waitFor(() =>
 			expect(toast.success).toHaveBeenCalledWith(
-				"Historial familiar guardado con éxito.",
+				"Historial personal guardado con éxito.",
 			),
 		);
 	});

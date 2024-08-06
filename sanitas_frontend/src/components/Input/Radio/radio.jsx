@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * @typedef {Object} RadioInputProps
  * @property {string} name - The name attribute for the radio input; used to group radio buttons.
@@ -12,6 +10,7 @@ import React from "react";
  *        - `style.input`: Styles for the input field, controlling visibility and cursor.
  *        - `style.outerSpan`: Styles for the outer span, affecting layout and borders.
  *        - `style.innerSpan`: Styles for the inner span, controlling visibility and background color. */
+
 export default function RadioInput({
   name,
   checked,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { colors, fonts } from "src/theme.mjs";
 
 /**
@@ -25,93 +25,126 @@ import { colors, fonts } from "src/theme.mjs";
  * @returns {JSX.Element} The React component rendering the card with either surgical, appointment, or family information.
  */
 export default function InformationCard({
-  type,
-  year,
-  surgeryType,
-  date,
-  reason,
-  disease,
-  relative,
-  onClick,
+	type,
+	year,
+	surgeryType,
+	date,
+	reason,
+	disease,
+	relative,
+	onClick,
 }) {
-  const [hover, setHover] = useState(false);
+	const [hover, setHover] = useState(false);
 
-  const cardStyle = {
-    backgroundColor: hover ? colors.sidebarHover : colors.secondaryBackground,
-    borderBottom: hover ? "0.1rem solid transparent" : `0.01rem solid ${colors.darkerGrey}`,
-    cursor: "pointer",
-    padding: "1.5rem",
-    transition: "background-color 0.3s, border-bottom 0.3s",
-    paddingTop: "1.5rem",
-    paddingBottom: "1.5rem",
-  };
+	const cardStyle = {
+		backgroundColor: hover ? colors.sidebarHover : colors.secondaryBackground,
+		borderBottom: hover
+			? "0.1rem solid transparent"
+			: `0.01rem solid ${colors.darkerGrey}`,
+		cursor: "pointer",
+		padding: "1.5rem",
+		transition: "background-color 0.3s, border-bottom 0.3s",
+		paddingTop: "1.5rem",
+		paddingBottom: "1.5rem",
+	};
 
-  const labelStyle = {
-    fontWeight: "bold",
-    fontFamily: fonts.textFont,
-  };
+	const labelStyle = {
+		fontWeight: "bold",
+		fontFamily: fonts.textFont,
+	};
 
-  const contentStyle = {
-    fontFamily: fonts.textFont,
-  };
+	const contentStyle = {
+		fontFamily: fonts.textFont,
+	};
 
-  const truncateText = (text, maxLength = 30) => {
-    if (text && text.length > maxLength) {
-      return text.substring(0, maxLength) + "...";
-    }
-    return text || "";
-  };
+	const truncateText = (text, maxLength = 30) => {
+		if (text && text.length > maxLength) {
+			return `${text.substring(0, maxLength)}...`;
+		}
+		return text || "";
+	};
 
-  const renderContent = () => {
-    switch (type) {
-      case "surgical":
-        return (
-          <>
-            <p>
-              <span style={labelStyle}>Año:</span> <span style={contentStyle}>{year}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Tipo de Cirugía:</span>{" "}
-              <span style={contentStyle}>{truncateText(surgeryType)}</span>
-            </p>
-          </>
-        );
-      case "appointment":
-        return (
-          <>
-            <p>
-              <span style={labelStyle}>Fecha:</span> <span style={contentStyle}>{date}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Motivo de Consulta:</span>{" "}
-              <span style={contentStyle}>{truncateText(reason)}</span>
-            </p>
-          </>
-        );
-      case "family":
-        return (
-          <>
-            <p>
-              <span style={labelStyle}>Enfermedad:</span> <span style={contentStyle}>{disease}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Familiar:</span> <span style={contentStyle}>{relative}</span>
-            </p>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
+	const renderContent = () => {
+		switch (type) {
+			case "surgical":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Año:</span>{" "}
+							<span style={contentStyle}>{year}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Tipo de Cirugía:</span>{" "}
+							<span style={contentStyle}>{truncateText(surgeryType)}</span>
+						</p>
+					</>
+				);
+			case "appointment":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Fecha:</span>{" "}
+							<span style={contentStyle}>{date}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Motivo de Consulta:</span>{" "}
+							<span style={contentStyle}>{truncateText(reason)}</span>
+						</p>
+					</>
+				);
+			case "family":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Enfermedad:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Familiar:</span>{" "}
+							<span style={contentStyle}>{relative}</span>
+						</p>
+					</>
+				);
+			case "personal":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Enfermedad:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Medicamento/Tratamiento:</span>{" "}
+							<span style={contentStyle}>{truncateText(surgeryType)}</span>
+						</p>
+					</>
+				);
+			case "personalMiocadio":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Enfermedad:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Año:</span>{" "}
+							<span style={contentStyle}>{year}</span>
+						</p>
+					</>
+				);
+			default:
+				return null;
+		}
+	};
 
-  return (
-    <div
-      style={cardStyle}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={onClick}
-    >
-      {renderContent()}
-    </div>
-  );
+	return (
+		<div
+			style={cardStyle}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			onClick={onClick}
+			onKeyUp={onClick}
+		>
+			{renderContent()}
+		</div>
+	);
 }

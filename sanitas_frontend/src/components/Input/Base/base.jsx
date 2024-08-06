@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * @typedef {Object} BaseInputProps
  * @property {'text' | 'number' | 'date' | 'email' | 'password'} type - The type of the input specifying the allowed types of inputs.
@@ -18,6 +16,7 @@ import React from "react";
  */
 
 export default function BaseInput({
+
   type,
   value,
   readOnly = false,

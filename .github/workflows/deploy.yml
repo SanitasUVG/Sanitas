@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend_url: ${{ steps.get_url_step.outputs.url }}
+      secure_url: ${{ steps.get_secure_url.outputs.url }}
       cognito_user_pool_id: ${{ steps.get_pool_id.outputs.id }}
       cognito_pool_client_id: ${{ steps.get_client_id.outputs.id }}
     defaults:
@@ -43,8 +44,13 @@ jobs:
       - name: Saving Backend URL
         id: get_url_step
         run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
+          --output json | jq .[1].OutputValue | sed -e 's/^\"//' -e
+          's/\/\"$//') >> $GITHUB_OUTPUT
+      - name: Saving Secured Backend URL
+        id: get_secure_url
+        run: echo url=$(sam list stack-outputs --stack-name sanitas-backend
           --output json | jq .[0].OutputValue | sed -e 's/^\"//' -e
-          's/\"$//') >> $GITHUB_OUTPUT
+          's/\/\"$//') >> $GITHUB_OUTPUT
       - name: Saving Cognito Pool ID
         id: get_pool_id
         run: echo id=$(sam list resources --stack-name sanitas-backend
@@ -81,6 +87,7 @@ jobs:
         run: yarn && BACKEND_URL=${{ needs.backend-deploy.outputs.backend_url
           }} COGNITO_POOL_ID=${{ needs.backend-deploy.outputs.cognito_user_pool_id
           }} COGNITO_CLIENT_ID=${{ needs.backend-deploy.outputs.cognito_pool_client_id
+          }} PROTECTED_URL=${{ needs.backend-deploy.outputs.secure_url
           }} yarn build --base=/Sanitas/
       # yamllint enable rule:line-length
       - name: Uploading to Github pages
