@@ -436,7 +436,8 @@ function NonPathologicalView({
 									fontSize: fontSize.textSize,
 								}}
 							>
-								Por favor ingresa tus datos, parece que es tu primera vez aquí.
+								Por favor, ingrese los datos del paciente. Parece que es su
+								primera visita aquí.
 							</div>
 						)}
 						<div
@@ -464,13 +465,13 @@ function NonPathologicalView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									Tipo de sangre:
+									Tipo de sangre (para editarlo, vaya a la pestaña "General"):
 								</p>
 								<BaseInput
 									type="text"
 									value={bloodTypeResult?.result?.bloodType ?? ""}
 									readOnly
-									placeholder="Tipo de sangre"
+									placeholder="Tipo de sangre:"
 									style={{
 										width: "20rem",
 										height: "2.5rem",
@@ -787,7 +788,6 @@ function NonPathologicalView({
 									display: "flex",
 									justifyContent: "center",
 									alignItems: "center",
-									paddingTop: "2rem",
 								}}
 							>
 								<BaseButton
