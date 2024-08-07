@@ -675,7 +675,7 @@ los datos requeridos según la alergia.
 - Versión 1: La versión 1 contiene una propiedad `data` que es
   un array de objetos con la siguiente forma:
 
-  - medication y food:
+  - medication, food, animals y others:
 
   ```json
   {
@@ -685,7 +685,7 @@ los datos requeridos según la alergia.
   }
   ```
 
-  - dust, pollen, climateChange, animals, others:
+  - dust, pollen y climateChange:
 
   ```json
   {
