@@ -255,9 +255,11 @@ function NonPathologicalView({
 	const nonPathologicalHistoryData = nonPathologicalHistoryResult.result;
 
 	// Checking if it is the user's first time to display a different UI.
-	// biome-ignore lint/complexity/useSimplifiedLogicExpression: Changes the logic
-	const isFirstTime =
-		!smoker.data.length && !drink.data.length && !drugs.data.length;
+	const isFirstTime = !(
+		smoker.data.length ||
+		drink.data.length ||
+		drugs.data.length
+	);
 
 	// Edit mode state to toggle between view and edit modes.
 	const [isEditable, setIsEditable] = useState(isFirstTime);
