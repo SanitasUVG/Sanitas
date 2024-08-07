@@ -3,24 +3,23 @@ import { logger, withRequest } from "logging";
 
 function checkValidInput(patientData) {
 	if (!patientData.cui) {
-		return false;
+		return { isValid: false, error: "CUI is required." };
 	}
 	if (!patientData.names) {
-		return false;
+		return { isValid: false, error: "Names are required." };
 	}
 	if (!patientData.lastNames) {
-		return false;
+		return { isValid: false, error: "Last names are required." };
 	}
 	if (patientData.isWoman === undefined) {
-		return false;
+		return { isValid: false, error: "Gender (isWoman) is required." };
 	}
 	if (!patientData.birthdate) {
-		return false;
+		return { isValid: false, error: "Birthdate is required." };
 	}
 
-	return true;
+	return { isValid: true };
 }
-
 export const createPatientHandler = async (event, context) => {
 	withRequest(event, context);
 
@@ -42,15 +41,32 @@ export const createPatientHandler = async (event, context) => {
 		await client.connect();
 
 		logger.info("Validating data...");
-		if (!checkValidInput(patientData)) {
+		const validation = checkValidInput(patientData);
+		if (!validation.isValid) {
 			logger.error({ patientData }, "The data is missing some fields!");
 
 			return {
 				statusCode: 400,
-				body: JSON.stringify({ error: "Invalid data" }),
+				body: JSON.stringify({ error: validation.error }),
 			};
 		}
 		logger.info({ patientData }, "Data is valid!");
+
+		// Check if the CUI already exists in the database
+		const existingPatientQuery = `
+			SELECT 1 FROM PACIENTE WHERE CUI = $1
+		`;
+		const existingPatientResult = await client.query(existingPatientQuery, [
+			patientData.cui,
+		]);
+		if (existingPatientResult.rows.length > 0) {
+			logger.error("CUI already exists.");
+
+			return {
+				statusCode: 409,
+				body: JSON.stringify({ error: "CUI already exists." }),
+			};
+		}
 
 		logger.info(
 			patientData,
@@ -58,10 +74,10 @@ export const createPatientHandler = async (event, context) => {
 		);
 
 		const query = `
-      INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
-      VALUES ($1, $2, $3, $4, $5)
-      returning *
-    `;
+			INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
+			VALUES ($1, $2, $3, $4, $5)
+			returning *
+		`;
 		const values = [
 			patientData.cui,
 			patientData.names,
