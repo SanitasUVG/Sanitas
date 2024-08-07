@@ -56,7 +56,9 @@ export const createPatientHandler = async (event, context) => {
 		const existingPatientQuery = `
 			SELECT 1 FROM PACIENTE WHERE CUI = $1
 		`;
-		const existingPatientResult = await client.query(existingPatientQuery, [patientData.cui]);
+		const existingPatientResult = await client.query(existingPatientQuery, [
+			patientData.cui,
+		]);
 		if (existingPatientResult.rows.length > 0) {
 			logger.error("CUI already exists.");
 
