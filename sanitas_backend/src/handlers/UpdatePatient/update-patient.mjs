@@ -155,11 +155,9 @@ export const updatePatientHandler = async (event, context) => {
 			"¡Se produjo un error al actualizar los datos del paciente!",
 		);
 
-		return responseBuilder
-			.setStatusCode(400)
-			.setBody({
-				error: "Se produjo un error al actualizar los datos del paciente.",
-			});
+		return responseBuilder.setStatusCode(400).setBody({
+			error: "Se produjo un error al actualizar los datos del paciente.",
+		});
 	} finally {
 		await client?.end();
 	}
