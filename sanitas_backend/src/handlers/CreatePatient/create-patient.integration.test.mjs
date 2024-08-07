@@ -16,15 +16,15 @@ describe("Create Patient Record Integration Tests", () => {
 			isWoman: false,
 			birthdate: "1990-01-01",
 		};
-
+	
 		const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData, {
 			validateStatus: () => true, // So axios doesn't throw an error for status >= 400
 		});
-
+	
 		// Verify the error is as expected
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("CUI is required.");
-	});
+	});	
 
 	test("Create a new patient record with duplicate CUI (should fail)", async () => {
 		const uniqueCUI = generateUniqueCUI();
