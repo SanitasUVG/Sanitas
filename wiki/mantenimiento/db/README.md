@@ -586,9 +586,116 @@ de los datos.
   ]
   ```
 
+### Antecedentes Alérgicos
+
+Los antecedentes alérgicos se organizan por tipo de alergia.
+Cada tipo de alergia se almacena en un objeto JSON que lista
+los datos requeridos según la alergia.
+
+```json
+{
+  "medicalHistory": {
+    "medication": {
+      "version": 1,
+      "data": [
+        {
+          "allergy": "Penicillin",
+          "reaction": "Rash",
+          "severity": "Mild"
+        }
+      ]
+    },
+    "food": {
+      "version": 1,
+      "data": [
+        {
+          "allergy": "Peanuts",
+          "reaction": "Anaphylaxis",
+          "severity": "Severe"
+        }
+      ]
+    },
+    "dust": {
+      "version": 1,
+      "data": [
+        {
+          "reaction": "Sneezing",
+          "severity": "Mild"
+        }
+      ]
+    },
+    "pollen": {
+      "version": 1,
+      "data": [
+        {
+          "reaction": "Itchy eyes",
+          "severity": "Moderate"
+        }
+      ]
+    },
+    "climateChange": {
+      "version": 1,
+      "data": [
+        {
+          "reaction": "Asthma attack",
+          "severity": "Severe"
+        }
+      ]
+    },
+    "animals": {
+      "version": 1,
+      "data": [
+        {
+          "allergy": "Cat dander",
+          "reaction": "Hives",
+          "severity": "Moderate"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "allergy": "Latex",
+          "reaction": "Contact dermatitis",
+          "severity": "Mild"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- Versión 1: La versión 1 contiene una propiedad `data` que es
+  un array de objetos con la siguiente forma:
+
+  - medication y food:
+
+  ```json
+  {
+    "allergy": "String",
+    "reaction": "String",
+    "severity": "String"
+  }
+  ```
+
+  - dust, pollen, climateChange, animals, others:
+
+  ```json
+  {
+    "reaction": "String",
+    "severity": "String"
+  }
+  ```
+
 ### Antecedentes Psiquiátricos
 
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
-
