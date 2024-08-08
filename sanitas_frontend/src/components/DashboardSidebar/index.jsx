@@ -171,7 +171,6 @@ export default function DashboardSidebar({
 			>
 				Antecedentes
 			</h3>
-
 			<div
 				style={{
 					paddingTop: "1rem",
@@ -215,7 +214,7 @@ export default function DashboardSidebar({
 				<TextIconButton
 					icon={glassicon}
 					text="No patológicos"
-					onClick={navigateToNonPathological}
+					onClick={wrapWithNavigate(navigateToNonPathological)}
 				/>
 			</div>
 		</div>

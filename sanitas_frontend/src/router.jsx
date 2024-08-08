@@ -15,8 +15,9 @@ import {
 	checkCui,
 	getCollaboratorInformation,
 	getFamilyHistory,
-	getGeneralPatientInformation,
 	getPersonalHistory,
+	getGeneralPatientInformation,
+	getNonPathologicalHistory,
 	getStudentPatientInformation,
 	getSurgicalHistory,
 	getTraumatologicalHistory,
@@ -25,6 +26,7 @@ import {
 	updateCollaboratorInformation,
 	updateFamilyHistory,
 	updateGeneralPatientInformation,
+	updateNonPathologicalHistory,
 	updatePersonalHistory,
 	updateStudentPatientInformation,
 	updateSurgicalHistory,
@@ -33,6 +35,7 @@ import {
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
 import { FamiliarHistory } from "./views/History/Familiar";
+import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
 import LoginView from "./views/LoginView";
@@ -57,6 +60,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	TRAUMATOLOGICAL_HISTORY: "traumatological",
 	FAMILIAR_HISTORY: "familiar",
 	PERSONAL_HISTORY: "personal",
+	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	// TODO: Add other Navigation routes...
 };
 
@@ -92,6 +96,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	navigateToPersonal: (navigate) => {
 		navigate(
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY}`,
+		);
+	},
+	navigateToNonPathological: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`,
 		);
 	},
 	// TODO: Add other Navigation routes...
@@ -144,6 +153,16 @@ const personalHistoryView = (
 		getBirthdayPatientInfo={getGeneralPatientInformation}
 		getPersonalHistory={getPersonalHistory}
 		updatePersonalHistory={updatePersonalHistory}
+		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+		useStore={useStore}
+	/>
+);
+
+const nonPathologicalHistoryView = (
+	<NonPathologicalHistory
+		getNonPathologicalHistory={getNonPathologicalHistory}
+		getBloodTypePatientInfo={getGeneralPatientInformation}
+		updateNonPathologicalHistory={updateNonPathologicalHistory}
 		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 		useStore={useStore}
 	/>
@@ -216,6 +235,10 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.PERSONAL_HISTORY,
 				element: personalHistoryView,
+			},
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY,
+				element: nonPathologicalHistoryView,
 			},
 			// TODO: Add more routes...
 		],

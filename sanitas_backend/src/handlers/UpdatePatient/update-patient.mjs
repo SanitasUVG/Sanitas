@@ -144,7 +144,7 @@ export const updatePatientHandler = async (event, context) => {
 		logger.info("Datos del paciente actualizados exitosamente.");
 		const response = responseBuilder
 			.setStatusCode(200)
-			.setBody(mapToAPIPatient([result.rows[0]]))
+			.setBody(mapToAPIPatient(result.rows[0]))
 			.build();
 
 		logger.info(response, "Respondiendo con:");
@@ -155,11 +155,9 @@ export const updatePatientHandler = async (event, context) => {
 			"¡Se produjo un error al actualizar los datos del paciente!",
 		);
 
-		return responseBuilder
-			.setStatusCode(400)
-			.setBody({
-				error: "Se produjo un error al actualizar los datos del paciente.",
-			});
+		return responseBuilder.setStatusCode(400).setBody({
+			error: "Se produjo un error al actualizar los datos del paciente.",
+		});
 	} finally {
 		await client?.end();
 	}

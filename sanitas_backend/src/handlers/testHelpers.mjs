@@ -113,6 +113,13 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
  * @property {null|MedicalConditionData} medicalHistory.cardiacDiseases - Medical history data for cardiac diseases.
  * @property {null|MedicalConditionData} medicalHistory.renalDiseases - Medical history data for renal diseases.
  * @property {null|MedicalConditionData} medicalHistory.others - Medical history data for other conditions.
+ * @property {null|MedicalConditionData} medicalHistory.medication - Allergic history data for medications.
+ * @property {null|MedicalConditionData} medicalHistory.food - Allergic history data for food.
+ * @property {null|MedicalConditionData} medicalHistory.dust - Allergic history data for dust.
+ * @property {null|MedicalConditionData} medicalHistory.pollen - Allergic history data for pollen.
+ * @property {null|MedicalConditionData} medicalHistory.climateChange - Allergic history data for weather changes.
+ * @property {null|MedicalConditionData} medicalHistory.animals - Allergic history data for animals.
+ * @property {null|MedicalConditionData} medicalHistory.others - Allergic history data for other conditions.
  */
 
 /**
@@ -226,4 +233,25 @@ export async function updatePatientNonPathologicalHistory(
 		`${LOCAL_API_URL}patient/nonpatological-history`,
 		nonPathologicalHistoryData,
 	);
+}
+/**
+ * Updates the allergic medical history for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating allergic medical history data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {MedicalHistory} allergicHistoryData - The allergic medical history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientAllergicHistory(
+	patientId,
+	allergicHistoryData,
+) {
+	allergicHistoryData.patientId = patientId;
+
+	const response = await axios.put(
+		`${LOCAL_API_URL}patient/allergic-history`,
+		allergicHistoryData,
+	);
+
+	expect(response.status).toBe(200);
 }
