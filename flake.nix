@@ -57,7 +57,7 @@
 
             echo -e "$(ansi yellow)" Running tests...
             cd sanitas_backend
-            sleep 90s
+            sleep 90 # Sleep for 90s
             npm test -- --runInBand
           '';
         };
