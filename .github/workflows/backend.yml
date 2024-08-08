@@ -28,11 +28,5 @@ jobs:
         run: npm run format:check
       - name: Linting
         run: npm run lint
-
-# TODO: Integration tests can't be run automatically
-# so they're commented out.
-#
-# - name: Testing
-#   run: |
-#       nix develop --impure . --command bash -c \
-#        "cd sanitas_backend/ && npm install && npm run test"
+      - name: Testing
+        run: cd .. && nix run .#integrationTests

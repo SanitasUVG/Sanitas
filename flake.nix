@@ -48,6 +48,20 @@
           '';
         };
 
+        integrationTests = pkgs.writeShellApplication {
+          name = "Sanitas integration tests";
+          runtimeInputs = with pkgs; [ansi docker];
+          text = ''
+            echo -e "$(ansi yellow)" Starting Services...
+            nix run .#restartServices &
+
+            echo -e "$(ansi yellow)" Running tests...
+            cd sanitas_backend
+            sleep 90s
+            npm test -- --runInBand
+          '';
+        };
+
         buildJSDoc = pkgs.writeShellApplication {
           name = "Sanitas JSdoc builder";
           runtimeInputs = with pkgs; [nodePackages.jsdoc ansi];
