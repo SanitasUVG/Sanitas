@@ -116,6 +116,12 @@
               ++ frontendRequiredPkgs
               ++ backendRequiredPkgs;
 
+            process = {
+              process-compose = pkgs.lib.mkOptionDefault {
+                tui = false;
+              };
+            };
+
             services.postgres = {
               enable = true;
               listen_addresses = postgresHost;
