@@ -1,8 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient } from "../testHelpers.mjs";
-
-const LOCAL_API_URL = "http://localhost:3000/";
+import { createTestPatient, LOCAL_API_URL } from "../testHelpers.mjs";
 
 describe("Update Patient integration tests", () => {
 	/** @type {number} */
