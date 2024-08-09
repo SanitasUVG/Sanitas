@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -23,15 +23,13 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @param {AllergicHistoryProps} props - The props passed to the AllergicHistory component.
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
-export function AlergicHistory({
-    getBirthdayPatientInfo,
+export function AllergicHistory({
     getAllergicHistory,
     updateAllergicHistory,
     sidebarConfig,
     useStore,
 }) {
     const id = useStore((s) => s.selectedPatientId);
-    const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
     const allergicHistoryResource = WrapPromise(getAllergicHistory(id));
 
     const LoadingView = () => {
@@ -116,7 +114,6 @@ export function AlergicHistory({
                         <Suspense fallback={<LoadingView />}>
                             <AllergicView
                                 id={id}
-                                birthdayResource={birthdayResource}
                                 allergicHistoryResource={allergicHistoryResource}
                                 updateAllergicHistory={updateAllergicHistory}
                             />
@@ -131,7 +128,6 @@ export function AlergicHistory({
 /**
  * @typedef {Object} AllergicViewProps
  * @property {number} id - The patient's ID.
- * @property {Object} birthdayResource - Wrapped resource for fetching birthdate data.
  * @property {Object} allergicHistoryResource - Wrapped resource for fetching Allergic history data.
  * @property {Function} updateAllergicHistory - Function to update the Allergic history.
  *
@@ -142,23 +138,20 @@ export function AlergicHistory({
  */
 function AllergicView({
     id,
-    birthdayResource,
     allergicHistoryResource,
     updateAllergicHistory,
 }) {
     const [selectedAllergie, setSelectedAllergie] = useState(null);
     const [addingNew, setAddingNew] = useState(false);
-    const [yearOptions, setYearOptions] = useState([]);
 
-    const birthYearResult = birthdayResource.read();
     const allergicHistoryResult = allergicHistoryResource.read();
 
     console.log("Allergic History Result:", allergicHistoryResult);
 
     let errorMessage = "";
 
-    if (birthYearResult.error || allergicHistoryResult.error) {
-        const error = birthYearResult.error || allergicHistoryResult.error;
+    if (allergicHistoryResult.error) {
+        const error = allergicHistoryResult.error;
         if (error) {
             console.error("Error details:", error);
             if (error.response) {
@@ -176,35 +169,26 @@ function AllergicView({
         }
     }
 
-    const birthYearData = birthYearResult.result;
     const allergicHistoryData = allergicHistoryResult.result;
 
-
-    const [AllergicHistory, setAllergicHistory] = useState(allergicHistoryData?.medicalHistory || {});
-
+    const [AllergicHistory, setAllergicHistory] = useState(
+        allergicHistoryData?.medicalHistory || {},
+    );
 
     // No allergic data in API
 
     const noAllergicData = !Object.values(AllergicHistory).some(
-        (category) => Array.isArray(category.data) && category.data.length > 0
+        (category) => Array.isArray(category.data) && category.data.length > 0,
     );
 
-    console.log("ESTA VACIO??? ", noAllergicData)
 
-    const currentYear = new Date().getFullYear();
 
-    const birthYear = birthYearData?.birthdate
-        ? new Date(birthYearData.birthdate).getFullYear()
-        : null;
-
-    useEffect(() => {
-
-    }, []);
+    useEffect(() => { }, []);
 
     // Event handlers for adding, editing, and saving allergic history records
     const handleOpenNewForm = () => {
         setSelectedAllergie({
-            selectedMed: "medication",  // Valor predeterminado de Medicamentos
+            selectedMed: "medication", // Valor predeterminado de Medicamentos
             whichAllergie: "",
             reactionType: "",
         });
@@ -214,9 +198,7 @@ function AllergicView({
     // Save the new Allergic record to the database
     const handleSaveNewAllergie = async () => {
         if (
-            !selectedAllergie.selectedMed ||
-            !selectedAllergie.whichAllergie ||
-            !selectedAllergie.reactionType
+            !((selectedAllergie.selectedMed && selectedAllergie.whichAllergie) && selectedAllergie.reactionType)
         ) {
             toast.error("Complete todos los campos requeridos.");
             return;
@@ -231,7 +213,8 @@ function AllergicView({
         };
 
         // Obtener la categoría actual (ej. medicamento, comida, etc.)
-        const currentCategoryData = AllergicHistory[selectedAllergie.selectedMed]?.data || [];
+        const currentCategoryData =
+            AllergicHistory[selectedAllergie.selectedMed]?.data || [];
 
         // Actualizar la categoría con el nuevo registro
         const updatedCategory = {
@@ -264,10 +247,9 @@ function AllergicView({
         setSelectedAllergie({
             selectedMed: allergy.selectedMed || "climateChange", // Este valor debe ser dinámico según el tipo de alergia
             whichAllergie: allergy.name || allergy.source || allergy.type,
-            reactionType: allergy.severity
+            reactionType: allergy.severity,
         });
     };
-
 
     const handleFieldChange = (fieldName, value) => {
         setSelectedAllergie((prevAllergie) => ({
@@ -343,22 +325,23 @@ function AllergicView({
                         arriba.
                     </p>
                 ) : (
-                    Object.keys(AllergicHistory || {}).map((category, index) => {
-                        return AllergicHistory[category]?.data?.map((allergy, idx) => {
-                            console.log('Creating card for:', allergy); // Verifica qué datos se están pasando
+                    Object.keys(AllergicHistory || {}).map((category) => {
+                        return AllergicHistory[category]?.data?.map((allergy) => {
+                            console.log("Creating card for:", allergy); // Verifica qué datos se están pasando
                             return (
                                 <InformationCard
-                                    key={`${category}-${index}`}
+                                    key={`${category}-${allergy.name || allergy.id}`}
                                     type="allergy" // Ajusta esto según sea necesario
-                                    disease={allergy.name || 'Sin Nombre'}  // Ajusta esto para reflejar correctamente la alergia
-                                    surgeryType={allergy.severity || 'Sin Severidad'}  // Ajusta esto para reflejar correctamente la severidad
-                                    onClick={() => handleSelectAllergie({ ...allergy, selectedMed: category })}
+                                    disease={allergy.name || "Sin Nombre"} // Ajusta esto para reflejar correctamente la alergia
+                                    surgeryType={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
+                                    onClick={() =>
+                                        handleSelectAllergie({ ...allergy, selectedMed: category })
+                                    }
                                 />
                             );
                         });
                     })
                 )}
-
             </div>
 
             {addingNew || selectedAllergie ? (
@@ -474,7 +457,7 @@ function AllergicView({
                                     onClick={handleSaveNewAllergie}
                                     style={{ width: "30%", height: "3rem" }}
                                 />
-                                <div style={{ width: "1rem" }}></div>
+                                <div style={{ width: "1rem" }} />
                                 <BaseButton
                                     text="Cancelar"
                                     onClick={handleCancel}

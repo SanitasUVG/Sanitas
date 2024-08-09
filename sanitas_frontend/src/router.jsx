@@ -45,7 +45,7 @@ import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
-import { AlergicHistory } from "./views/History/Allergic";
+import { AllergicHistory } from "./views/History/Allergic";
 
 const useStore = createEmptyStore();
 
@@ -64,7 +64,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	FAMILIAR_HISTORY: "familiar",
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
-	ALERGIC_HISTORY: "alergic",
+	ALLERGIC_HISTORY: "allergic",
 	// TODO: Add other Navigation routes...
 };
 
@@ -109,7 +109,7 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	},
 	navigateToAllergies: (navigate) => {
 		navigate(
-			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALERGIC_HISTORY}`,
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY}`,
 		);
 	},
 	// TODO: Add other Navigation routes...
@@ -177,9 +177,8 @@ const nonPathologicalHistoryView = (
 	/>
 );
 
-const alergicHistoryView = (
-	<AlergicHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
+const allergicHistoryView = (
+	<AllergicHistory
 		getAllergicHistory={getAllergicHistory}
 		updateAllergicHistory={updateAllergicHistory}
 		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
@@ -260,8 +259,8 @@ export const ROUTES = [
 				element: nonPathologicalHistoryView,
 			},
 			{
-				path: UPDATE_PATIENT_NAV_PATHS.ALERGIC_HISTORY,
-				element: alergicHistoryView,
+				path: UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY,
+				element: allergicHistoryView,
 			},
 			// TODO: Add more routes...
 		],
