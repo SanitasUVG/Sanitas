@@ -1,7 +1,7 @@
 import { expect } from "@jest/globals";
 import axios from "axios";
 
-export const LOCAL_API_URL = "http://localhost:3000/";
+export const LOCAL_API_URL = "http://127.0.0.1:3000/";
 
 /**
  * Backend namespace for JSDoc
