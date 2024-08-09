@@ -1,7 +1,8 @@
 import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
 import axios from "axios";
+import { LOCAL_API_URL } from "../testHelpers.mjs";
 
-const LOCAL_API_URL = "http://localhost:3000/patient/search";
+const API_URL = `${LOCAL_API_URL}patient/search`;
 
 describe("Search Patient Integration Tests", () => {
 	beforeAll(() => {
@@ -16,7 +17,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "A01234567",
 			searchType: "Carnet",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -26,7 +27,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "C001",
 			searchType: "NumeroColaborador",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -36,7 +37,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "Pérez",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -46,7 +47,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "Maria",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -55,7 +56,7 @@ describe("Search Patient Integration Tests", () => {
 		const postData = {
 			searchType: "Carnet",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData, {
+		const response = await axios.post(API_URL, postData, {
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -68,7 +69,7 @@ describe("Search Patient Integration Tests", () => {
 		const postData = {
 			requestSearch: "A01234567",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData, {
+		const response = await axios.post(API_URL, postData, {
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -80,7 +81,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "A01234567",
 			searchType: "InvalidType",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData, {
+		const response = await axios.post(API_URL, postData, {
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -94,7 +95,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "Carnet",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
 	});
@@ -104,7 +105,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "NumeroColaborador",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
 	});
@@ -114,7 +115,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(LOCAL_API_URL, postData);
+		const response = await axios.post(API_URL, postData);
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
 	});

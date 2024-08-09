@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
+import { LOCAL_API_URL } from "../testHelpers.mjs";
 
-const LOCAL_API_URL = "http://localhost:3000/check-cui/";
+const API_URL = `${LOCAL_API_URL}check-cui/`;
 
 describe("Check cui integration tests", () => {
 	beforeAll(() => {
@@ -11,7 +12,7 @@ describe("Check cui integration tests", () => {
 		// Delete inserted data.
 	});
 	test("Check if Cui exists", async () => {
-		const response = await axios.get(`${LOCAL_API_URL}1234567890123`);
+		const response = await axios.get(`${API_URL}1234567890123`);
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -21,7 +22,7 @@ describe("Check cui integration tests", () => {
 	});
 
 	test("Check if Cui dont exists", async () => {
-		const response = await axios.get(`${LOCAL_API_URL}6234567842123`);
+		const response = await axios.get(`${API_URL}6234567842123`);
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -31,7 +32,7 @@ describe("Check cui integration tests", () => {
 	});
 
 	test("Check error response", async () => {
-		const response = await axios.get(LOCAL_API_URL, {
+		const response = await axios.get(API_URL, {
 			validateStatus: () => true,
 		});
 

@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-const LOCAL_API_URL = "http://localhost:3000/health-check";
+import { LOCAL_API_URL } from "../testHelpers.mjs";
+
+const API_URL = `${LOCAL_API_URL}health-check`;
 
 describe("Health Check Integration Test", () => {
 	beforeAll(() => {
@@ -11,7 +13,7 @@ describe("Health Check Integration Test", () => {
 	});
 
 	test("should return DB status: UP if the database connection is successful", async () => {
-		const response = await axios.get(LOCAL_API_URL);
+		const response = await axios.get(API_URL);
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
 		expect(response.data).toBeDefined();
