@@ -3,10 +3,11 @@ import axios from "axios";
 import {
 	createTestPatient,
 	generateUniqueCUI,
+	LOCAL_API_URL,
 	updateStudentInfo,
 } from "../testHelpers.mjs";
 
-const LOCAL_API_URL = "http://localhost:3000/patient/student";
+const API_URL = `${LOCAL_API_URL}patient/student`;
 
 describe("Update patient student data integration tests", () => {
 	/** @type {number} */
@@ -45,7 +46,7 @@ describe("Update patient student data integration tests", () => {
 			carnet: "22386",
 		};
 
-		const response = await axios.put(LOCAL_API_URL, payload);
+		const response = await axios.put(API_URL, payload);
 
 		expect(response.status).toBe(200);
 
@@ -60,7 +61,7 @@ describe("Update patient student data integration tests", () => {
 			career: "Lic. Química",
 		};
 
-		const response = await axios.put(LOCAL_API_URL, payload);
+		const response = await axios.put(API_URL, payload);
 
 		expect(response.status).toBe(200);
 
@@ -76,7 +77,7 @@ describe("Update patient student data integration tests", () => {
 			career: "22386",
 		};
 
-		const response = await axios.put(LOCAL_API_URL, payload, {
+		const response = await axios.put(API_URL, payload, {
 			validateStatus: () => true,
 		});
 
