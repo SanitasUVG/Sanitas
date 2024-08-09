@@ -6,6 +6,12 @@ on:  # yamllint disable-line rule:truthy
       - opened
       - edited
       - synchronize
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number
+    || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linting:
     name: Backend checks
