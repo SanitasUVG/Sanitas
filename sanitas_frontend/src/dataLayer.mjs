@@ -645,8 +645,6 @@ export const updateNonPathologicalHistory = async (
 	}
 };
 
-
-
 /**
  * Fetches the Allergic history for a specific patient by their ID.
  * Handles potential errors and formats the response.
