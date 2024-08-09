@@ -1,4 +1,4 @@
-# Stupid
+# Idiot
 
 Sistema de registro de fichas médicas para la comunidad UVG
 
