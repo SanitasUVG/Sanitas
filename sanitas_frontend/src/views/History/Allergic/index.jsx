@@ -24,105 +24,105 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
 export function AllergicHistory({
-    getAllergicHistory,
-    updateAllergicHistory,
-    sidebarConfig,
-    useStore,
+	getAllergicHistory,
+	updateAllergicHistory,
+	sidebarConfig,
+	useStore,
 }) {
-    const id = useStore((s) => s.selectedPatientId);
-    const allergicHistoryResource = WrapPromise(getAllergicHistory(id));
+	const id = useStore((s) => s.selectedPatientId);
+	const allergicHistoryResource = WrapPromise(getAllergicHistory(id));
 
-    const LoadingView = () => {
-        return (
-            <Throbber loadingMessage="Cargando información de los antecedentes alérgicos..." />
-        );
-    };
+	const LoadingView = () => {
+		return (
+			<Throbber loadingMessage="Cargando información de los antecedentes alérgicos..." />
+		);
+	};
 
-    return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "row",
-                backgroundColor: colors.primaryBackground,
-                height: "100vh",
-                padding: "2rem",
-            }}
-        >
-            <div
-                style={{
-                    width: "25%",
-                }}
-            >
-                <DashboardSidebar {...sidebarConfig} />
-            </div>
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				backgroundColor: colors.primaryBackground,
+				height: "100vh",
+				padding: "2rem",
+			}}
+		>
+			<div
+				style={{
+					width: "25%",
+				}}
+			>
+				<DashboardSidebar {...sidebarConfig} />
+			</div>
 
-            <div
-                style={{
-                    paddingLeft: "2rem",
-                    height: "100%",
-                    width: "100%",
-                }}
-            >
-                <div
-                    style={{
-                        backgroundColor: colors.secondaryBackground,
-                        padding: "3.125rem",
-                        height: "100%",
-                        borderRadius: "10px",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        <h1
-                            style={{
-                                color: colors.titleText,
-                                fontFamily: fonts.titleFont,
-                                fontSize: fontSize.titleSize,
-                            }}
-                        >
-                            Antecedentes Alérgicos
-                        </h1>
-                        <h3
-                            style={{
-                                fontFamily: fonts.textFont,
-                                fontWeight: "normal",
-                                fontSize: fontSize.subtitleSize,
-                                paddingTop: "0.5rem",
-                                paddingBottom: "3rem",
-                            }}
-                        >
-                            Registro de antecedentes Alérgicos
-                        </h3>
-                    </div>
+			<div
+				style={{
+					paddingLeft: "2rem",
+					height: "100%",
+					width: "100%",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: colors.secondaryBackground,
+						padding: "3.125rem",
+						height: "100%",
+						borderRadius: "10px",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<h1
+							style={{
+								color: colors.titleText,
+								fontFamily: fonts.titleFont,
+								fontSize: fontSize.titleSize,
+							}}
+						>
+							Antecedentes Alérgicos
+						</h1>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingTop: "0.5rem",
+								paddingBottom: "3rem",
+							}}
+						>
+							Registro de antecedentes Alérgicos
+						</h3>
+					</div>
 
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-align",
-                            alignItems: "space-between",
-                            width: "100%",
-                            gap: "2rem",
-                        }}
-                    >
-                        <Suspense fallback={<LoadingView />}>
-                            <AllergicView
-                                id={id}
-                                allergicHistoryResource={allergicHistoryResource}
-                                updateAllergicHistory={updateAllergicHistory}
-                            />
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-align",
+							alignItems: "space-between",
+							width: "100%",
+							gap: "2rem",
+						}}
+					>
+						<Suspense fallback={<LoadingView />}>
+							<AllergicView
+								id={id}
+								allergicHistoryResource={allergicHistoryResource}
+								updateAllergicHistory={updateAllergicHistory}
+							/>
+						</Suspense>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 /**
@@ -136,344 +136,342 @@ export function AllergicHistory({
  * @param {AllergicViewProps} props - Specific props for the AllergicViewiew component.
  * @returns {JSX.Element} - A detailed view for managing allergic history with interactivity to add or edit records.
  */
-function AllergicView({
-    id,
-    allergicHistoryResource,
-    updateAllergicHistory,
-}) {
-    const [selectedAllergie, setSelectedAllergie] = useState(null);
-    const [addingNew, setAddingNew] = useState(false);
+function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
+	const [selectedAllergie, setSelectedAllergie] = useState(null);
+	const [addingNew, setAddingNew] = useState(false);
 
-    const allergicHistoryResult = allergicHistoryResource.read();
+	const allergicHistoryResult = allergicHistoryResource.read();
 
-    console.log("Allergic History Result:", allergicHistoryResult);
+	console.log("Allergic History Result:", allergicHistoryResult);
 
-    let errorMessage = "";
+	let errorMessage = "";
 
-    if (allergicHistoryResult.error) {
-        const error = allergicHistoryResult.error;
-        if (error) {
-            console.error("Error details:", error);
-            if (error.response) {
-                const { status, data } = error.response;
-                console.error(`Status: ${status}, Response: ${JSON.stringify(data)}`);
-                if (status < 500) {
-                    errorMessage =
-                        "Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
-                } else {
-                    errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-                }
-            } else {
-                errorMessage = error;
-            }
-        }
-    }
+	if (allergicHistoryResult.error) {
+		const error = allergicHistoryResult.error;
+		if (error) {
+			console.error("Error details:", error);
+			if (error.response) {
+				const { status, data } = error.response;
+				console.error(`Status: ${status}, Response: ${JSON.stringify(data)}`);
+				if (status < 500) {
+					errorMessage =
+						"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+				} else {
+					errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+				}
+			} else {
+				errorMessage = error;
+			}
+		}
+	}
 
-    const allergicHistoryData = allergicHistoryResult.result;
+	const allergicHistoryData = allergicHistoryResult.result;
 
-    const [AllergicHistory, setAllergicHistory] = useState(
-        allergicHistoryData?.medicalHistory || {},
-    );
+	const [AllergicHistory, setAllergicHistory] = useState(
+		allergicHistoryData?.medicalHistory || {},
+	);
 
-    // No allergic data in API
+	// No allergic data in API
 
-    const noAllergicData = !Object.values(AllergicHistory).some(
-        (category) => Array.isArray(category.data) && category.data.length > 0,
-    );
+	const noAllergicData = !Object.values(AllergicHistory).some(
+		(category) => Array.isArray(category.data) && category.data.length > 0,
+	);
 
+	useEffect(() => {}, []);
 
+	// Event handlers for adding, editing, and saving allergic history records
+	const handleOpenNewForm = () => {
+		setSelectedAllergie({
+			selectedMed: "medication", // Valor predeterminado de Medicamentos
+			whichAllergie: "",
+			reactionType: "",
+		});
+		setAddingNew(true);
+	};
 
-    useEffect(() => { }, []);
+	// Save the new Allergic record to the database
+	const handleSaveNewAllergie = async () => {
+		if (
+			!(
+				selectedAllergie.selectedMed &&
+				selectedAllergie.whichAllergie &&
+				selectedAllergie.reactionType
+			)
+		) {
+			toast.error("Complete todos los campos requeridos.");
+			return;
+		}
 
-    // Event handlers for adding, editing, and saving allergic history records
-    const handleOpenNewForm = () => {
-        setSelectedAllergie({
-            selectedMed: "medication", // Valor predeterminado de Medicamentos
-            whichAllergie: "",
-            reactionType: "",
-        });
-        setAddingNew(true);
-    };
+		toast.info("Guardando antecedente alérgico...");
 
-    // Save the new Allergic record to the database
-    const handleSaveNewAllergie = async () => {
-        if (
-            !((selectedAllergie.selectedMed && selectedAllergie.whichAllergie) && selectedAllergie.reactionType)
-        ) {
-            toast.error("Complete todos los campos requeridos.");
-            return;
-        }
+		// Crear el nuevo registro de alergia
+		const newAllergy = {
+			name: selectedAllergie.whichAllergie,
+			severity: selectedAllergie.reactionType,
+		};
 
-        toast.info("Guardando antecedente alérgico...");
+		// Obtener la categoría actual (ej. medicamento, comida, etc.)
+		const currentCategoryData =
+			AllergicHistory[selectedAllergie.selectedMed]?.data || [];
 
-        // Crear el nuevo registro de alergia
-        const newAllergy = {
-            name: selectedAllergie.whichAllergie,
-            severity: selectedAllergie.reactionType,
-        };
+		// Actualizar la categoría con el nuevo registro
+		const updatedCategory = {
+			version: AllergicHistory.version,
+			data: [...currentCategoryData, newAllergy],
+		};
 
-        // Obtener la categoría actual (ej. medicamento, comida, etc.)
-        const currentCategoryData =
-            AllergicHistory[selectedAllergie.selectedMed]?.data || [];
+		// Actualizar el historial médico con la nueva categoría
+		const updatedMedicalHistory = {
+			...AllergicHistory,
+			[selectedAllergie.selectedMed]: updatedCategory,
+		};
 
-        // Actualizar la categoría con el nuevo registro
-        const updatedCategory = {
-            version: AllergicHistory.version,
-            data: [...currentCategoryData, newAllergy],
-        };
+		try {
+			const response = await updateAllergicHistory(id, updatedMedicalHistory);
+			if (!response.error) {
+				// Actualizar el estado con el historial médico actualizado
+				setAllergicHistory(updatedMedicalHistory);
+				setAddingNew(false);
+				setSelectedAllergie(null);
+				toast.success("Antecedente alérgico guardado con éxito.");
+			} else {
+				toast.error(`Error al guardar: ${response.error}`);
+			}
+		} catch (error) {
+			toast.error(`Error en la operación: ${error.message}`);
+		}
+	};
+	const handleSelectAllergie = (allergy) => {
+		setSelectedAllergie({
+			selectedMed: allergy.selectedMed || "climateChange", // Este valor debe ser dinámico según el tipo de alergia
+			whichAllergie: allergy.name || allergy.source || allergy.type,
+			reactionType: allergy.severity,
+		});
+	};
 
-        // Actualizar el historial médico con la nueva categoría
-        const updatedMedicalHistory = {
-            ...AllergicHistory,
-            [selectedAllergie.selectedMed]: updatedCategory,
-        };
+	const handleFieldChange = (fieldName, value) => {
+		setSelectedAllergie((prevAllergie) => ({
+			...prevAllergie,
+			[fieldName]: value,
+		}));
+	};
 
-        try {
-            const response = await updateAllergicHistory(id, updatedMedicalHistory);
-            if (!response.error) {
-                // Actualizar el estado con el historial médico actualizado
-                setAllergicHistory(updatedMedicalHistory);
-                setAddingNew(false);
-                setSelectedAllergie(null);
-                toast.success("Antecedente alérgico guardado con éxito.");
-            } else {
-                toast.error(`Error al guardar: ${response.error}`);
-            }
-        } catch (error) {
-            toast.error(`Error en la operación: ${error.message}`);
-        }
-    };
-    const handleSelectAllergie = (allergy) => {
-        setSelectedAllergie({
-            selectedMed: allergy.selectedMed || "climateChange", // Este valor debe ser dinámico según el tipo de alergia
-            whichAllergie: allergy.name || allergy.source || allergy.type,
-            reactionType: allergy.severity,
-        });
-    };
+	const handleCancel = () => {
+		setSelectedAllergie(null);
+		setAddingNew(false);
+	};
 
-    const handleFieldChange = (fieldName, value) => {
-        setSelectedAllergie((prevAllergie) => ({
-            ...prevAllergie,
-            [fieldName]: value,
-        }));
-    };
+	const allergyOptions = [
+		{ label: "Medicamentos", value: "medication" },
+		{ label: "Comida", value: "food" },
+		{ label: "Polvo", value: "dust" },
+		{ label: "Polen", value: "pollen" },
+		{ label: "Cambio Climático", value: "climateChange" },
+		{ label: "Animales", value: "animals" },
+		{ label: "Otros", value: "others" },
+	];
 
-    const handleCancel = () => {
-        setSelectedAllergie(null);
-        setAddingNew(false);
-    };
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				width: "100%",
+				height: "100%",
+				gap: "1.5rem",
+			}}
+		>
+			<div
+				style={{
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
+					padding: "1rem",
+					height: "65vh",
+					flex: 1,
+					overflowY: "auto",
+				}}
+			>
+				<div
+					style={{
+						paddingBottom: "0.5rem",
+					}}
+				>
+					<BaseButton
+						text="Agregar antecedente Alérgico"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
 
-    const allergyOptions = [
-        { label: "Medicamentos", value: "medication" },
-        { label: "Comida", value: "food" },
-        { label: "Polvo", value: "dust" },
-        { label: "Polen", value: "pollen" },
-        { label: "Cambio Climático", value: "climateChange" },
-        { label: "Animales", value: "animals" },
-        { label: "Otros", value: "others" },
-    ];
+				{errorMessage && (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				)}
 
-    return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                height: "100%",
-                gap: "1.5rem",
-            }}
-        >
-            <div
-                style={{
-                    border: `1px solid ${colors.primaryBackground}`,
-                    borderRadius: "10px",
-                    padding: "1rem",
-                    height: "65vh",
-                    flex: 1,
-                    overflowY: "auto",
-                }}
-            >
-                <div
-                    style={{
-                        paddingBottom: "0.5rem",
-                    }}
-                >
-                    <BaseButton
-                        text="Agregar antecedente Alérgico"
-                        onClick={handleOpenNewForm}
-                        style={{ width: "100%", height: "3rem" }}
-                    />
-                </div>
+				{noAllergicData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay antecedentes alérgicos! Agrega uno en el botón de
+						arriba.
+					</p>
+				) : (
+					Object.keys(AllergicHistory || {}).map((category) => {
+						return AllergicHistory[category]?.data?.map((allergy) => {
+							console.log("Creating card for:", allergy); // Verifica qué datos se están pasando
+							return (
+								<InformationCard
+									key={`${category}-${allergy.name || allergy.id}`}
+									type="allergy" // Ajusta esto según sea necesario
+									disease={allergy.name || "Sin Nombre"} // Ajusta esto para reflejar correctamente la alergia
+									surgeryType={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
+									onClick={() =>
+										handleSelectAllergie({ ...allergy, selectedMed: category })
+									}
+								/>
+							);
+						});
+					})
+				)}
+			</div>
 
-                {errorMessage && (
-                    <div
-                        style={{
-                            color: "red",
-                            paddingTop: "1rem",
-                            textAlign: "center",
-                            fontFamily: fonts.titleFont,
-                            fontSize: fontSize.textSize,
-                        }}
-                    >
-                        {errorMessage}
-                    </div>
-                )}
+			{addingNew || selectedAllergie ? (
+				<div
+					style={{
+						border: `1px solid ${colors.primaryBackground}`,
+						borderRadius: "10px",
+						padding: "1rem",
+						height: "65vh",
+						flex: 1.5,
+						overflowY: "auto",
+						width: "100%",
+						paddingLeft: "2rem",
+					}}
+				>
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "1.5rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						¿Es alérgico a uno de los siguientes?
+					</p>
+					<DropdownMenu
+						options={allergyOptions}
+						value={selectedAllergie?.selectedMed || "medication"}
+						readOnly={!addingNew}
+						onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
+						style={{
+							container: { width: "80%" },
+							select: {},
+							option: {},
+							indicator: {},
+						}}
+					/>
 
-                {noAllergicData && !errorMessage ? (
-                    <p style={{ textAlign: "center", paddingTop: "20px" }}>
-                        ¡Parece que no hay antecedentes alérgicos! Agrega uno en el botón de
-                        arriba.
-                    </p>
-                ) : (
-                    Object.keys(AllergicHistory || {}).map((category) => {
-                        return AllergicHistory[category]?.data?.map((allergy) => {
-                            console.log("Creating card for:", allergy); // Verifica qué datos se están pasando
-                            return (
-                                <InformationCard
-                                    key={`${category}-${allergy.name || allergy.id}`}
-                                    type="allergy" // Ajusta esto según sea necesario
-                                    disease={allergy.name || "Sin Nombre"} // Ajusta esto para reflejar correctamente la alergia
-                                    surgeryType={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
-                                    onClick={() =>
-                                        handleSelectAllergie({ ...allergy, selectedMed: category })
-                                    }
-                                />
-                            );
-                        });
-                    })
-                )}
-            </div>
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						¿A cual?
+					</p>
+					<BaseInput
+						value={selectedAllergie?.whichAllergie || ""}
+						onChange={(e) => handleFieldChange("whichAllergie", e.target.value)}
+						placeholder="Ingrese a cuál del tipo seleccionado"
+						style={{
+							width: "80%",
+							height: "2.5rem",
+							fontFamily: fonts.textFont,
+							fontSize: "1rem",
+						}}
+					/>
 
-            {addingNew || selectedAllergie ? (
-                <div
-                    style={{
-                        border: `1px solid ${colors.primaryBackground}`,
-                        borderRadius: "10px",
-                        padding: "1rem",
-                        height: "65vh",
-                        flex: 1.5,
-                        overflowY: "auto",
-                        width: "100%",
-                        paddingLeft: "2rem",
-                    }}
-                >
-                    <p
-                        style={{
-                            paddingBottom: "0.5rem",
-                            paddingTop: "1.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                        }}
-                    >
-                        ¿Es alérgico a uno de los siguientes?
-                    </p>
-                    <DropdownMenu
-                        options={allergyOptions}
-                        value={selectedAllergie?.selectedMed || "medication"}
-                        readOnly={!addingNew}
-                        onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
-                        style={{
-                            container: { width: "80%" },
-                            select: {},
-                            option: {},
-                            indicator: {},
-                        }}
-                    />
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						Tipo de reacción:
+					</p>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: "0.5rem",
+							paddingLeft: "1.5rem",
+						}}
+					>
+						<RadioInput
+							label="Cutánea"
+							name="reactionType"
+							checked={selectedAllergie?.reactionType === "Cutánea"}
+							onChange={() => handleFieldChange("reactionType", "Cutánea")}
+							style={{ label: { fontFamily: fonts.textFont } }}
+						/>
+						<RadioInput
+							label="Respiratoria"
+							name="reactionType"
+							checked={selectedAllergie?.reactionType === "Respiratoria"}
+							onChange={() => handleFieldChange("reactionType", "Respiratoria")}
+							style={{ label: { fontFamily: fonts.textFont } }}
+						/>
+						<RadioInput
+							label="Ambos"
+							name="reactionType"
+							checked={selectedAllergie?.reactionType === "Ambos"}
+							onChange={() => handleFieldChange("reactionType", "Ambos")}
+							style={{ label: { fontFamily: fonts.textFont } }}
+						/>
+					</div>
 
-                    <p
-                        style={{
-                            paddingBottom: "0.5rem",
-                            paddingTop: "2rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                        }}
-                    >
-                        ¿A cual?
-                    </p>
-                    <BaseInput
-                        value={selectedAllergie?.whichAllergie || ""}
-                        onChange={(e) => handleFieldChange("whichAllergie", e.target.value)}
-                        placeholder="Ingrese a cuál del tipo seleccionado"
-                        style={{
-                            width: "80%",
-                            height: "2.5rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: "1rem",
-                        }}
-                    />
-
-                    <p
-                        style={{
-                            paddingBottom: "0.5rem",
-                            paddingTop: "2rem",
-                            fontFamily: fonts.textFont,
-                            fontSize: fontSize.textSize,
-                        }}
-                    >
-                        Tipo de reacción:
-                    </p>
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "0.5rem",
-                            paddingLeft: "1.5rem",
-                        }}
-                    >
-                        <RadioInput
-                            label="Cutánea"
-                            name="reactionType"
-                            checked={selectedAllergie?.reactionType === "Cutánea"}
-                            onChange={() => handleFieldChange("reactionType", "Cutánea")}
-                            style={{ label: { fontFamily: fonts.textFont } }}
-                        />
-                        <RadioInput
-                            label="Respiratoria"
-                            name="reactionType"
-                            checked={selectedAllergie?.reactionType === "Respiratoria"}
-                            onChange={() => handleFieldChange("reactionType", "Respiratoria")}
-                            style={{ label: { fontFamily: fonts.textFont } }}
-                        />
-                        <RadioInput
-                            label="Ambos"
-                            name="reactionType"
-                            checked={selectedAllergie?.reactionType === "Ambos"}
-                            onChange={() => handleFieldChange("reactionType", "Ambos")}
-                            style={{ label: { fontFamily: fonts.textFont } }}
-                        />
-                    </div>
-
-                    <div
-                        style={{
-                            paddingTop: "5rem",
-                            display: "flex",
-                            justifyContent: "center",
-                        }}
-                    >
-                        {addingNew && (
-                            <>
-                                <BaseButton
-                                    text="Guardar"
-                                    onClick={handleSaveNewAllergie}
-                                    style={{ width: "30%", height: "3rem" }}
-                                />
-                                <div style={{ width: "1rem" }} />
-                                <BaseButton
-                                    text="Cancelar"
-                                    onClick={handleCancel}
-                                    style={{
-                                        width: "30%",
-                                        height: "3rem",
-                                        backgroundColor: "#fff",
-                                        color: colors.primaryBackground,
-                                        border: `1.5px solid ${colors.primaryBackground}`,
-                                    }}
-                                />
-                            </>
-                        )}
-                    </div>
-                </div>
-            ) : null}
-        </div>
-    );
+					<div
+						style={{
+							paddingTop: "5rem",
+							display: "flex",
+							justifyContent: "center",
+						}}
+					>
+						{addingNew && (
+							<>
+								<BaseButton
+									text="Guardar"
+									onClick={handleSaveNewAllergie}
+									style={{ width: "30%", height: "3rem" }}
+								/>
+								<div style={{ width: "1rem" }} />
+								<BaseButton
+									text="Cancelar"
+									onClick={handleCancel}
+									style={{
+										width: "30%",
+										height: "3rem",
+										backgroundColor: "#fff",
+										color: colors.primaryBackground,
+										border: `1.5px solid ${colors.primaryBackground}`,
+									}}
+								/>
+							</>
+						)}
+					</div>
+				</div>
+			) : null}
+		</div>
+	);
 }
