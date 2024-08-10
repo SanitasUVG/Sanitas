@@ -20,25 +20,29 @@ export default function BaseButton({ text, onClick, style = {} }) {
 	const defaultStyle = {
 		backgroundColor: "#0F6838",
 		color: "#FFFFFF",
-		borderRadius: "5px",
-		padding: "10px 20px",
+		borderRadius: "0.313rem",
+		padding: "0.625rem 1.25rem",
 		border: "none",
 		cursor: "pointer",
-		fontSize: "14px",
+		fontSize: "0.875rem",
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
 		transition: "background-color 0.3s",
 		overflow: "hidden",
-		minWidth: "100px",
+		minWidth: "6.25rem",
+		position: "relative",
 		...style,
 	};
 
 	const textStyle = {
 		opacity: isHovered ? 0 : 1,
-		position: "relative",
 		visibility: isHovered ? "hidden" : "visible",
 		transition: "opacity 0.3s, visibility 0.3s",
+		alignItems: "center",
+		justifyContent: "center",
+		position: "absolute",
+		width: "100%",
 	};
 
 	const iconStyle = {
@@ -46,10 +50,13 @@ export default function BaseButton({ text, onClick, style = {} }) {
 		opacity: isHovered ? 1 : 0,
 		transform: isHovered ? "scale(1)" : "scale(0)",
 		transition: "opacity 0.3s, transform 0.3s",
-		position: "absolute",
-		fontSize: "24px",
+		fontSize: "1.5rem",
 		transformOrigin: "center",
 		visibility: isHovered ? "visible" : "hidden",
+		position: "absolute",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
 	};
 
 	return (

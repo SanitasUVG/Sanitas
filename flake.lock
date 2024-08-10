@@ -41,15 +41,16 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1721213664,
-        "narHash": "sha256-OqQr3ulhVGCBjW7g1DXaI3wB9YtVVUb4cyaQMAJ/2NQ=",
-        "owner": "cachix",
+        "lastModified": 1723158735,
+        "narHash": "sha256-+ttPzSzu8eKYuXnmb15qsLClUQV6J5WLj5mzWgsMYYs=",
+        "owner": "ElrohirGT",
         "repo": "devenv",
-        "rev": "1d848fc26376d919458482fa0b4d0e240285a93f",
+        "rev": "09321a82506f60125ae3fa0353fae6647da7c965",
         "type": "github"
       },
       "original": {
-        "owner": "cachix",
+        "owner": "ElrohirGT",
+        "ref": "feat-add-custom-pg-hba-conf",
         "repo": "devenv",
         "type": "github"
       }
@@ -318,11 +319,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1721138476,
-        "narHash": "sha256-+W5eZOhhemLQxelojLxETfbFbc19NWawsXBlapYpqIA=",
+        "lastModified": 1722813957,
+        "narHash": "sha256-IAoYyYnED7P8zrBFMnmp7ydaJfwTnwcnqxUElC1I26Y=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "ad0b5eed1b6031efaed382844806550c3dcb4206",
+        "rev": "cb9a96f23c491c081b38eab96d22fa958043c9fa",
         "type": "github"
       },
       "original": {

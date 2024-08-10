@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
     devenv = {
-      url = "github:cachix/devenv";
+      url = "github:ElrohirGT/devenv/feat-add-custom-pg-hba-conf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -45,6 +45,20 @@
 
             echo "Entering devshell..."
             nix develop --impure . -c devenv up
+          '';
+        };
+
+        integrationTests = pkgs.writeShellApplication {
+          name = "Sanitas integration tests";
+          runtimeInputs = with pkgs; [ansi docker];
+          text = ''
+            echo -e "$(ansi yellow)" Starting Services...
+            nix run .#restartServices &
+
+            echo -e "$(ansi yellow)" Running tests...
+            cd sanitas_backend
+            sleep 180 # Sleep for 180s = 3m
+            npm test -- --runInBand
           '';
         };
 
@@ -102,11 +116,18 @@
               ++ frontendRequiredPkgs
               ++ backendRequiredPkgs;
 
+            process = {
+              process-compose = pkgs.lib.mkOptionDefault {
+                tui = false;
+              };
+            };
+
             services.postgres = {
               enable = true;
               listen_addresses = postgresHost;
               port = postgresPort;
               initialScript = dbInitFile;
+              customPgHbaFile = ./pg_hba.conf;
               settings = {
                 log_connections = true;
                 log_statement = "all";
@@ -118,18 +139,10 @@
 
             processes = {
               frontend = {
-                exec = "cd sanitas_frontend/ && yarn dev";
-                # TODO: Uncomment when supported by devenv.
-                # process-compose = {
-                #   ready_log_line = "ready in";
-                # };
+                exec = "cd sanitas_frontend/ && yarn && yarn dev";
               };
               storybook = {
-                exec = "cd sanitas_frontend/ && yarn storybook";
-                # TODO: Uncomment when supported by devenv.
-                # process-compose = {
-                #   ready_log_line = "for react-vite started";
-                # };
+                exec = "cd sanitas_frontend/ && yarn && yarn storybook";
               };
               backend.exec = let
                 ipCommand =
@@ -137,16 +150,6 @@
                   then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
                   else "ip route get 1.2.3.4 | awk '{print $7}'";
               in "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
-              pg_setup = {
-                exec = "cat pg_hba.conf > ./.devenv/state/postgres/pg_hba.conf";
-                process-compose = {
-                  depends_on = {
-                    postgres = {
-                      condition = "process_healthy";
-                    };
-                  };
-                };
-              };
             };
 
             pre-commit = {
