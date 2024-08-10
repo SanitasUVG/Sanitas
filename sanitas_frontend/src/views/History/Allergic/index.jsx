@@ -23,6 +23,7 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @param {AllergicHistoryProps} props - The props passed to the AllergicHistory component.
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
+
 export function AllergicHistory({
 	getAllergicHistory,
 	updateAllergicHistory,
@@ -136,6 +137,7 @@ export function AllergicHistory({
  * @param {AllergicViewProps} props - Specific props for the AllergicViewiew component.
  * @returns {JSX.Element} - A detailed view for managing allergic history with interactivity to add or edit records.
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 	const [selectedAllergie, setSelectedAllergie] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
