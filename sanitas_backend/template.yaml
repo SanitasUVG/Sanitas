@@ -53,16 +53,6 @@ Globals:
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  SanitasCognitoAuthorizer:
-    Type: AWS::ApiGateway::Authorizer
-    Properties:
-      Name: SanitasCognitoAuthorizer
-      IdentitySource: method.request.header.Authorization
-      RestApiId: !Ref SanitasAPI
-      Type: COGNITO_USER_POOLS
-      ProviderARNs:
-        # yamllint disable-line rule:line-length
-        - !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPool}
   DBConnectionLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
