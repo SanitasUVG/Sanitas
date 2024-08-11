@@ -1,6 +1,6 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils/index.mjs";
+import { createResponse, decodeJWT } from "utils/index.mjs";
 
 /**
  * @typedef {Object} RequestParams
@@ -27,7 +27,6 @@ const checkParameters = (event) => {
 	}
 
 	const { requestSearch, searchType } = JSON.parse(event.body);
-	logger.info({ headers: event.headers }, "Received headers...");
 	logger.info({ requestSearch, searchType }, "Received search parameters!");
 
 	logger.info("Parsing requestSearch...");
@@ -77,6 +76,21 @@ export const searchPatientHandler = async (event, context) => {
 		return paramCheckResult.errorResponse;
 	}
 
+	logger.info({ headers: event.headers }, "Received headers...");
+	let jwt = event.headers["Authorization"];
+
+	logger.info({ jwt }, "Parsing JWT...");
+	const tokenInfo = decodeJWT(jwt);
+	if (tokenInfo.error) {
+		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		return responseBuilder
+			.setStatusCode(400)
+			.setBody({ error: "JWT couldn't be parsed" })
+			.build();
+	}
+	const { email } = tokenInfo;
+	logger.info("JWT Parsed!");
+
 	const { requestSearch, searchType } = paramCheckResult.requestParams;
 
 	let client;
@@ -85,6 +99,20 @@ export const searchPatientHandler = async (event, context) => {
 		logger.info(url, "Connecting to DB...");
 		client = getPgClient(url);
 		await client.connect();
+		logger.info("Connected to DB!");
+
+		let isDoctor = isDoctor(client, email);
+		if (isDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: isDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
+		if (!isDoctor) {
+			const msg = "Unauthorized, you're not a doctor!";
+			logger.error({ error: "The user is not a doctor" }, msg);
+			return responseBuilder.setStatusCode(401).setBody({ error: msg }).build();
+		}
 
 		let sqlQuery = "";
 		const queryParams = [];
