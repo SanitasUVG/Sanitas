@@ -35,6 +35,15 @@ export const generateUniqueCUI = () => {
 };
 
 /**
+ * Creates an Authorization header for the axios library.
+ * @param {string} jwt - The JWT token to use for authorization.
+ * @returns { {Authorization: string} }
+ */
+export const createAuthorizationHeader = (jwt) => {
+	return { Authorization: jwt };
+};
+
+/**
  * Inserts a test patient into the DB.
  *
  * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
