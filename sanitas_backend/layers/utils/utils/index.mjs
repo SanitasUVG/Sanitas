@@ -1,3 +1,19 @@
+import { jwtDecode } from 'jwt-decode';
+
+/**
+	* Decodes de data of a valid JWT.
+	* This function assumes the decoded JWT doesn't have a field named `error`.
+	* @param {string} jwt 
+	* @returns {*|{error: *}} The JWT token or an object with `error` if an error ocurred.
+	*/
+export function decodeJWT(jwt) {
+	try {
+		return jwtDecode(jwt);
+	} catch (error) {
+		return {error}
+	}
+}
+
 /**
  * @typedef {Object} DBPatient
  * @property {number} id
