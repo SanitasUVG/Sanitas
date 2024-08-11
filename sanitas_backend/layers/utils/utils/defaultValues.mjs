@@ -205,7 +205,6 @@ export const genDefaultAllergicHistory = () => ({
 	},
 });
 
-
 export function genDefaultPsychiatricHistory() {
 	return {
 		depresion: false,
@@ -219,6 +218,6 @@ export function genDefaultPsychiatricHistory() {
 		bipolaridad: false,
 		bipolaridad_data: {},
 		otro: false,
-		otro_data: {}
+		otro_data: {},
 	};
 }

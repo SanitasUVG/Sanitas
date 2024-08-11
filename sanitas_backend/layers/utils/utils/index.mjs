@@ -643,7 +643,6 @@ export function mapToAPIAllergicHistory(dbData) {
 	};
 }
 
-
 /**
  * @typedef {Object} PsychiatricMedicalHistory
  * @property {null|MedicalConditionData} medicalHistory.depression - Psychiatric medical history data for depression.
@@ -687,7 +686,9 @@ export function mapToAPIPsychiatricHistory(dbData) {
 	for (let i = 0; keys.length; i++) {
 		const key = keys[i];
 		if (key !== "id_paciente") {
-			medicalHistory[key.replace("_data", "")] = dbData[key] ? formatResponse(dbData[key]) : {};
+			medicalHistory[key.replace("_data", "")] = dbData[key]
+				? formatResponse(dbData[key])
+				: {};
 		}
 	}
 
@@ -703,4 +704,3 @@ export function mapToAPIPsychiatricHistory(dbData) {
 		},
 	};
 }
-
