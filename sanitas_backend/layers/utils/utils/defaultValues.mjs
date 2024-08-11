@@ -204,3 +204,21 @@ export const genDefaultAllergicHistory = () => ({
 		data: [],
 	},
 });
+
+
+export function genDefaultPsychiatricHistory() {
+	return {
+		depresion: false,
+		depresion_data: {},
+		ansiedad: false,
+		ansiedad_data: {},
+		toc: false,
+		toc_data: {},
+		tdah: false,
+		tdah_data: {},
+		bipolaridad: false,
+		bipolaridad_data: {},
+		otro: false,
+		otro_data: {}
+	};
+}
