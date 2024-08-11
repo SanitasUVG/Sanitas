@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 /**
 	* Decodes de data of a valid JWT.
 	* This function assumes the decoded JWT doesn't have a field named `error`.
-	* @param {string} jwt 
+	* @param {string} jwt - The JWT token to decode.
 	* @returns {*|{error: *}} The JWT token or an object with `error` if an error ocurred.
 	*/
 export function decodeJWT(jwt) {
