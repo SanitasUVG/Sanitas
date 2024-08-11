@@ -274,7 +274,7 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
  * @property {null|MedicalConditionData} toc_data - Psychiatric medical history data for Obsessive-Compulsive Disorder (OCD).
  * @property {null|MedicalConditionData} tdah_data - Psychiatric medical history data for Attention-Deficit/Hyperactivity Disorder (ADHD).
  * @property {null|MedicalConditionData} bipolaridad_data - Psychiatric medical history data for bipolar disorder.
- * @property {null|MedicalConditionData} otro_psiquiatrico_data - Psychiatric medical history data for other conditions not listed separately.
+ * @property {null|MedicalConditionData} otro_data - Psychiatric medical history data for other conditions not listed separately.
  */
 
 /**
@@ -665,7 +665,7 @@ export function mapToAPIAllergicHistory(dbData) {
  * It handles the transformation of nested data where applicable.
  *
  * @param {DBData} dbData - The raw database data containing fields for various psychiatric conditions of a patient.
- * @returns {PsychiatricMedicalHistoryAPI} A structured object containing the patientId and a detailed psychiatricHistory,
+ * @returns {PsychiatricMedicalHistory} A structured object containing the patientId and a detailed psychiatricHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
 export function mapToAPIPsychiatricHistory(dbData) {
@@ -683,12 +683,15 @@ export function mapToAPIPsychiatricHistory(dbData) {
 
 	const medicalHistory = {};
 	const keys = Object.keys(dbData);
-	for (let i = 0; keys.length; i++) {
+	for (let i = 0; i < keys.length; i++) {
 		const key = keys[i];
 		if (key !== "id_paciente") {
-			medicalHistory[key.replace("_data", "")] = dbData[key]
-				? formatResponse(dbData[key])
-				: {};
+			// Asegúrate de que el campo no sea undefined antes de intentar reemplazar
+			if (key) {
+				medicalHistory[key.replace("_data", "")] = dbData[key]
+					? formatResponse(dbData[key])
+					: {};
+			}
 		}
 	}
 

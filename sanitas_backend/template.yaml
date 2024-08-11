@@ -480,6 +480,25 @@ Resources:
             Method: GET
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # Esta es una configuración de Lambda function asociada con el código fuente:
+  # update-allergic-history-patient.mjs
+  updatePsychiatricHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdatePsychiatricHistory/update-psychiatric-history-patient.updatePsychiatricHistoryHandler
+      Description: Updates the psychiatric history for a specific patient
+        by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/psychiatric-history
+            Method: PUT
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:

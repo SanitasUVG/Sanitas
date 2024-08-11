@@ -205,19 +205,33 @@ export const genDefaultAllergicHistory = () => ({
 	},
 });
 
-export function genDefaultPsychiatricHistory() {
-	return {
-		depresion: false,
-		depresion_data: {},
-		ansiedad: false,
-		ansiedad_data: {},
-		toc: false,
-		toc_data: {},
-		tdah: false,
-		tdah_data: {},
-		bipolaridad: false,
-		bipolaridad_data: {},
-		otro: false,
-		otro_data: {},
-	};
-}
+/**
+ * Generates the default value for a psychiatric medical history in the DB.
+ * @returns {import("./index.mjs").PsychiatricMedicalHistory}
+ */
+export const genDefaultPsychiatricHistory = () => ({
+	depression: {
+		version: 1,
+		data: [],
+	},
+	anxiety: {
+		version: 1,
+		data: [],
+	},
+	ocd: {
+		version: 1,
+		data: [],
+	},
+	adhd: {
+		version: 1,
+		data: [],
+	},
+	bipolar: {
+		version: 1,
+		data: [],
+	},
+	other: {
+		version: 1,
+		data: [],
+	},
+});

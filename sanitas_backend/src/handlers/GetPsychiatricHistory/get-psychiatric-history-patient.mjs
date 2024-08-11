@@ -58,16 +58,13 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 				.setStatusCode(200)
 				.setBody({
 					patientId,
-					psychiatricHistory: genDefaultPsychiatricHistory(),
+					medicalHistory: genDefaultPsychiatricHistory(),
 				})
 				.build();
 		}
 
-		const psychiatricHistory = mapToAPIPsychiatricHistory(dbResponse.rows[0]);
-		return responseBuilder
-			.setStatusCode(200)
-			.setBody(psychiatricHistory)
-			.build();
+		const medicalHistory = mapToAPIPsychiatricHistory(dbResponse.rows[0]);
+		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
 		logger.error(
 			"An error occurred while fetching psychiatric history!",
