@@ -42,7 +42,7 @@ import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
-import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
+import { TraumatologicHistory } from "./views/History/Traumatological";
 
 const useStore = createEmptyStore();
 
