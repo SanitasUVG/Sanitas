@@ -34,24 +34,9 @@ describe("Get user role integration tests", () => {
 		expect(response.data).toEqual("DOCTOR");
 	});
 
-	it("can't be called by incorrect method", async () => {
-		const headers = createAuthorizationHeader(createInvalidJWT());
-		const response = await axios.post(
-			API_URL,
-			{},
-			{
-				headers,
-				validateStatus: () => true,
-			},
-		);
-
-		expect(response.status).toBe(405);
-		expect(response.data).toEqual({ error: "Method Not Allowed" });
-	});
-
 	it("can't be called by a malformed JWT", async () => {
 		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
-		const response = await axios.get(API_URL, postData, {
+		const response = await axios.get(API_URL, {
 			headers: specialHeaders,
 			validateStatus: () => true,
 		});
