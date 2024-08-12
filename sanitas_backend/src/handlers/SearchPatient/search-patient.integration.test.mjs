@@ -157,9 +157,6 @@ describe("Search Patient Integration Tests", () => {
 		};
 
 		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
-		console.log(
-			`Sending request to ${API_URL} with ${JSON.stringify(postData)} and headers: ${JSON.stringify(specialHeaders)}`,
-		);
 		const response = await axios.post(API_URL, postData, {
 			headers: specialHeaders,
 			validateStatus: () => true,
