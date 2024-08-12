@@ -204,3 +204,34 @@ export const genDefaultAllergicHistory = () => ({
 		data: [],
 	},
 });
+
+/**
+ * Generates the default value for a psychiatric medical history in the DB.
+ * @returns {import("./index.mjs").PsychiatricMedicalHistory}
+ */
+export const genDefaultPsychiatricHistory = () => ({
+	depression: {
+		version: 1,
+		data: [],
+	},
+	anxiety: {
+		version: 1,
+		data: [],
+	},
+	ocd: {
+		version: 1,
+		data: [],
+	},
+	adhd: {
+		version: 1,
+		data: [],
+	},
+	bipolar: {
+		version: 1,
+		data: [],
+	},
+	other: {
+		version: 1,
+		data: [],
+	},
+});
