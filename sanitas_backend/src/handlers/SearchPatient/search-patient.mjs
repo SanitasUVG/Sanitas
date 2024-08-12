@@ -27,6 +27,7 @@ const checkParameters = (event) => {
 	}
 
 	const { requestSearch, searchType } = JSON.parse(event.body);
+	logger.info({ headers: event.headers }, "Received headers...");
 	logger.info({ requestSearch, searchType }, "Received search parameters!");
 
 	logger.info("Parsing requestSearch...");
