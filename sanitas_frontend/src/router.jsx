@@ -116,65 +116,95 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 };
 
 const updateInfoView = (
-	<UpdateInfoView
-		getGeneralPatientInformation={getGeneralPatientInformation}
-		updateGeneralPatientInformation={updateGeneralPatientInformation}
-		getStudentPatientInformation={getStudentPatientInformation}
-		updateStudentPatientInformation={updateStudentPatientInformation}
-		getCollaboratorInformation={getCollaboratorInformation}
-		updateCollaboratorInformation={updateCollaboratorInformation}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<UpdateInfoView
+			getGeneralPatientInformation={getGeneralPatientInformation}
+			updateGeneralPatientInformation={updateGeneralPatientInformation}
+			getStudentPatientInformation={getStudentPatientInformation}
+			updateStudentPatientInformation={updateStudentPatientInformation}
+			getCollaboratorInformation={getCollaboratorInformation}
+			updateCollaboratorInformation={updateCollaboratorInformation}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const surgicalHistoryView = (
-	<SurgicalHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getSurgicalHistory={getSurgicalHistory}
-		updateSurgicalHistory={updateSurgicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<SurgicalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getSurgicalHistory={getSurgicalHistory}
+			updateSurgicalHistory={updateSurgicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const traumatologicalHistoryView = (
-	<TraumatologicHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getTraumatologicHistory={getTraumatologicalHistory}
-		updateTraumatologicalHistory={updateTraumatologicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<TraumatologicHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getTraumatologicHistory={getTraumatologicalHistory}
+			updateTraumatologicalHistory={updateTraumatologicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const familiarHistoryView = (
-	<FamiliarHistory
-		getFamiliarHistory={getFamilyHistory}
-		updateFamiliarHistory={updateFamilyHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<FamiliarHistory
+			getFamiliarHistory={getFamilyHistory}
+			updateFamiliarHistory={updateFamilyHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const personalHistoryView = (
-	<PersonalHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getPersonalHistory={getPersonalHistory}
-		updatePersonalHistory={updatePersonalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PersonalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getPersonalHistory={getPersonalHistory}
+			updatePersonalHistory={updatePersonalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const nonPathologicalHistoryView = (
-	<NonPathologicalHistory
-		getNonPathologicalHistory={getNonPathologicalHistory}
-		getBloodTypePatientInfo={getGeneralPatientInformation}
-		updateNonPathologicalHistory={updateNonPathologicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<NonPathologicalHistory
+			getNonPathologicalHistory={getNonPathologicalHistory}
+			getBloodTypePatientInfo={getGeneralPatientInformation}
+			updateNonPathologicalHistory={updateNonPathologicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const allergicHistoryView = (
