@@ -15,7 +15,7 @@ export const createDoctorJWT = () =>
  * @returns {string} The invalid JWT.
  */
 export const createInvalidJWT = () =>
-	"JhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6";
+	"ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6";
 
 /**
  * Creates a valid JWT for the email student@gmail.com.

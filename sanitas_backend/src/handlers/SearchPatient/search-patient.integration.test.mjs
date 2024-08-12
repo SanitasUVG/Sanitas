@@ -1,10 +1,17 @@
 import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
 import axios from "axios";
-import { LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/search`;
 
 describe("Search Patient Integration Tests", () => {
+	const headers = createAuthorizationHeader(createDoctorJWT());
 	beforeAll(() => {
 		// TODO: Insert data into DB.
 	});
@@ -17,7 +24,9 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "A01234567",
 			searchType: "Carnet",
 		};
-		const response = await axios.post(API_URL, postData);
+
+		const response = await axios.post(API_URL, postData, { headers });
+
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -27,7 +36,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "C001",
 			searchType: "NumeroColaborador",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -37,7 +46,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "Pérez",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -47,7 +56,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "Maria",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data.length).toBeGreaterThan(0);
 	});
@@ -57,6 +66,7 @@ describe("Search Patient Integration Tests", () => {
 			searchType: "Carnet",
 		};
 		const response = await axios.post(API_URL, postData, {
+			headers,
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -70,6 +80,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "A01234567",
 		};
 		const response = await axios.post(API_URL, postData, {
+			headers,
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -82,6 +93,7 @@ describe("Search Patient Integration Tests", () => {
 			searchType: "InvalidType",
 		};
 		const response = await axios.post(API_URL, postData, {
+			headers,
 			validateStatus: () => true,
 		});
 		expect(response.status).toBe(400);
@@ -95,7 +107,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "Carnet",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
 	});
@@ -105,7 +117,7 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "NumeroColaborador",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
 	});
@@ -115,8 +127,45 @@ describe("Search Patient Integration Tests", () => {
 			requestSearch: "NonExistentPatient",
 			searchType: "Nombres",
 		};
-		const response = await axios.post(API_URL, postData);
+		const response = await axios.post(API_URL, postData, { headers });
 		expect(response.status).toBe(200);
 		expect(response.data).toEqual([]);
+	});
+
+	it("a patient can't call the endpoint", async () => {
+		const postData = {
+			requestSearch: "A01234567",
+			searchType: "Carnet",
+		};
+
+		const specialHeaders = createAuthorizationHeader(createPatientJWT());
+		const response = await axios.post(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.data).toEqual({
+			error: "Unauthorized, you're not a doctor!",
+		});
+	});
+
+	it("can't be called by a malformed JWT", async () => {
+		const postData = {
+			requestSearch: "A01234567",
+			searchType: "Carnet",
+		};
+
+		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
+		console.log(
+			`Sending request to ${API_URL} with ${JSON.stringify(postData)} and headers: ${JSON.stringify(specialHeaders)}`,
+		);
+		const response = await axios.post(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
 });

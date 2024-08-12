@@ -89,7 +89,7 @@ export const searchPatientHandler = async (event, context) => {
 			.build();
 	}
 	const { email } = tokenInfo;
-	logger.info("JWT Parsed!");
+	logger.info({ tokenInfo }, "JWT Parsed!");
 
 	const { requestSearch, searchType } = paramCheckResult.requestParams;
 
@@ -101,18 +101,20 @@ export const searchPatientHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected to DB!");
 
-		let isDoctor = isDoctor(client, email);
-		if (isDoctor.error) {
+		let itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
 			const msg = "An error occurred while trying to check if user is doctor!";
-			logger.error({ error: isDoctor.error }, msg);
+			logger.error({ error: itsDoctor.error }, msg);
 			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
 		}
 
-		if (!isDoctor) {
+		if (!itsDoctor) {
 			const msg = "Unauthorized, you're not a doctor!";
-			logger.error({ error: "The user is not a doctor" }, msg);
-			return responseBuilder.setStatusCode(401).setBody({ error: msg }).build();
+			const body = { error: msg };
+			logger.error(body, msg);
+			return responseBuilder.setStatusCode(401).setBody(body).build();
 		}
+		logger.info(`${email} is a doctor!`);
 
 		let sqlQuery = "";
 		const queryParams = [];
