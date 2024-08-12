@@ -532,6 +532,19 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  getRoleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/handlers/GetRole/get-role.handler
+      Description: Retrieves the role of the provided JWT.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /role
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
