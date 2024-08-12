@@ -55,9 +55,9 @@ describe("AllergicHistory Component Tests", () => {
 			</Wrapper>,
 		);
 
-		await waitFor(() => screen.getByText("Agregar antecedente Alérgico"));
+		await waitFor(() => screen.getByText("Agregar antecedente alérgico"));
 
-		const addButton = screen.getByText("Agregar antecedente Alérgico");
+		const addButton = screen.getByText("Agregar antecedente alérgico");
 		fireEvent.click(addButton);
 		await waitFor(() => {
 			expect(screen.getByText("Guardar")).toBeInTheDocument();
@@ -142,8 +142,8 @@ describe("AllergicHistory Component Tests", () => {
 			</Wrapper>,
 		);
 
-		await waitFor(() => screen.getByText("Agregar antecedente Alérgico"));
-		fireEvent.click(screen.getByText("Agregar antecedente Alérgico"));
+		await waitFor(() => screen.getByText("Agregar antecedente alérgico"));
+		fireEvent.click(screen.getByText("Agregar antecedente alérgico"));
 
 		await waitFor(() => screen.getByText("Guardar"));
 
