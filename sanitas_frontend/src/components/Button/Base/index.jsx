@@ -30,7 +30,8 @@ export default function BaseButton({ text, onClick, style = {} }) {
 		justifyContent: "center",
 		transition: "background-color 0.3s",
 		overflow: "hidden",
-		minWidth: "6.25rem",
+		minWidth: "8rem",
+		height: "2.3rem",
 		position: "relative",
 		...style,
 	};
