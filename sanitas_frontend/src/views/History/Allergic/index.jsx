@@ -98,7 +98,7 @@ export function AllergicHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes Alérgicos
+							Registro de antecedentes alérgicos
 						</h3>
 					</div>
 
@@ -143,8 +143,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 	const [addingNew, setAddingNew] = useState(false);
 
 	const allergicHistoryResult = allergicHistoryResource.read();
-
-	console.log("Allergic History Result:", allergicHistoryResult);
 
 	let errorMessage = "";
 
@@ -216,9 +214,13 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		const currentCategoryData =
 			AllergicHistory[selectedAllergie.selectedMed]?.data || [];
 
+		// Si la categoría ya tiene datos, usamos su versión, de lo contrario, establecemos la versión en 1
+		const currentVersion =
+			AllergicHistory[selectedAllergie.selectedMed]?.version || 1;
+
 		// Actualizar la categoría con el nuevo registro
 		const updatedCategory = {
-			version: AllergicHistory.version,
+			version: currentVersion,
 			data: [...currentCategoryData, newAllergy],
 		};
 
@@ -268,7 +270,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		{ label: "Comida", value: "food" },
 		{ label: "Polvo", value: "dust" },
 		{ label: "Polen", value: "pollen" },
-		{ label: "Cambio Climático", value: "climateChange" },
+		{ label: "Cambio de Clima", value: "climateChange" },
 		{ label: "Animales", value: "animals" },
 		{ label: "Otros", value: "others" },
 	];
@@ -299,7 +301,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 					}}
 				>
 					<BaseButton
-						text="Agregar antecedente Alérgico"
+						text="Agregar antecedente alérgico"
 						onClick={handleOpenNewForm}
 						style={{ width: "100%", height: "3rem" }}
 					/>
@@ -327,7 +329,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 				) : (
 					Object.keys(AllergicHistory || {}).map((category) => {
 						return AllergicHistory[category]?.data?.map((allergy) => {
-							console.log("Creating card for:", allergy); // Verifica qué datos se están pasando
 							return (
 								<InformationCard
 									key={`${category}-${allergy.name || allergy.id}`}
@@ -388,7 +389,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							fontSize: fontSize.textSize,
 						}}
 					>
-						¿A cual?
+						¿A cuál?
 					</p>
 					<BaseInput
 						value={selectedAllergie?.whichAllergie || ""}
