@@ -636,3 +636,124 @@ export function mapToAPIAllergicHistory(dbData) {
 		},
 	};
 }
+
+/**
+ * @typedef {Object} GynecologicalHistoryDB
+ * @property {number} id_paciente - The unique identifier of the patient.
+ * * @property {GynecologicalHistoryEntry} edad_primera_menstruacion_data - Data about the first menstrual period.
+ * @property {GynecologicalHistoryEntry} ciclos_regulares_data - Data about the regularity of menstrual cycles.
+ * @property {GynecologicalHistoryEntry} menstruacion_dolorosa_data - Data about painful menstruation.
+ * @property {GynecologicalHistoryEntry} num_embarazos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_partos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_cesareas - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_abortos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalIllnessEntry} medicacion_quistes_ovaricos_data - Data about ovarian cysts.
+ * @property {GynecologicalIllnessEntry} medicacion_miomatosis_data - Data about uterine myomatosis.
+ * @property {GynecologicalIllnessEntry} medicacion_endometriosis_data - Data about endometriosis.
+ * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data- Data about other diagnosed conditions.
+ * @property {GynecologicalSurgeryEntry[]} cirugia_quistes_ovaricos_data - Data about surgeries for ovarian cysts.
+ * @property {GynecologicalSurgeryEntry} cirugia_histerectomia_data - Data about hysterectomy surgeries.
+ * @property {GynecologicalSurgeryEntry} cirugia_esterilizacion_data - Data about sterilization surgeries.
+ * @property {GynecologicalSurgeryEntry[]} cirugia_reseccion_masas_data - An array of data about breast mass resection surgeries.
+ */
+
+/**
+ * @typedef {Object} GynecologicalHistoryEntry
+ * @property {number} version - The version of the data format.
+ * @property {Object} data - Detailed data about the gynecological condition or treatment.
+ */
+
+/**
+ * @typedef {Object} PregnancyData
+ * @property {number} totalPregnancies - Total number of pregnancies.
+ * @property {number} vaginalDeliveries - Number of vaginal deliveries.
+ * @property {number} cesareanSections - Number of cesarean sections.
+ * @property {number} abortions - Number of abortions.
+ */
+
+/**
+ * @typedef {Object} GynecologicalSurgeryEntry
+ * @property {number} year - The year the surgery took place.
+ * @property {boolean} complications - Indicates whether there were complications.
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessMedication
+ * @property {number} medication - The year the surgery took place.
+ * @property {boolean} dosage - Indicates whether there were complications.
+ * @property {boolean} frequency - Indicates whether there were complications.
+
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessEntry
+ * @property {GynecologicalIllnessMedication} medication - The year the surgery took place.
+ */
+
+/**
+ * @typedef {Object} GynecologicalMedicalHistory
+ * @property {GynecologicalHistoryEntry} medicalHistory.firstMenstrualPeriod - Data about the first menstrual period.
+ * @property {GynecologicalHistoryEntry} medicalHistory.regularCycles - Data about the regularity of menstrual cycles.
+ * @property {GynecologicalHistoryEntry} medicalHistory.painfulMenstruation - Data about painful menstruation.
+ * @property {GynecologicalHistoryEntry} medicalHistory.pregnancies - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} medicalHistory.diagnosedIllnesses - Data about diagnosed gynecological illnesses.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.ovarianCysts - Data about ovarian cysts.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.uterineMyomatosis - Data about uterine myomatosis.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.endometriosis - Data about endometriosis.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.otherCondition - Data about other diagnosed conditions.
+ * @property {GynecologicalHistoryEntry} medicalHistory.hasSurgeries - Data about surgeries related to gynecological issues.
+ * @property {GynecologicalSurgeryEntry[]} medicalHistory.hasSurgeries.ovarianCystsSurgery - Data about surgeries for ovarian cysts.
+ * @property {GynecologicalSurgeryEntry} medicalHistory.hasSurgeries.hysterectomy - Data about hysterectomy surgeries.
+ * @property {GynecologicalSurgeryEntry} medicalHistory.hasSurgeries.sterilizationSurgery - Data about sterilization surgeries.
+ * @property {GynecologicalSurgeryEntry[]} medicalHistory.hasSurgeries.breastMassResection - An array of data about breast mass resection surgeries.
+ */
+
+/**
+ * @typedef {Object} APIGynecologicalHistory
+ * @property {number} patientId - The ID of the patient.
+ * @property {GynecologicalMedicalHistory} medicalHistory - The medical history structured data.
+ */
+
+/**
+ * Maps database gynecological history data to the API format.
+ * @param {GynecologicalHistoryDB} dbData - The raw database data.
+ * @returns {APIGynecologicalHistory} The formatted gynecological history for API response.
+ */
+
+export function mapToAPIGynecologicalHistory(dbData) {
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: {
+			firstMenstrualPeriod: dbData.edad_primera_menstruacion_data,
+			regularCycles: dbData.ciclos_regulares_data,
+			painfulMenstruation: dbData.menstruacion_dolorosa_data,
+			pregnancies: {
+				version: 1,
+				data: {
+					totalPregnancies: dbData.num_embarazos,
+					vaginalDeliveries: dbData.num_partos,
+					cesareanSections: dbData.num_cesareas,
+					abortions: dbData.num_abortos,
+				},
+			},
+			diagnosedIllnesses: {
+				version: 1,
+				data: {
+					ovarianCysts: dbData.medicacion_quistes_ovaricos_data,
+					uterineMyomatosis: dbData.medicacion_miomatosis_data,
+					endometriosis: dbData.medicacion_endometriosis_data,
+					otherCondition: dbData.medicacion_otra_condicion_data,
+				},
+			},
+			hasSurgeries: {
+				version: 1,
+				data: {
+					ovarianCystsSurgery: dbData.cirugia_quistes_ovaricos_data,
+					hysterectomy: dbData.cirugia_histerectomia_data,
+					sterilizationSurgery: dbData.cirugia_esterilizacion_data,
+					breastMassResection: dbData.cirugia_reseccion_masas_data,
+				},
+			},
+		},
+	};
+}
