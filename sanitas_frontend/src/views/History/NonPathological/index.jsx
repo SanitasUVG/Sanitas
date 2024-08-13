@@ -351,7 +351,7 @@ function NonPathologicalView({
 			},
 		};
 
-		toast.info("Guardando antecedente quirúrgico...");
+		toast.info("Guardando antecedente no patológico...");
 
 		const result = await updateNonPathologicalHistory(id, updateDetails);
 		if (!result.error) {
