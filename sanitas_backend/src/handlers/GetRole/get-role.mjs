@@ -18,7 +18,7 @@ export const handler = async (event, context) => {
 	}
 
 	logger.info({ headers: event.headers }, "Received headers...");
-	let jwt = event.headers["Authorization"];
+	const jwt = event.headers.Authorization;
 
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
@@ -40,7 +40,7 @@ export const handler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected to DB!");
 
-		let itsDoctor = await isDoctor(client, email);
+		const itsDoctor = await isDoctor(client, email);
 		if (itsDoctor.error) {
 			const msg = "An error occurred while trying to check if user is doctor!";
 			logger.error({ error: itsDoctor.error }, msg);

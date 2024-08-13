@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -11,7 +11,6 @@ import {
 const API_URL = `${LOCAL_API_URL}role`;
 
 describe("Get user role integration tests", () => {
-
 	it("recognized a patient", async () => {
 		const headers = createAuthorizationHeader(createPatientJWT());
 		const response = await axios.get(API_URL, { headers });

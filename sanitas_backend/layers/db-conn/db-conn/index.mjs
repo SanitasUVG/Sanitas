@@ -22,7 +22,7 @@ export async function isDoctor(client, email) {
 	const query = "SELECT 1 FROM DOCTOR WHERE email=$1 LIMIT 1";
 	const params = [email];
 	try {
-		let result = await client.query(query, params);
+		const result = await client.query(query, params);
 		return result.rowCount > 0;
 	} catch (error) {
 		return { error };
