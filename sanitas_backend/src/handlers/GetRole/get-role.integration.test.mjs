@@ -11,12 +11,6 @@ import {
 const API_URL = `${LOCAL_API_URL}role`;
 
 describe("Get user role integration tests", () => {
-	beforeAll(() => {
-		// TODO: Insert data into DB.
-	});
-	afterAll(() => {
-		// TODO: Delete inserted data.
-	});
 
 	it("recognized a patient", async () => {
 		const headers = createAuthorizationHeader(createPatientJWT());
