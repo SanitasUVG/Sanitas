@@ -127,7 +127,7 @@ describe("TraumatologicHistory Component Tests", () => {
 
 		await waitFor(() => {
 			expect(toast.error).toHaveBeenCalledWith(
-				"Complete todos los campos requeridos.",
+				"Complete todos los campos requeridos, incluyendo el tipo de tratamiento.",
 			);
 		});
 	});

@@ -308,16 +308,18 @@ export const updateTraumatologicalHistory = async (
 	const payload = {
 		patientId: patientId,
 		medicalHistory: {
-			traumatological: {
+			traumas: {
 				version: currentVersion,
 				data: traumatologicalEvents.map((event) => ({
-					eventType: event.eventType,
-					eventYear: event.eventYear,
-					details: event.details,
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
 				})),
 			},
 		},
 	};
+
+	console.log("Payload sent to server:", payload);
 
 	try {
 		const response = await axios.put(url, payload);
@@ -640,6 +642,68 @@ export const updateNonPathologicalHistory = async (
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Fetches the Allergic history for a specific patient by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} id - The patient's ID.
+ * @returns {Promise<Object>} An object containing either the allergic history data or an error.
+ */
+export const getAllergicHistory = async (id) => {
+	const url = `${BASE_URL}/patient/allergic-history/${id}`;
+	try {
+		const response = await axios.get(url);
+		if (response.status !== 200) {
+			return { error: `Received unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return {
+				error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+			};
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the allergic history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the family history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} allergicHistoryData - An object containing details about the patient's allergic history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
+	const url = `${BASE_URL}/patient/allergic-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: allergicHistoryData,
+	};
+
+	try {
+		const response = await axios.put(url, payload);
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
 		}
 		return { error: error.message };
 	}
