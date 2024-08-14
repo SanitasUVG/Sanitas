@@ -308,16 +308,18 @@ export const updateTraumatologicalHistory = async (
 	const payload = {
 		patientId: patientId,
 		medicalHistory: {
-			traumatological: {
+			traumas: {
 				version: currentVersion,
 				data: traumatologicalEvents.map((event) => ({
-					eventType: event.eventType,
-					eventYear: event.eventYear,
-					details: event.details,
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
 				})),
 			},
 		},
 	};
+
+	console.log("Payload sent to server:", payload);
 
 	try {
 		const response = await axios.put(url, payload);

@@ -303,7 +303,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	const updateFamiliarHistoryState = async (newEntry) => {
-		toast.info("Guardando antecedente quirúrgico...");
+		toast.info("Guardando antecedente familiar...");
 
 		const updatedData = [
 			...familiarHistory[selectedFamiliar.disease].data,
@@ -325,7 +325,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 			if (response.error) {
 				toast.error(`Error al guardar la información: ${response.error}`);
 			} else {
-				toast.success("Historial familiar guardado con éxito.");
+				toast.success("Antecedente familiar guardado con éxito.");
 				setFamiliarHistory(updatedFamiliarHistory);
 				setSelectedFamiliar({});
 				setAddingNew(false);

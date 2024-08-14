@@ -163,7 +163,7 @@ describe("FamiliarHistory Component Tests", () => {
 
 		await waitFor(() =>
 			expect(toast.success).toHaveBeenCalledWith(
-				"Historial familiar guardado con éxito.",
+				"Antecedente familiar guardado con éxito.",
 			),
 		);
 	});

@@ -326,7 +326,7 @@ function PersonalView({
 				break;
 		}
 
-		toast.info("Guardando antecedente quirúrgico...");
+		toast.info("Guardando antecedente personal...");
 
 		// Update the data for the current disease
 		const updatedData = [
@@ -349,7 +349,7 @@ function PersonalView({
 			if (response.error) {
 				toast.error(`Error al guardar la información: ${response.error}`);
 			} else {
-				toast.success("Historial personal guardado con éxito.");
+				toast.success("Antecedente personal guardado con éxito.");
 				setPersonalHistory(updatedPersonalHistory);
 				setSelectedPersonal({});
 				setAddingNew(false);
@@ -467,7 +467,7 @@ function PersonalView({
 										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
 										type="personal"
 										disease={displayedDisease}
-										surgeryType={
+										reasonInfo={
 											entry.medicine ? entry.medicine : entry.treatment
 										}
 										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}

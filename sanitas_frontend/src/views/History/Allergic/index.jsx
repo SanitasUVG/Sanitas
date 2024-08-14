@@ -334,7 +334,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 									key={`${category}-${allergy.name || allergy.id}`}
 									type="allergy" // Ajusta esto según sea necesario
 									disease={allergy.name || "Sin Nombre"} // Ajusta esto para reflejar correctamente la alergia
-									surgeryType={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
+									reasonInfo={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
 									onClick={() =>
 										handleSelectAllergie({ ...allergy, selectedMed: category })
 									}
