@@ -17,13 +17,21 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: 
-					{medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
-					
+					data: {
+						medication: "MEDICINE 1",
+						dose: "1gm",
+						frecuency: "1 by day",
+						ube: false,
+					},
 				},
 				anxiety: {
 					version: 1,
-					data:{medication: "MEDICINE 2", dose: "2gmr", frecuency: "2 by day", ube: true},
+					data: {
+						medication: "MEDICINE 2",
+						dose: "2gmr",
+						frecuency: "2 by day",
+						ube: true,
+					},
 				},
 				ocd: {
 					version: 1,
@@ -57,7 +65,12 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: {medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
+					data: {
+						medication: "MEDICINE 1",
+						dose: "1gm",
+						frecuency: "1 by day",
+						ube: false,
+					},
 				},
 				anxiety: {
 					version: 1,
@@ -73,7 +86,7 @@ describe("Update Psychiatric Medical History integration tests", () => {
 				},
 				bipolar: {
 					version: 1,
-					data:{},
+					data: {},
 				},
 				other: {
 					version: 1,
@@ -97,7 +110,12 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: {medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
+					data: {
+						medication: "MEDICINE 1",
+						dose: "1gm",
+						frecuency: "1 by day",
+						ube: false,
+					},
 				},
 			},
 		};

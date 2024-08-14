@@ -4,12 +4,28 @@ import axios from "axios";
 export const LOCAL_API_URL = "http://127.0.0.1:3000/";
 
 /**
- * Backend namespace for JSDoc
- * @namespace backend
+ * Creates a valid JWT for the email: doctor@gmail.com
+ * @returns {string} The valid JWT.
  */
+export const createDoctorJWT = () =>
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6EA";
 
 /**
- * @memberof Backend
+ * Creates an invalid JWT.
+ * @returns {string} The invalid JWT.
+ */
+export const createInvalidJWT = () =>
+	"ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6";
+
+/**
+ * Creates a valid JWT for the email student@gmail.com.
+ * This email should not be in the table `DOCTOR`.
+ * @returns {string} The valid JWT.
+ */
+export const createPatientJWT = () =>
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dWRlbnRAZ21haWwuY29tIn0.FbVOS-5cuUnrdvoyyMmroGgorO5t9c1_SFR4RHqSkN8";
+
+/**
  * @returns {string} The randomly generated CUI.
  */
 export const generateUniqueCUI = () => {
@@ -19,9 +35,17 @@ export const generateUniqueCUI = () => {
 };
 
 /**
+ * Creates an Authorization header for the axios library.
+ * @param {string} jwt - The JWT token to use for authorization.
+ * @returns { {Authorization: string} }
+ */
+export const createAuthorizationHeader = (jwt) => {
+	return { Authorization: jwt };
+};
+
+/**
  * Inserts a test patient into the DB.
  *
- * @memberof Backend
  * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
  * @param {string} [names="Flabio André"] - The names of the patient.
  * @param {string} [lastNames="Galán Dona"] - The last names of the patient.

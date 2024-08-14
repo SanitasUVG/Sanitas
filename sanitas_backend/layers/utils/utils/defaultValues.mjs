@@ -212,26 +212,26 @@ export const genDefaultAllergicHistory = () => ({
 export const genDefaultPsychiatricHistory = () => ({
 	depression: {
 		version: 1,
-		data: {medication: "", dose: "", frecuency: "", ube: false},
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 	anxiety: {
 		version: 1,
-		data:	{medication: "", dose: "", frecuency: "", ube: false} ,
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 	ocd: {
 		version: 1,
-		data: {medication: "", dose: "", frecuency: "", ube: false},
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 	adhd: {
 		version: 1,
-		data: {medication: "", dose: "", frecuency: "", ube: false},
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 	bipolar: {
 		version: 1,
-		data: {medication: "", dose: "", frecuency: "", ube: false},
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 	other: {
 		version: 1,
-		data: {medication: "", dose: "", frecuency: "", ube: false},
+		data: { medication: "", dose: "", frecuency: "", ube: false },
 	},
 });
