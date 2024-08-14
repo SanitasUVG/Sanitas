@@ -4,7 +4,7 @@ import { IS_PRODUCTION } from "./constants.mjs";
 import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
-const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
+const _BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
 const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 
 /**
@@ -112,7 +112,7 @@ export const checkCui = async (cui) => {
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	try {
-		const response = await axios.get(`${BASE_URL}/check-cui/${cui}`, {
+		const response = await axios.get(`${PROTECTED_URL}/check-cui/${cui}`, {
 			headers: { Authorization: token },
 		});
 		return { exists: response.data.exists, cui: cui };
@@ -148,7 +148,7 @@ export const submitPatientData = async (patientData) => {
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	try {
 		const { data: result } = await axios.post(
-			`${BASE_URL}/patient`,
+			`${PROTECTED_URL}/patient`,
 			{
 				cui: patientData.cui,
 				names: patientData.names,
@@ -219,7 +219,7 @@ export const getGeneralPatientInformation = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/general/${id}`;
+	const url = `${PROTECTED_URL}/patient/general/${id}`;
 	try {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
@@ -254,7 +254,7 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/general`;
+	const url = `${PROTECTED_URL}/patient/general`;
 	try {
 		const { data: result } = await axios.put(url, APIPatient, {
 			headers: {
@@ -299,7 +299,7 @@ export const getStudentPatientInformation = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/student/${id}`;
+	const url = `${PROTECTED_URL}/patient/student/${id}`;
 	try {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
@@ -334,7 +334,7 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/student`;
+	const url = `${PROTECTED_URL}/patient/student`;
 	try {
 		const { data: result } = await axios.put(url, APIStudentInfo, {
 			headers: { Authorization: token, "Content-Type": "application/json" },
@@ -365,7 +365,7 @@ export const getTraumatologicalHistory = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/traumatological-history/${id}`;
+	const url = `${PROTECTED_URL}/patient/traumatological-history/${id}`;
 	try {
 		const response = await axios.get(url, {
 			headers: { Authorization: token },
@@ -414,7 +414,7 @@ export const updateTraumatologicalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/traumatological-history`;
+	const url = `${PROTECTED_URL}/patient/traumatological-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -469,7 +469,7 @@ export const getSurgicalHistory = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/surgical-history/${id}`;
+	const url = `${PROTECTED_URL}/patient/surgical-history/${id}`;
 	try {
 		const response = await axios.get(url, {
 			headers: { Authorization: token },
@@ -518,7 +518,7 @@ export const updateSurgicalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/surgical-history`;
+	const url = `${PROTECTED_URL}/patient/surgical-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -573,7 +573,7 @@ export const getPersonalHistory = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/personal-history/${id}`;
+	const url = `${PROTECTED_URL}/patient/personal-history/${id}`;
 
 	try {
 		const response = await axios.get(url, {
@@ -621,7 +621,7 @@ export const updatePersonalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/personal-history`;
+	const url = `${PROTECTED_URL}/patient/personal-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -678,7 +678,7 @@ export const getCollaboratorInformation = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/collaborator/${id}`;
+	const url = `${PROTECTED_URL}/patient/collaborator/${id}`;
 	try {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
@@ -713,7 +713,7 @@ export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/collaborator/`;
+	const url = `${PROTECTED_URL}/patient/collaborator/`;
 	try {
 		const { data: result } = await axios.put(url, APICollaboratorInfo, {
 			headers: { Authorization: token },
@@ -744,7 +744,7 @@ export const getFamilyHistory = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/family-history/${id}`;
+	const url = `${PROTECTED_URL}/patient/family-history/${id}`;
 	try {
 		const response = await axios.get(url, {
 			headers: { Authorization: token },
@@ -788,7 +788,7 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/family-history`;
+	const url = `${PROTECTED_URL}/patient/family-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -834,7 +834,7 @@ export const getNonPathologicalHistory = async (patientId) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/nonpatological-history/${patientId}`;
+	const url = `${PROTECTED_URL}/patient/nonpatological-history/${patientId}`;
 
 	try {
 		const response = await axios.get(url, {
@@ -876,7 +876,7 @@ export const updateNonPathologicalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/nonpatological-history`;
+	const url = `${PROTECTED_URL}/patient/nonpatological-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -919,7 +919,7 @@ export const getAllergicHistory = async (id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/allergic-history/${id}`;
+	const url = `${PROTECTED_URL}/patient/allergic-history/${id}`;
 	try {
 		const response = await axios.get(url, {
 			headers: { Authorization: token },
@@ -963,7 +963,7 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${BASE_URL}/patient/allergic-history`;
+	const url = `${PROTECTED_URL}/patient/allergic-history`;
 
 	const payload = {
 		patientId: patientId,
