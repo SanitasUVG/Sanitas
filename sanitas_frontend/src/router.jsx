@@ -44,7 +44,7 @@ import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
-import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
+import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
 
 const useStore = createEmptyStore();
@@ -208,12 +208,17 @@ const nonPathologicalHistoryView = (
 );
 
 const allergicHistoryView = (
-	<AllergicHistory
-		getAllergicHistory={getAllergicHistory}
-		updateAllergicHistory={updateAllergicHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<AllergicHistory
+			getAllergicHistory={getAllergicHistory}
+			updateAllergicHistory={updateAllergicHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 export const ROUTES = [
