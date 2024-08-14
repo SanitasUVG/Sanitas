@@ -133,6 +133,20 @@ export default function InformationCard({
 						</p>
 					</>
 				);
+			case "allergy":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Alérgico a:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Reacción:</span>{" "}
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
+						</p>
+					</>
+				);
+
 			case "traumatological":
 				return (
 					<>
