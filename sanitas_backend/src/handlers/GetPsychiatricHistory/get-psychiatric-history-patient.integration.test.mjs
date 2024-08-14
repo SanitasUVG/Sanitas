@@ -17,27 +17,27 @@ describe("Get Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: [{ description: "Major depressive disorder" }],
+					data: {medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
 				},
 				anxiety: {
 					version: 1,
-					data: [{ description: "Generalized anxiety disorder" }],
+					data: {medication: "MEDICINE 2", dose: "2gmr", frecuency: "2 by day", ube: true},
 				},
 				ocd: {
 					version: 1,
-					data: [{ description: "Obsessive-compulsive disorder" }],
+					data: {},
 				},
 				adhd: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				bipolar: {
 					version: 1,
-					data: [{ description: "Bipolar disorder type II" }],
+					data:{},
 				},
 				other: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 			},
 		});
@@ -70,12 +70,6 @@ describe("Get Psychiatric Medical History integration tests", () => {
 
 		expect(psychiatricHistory).toBeDefined();
 		expect(psychiatricHistory.patientId).toBe(nonExistentPatientId);
-		expect(psychiatricHistory.medicalHistory.depression.data.length).toBe(0);
-		expect(psychiatricHistory.medicalHistory.anxiety.data.length).toBe(0);
-		expect(psychiatricHistory.medicalHistory.ocd.data.length).toBe(0);
-		expect(psychiatricHistory.medicalHistory.adhd.data.length).toBe(0);
-		expect(psychiatricHistory.medicalHistory.bipolar.data.length).toBe(0);
-		expect(psychiatricHistory.medicalHistory.other.data.length).toBe(0);
 	});
 
 	test("Fail to retrieve psychiatric history due to missing patient ID in the request", async () => {

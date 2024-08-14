@@ -17,45 +17,29 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: [
-						{
-							description: "Major depressive disorder",
-							treatment: "Cognitive behavioral therapy",
-							duration: "6 months",
-						},
-					],
+					data: 
+					{medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
+					
 				},
 				anxiety: {
 					version: 1,
-					data: [
-						{
-							description: "Generalized anxiety disorder",
-							treatment: "Medication and relaxation techniques",
-							duration: "Ongoing",
-						},
-					],
+					data:{medication: "MEDICINE 2", dose: "2gmr", frecuency: "2 by day", ube: true},
 				},
 				ocd: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				adhd: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				bipolar: {
 					version: 1,
-					data: [
-						{
-							description: "Bipolar disorder type II",
-							medication: "Lithium",
-							frequency: "Daily",
-						},
-					],
+					data: {},
 				},
 				other: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 			},
 		};
@@ -73,39 +57,27 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: [
-						{
-							description: "Major depressive disorder",
-							treatment: "Cognitive behavioral therapy",
-							duration: "6 months",
-						},
-					],
+					data: {medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
 				},
 				anxiety: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				ocd: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				adhd: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 				bipolar: {
 					version: 1,
-					data: [
-						{
-							description: "Bipolar disorder type II",
-							medication: "Lithium",
-							frequency: "Daily",
-						},
-					],
+					data:{},
 				},
 				other: {
 					version: 1,
-					data: [],
+					data: {},
 				},
 			},
 		};
@@ -125,13 +97,7 @@ describe("Update Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: [
-						{
-							description: "Major depressive disorder",
-							treatment: "Cognitive behavioral therapy",
-							duration: "6 months",
-						},
-					],
+					data: {medication: "MEDICINE 1", dose: "1gm", frecuency: "1 by day", ube: false},
 				},
 			},
 		};
