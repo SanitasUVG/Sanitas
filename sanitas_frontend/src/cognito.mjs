@@ -98,6 +98,7 @@ export async function mockSingInUser(_email, _password) {
 /**
  * Gets the user session
  * @callback CognitoGetSessionCallback
+ * @param {boolean} [isDoctor=true] - Flag to indicate if the generated session is of a doctor or patient.
  * @returns {Promise<import("./dataLayer.mjs").Result<import("amazon-cognito-identity-js").CognitoUserSession,*>>} An object with the user session.
  */
 /**
@@ -123,8 +124,13 @@ export async function getSession() {
 /**
  * @type {CognitoGetSessionCallback}
  */
-export async function mockGetSession() {
-	return { result: { isValid: () => true } };
+export async function mockGetSession(isDoctor = true) {
+	const doctorJWT =
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6EA";
+	const patientJWT =
+		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dWRlbnRAZ21haWwuY29tIn0.FbVOS-5cuUnrdvoyyMmroGgorO5t9c1_SFR4RHqSkN8";
+	const jwtToken = isDoctor ? doctorJWT : patientJWT;
+	return { result: { isValid: () => true, idToken: { jwtToken } } };
 }
 
 /**

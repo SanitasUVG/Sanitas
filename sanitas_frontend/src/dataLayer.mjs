@@ -27,7 +27,7 @@ const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 export async function searchPatient(query, type) {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -101,7 +101,7 @@ export async function searchPatient(query, type) {
 export const checkCui = async (cui) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -136,7 +136,7 @@ export const checkCui = async (cui) => {
 export const submitPatientData = async (patientData) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -209,7 +209,7 @@ export const submitPatientData = async (patientData) => {
 export const getGeneralPatientInformation = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -244,7 +244,7 @@ export const getGeneralPatientInformation = async (id) => {
 export const updateGeneralPatientInformation = async (APIPatient) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -289,7 +289,7 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
 export const getStudentPatientInformation = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -324,7 +324,7 @@ export const getStudentPatientInformation = async (id) => {
 export const updateStudentPatientInformation = async (APIStudentInfo) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -355,7 +355,7 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 export const getTraumatologicalHistory = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -404,7 +404,7 @@ export const updateTraumatologicalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -459,7 +459,7 @@ export const updateTraumatologicalHistory = async (
 export const getSurgicalHistory = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -508,7 +508,7 @@ export const updateSurgicalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -563,7 +563,7 @@ export const updateSurgicalHistory = async (
 export const getPersonalHistory = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -611,7 +611,7 @@ export const updatePersonalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -668,7 +668,7 @@ export const updatePersonalHistory = async (
 export const getCollaboratorInformation = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -703,7 +703,7 @@ export const getCollaboratorInformation = async (id) => {
 export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -734,7 +734,7 @@ export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
 export const getFamilyHistory = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -778,7 +778,7 @@ export const getFamilyHistory = async (id) => {
 export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -824,7 +824,7 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 export const getNonPathologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -866,7 +866,7 @@ export const updateNonPathologicalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -909,7 +909,7 @@ export const updateNonPathologicalHistory = async (
 export const getAllergicHistory = async (id) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -953,7 +953,7 @@ export const getAllergicHistory = async (id) => {
 export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
