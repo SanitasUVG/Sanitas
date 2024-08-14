@@ -1,6 +1,6 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils/index.mjs";
+import { createResponse, decodeJWT } from "utils/index.mjs";
 
 /**
  * @typedef {Object} RequestParams
@@ -27,7 +27,6 @@ const checkParameters = (event) => {
 	}
 
 	const { requestSearch, searchType } = JSON.parse(event.body);
-	logger.info({ headers: event.headers }, "Received headers...");
 	logger.info({ requestSearch, searchType }, "Received search parameters!");
 
 	logger.info("Parsing requestSearch...");
@@ -77,6 +76,21 @@ export const searchPatientHandler = async (event, context) => {
 		return paramCheckResult.errorResponse;
 	}
 
+	logger.info({ headers: event.headers }, "Received headers...");
+	const jwt = event.headers.Authorization;
+
+	logger.info({ jwt }, "Parsing JWT...");
+	const tokenInfo = decodeJWT(jwt);
+	if (tokenInfo.error) {
+		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		return responseBuilder
+			.setStatusCode(400)
+			.setBody({ error: "JWT couldn't be parsed" })
+			.build();
+	}
+	const { email } = tokenInfo;
+	logger.info({ tokenInfo }, "JWT Parsed!");
+
 	const { requestSearch, searchType } = paramCheckResult.requestParams;
 
 	let client;
@@ -85,6 +99,22 @@ export const searchPatientHandler = async (event, context) => {
 		logger.info(url, "Connecting to DB...");
 		client = getPgClient(url);
 		await client.connect();
+		logger.info("Connected to DB!");
+
+		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
+		if (!itsDoctor) {
+			const msg = "Unauthorized, you're not a doctor!";
+			const body = { error: msg };
+			logger.error(body, msg);
+			return responseBuilder.setStatusCode(401).setBody(body).build();
+		}
+		logger.info(`${email} is a doctor!`);
 
 		let sqlQuery = "";
 		const queryParams = [];
