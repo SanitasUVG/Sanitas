@@ -675,7 +675,7 @@ los datos requeridos según la alergia.
 - Versión 1: La versión 1 contiene una propiedad `data` que es
   un array de objetos con la siguiente forma:
 
-  - medication, food, animals y others:
+  - medication, food, animals, dust, pollen, climateChange y others:
 
   ```json
   {
@@ -685,17 +685,80 @@ los datos requeridos según la alergia.
   }
   ```
 
-  - dust, pollen y climateChange:
-
-  ```json
-  {
-    "reaction": "String",
-    "severity": "String"
-  }
-  ```
-
 ### Antecedentes Psiquiátricos
+
+Los antecedentes psiquiátricos se organizan por tipo de condición psiquiátrica.
+Cada tipo de condición se almacena en un objeto JSON
+que lista los datos requeridos según la condición.
+
+```json
+{
+  "medicalHistory": {
+    "depression": {
+      "version": 1,
+      "data": [
+        {
+          "description": "Major depressive disorder",
+          "treatment": "Cognitive behavioral therapy",
+          "duration": "6 months"
+        }
+      ]
+    },
+    "anxiety": {
+      "version": 1,
+      "data": [
+        {
+          "description": "Generalized anxiety disorder",
+          "treatment": "Medication and relaxation techniques",
+          "duration": "Ongoing"
+        }
+      ]
+    },
+    "ocd": {
+      "version": 1,
+      "data": []
+    },
+    "adhd": {
+      "version": 1,
+      "data": []
+    },
+    "bipolar": {
+      "version": 1,
+      "data": [
+        {
+          "description": "Bipolar disorder type II",
+          "medication": "Lithium",
+          "frequency": "Daily"
+        }
+      ]
+    },
+    "other": {
+      "version": 1,
+      "data": []
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- Versión 1: La versión 1 contiene una propiedad `data`
+  que es un array de objetos con la siguiente forma:
+
+- depression, anxiety, bipolar, ocd, adhd y other:
+
+```json
+{
+  "description": "String",
+  "treatment": "String",
+  "duration": "String"
+}
 
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
+```

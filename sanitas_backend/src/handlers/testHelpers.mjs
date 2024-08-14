@@ -279,3 +279,37 @@ export async function updatePatientAllergicHistory(
 
 	expect(response.status).toBe(200);
 }
+
+/**
+ * @typedef {Object} PsychiatricMedicalHistory
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {Object} medicalHistory - An object containing formatted psychiatric medical history data.
+ * @property {null|MedicalConditionData} medicalHistory.depression - Psychiatric medical history data for depression.
+ * @property {null|MedicalConditionData} medicalHistory.anxiety - Psychiatric medical history data for anxiety.
+ * @property {null|MedicalConditionData} medicalHistory.ocd - Psychiatric medical history data for OCD (Obsessive-Compulsive Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.adhd - Psychiatric medical history data for ADHD (Attention-Deficit/Hyperactivity Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.bipolar - Psychiatric medical history data for bipolar disorder.
+ * @property {null|MedicalConditionData} medicalHistory.other - Psychiatric medical history data for other conditions.
+ */
+
+/**
+ * Updates the psychiatric medical history for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating psychiatric medical history data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {PsychiatricMedicalHistory} psychiatricHistoryData - The psychiatric medical history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientPsychiatricHistory(
+	patientId,
+	psychiatricHistoryData,
+) {
+	psychiatricHistoryData.patientId = patientId;
+
+	const response = await axios.put(
+		`${LOCAL_API_URL}patient/psychiatric-history`,
+		psychiatricHistoryData,
+	);
+
+	expect(response.status).toBe(200);
+}
