@@ -31,6 +31,11 @@ CREATE TABLE PACIENTE (
     FOREIGN KEY (ID_SEGURO) REFERENCES SEGURO (ID)
 );
 
+CREATE TABLE DOCTOR (
+    EMAIL VARCHAR(100) NOT NULL PRIMARY KEY
+);
+COMMENT ON TABLE DOCTOR IS
+'This table is used for saving all user emails that have the role of a doctor.';
 
 
 CREATE TABLE ESTUDIANTE (

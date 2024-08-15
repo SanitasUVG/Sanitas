@@ -4,7 +4,7 @@ import { IS_PRODUCTION } from "./constants.mjs";
 import { calculateYearsBetween } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
-const BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
+const _BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
 const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 
 /**
@@ -27,7 +27,7 @@ const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 export async function searchPatient(query, type) {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession();
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -99,8 +99,22 @@ export async function searchPatient(query, type) {
  * @throws {Error} Throws an error if the request fails or if the server response is not OK.
  */
 export const checkCui = async (cui) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	try {
-		const response = await axios.get(`${BASE_URL}/check-cui/${cui}`);
+		const response = await axios.get(`${PROTECTED_URL}/check-cui/${cui}`, {
+			headers: { Authorization: token },
+		});
 		return { exists: response.data.exists, cui: cui };
 	} catch (error) {
 		throw new Error("Error fetching CUI:", error);
@@ -120,9 +134,21 @@ export const checkCui = async (cui) => {
  * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
  */
 export const submitPatientData = async (patientData) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	try {
 		const { data: result } = await axios.post(
-			`${BASE_URL}/patient`,
+			`${PROTECTED_URL}/patient`,
 			{
 				cui: patientData.cui,
 				names: patientData.names,
@@ -133,6 +159,7 @@ export const submitPatientData = async (patientData) => {
 			{
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: token,
 				},
 			},
 		);
@@ -180,10 +207,23 @@ export const submitPatientData = async (patientData) => {
  */
 
 export const getGeneralPatientInformation = async (id) => {
-	const url = `${BASE_URL}/patient/general/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
 
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/general/${id}`;
 	try {
-		const { data: result } = await axios.get(url);
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -202,9 +242,26 @@ export const getGeneralPatientInformation = async (id) => {
  * @type {UpdateGeneralPatientInformationAPICall}
  */
 export const updateGeneralPatientInformation = async (APIPatient) => {
-	const url = `${BASE_URL}/patient/general`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/general`;
 	try {
-		const { data: result } = await axios.put(url, APIPatient);
+		const { data: result } = await axios.put(url, APIPatient, {
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token,
+			},
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -230,9 +287,23 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
  * @type {GetStudentPatientInformationAPICall}
  */
 export const getStudentPatientInformation = async (id) => {
-	const url = `${BASE_URL}/patient/student/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student/${id}`;
 	try {
-		const { data: result } = await axios.get(url);
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -251,9 +322,23 @@ export const getStudentPatientInformation = async (id) => {
  * @type {UpdateStudentPatientInformationAPICall}
  */
 export const updateStudentPatientInformation = async (APIStudentInfo) => {
-	const url = `${BASE_URL}/patient/student`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student`;
 	try {
-		const { data: result } = await axios.put(url, APIStudentInfo);
+		const { data: result } = await axios.put(url, APIStudentInfo, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -268,9 +353,23 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
  * @returns {Promise<Object>} An object containing either the traumatological history data or an error.
  */
 export const getTraumatologicalHistory = async (id) => {
-	const url = `${BASE_URL}/patient/traumatological-history/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/traumatological-history/${id}`;
 	try {
-		const response = await axios.get(url);
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
 		}
@@ -303,24 +402,38 @@ export const updateTraumatologicalHistory = async (
 	traumatologicalEvents,
 	currentVersion,
 ) => {
-	const url = `${BASE_URL}/patient/traumatological-history`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/traumatological-history`;
 
 	const payload = {
 		patientId: patientId,
 		medicalHistory: {
-			traumatological: {
+			traumas: {
 				version: currentVersion,
 				data: traumatologicalEvents.map((event) => ({
-					eventType: event.eventType,
-					eventYear: event.eventYear,
-					details: event.details,
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
 				})),
 			},
 		},
 	};
 
 	try {
-		const response = await axios.put(url, payload);
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
 		}
@@ -344,9 +457,23 @@ export const updateTraumatologicalHistory = async (
  * @returns {Promise<Object>} An object containing either the surgical history data or an error.
  */
 export const getSurgicalHistory = async (id) => {
-	const url = `${BASE_URL}/patient/surgical-history/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/surgical-history/${id}`;
 	try {
-		const response = await axios.get(url);
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
 		}
@@ -379,7 +506,19 @@ export const updateSurgicalHistory = async (
 	surgicalEvents,
 	currentVersion,
 ) => {
-	const url = `${BASE_URL}/patient/surgical-history`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/surgical-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -396,7 +535,9 @@ export const updateSurgicalHistory = async (
 	};
 
 	try {
-		const response = await axios.put(url, payload);
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
 		}
@@ -420,9 +561,24 @@ export const updateSurgicalHistory = async (
  * @returns {Promise<Object>} An object containing either the personal history data or an error.
  */
 export const getPersonalHistory = async (id) => {
-	const url = `${BASE_URL}/patient/personal-history/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/personal-history/${id}`;
+
 	try {
-		const response = await axios.get(url);
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		if (response.status === 200) {
 			return { result: response.data };
 		}
@@ -453,7 +609,19 @@ export const updatePersonalHistory = async (
 	patientId,
 	personalHistoryDetails,
 ) => {
-	const url = `${BASE_URL}/patient/personal-history`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/personal-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -461,7 +629,9 @@ export const updatePersonalHistory = async (
 	};
 
 	try {
-		const response = await axios.put(url, payload);
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
 		}
@@ -496,9 +666,23 @@ export const updatePersonalHistory = async (
  * @type {GetCollaboratorPatientInformationAPICall}
  */
 export const getCollaboratorInformation = async (id) => {
-	const url = `${BASE_URL}/patient/collaborator/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/collaborator/${id}`;
 	try {
-		const { data: result } = await axios.get(url);
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -517,9 +701,23 @@ export const getCollaboratorInformation = async (id) => {
  * @type {UpdateCollaboratorPatientInformationAPICall}
  */
 export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
-	const url = `${BASE_URL}/patient/collaborator/`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/collaborator/`;
 	try {
-		const { data: result } = await axios.put(url, APICollaboratorInfo);
+		const { data: result } = await axios.put(url, APICollaboratorInfo, {
+			headers: { Authorization: token },
+		});
 		return { result };
 	} catch (error) {
 		return { error };
@@ -534,9 +732,23 @@ export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
  * @returns {Promise<Object>} An object containing either the family history data or an error.
  */
 export const getFamilyHistory = async (id) => {
-	const url = `${BASE_URL}/patient/family-history/${id}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/family-history/${id}`;
 	try {
-		const response = await axios.get(url);
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Received unexpected status code: ${response.status}` };
 		}
@@ -564,7 +776,19 @@ export const getFamilyHistory = async (id) => {
  * it returns the error message or the error response from the server.
  */
 export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
-	const url = `${BASE_URL}/patient/family-history`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/family-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -572,7 +796,9 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
 	};
 
 	try {
-		const response = await axios.put(url, payload);
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
 		if (response.status !== 200) {
 			return { error: `Unexpected status code: ${response.status}` };
 		}
@@ -596,10 +822,24 @@ export const updateFamilyHistory = async (patientId, familyHistoryDetails) => {
  * it returns the error message or the error response from the server.
  */
 export const getNonPathologicalHistory = async (patientId) => {
-	const url = `${BASE_URL}/patient/nonpatological-history/${patientId}`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/nonpatological-history/${patientId}`;
 
 	try {
-		const response = await axios.get(url);
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
 		if (response.status === 200) {
 			return { result: response.data };
 		}
@@ -624,7 +864,19 @@ export const updateNonPathologicalHistory = async (
 	patientId,
 	nonPathologicalHistoryDetails,
 ) => {
-	const url = `${BASE_URL}/patient/nonpatological-history`;
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/nonpatological-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -632,7 +884,9 @@ export const updateNonPathologicalHistory = async (
 	};
 
 	try {
-		const response = await axios.put(url, payload);
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
 		if (response.status === 200) {
 			return { result: response.data };
 		}
@@ -640,6 +894,96 @@ export const updateNonPathologicalHistory = async (
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Fetches the Allergic history for a specific patient by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} id - The patient's ID.
+ * @returns {Promise<Object>} An object containing either the allergic history data or an error.
+ */
+export const getAllergicHistory = async (id) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/allergic-history/${id}`;
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Received unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return {
+				error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+			};
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the allergic history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the family history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} allergicHistoryData - An object containing details about the patient's allergic history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/allergic-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: allergicHistoryData,
+	};
+
+	try {
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
 		}
 		return { error: error.message };
 	}

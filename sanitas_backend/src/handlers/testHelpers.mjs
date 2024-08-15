@@ -4,12 +4,28 @@ import axios from "axios";
 export const LOCAL_API_URL = "http://127.0.0.1:3000/";
 
 /**
- * Backend namespace for JSDoc
- * @namespace backend
+ * Creates a valid JWT for the email: doctor@gmail.com
+ * @returns {string} The valid JWT.
  */
+export const createDoctorJWT = () =>
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6EA";
 
 /**
- * @memberof Backend
+ * Creates an invalid JWT.
+ * @returns {string} The invalid JWT.
+ */
+export const createInvalidJWT = () =>
+	"ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJlbWFpbCI6ImRvY3RvckBnbWFpbC5jb20ifQ.VnyYMhqM1w4R2sSiLPY2-jaYyCqDF47EpACto1Ga6";
+
+/**
+ * Creates a valid JWT for the email student@gmail.com.
+ * This email should not be in the table `DOCTOR`.
+ * @returns {string} The valid JWT.
+ */
+export const createPatientJWT = () =>
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dWRlbnRAZ21haWwuY29tIn0.FbVOS-5cuUnrdvoyyMmroGgorO5t9c1_SFR4RHqSkN8";
+
+/**
  * @returns {string} The randomly generated CUI.
  */
 export const generateUniqueCUI = () => {
@@ -19,9 +35,17 @@ export const generateUniqueCUI = () => {
 };
 
 /**
+ * Creates an Authorization header for the axios library.
+ * @param {string} jwt - The JWT token to use for authorization.
+ * @returns { {Authorization: string} }
+ */
+export const createAuthorizationHeader = (jwt) => {
+	return { Authorization: jwt };
+};
+
+/**
  * Inserts a test patient into the DB.
  *
- * @memberof Backend
  * @param {string} [cui=generateUniqueCUI()] - The CUI of the patient.
  * @param {string} [names="Flabio André"] - The names of the patient.
  * @param {string} [lastNames="Galán Dona"] - The last names of the patient.
@@ -287,4 +311,38 @@ export async function updatePatientGynecologicalHistory(
 		`${LOCAL_API_URL}patient/gyneco-history`,
 		gynecologicalHistoryData,
 	);
+}
+=======
+ /**
+ * @typedef {Object} PsychiatricMedicalHistory
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {Object} medicalHistory - An object containing formatted psychiatric medical history data.
+ * @property {null|MedicalConditionData} medicalHistory.depression - Psychiatric medical history data for depression.
+ * @property {null|MedicalConditionData} medicalHistory.anxiety - Psychiatric medical history data for anxiety.
+ * @property {null|MedicalConditionData} medicalHistory.ocd - Psychiatric medical history data for OCD (Obsessive-Compulsive Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.adhd - Psychiatric medical history data for ADHD (Attention-Deficit/Hyperactivity Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.bipolar - Psychiatric medical history data for bipolar disorder.
+ * @property {null|MedicalConditionData} medicalHistory.other - Psychiatric medical history data for other conditions.
+ */
+
+/**
+ * Updates the psychiatric medical history for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating psychiatric medical history data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {PsychiatricMedicalHistory} psychiatricHistoryData - The psychiatric medical history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientPsychiatricHistory(
+	patientId,
+	psychiatricHistoryData,
+) {
+	psychiatricHistoryData.patientId = patientId;
+
+	const response = await axios.put(
+		`${LOCAL_API_URL}patient/psychiatric-history`,
+		psychiatricHistoryData,
+	);
+
+	expect(response.status).toBe(200);
 }

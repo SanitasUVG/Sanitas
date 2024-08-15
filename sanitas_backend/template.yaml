@@ -105,8 +105,6 @@ Resources:
             Path: /
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -122,8 +120,7 @@ Resources:
             Path: /check-cui/{cui}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
+
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -144,8 +141,6 @@ Resources:
             RestApiId: !Ref SanitasAPI
             Path: /patient/search
             Method: POST
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -164,8 +159,6 @@ Resources:
             Path: /patient
             Method: POST
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -182,9 +175,6 @@ Resources:
           Properties:
             Path: /health-check
             Method: GET
-            RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # This is a Lambda function config associated with the source code:
   # health-check.mjs
   getPatientFunction:
@@ -200,8 +190,6 @@ Resources:
             Path: /patient/general/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # This is a Lambda function config associated with the source code:
   # update-patient.mjs
   updatePatientFunction:
@@ -216,8 +204,6 @@ Resources:
             Path: /patient/general
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   updateStudentInfoFunction:
     Type: AWS::Serverless::Function
@@ -231,8 +217,6 @@ Resources:
             Path: /patient/student
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # update-patient.mjs
@@ -249,8 +233,6 @@ Resources:
             Path: /patient/collaborator
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -271,8 +253,6 @@ Resources:
             Path: /patient/surgical-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # update-surgical-history.mjs
@@ -290,8 +270,6 @@ Resources:
             Path: /patient/surgical-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # get-family-history-patient.mjs
@@ -309,8 +287,6 @@ Resources:
             Path: /patient/family-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # get-family-history-patient.mjs
@@ -328,8 +304,6 @@ Resources:
             Path: /patient/personal-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # update-family-history.mjs
@@ -347,8 +321,6 @@ Resources:
             Path: /patient/family-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # update-family-history.mjs
@@ -366,8 +338,6 @@ Resources:
             Path: /patient/personal-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # get-traumatological-history-patient.mjs
@@ -386,8 +356,6 @@ Resources:
             Path: /patient/traumatological-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # update-traumatological-history.mjs
@@ -405,8 +373,6 @@ Resources:
             Path: /patient/traumatological-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
 
   # This is a Lambda function config associated with the source code:
   # get-patient.mjs
@@ -423,8 +389,6 @@ Resources:
             Path: /patient/student/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -443,8 +407,6 @@ Resources:
             Path: /patient/collaborator/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -464,8 +426,6 @@ Resources:
             Path: /patient/nonpatological-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -485,8 +445,6 @@ Resources:
             Path: /patient/nonpatological-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -506,8 +464,6 @@ Resources:
             Path: /patient/allergic-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -527,8 +483,44 @@ Resources:
             Path: /patient/allergic-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
+            # Each Lambda function is defined by properties:
+            # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # Esta es una configuración de Lambda function asociada con el cÃ³digo fuente:
+  # get-psychiatric-history-patient.mjs
+  getPsychiatricHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetPsychiatricHistory/get-psychiatric-history-patient.getPsychiatricHistoryHandler
+      Description: Retrieves the psychiatric history for a specific
+        patient by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/psychiatric-history/{id}
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # Esta es una configuración de Lambda function asociada con el código fuente:
+  # update-allergic-history-patient.mjs
+  updatePsychiatricHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdatePsychiatricHistory/update-psychiatric-history-patient.updatePsychiatricHistoryHandler
+      Description: Updates the psychiatric history for a specific patient
+        by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/psychiatric-history
+            Method: PUT
+            RestApiId: !Ref SanitasAPI
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -548,8 +540,6 @@ Resources:
             Path: /patient/gyneco-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   # This is a Lambda function config associated with the source code:
   # update-gynecoobstetric-history-patient.mjs
@@ -566,6 +556,24 @@ Resources:
           Properties:
             Path: /patient/gyneco-history
             Method: PUT
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  getRoleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/handlers/GetRole/get-role.handler
+      Description: Retrieves the role of the provided JWT.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /role
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+            Path: /patient/gyneco-history/{id}
+            Method: GET
             RestApiId: !Ref SanitasAPI
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
