@@ -2,6 +2,8 @@ import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
 import { Suspense, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -155,7 +157,7 @@ function UpdateColaboratorInformationSection({
 		},
 		h1: {
 			gridColumn: "1 / span 2",
-			fontSize: "24px",
+			fontSize: fontSize.subtitleSize,
 		},
 		h2: {
 			gridColumn: "1 / span 2",
@@ -225,6 +227,7 @@ function UpdateColaboratorInformationSection({
 						display: "flex",
 						justifyContent: "space-between",
 						alignItems: "center",
+						paddingRight: "1rem",
 					}}
 				>
 					<h1 style={styles.h1}>Datos de Colaborador:</h1>
@@ -237,27 +240,34 @@ function UpdateColaboratorInformationSection({
 						<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
 					)}
 				</div>
-				<div style={styles.firstsectionform}>
-					<label style={styles.label}>Codigo:</label>
+				<div
+					style={{
+						display: "grid",
+						gridTemplateColumns: "30% 30%",
+						rowGap: "0.5rem",
+						columnGap: "2rem",
+					}}
+				>
+					<label style={styles.label}>Código:</label>
 					<BaseInput
 						type="text"
 						value={patientData.code}
 						onChange={(e) =>
 							setPatientData({ ...patientData, code: e.target.value })
 						}
-						placeholder="Codigo"
+						placeholder="Código"
 						style={{ ...styles.input, ...GenInputStyle(2, 1) }}
 						disabled={!editMode}
 					/>
 
-					<label style={styles.label}>Area:</label>
+					<label style={styles.label}>Área:</label>
 					<BaseInput
 						type="text"
 						value={patientData.area}
 						onChange={(e) =>
 							setPatientData({ ...patientData, area: e.target.value })
 						}
-						placeholder="Area"
+						placeholder="Área"
 						style={{ ...styles.input, ...GenInputStyle(2, 2) }}
 						disabled={!editMode}
 					/>
@@ -271,7 +281,7 @@ function UpdateColaboratorInformationSection({
 		return (
 			<div>
 				<h1 style={styles.h1}>Datos de Colaborador:</h1>
-				<Throbber loadingMessage="Cargando información de colaborador..." />
+				<Throbber loadingMessage="Cargando datos de colaborador..." />
 			</div>
 		);
 	};
@@ -381,6 +391,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
+		const [setCuiError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
 
 		const response = generalInformationResource.read();
@@ -409,8 +420,8 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 			const response = resourceUpdate.read();
 			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
+				toast.error(
+					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
 				);
 			} else {
 				setPatientData({
@@ -423,7 +434,12 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		}
 
 		const handleUpdatePatient = async () => {
+			if (patientData.cui.length > 13) {
+				toast.info("El CUI no puede exceder de 13 dígitos.");
+				return; // Evita la actualización si el CUI es inválido
+			}
 			setEditMode(false);
+			setCuiError(""); // Limpiar el error de CUI
 			const updateInformationResource = WrapPromise(updateData(patientData));
 			setResourceUpdate(updateInformationResource);
 		};
