@@ -548,8 +548,6 @@ Resources:
             Path: /patient/gyneco-history/{id}
             Method: GET
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
@@ -569,8 +567,6 @@ Resources:
             Path: /patient/gyneco-history
             Method: PUT
             RestApiId: !Ref SanitasAPI
-            Authorizer:
-              Ref: SanitasCognitoAuthorizer
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
