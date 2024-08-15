@@ -316,10 +316,10 @@ export const genDefaultGynecologicalHistory = () => ({
 			sterilizationSurgery: {},
 			breastMassResection: [],
 		},
-  }
+	},
 });
-  
-  /**
+
+/**
  * Generates the default value for a psychiatric medical history in the DB.
  * @returns {import("./index.mjs").PsychiatricMedicalHistory}
  */

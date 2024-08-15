@@ -312,8 +312,7 @@ export async function updatePatientGynecologicalHistory(
 		gynecologicalHistoryData,
 	);
 }
-=======
- /**
+/**
  * @typedef {Object} PsychiatricMedicalHistory
  * @property {number} patientId - The unique identifier of the patient.
  * @property {Object} medicalHistory - An object containing formatted psychiatric medical history data.

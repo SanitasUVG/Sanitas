@@ -776,10 +776,11 @@ export function mapToAPIGynecologicalHistory(dbData) {
 					breastMassResection: dbData.cirugia_reseccion_masas_data,
 				},
 			},
-    }
-  });
+		},
+	};
+}
 
- /**
+/**
  * @typedef {Object} PsychiatricMedicalHistory
  * @property {null|MedicalConditionData} medicalHistory.depression - Psychiatric medical history data for depression.
  * @property {null|MedicalConditionData} medicalHistory.anxiety - Psychiatric medical history data for anxiety.
