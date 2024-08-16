@@ -188,6 +188,7 @@ function UpdateColaboratorInformationSection({
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
+		const [setIsLoading] = useState(false);
 
 		const response = collaboratorInformationResource.read();
 
@@ -197,15 +198,19 @@ function UpdateColaboratorInformationSection({
 
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();
+			setIsLoading(false); // Finaliza la carga
 			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
+				toast.error(
+					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
 				);
 			} else {
-				setPatientData({ ...response.result });
+				setPatientData({
+					...response.result,
+					birthdate: formatDate(response.result.birthdate),
+				});
+				toast.success("¡Información actualizada exitosamente!");
 			}
-
 			setResourceUpdate(null);
 		}
 
@@ -424,6 +429,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 					...response.result,
 					birthdate: formatDate(response.result.birthdate),
 				});
+				toast.success("¡Información actualizada exitosamente!");
 			}
 			setResourceUpdate(null);
 		}
@@ -739,23 +745,32 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		};
 
 		/** @type [import("src/dataLayer.mjs").APIStudentInformation, (newInfo: import("src/dataLayer.mjs").APIStudentInformation)=>void] */
-		const [info, setInfo] = useState(response.result);
+		const [info] = useState(response.result);
 		const [resourceUpdate, setResourceUpdate] = useState(null);
 		const [carnet, setCarnet] = useState(info?.carnet);
 		const [career, setCareer] = useState(info?.career);
 		const [updateError, setUpdateError] = useState("");
+		const [setIsLoading] = useState(false);
+
+		const [setPatientData] = useState({
+			...response.result,
+			birthdate: formatDate(response.result?.birthdate),
+		});
 
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();
-
+			setIsLoading(false); // Finaliza la carga
 			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
+				toast.error(
+					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
 				);
 			} else {
-				setIsEditable(false);
-				setInfo(response.result);
+				setPatientData({
+					...response.result,
+					birthdate: formatDate(response.result.birthdate),
+				});
+				toast.success("¡Información actualizada exitosamente!");
 			}
 			setResourceUpdate(null);
 		}
