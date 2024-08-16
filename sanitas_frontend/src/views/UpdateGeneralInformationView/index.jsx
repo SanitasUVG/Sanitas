@@ -393,57 +393,50 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		const [updateError, setUpdateError] = useState("");
 		const [setCuiError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
+		const [isLoading, setIsLoading] = useState(false); // Estado de carga
 
 		const response = generalInformationResource.read();
-
 		const [patientData, setPatientData] = useState({
 			...response.result,
 			birthdate: formatDate(response.result?.birthdate),
 		});
-
+	
 		if (response.error) {
 			return (
-				<div
-					style={{
-						padding: "2rem",
-					}}
-				>
-					<h1 style={styles.h1}>
-						Error al buscar el paciente. Asegúrese de que el ID es correcto.
-					</h1>
+				<div style={{ padding: "2rem" }}>
+					<h1 style={styles.h1}>Error al buscar el paciente. Asegúrese de que el ID es correcto.</h1>
 					<p>{response.error.toString()}</p>
 				</div>
 			);
 		}
-
+	
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();
+			setIsLoading(false); // Finaliza la carga
 			setUpdateError("");
 			if (response.error) {
-				toast.error(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
-				);
+				toast.error(`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`);
 			} else {
 				setPatientData({
 					...response.result,
 					birthdate: formatDate(response.result.birthdate),
 				});
 			}
-
 			setResourceUpdate(null);
 		}
-
+	
 		const handleUpdatePatient = async () => {
-			if (patientData.cui.length > 13) {
-				toast.info("El CUI no puede exceder de 13 dígitos.");
+			if (patientData.cui.length !== 13) {
+				toast.info("El CUI debe contener exactamente 13 dígitos.");
 				return; // Evita la actualización si el CUI es inválido
 			}
 			setEditMode(false);
-			setCuiError(""); // Limpiar el error de CUI
+			setUpdateError(""); // Limpiar el error de CUI
+			setIsLoading(true); // Inicia la carga
 			const updateInformationResource = WrapPromise(updateData(patientData));
 			setResourceUpdate(updateInformationResource);
 		};
-
+	
 		const handleCancelEdit = () => {
 			setPatientData({
 				...response.result,
@@ -451,6 +444,18 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 			});
 			setEditMode(false);
 		};
+	
+		const LoadingView = () => (
+			<div>
+				<h1 style={styles.h1}>Datos Generales:</h1>
+				<Throbber loadingMessage="Cargando información del paciente..." />
+			</div>
+		);
+	
+		if (isLoading) {
+			return <LoadingView />; // Muestra el mensaje de carga si está cargando
+		}
+	
 
 		return (
 			<form style={styles.form}>
