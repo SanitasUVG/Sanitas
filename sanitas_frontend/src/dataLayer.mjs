@@ -988,3 +988,97 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 		return { error: error.message };
 	}
 };
+
+/**
+ * Fetches the Psichiatric history for a specific patient by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} id - The patient's ID.
+ * @returns {Promise<Object>} An object containing either the allergic history data or an error.
+ */
+export const getPsichiatricHistory = async (id) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/psychiatric-history/${id}`;
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Received unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return {
+				error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+			};
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the allergic history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the family history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} psichiatricHistoryData - An object containing details about the patient's allergic history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
+export const updatePsichiatricHistory = async (
+	patientId,
+	psichiatricHistoryData,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/psychiatric-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: psichiatricHistoryData,
+	};
+
+	try {
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};

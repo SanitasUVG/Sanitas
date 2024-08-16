@@ -33,6 +33,8 @@ import {
 	updateTraumatologicalHistory,
 	getAllergicHistory,
 	updateAllergicHistory,
+	getPsichiatricHistory,
+	updatePsichiatricHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -46,6 +48,7 @@ import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
+import { PsichiatricHistory } from "./views/History/Psichiatric";
 
 const useStore = createEmptyStore();
 
@@ -65,6 +68,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
+	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
 
@@ -110,6 +114,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	navigateToAllergies: (navigate) => {
 		navigate(
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToPsiquiatric: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
 		);
 	},
 	// TODO: Add other Navigation routes...
@@ -221,6 +230,20 @@ const allergicHistoryView = (
 	</RequireAuth>
 );
 
+const psichiatricHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updatePsichiatricHistory={updatePsichiatricHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 export const ROUTES = [
 	{
 		path: NAV_PATHS.SEARCH_PATIENT,
@@ -296,6 +319,10 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY,
 				element: allergicHistoryView,
+			},
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
+				element: psichiatricHistoryView,
 			},
 			// TODO: Add more routes...
 		],
