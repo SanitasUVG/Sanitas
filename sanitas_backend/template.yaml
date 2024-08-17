@@ -524,6 +524,42 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # get-gynecoobstetric-history-patient.mjs
+  getGynecologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/GetGynecoObstetricHistory/get-gynecoobstetric-history-patient.getGynecologicalHistoryHandler
+      Description: Function to get gyneco-obstetric history data from.
+        patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/gyneco-history/{id}
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+
+  # This is a Lambda function config associated with the source code:
+  # update-gynecoobstetric-history-patient.mjs
+  updateGynecologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateGynecoObstetricHistory/update-gynecoobstetric-history-patient.updateGynecologicalHistoryHandler
+      Description: Function to put gyneco-obstetric history data from.
+        patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/gyneco-history
+            Method: PUT
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   getRoleFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -536,6 +572,9 @@ Resources:
             Path: /role
             Method: GET
             RestApiId: !Ref SanitasAPI
+
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   SanitasAPI:
     Type: AWS::Serverless::Api

@@ -281,6 +281,38 @@ export async function updatePatientAllergicHistory(
 }
 
 /**
+ * @typedef {Object} GynecologicalHistoryData
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} firstMenstrualPeriod - Information about the first menstrual period.
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} regularCycles - Information about the regularity of menstrual cycles.
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} painfulMenstruation - Information about painful menstruation.
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} pregnancies - Information about pregnancies.
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} diagnosedIllnesses - Information about diagnosed illnesses related to gynecology.
+ * @property {import("../../layers/utils/utils/index.mjs").GynecologicalHistoryEntry} hasSurgeries - Information about surgeries related to gynecology.
+ */
+
+/**
+ * @typedef {Object} GynecologicalHistory
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {GynecologicalHistoryData} medicalHistory - Detailed gynecological history of the patient.
+ */
+
+/**
+ * Updates or creates gynecological history for a patient.
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {GynecologicalHistory} gynecologicalHistoryData - The gynecological history data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientGynecologicalHistory(
+	patientId,
+	gynecologicalHistoryData,
+) {
+	gynecologicalHistoryData.patientId = patientId;
+	await axios.put(
+		`${LOCAL_API_URL}patient/gyneco-history`,
+		gynecologicalHistoryData,
+	);
+}
+/**
  * @typedef {Object} PsychiatricMedicalHistory
  * @property {number} patientId - The unique identifier of the patient.
  * @property {Object} medicalHistory - An object containing formatted psychiatric medical history data.
