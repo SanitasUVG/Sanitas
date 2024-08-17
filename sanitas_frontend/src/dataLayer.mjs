@@ -988,3 +988,72 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 		return { error: error.message };
 	}
 };
+
+export const getGynecologicalHistory = async (patientId) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/gynecological-history/${patientId}`; // CAMBIAR A  gyneco-history  LUEGO
+
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
+export const updateGynecologicalHistory = async (
+	patientId,
+	gynecologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/gynecological-history`; // CAMBIAR A  gyneco-history  LUEGO
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: gynecologicalHistoryDetails,
+	};
+
+	try {
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
