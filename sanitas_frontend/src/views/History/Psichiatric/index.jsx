@@ -200,9 +200,29 @@ function PsichiatricView({
 	};
 
 	// Save the new Allergic record to the database
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handleSaveNewHistory = async () => {
 		setShowOtherInput(false);
-		if (!(selectedHistory.selectedIll && selectedHistory.medication)) {
+		if (selectedHistory.selectedIll === "other") {
+			if (!selectedHistory.ill) {
+				toast.error("Complete todos los campos requeridos.");
+				setShowOtherInput(true);
+				return;
+			}
+		}
+		if (
+			!(
+				selectedHistory.selectedIll &&
+				selectedHistory.medication &&
+				selectedHistory.frecuency
+			)
+		) {
+			if (selectedHistory.selectedIll === "other") {
+				toast.error("Complete todos los campos requeridos.");
+				setShowOtherInput(true);
+				return;
+			}
+
 			toast.error("Complete todos los campos requeridos.");
 			return;
 		}
@@ -365,6 +385,18 @@ function PsichiatricView({
 							historyData?.dose ||
 							historyData?.frecuency
 						) {
+							if (!(historyData?.ill === "")) {
+								return (
+									<InformationCard
+										key={category}
+										type="psichiatric"
+										disease={historyData?.ill}
+										reasonInfo={historyData?.medication || "Sin Medicamento"}
+										onClick={() => handleOnClickCard(category, historyData)}
+									/>
+								);
+							}
+
 							return (
 								<InformationCard
 									key={category}
@@ -476,7 +508,7 @@ function PsichiatricView({
 					<BaseInput
 						value={selectedHistory.dose || ""}
 						onChange={(e) => handleFieldChange("dose", e.target.value)}
-						placeholder="Ingrese cuánto (opcional)"
+						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
 							width: "80%",
 							height: "2.5rem",
@@ -497,7 +529,7 @@ function PsichiatricView({
 					<BaseInput
 						value={selectedHistory.frecuency || ""}
 						onChange={(e) => handleFieldChange("frecuency", e.target.value)}
-						placeholder="Ingrese cada cuánto administra el medicamento"
+						placeholder="Ingrese cada cuándo administra el medicamento. (Ej. Cada dos días, cada 12 horas...)"
 						style={{
 							width: "80%",
 							height: "2.5rem",
@@ -520,6 +552,7 @@ function PsichiatricView({
 							display: "flex",
 							gap: "1rem",
 							alignItems: "center",
+							paddingLeft: "0.5rem",
 							paddingBottom: "2rem",
 						}}
 					>
@@ -541,7 +574,7 @@ function PsichiatricView({
 
 					<div
 						style={{
-							paddingTop: "5rem",
+							paddingTop: "2rem",
 							display: "flex",
 							justifyContent: "center",
 						}}

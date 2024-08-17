@@ -200,12 +200,17 @@ describe("PsichiatricHistory Component Tests", () => {
 				target: { value: "New Medication" },
 			},
 		);
-		fireEvent.change(screen.getByPlaceholderText("Ingrese cuánto (opcional)"), {
-			target: { value: "50mg" },
-		});
 		fireEvent.change(
 			screen.getByPlaceholderText(
-				"Ingrese cada cuánto administra el medicamento",
+				"Ingrese cuánto. Ej. 50mg (Este campo es opcional)",
+			),
+			{
+				target: { value: "50mg" },
+			},
+		);
+		fireEvent.change(
+			screen.getByPlaceholderText(
+				"Ingrese cada cuándo administra el medicamento. (Ej. Cada dos días, cada 12 horas...)",
 			),
 			{
 				target: { value: "Twice daily" },

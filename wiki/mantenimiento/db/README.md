@@ -693,50 +693,64 @@ que lista los datos requeridos según la condición.
 
 ```json
 {
-  "medicalHistory": {
-    "depression": {
-      "version": 1,
-      "data": [
-        {
-          "description": "Major depressive disorder",
-          "treatment": "Cognitive behavioral therapy",
-          "duration": "6 months"
+
+    "medicalHistory": {
+        "depression": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "anxiety": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "ocd": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "adhd": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "bipolar": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "other": {
+            "version": 1,
+            "data": {
+                "ill": "",
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
         }
-      ]
-    },
-    "anxiety": {
-      "version": 1,
-      "data": [
-        {
-          "description": "Generalized anxiety disorder",
-          "treatment": "Medication and relaxation techniques",
-          "duration": "Ongoing"
-        }
-      ]
-    },
-    "ocd": {
-      "version": 1,
-      "data": []
-    },
-    "adhd": {
-      "version": 1,
-      "data": []
-    },
-    "bipolar": {
-      "version": 1,
-      "data": [
-        {
-          "description": "Bipolar disorder type II",
-          "medication": "Lithium",
-          "frequency": "Daily"
-        }
-      ]
-    },
-    "other": {
-      "version": 1,
-      "data": []
     }
-  }
 }
 ```
 
