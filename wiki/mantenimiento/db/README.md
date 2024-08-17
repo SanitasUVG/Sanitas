@@ -763,16 +763,29 @@ que lista los datos requeridos según la condición.
 - Versión 1: La versión 1 contiene una propiedad `data`
   que es un array de objetos con la siguiente forma:
 
-- depression, anxiety, bipolar, ocd, adhd y other:
+- depression, anxiety, bipolar, ocd, adhd:
+
+````json
+{
+  "medication": "String",
+  "dose": "String",
+  "frecuency": "String",
+  "ube": false
+}
+
+- other:
+
 
 ```json
 {
-  "description": "String",
-  "treatment": "String",
-  "duration": "String"
+    "ill": "String",
+    "medication": "String",
+    "dose": "String",
+    "frecuency": "String",
+    "ube": false
 }
 
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
-```
+````
