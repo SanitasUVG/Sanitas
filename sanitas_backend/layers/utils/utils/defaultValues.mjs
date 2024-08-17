@@ -206,6 +206,120 @@ export const genDefaultAllergicHistory = () => ({
 });
 
 /**
+ * @typedef {Object} DefaultGynecologicalHistory
+ * Represents the default values for the gynecological history of a patient.
+ *
+ * @property {GynecologicalHistoryEntry} firstMenstrualPeriod - Default data for the first menstrual period.
+ * @property {GynecologicalHistoryEntry} regularCycles - Default data for the regularity of menstrual cycles.
+ * @property {GynecologicalHistoryEntry} painfulMenstruation - Default data for painful menstruation.
+ * @property {PregnancyData} pregnancies - Default data for pregnancy history.
+ * @property {GynecologicalIllnessData} diagnosedIllnesses - Default data for diagnosed gynecological illnesses.
+ * @property {GynecologicalSurgeryData} hasSurgeries - Default data for surgical history.
+ *
+ * Each property uses a defined subtype to structure the data uniformly.
+ */
+
+/**
+ * @typedef {Object} GynecologicalHistoryEntry
+ * Represents the general structure for entries in the gynecological history.
+ *
+ * @property {number} version - The version of the data format.
+ * @property {Object} data - Detailed data for the specific entry, containing various properties depending on the type.
+ */
+
+/**
+ * @typedef {Object} PregnancyData
+ * Detailed structure for pregnancy-related data.
+ *
+ * @property {number} totalPregnancies - Total number of pregnancies.
+ * @property {number} vaginalDeliveries - Number of vaginal deliveries.
+ * @property {number} cesareanSections - Number of cesarean sections.
+ * @property {number} abortions - Number of abortions.
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessData
+ * Detailed structure for diagnosed illnesses in the gynecological history.
+ *
+ * @property {GynecologicalIllnessEntry} ovarianCysts - Information about ovarian cysts.
+ * @property {GynecologicalIllnessEntry} uterineMyomatosis - Information about uterine myomatosis.
+ * @property {GynecologicalIllnessEntry} endometriosis - Information about endometriosis.
+ * @property {GynecologicalIllnessEntry} otherConditions - Information about other diagnosed conditions.
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessEntry
+ * Represents medication details for a gynecological illness.
+ *
+ * @property {GynecologicalIllnessMedication} medication - Medication details for the illness.
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessMedication
+ * Detailed medication information for a gynecological condition.
+ *
+ * @property {string} medication - Name of the medication.
+ * @property {string} dosage - Dosage of the medication.
+ * @property {string} frequency - Frequency of medication intake.
+ */
+
+/**
+ * @typedef {Object} GynecologicalSurgeryData
+ * Detailed structure for surgeries in the gynecological history.
+ *
+ * @property {GynecologicalSurgeryEntry[]} ovarianCystsSurgery - Data about surgeries for ovarian cysts.
+ * @property {GynecologicalSurgeryEntry} hysterectomy - Data about hysterectomy surgeries.
+ * @property {GynecologicalSurgeryEntry} sterilizationSurgery - Data about sterilization surgeries.
+ * @property {GynecologicalSurgeryEntry[]} breastMassResection - An array of data about breast mass resection surgeries.
+ */
+
+/**
+ * Generates the default value for gynecological medical history.
+ * @returns {DefaultGynecologicalHistory} The default gynecological medical history with predefined empty or neutral values.
+ */
+export const genDefaultGynecologicalHistory = () => ({
+	firstMenstrualPeriod: {
+		version: 1,
+		data: { age: null },
+	},
+	regularCycles: {
+		version: 1,
+		data: { isRegular: false },
+	},
+	painfulMenstruation: {
+		version: 1,
+		data: { isPainful: false, medication: "" },
+	},
+	pregnancies: {
+		version: 1,
+		data: {
+			totalPregnancies: 0,
+			vaginalDeliveries: 0,
+			cesareanSections: 0,
+			abortions: 0,
+		},
+	},
+	diagnosedIllnesses: {
+		version: 1,
+		data: {
+			ovarianCysts: {},
+			uterineMyomatosis: {},
+			endometriosis: {},
+			otherConditions: [],
+		},
+	},
+	hasSurgeries: {
+		version: 1,
+		data: {
+			ovarianCystsSurgery: [],
+			hysterectomy: {},
+			sterilizationSurgery: {},
+			breastMassResection: [],
+		},
+	},
+});
+
+/**
  * Generates the default value for a psychiatric medical history in the DB.
  * @returns {import("./index.mjs").PsychiatricMedicalHistory}
  */

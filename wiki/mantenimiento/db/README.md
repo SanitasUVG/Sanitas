@@ -761,7 +761,7 @@ que lista los datos requeridos según la condición.
 <!-- markdownlint-enable MD024 -->
 
 - Versión 1: La versión 1 contiene una propiedad `data`
-  que es un array de objetos con la siguiente forma:
+  que es un objeto con la siguiente forma:
 
 - depression, anxiety, bipolar, ocd, adhd y other:
 
@@ -771,8 +771,9 @@ que lista los datos requeridos según la condición.
   "treatment": "String",
   "duration": "String"
 }
+```
 
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
-```
+
