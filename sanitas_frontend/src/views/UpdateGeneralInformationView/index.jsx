@@ -188,42 +188,49 @@ function UpdateColaboratorInformationSection({
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [setIsLoading] = useState(false);
-
+		const [isLoading, setIsLoading] = useState(false);
+	
 		const response = collaboratorInformationResource.read();
-
+	
 		const [patientData, setPatientData] = useState({
-			...response.result,
+		  ...(response?.result || {}), 
 		});
-
+	
 		if (resourceUpdate !== null) {
-			const response = resourceUpdate.read();
-			setIsLoading(false); // Finaliza la carga
-			setUpdateError("");
-			if (response.error) {
-				toast.error(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
-				);
-			} else {
-				setPatientData({
-					...response.result,
-					birthdate: formatDate(response.result.birthdate),
-				});
-				toast.success("¡Información actualizada exitosamente!");
-			}
-			setResourceUpdate(null);
+		  const response = resourceUpdate.read();
+		  setIsLoading(false);
+		  setUpdateError("");
+		  if (response.error) {
+			setUpdateError(
+			  `Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
+			);
+		  } else {
+			setEditMode(false);
+			setPatientData(response.result || {}); 
+			toast.success("¡Información actualizada exitosamente!");
+		  }
+		  setResourceUpdate(null);
 		}
-
+	
 		const handleUpdatePatient = async () => {
-			setEditMode(false);
-			const updateInformationResource = WrapPromise(updateData(patientData));
-			setResourceUpdate(updateInformationResource);
+		  setEditMode(false);
+		  try {
+			const response = await updateData(patientData);
+			setPatientData(response.result || {}); 
+			toast.success("¡Información actualizada exitosamente!");
+		  } catch (error) {
+			setUpdateError(`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${error.message}`);
+		  }
 		};
-
+	
 		const handleCancelEdit = () => {
-			setPatientData({ ...response.result });
-			setEditMode(false);
+		  setPatientData({ ...response?.result }); 
+		  setEditMode(false);
 		};
+	
+		if (isLoading) {
+		  return <LoadingView />;
+		}
 
 		return (
 			<form style={styles.form}>
@@ -400,6 +407,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		const [isLoading, setIsLoading] = useState(false); // Estado de carga
 
 		const response = generalInformationResource.read();
+		
 		const [patientData, setPatientData] = useState({
 			...response.result,
 			birthdate: formatDate(response.result?.birthdate),
@@ -745,31 +753,24 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		};
 
 		/** @type [import("src/dataLayer.mjs").APIStudentInformation, (newInfo: import("src/dataLayer.mjs").APIStudentInformation)=>void] */
-		const [info] = useState(response.result);
+		const [info, setInfo] = useState(response.result);
 		const [resourceUpdate, setResourceUpdate] = useState(null);
 		const [carnet, setCarnet] = useState(info?.carnet);
 		const [career, setCareer] = useState(info?.career);
 		const [updateError, setUpdateError] = useState("");
-		const [setIsLoading] = useState(false);
-
-		const [setPatientData] = useState({
-			...response.result,
-			birthdate: formatDate(response.result?.birthdate),
-		});
+		const [isLoading] = useState(false);
 
 		if (resourceUpdate !== null) {
 			const response = resourceUpdate.read();
-			setIsLoading(false); // Finaliza la carga
+
 			setUpdateError("");
 			if (response.error) {
-				toast.error(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
+				setUpdateError(
+					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
 				);
 			} else {
-				setPatientData({
-					...response.result,
-					birthdate: formatDate(response.result.birthdate),
-				});
+				setIsEditable(false);
+				setInfo(response.result);
 				toast.success("¡Información actualizada exitosamente!");
 			}
 			setResourceUpdate(null);
@@ -779,6 +780,10 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 			const newInfo = { ...info, carnet, career };
 			setResourceUpdate(WrapPromise(updateData(newInfo)));
 		};
+
+		if (isLoading) {
+			return <LoadingView />;
+		}
 
 		return (
 			<>
@@ -866,3 +871,4 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		</div>
 	);
 }
+
