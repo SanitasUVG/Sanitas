@@ -160,6 +160,20 @@ export default function InformationCard({
 						</p>
 					</>
 				);
+
+			case "psichiatric":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Enfermedad:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Medicamento:</span>{" "}
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
+						</p>
+					</>
+				);
 			default:
 				return null;
 		}
