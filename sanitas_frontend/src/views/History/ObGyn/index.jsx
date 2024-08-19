@@ -1,10 +1,9 @@
-import { Suspense, useEffect, useState } from "react";
+import { React, Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
-import InformationCard from "src/components/InformationCard";
 import { BaseInput } from "src/components/Input/index";
 import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
@@ -116,14 +115,253 @@ export function ObGynHistory({
 	);
 }
 
-// TODO: Simplify so the linter doesn't trigger
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
+function DiagnosisSection({ title, diagnosisKey, editable, isNew, onCancel }) {
+	const [diagnosed, setDiagnosed] = useState(false);
+	const [diagnosisName, setDiagnosisName] = useState("");
+	const [medication, setMedication] = useState("");
+	const [dose, setDose] = useState("");
+	const [frequency, setFrequency] = useState("");
+
+	const showFields = isNew || diagnosed;
+
+	return (
+		<div>
+			<p
+				style={{
+					paddingBottom: "0.5rem",
+					paddingTop: "2rem",
+					fontFamily: fonts.textFont,
+					fontSize: fontSize.textSize,
+					fontWeight: diagnosed || isNew ? "bold" : "normal",
+				}}
+			>
+				{title}
+			</p>
+			{!isNew && (
+				<div
+					style={{
+						display: "flex",
+						gap: "1rem",
+						alignItems: "center",
+						paddingLeft: "0.5rem",
+						paddingTop: "0.5rem",
+					}}
+				>
+					<RadioInput
+						name={diagnosisKey}
+						checked={diagnosed}
+						onChange={() => setDiagnosed(true)}
+						label="Sí"
+						disabled={!editable}
+					/>
+					<RadioInput
+						name={diagnosisKey}
+						checked={!diagnosed}
+						onChange={() => setDiagnosed(false)}
+						label="No"
+						disabled={!editable}
+					/>
+				</div>
+			)}
+			{showFields && (
+				<>
+					{isNew && (
+						<div>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "1rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								Nombre del diagnóstico:
+							</p>
+
+							<BaseInput
+								value={diagnosisName}
+								onChange={(e) => setDiagnosisName(e.target.value)}
+								readOnly={!editable}
+								placeholder="Ingrese el nombre del diagnóstico."
+								style={{
+									width: "60%",
+									height: "3rem",
+									fontFamily: fonts.textFont,
+									fontSize: "1rem",
+								}}
+							/>
+						</div>
+					)}
+
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						Medicamento:
+					</p>
+
+					<BaseInput
+						value={medication}
+						onChange={(e) => setMedication(e.target.value)}
+						readOnly={!editable}
+						placeholder="Ingrese el medicamento administrado."
+						style={{
+							width: "60%",
+							height: "3rem",
+							fontFamily: fonts.textFont,
+							fontSize: "1rem",
+						}}
+					/>
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						Dosis:
+					</p>
+					<BaseInput
+						value={dose}
+						onChange={(e) => setDose(e.target.value)}
+						readOnly={!editable}
+						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
+						style={{
+							width: "60%",
+							height: "3rem",
+							fontFamily: fonts.textFont,
+							fontSize: "1rem",
+						}}
+					/>
+
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						Frecuencia:
+					</p>
+
+					<BaseInput
+						value={frequency}
+						onChange={(e) => setFrequency(e.target.value)}
+						readOnly={!editable}
+						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
+						style={{
+							width: "60%",
+							height: "3rem",
+							fontFamily: fonts.textFont,
+							fontSize: "1rem",
+						}}
+					/>
+
+					{isNew && (
+						<div>
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingTop: "2rem",
+								}}
+							>
+								<BaseButton
+									text="Cancelar nuevo diagnóstico"
+									onClick={onCancel}
+									style={{
+										width: "25%",
+										height: "3rem",
+										backgroundColor: "#fff",
+										color: colors.primaryBackground,
+										border: `1.5px solid ${colors.primaryBackground}`,
+									}}
+								/>
+							</div>
+						</div>
+					)}
+				</>
+			)}
+		</div>
+	);
+}
+
 function ObGynView({
 	id,
 	birthdayResource,
 	obgynHistoryResource,
 	updateObGynHistory,
 }) {
+	const [age, setAge] = useState("");
+	const [isRegular, setIsRegular] = useState(false);
+	const [isPainful, setIsPainful] = useState(false);
+	const [medication, setMedication] = useState("");
+	const [isEditable, setIsEditable] = useState(true);
+
+	// GENERAL INFO SECTION
+
+	// RENDER BASE INPUT IF MENSTRUATION IS PAINFUL
+	const renderMedicationInput = () => {
+		if (isPainful) {
+			return (
+				<div>
+					<p
+						style={{
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						¿Qué medicamento toma?
+					</p>
+					<BaseInput
+						value={medication}
+						onChange={(e) => setMedication(e.target.value)}
+						readOnly={!isEditable}
+						placeholder="Ingrese el medicamento tomado para regular los dolores de menstruación."
+						style={{
+							width: "60%",
+							height: "3rem",
+							fontFamily: fonts.textFont,
+							fontSize: "1rem",
+						}}
+					/>
+				</div>
+			);
+		}
+		return null;
+	};
+
+	// DIAGNOSIS SECTION
+
+	const [diagnoses, setDiagnoses] = useState([
+		{ key: "cysts", title: "Diagnóstico por Quistes Ováricos:" },
+		{ key: "uterinemya", title: "Diagnóstico por Miamatosos Uterina:" },
+		{ key: "endometriosis", title: "Diagnóstico por Endometriosis:" },
+	]);
+
+	// Función para añadir una nueva sección de diagnóstico
+	const addDiagnosis = () => {
+		const newDiagnosis = {
+			key: `diagnosis-${Date.now()}`,
+			title: "Nuevo Diagnóstico:",
+			isNew: true, // Este diagnóstico es nuevo y debería mostrar el campo adicional
+		};
+		setDiagnoses([...diagnoses, newDiagnosis]);
+	};
+
+	const removeDiagnosis = (key) => {
+		setDiagnoses(diagnoses.filter((diagnosis) => diagnosis.key !== key));
+	};
+
 	const yearOptions = [
 		{ label: "2024", value: "2024" },
 		{ label: "2023", value: "2023" },
@@ -183,13 +421,15 @@ function ObGynView({
 					Ingrese la edad en la que tuvo la primera mestruación:
 				</p>
 				<BaseInput
-					// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-					// onChange={}
-					// readOnly={!addingNew}
+					type="number"
+					min="1"
+					value={age}
+					onChange={(e) => setAge(e.target.value)}
+					readOnly={!isEditable}
 					placeholder="Ingrese la edad (Ej. 15, 16...)"
 					style={{
 						width: "60%",
-						height: "10%",
+						height: "3rem",
 						fontFamily: fonts.textFont,
 						fontSize: "1rem",
 					}}
@@ -214,17 +454,17 @@ function ObGynView({
 				>
 					<RadioInput
 						name="regular"
-						//checked={smokingStatus}
-						//onChange={() => handleSmokingChange(true)}
+						checked={isRegular === true}
+						onChange={() => setIsRegular(true)}
 						label="Sí"
-						//disabled={!isEditable}
+						disabled={!isEditable}
 					/>
 					<RadioInput
 						name="notregular"
-						//checked={!smokingStatus}
-						//onChange={() => handleSmokingChange(false)}
+						checked={isRegular === false}
+						onChange={() => setIsRegular(false)}
 						label="No"
-						//disabled={!isEditable}
+						disabled={!isEditable}
 					/>
 				</div>
 				<p
@@ -247,42 +487,22 @@ function ObGynView({
 				>
 					<RadioInput
 						name="pain"
-						//checked={smokingStatus}
-						//onChange={() => handleSmokingChange(true)}
+						checked={isPainful === true}
+						onChange={() => setIsPainful(true)}
 						label="Sí"
-						//disabled={!isEditable}
+						disabled={!isEditable}
 					/>
 					<RadioInput
 						name="nopain"
-						//checked={!smokingStatus}
-						//onChange={() => handleSmokingChange(false)}
+						checked={isPainful === false}
+						onChange={() => setIsPainful(false)}
 						label="No"
-						//disabled={!isEditable}
+						disabled={!isEditable}
 					/>
 				</div>
 
-				<p
-					style={{
-						paddingBottom: "0.5rem",
-						paddingTop: "2rem",
-						fontFamily: fonts.textFont,
-						fontSize: fontSize.textSize,
-					}}
-				>
-					¿Qué medicamento toma?
-				</p>
-				<BaseInput
-					// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-					// onChange={}
-					// readOnly={!addingNew}
-					placeholder="Ingrese el medicamento tomado para regular los dolores de menstruación."
-					style={{
-						width: "60%",
-						height: "10%",
-						fontFamily: fonts.textFont,
-						fontSize: "1rem",
-					}}
-				/>
+				{renderMedicationInput()}
+
 				<div
 					style={{
 						display: "flex",
@@ -299,7 +519,7 @@ function ObGynView({
 							display: "flex",
 							justifyContent: "center",
 						}}
-					></div>
+					/>
 				</div>
 				<div
 					style={{
@@ -334,10 +554,10 @@ function ObGynView({
 							// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
 							// onChange={}
 							// readOnly={!addingNew}
-							placeholder="Total de partos."
+							placeholder="Total de partos"
 							style={{
 								width: "100%",
-								height: "10%",
+								height: "2.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
 							}}
@@ -347,8 +567,8 @@ function ObGynView({
 						style={{
 							fontWeight: "bold",
 							fontSize: fonts.titleFont,
-							paddingTop: "2.5rem",
-							paddingRight: "2rem",
+							paddingTop: "3.5rem",
+							paddingRight: "1rem",
 						}}
 					>
 						{" "}
@@ -379,7 +599,7 @@ function ObGynView({
 							placeholder="# vía vaginal"
 							style={{
 								width: "100%",
-								height: "10%",
+								height: "2.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
 							}}
@@ -389,8 +609,8 @@ function ObGynView({
 						style={{
 							fontWeight: "bold",
 							fontSize: fonts.titleFont,
-							paddingTop: "2.5rem",
-							paddingRight: "2rem",
+							paddingTop: "3.5rem",
+							paddingRight: "1rem",
 						}}
 					>
 						{" "}
@@ -421,7 +641,7 @@ function ObGynView({
 							placeholder="# cesáreas"
 							style={{
 								width: "100%",
-								height: "10%",
+								height: "2.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
 							}}
@@ -431,8 +651,8 @@ function ObGynView({
 						style={{
 							fontWeight: "bold",
 							fontSize: fonts.titleFont,
-							paddingTop: "2.5rem",
-							paddingRight: "2rem",
+							paddingTop: "3.5rem",
+							paddingRight: "1rem",
 						}}
 					>
 						{" "}
@@ -463,7 +683,7 @@ function ObGynView({
 							placeholder="# abortos"
 							style={{
 								width: "100%",
-								height: "10%",
+								height: "2.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
 							}}
@@ -473,38 +693,10 @@ function ObGynView({
 
 				<div
 					style={{
-						paddingTop: "5rem",
-						display: "flex",
-						justifyContent: "center",
-					}}
-				>
-					<>
-						<BaseButton
-							text="Guardar"
-							// onClick={handleSaveNewSurgery}
-							style={{ width: "20%", height: "3rem" }}
-						/>
-						<div style={{ width: "1rem" }} />
-						<BaseButton
-							text="Cancelar"
-							// onClick={handleCancel}
-							style={{
-								width: "20%",
-								height: "3rem",
-								backgroundColor: "#fff",
-								color: colors.primaryBackground,
-								border: `1.5px solid ${colors.primaryBackground}`,
-							}}
-						/>
-					</>
-				</div>
-
-				<div
-					style={{
 						padding: "1rem",
 						borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
 					}}
-				></div>
+				/>
 
 				<div
 					style={{
@@ -525,336 +717,31 @@ function ObGynView({
 						Diagnóstico de Enfermedades{" "}
 					</p>
 
-					<p // QUISTES OVÁRICOS
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Diagnóstico por Quistes Ováricos:
-					</p>
-					<div
-						style={{
-							display: "flex",
-							gap: "1rem",
-							alignItems: "center",
-							paddingLeft: "0.5rem",
-						}}
-					>
-						<RadioInput
-							name="cysts"
-							//checked={smokingStatus}
-							//onChange={() => handleSmokingChange(true)}
-							label="Sí"
-							//disabled={!isEditable}
-						/>
-						<RadioInput
-							name="nocysts"
-							//checked={!smokingStatus}
-							//onChange={() => handleSmokingChange(false)}
-							label="No"
-							//disabled={!isEditable}
-						/>
-					</div>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Medicamento:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese el medicamento administrado."
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Dósis:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Frecuencia:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
+					{diagnoses.map((diagnosis, index) => (
+						<div key={diagnosis.key}>
+							<DiagnosisSection
+								title={diagnosis.title}
+								diagnosisKey={diagnosis.key}
+								editable={true}
+								isNew={diagnosis.isNew}
+								onCancel={() => removeDiagnosis(diagnosis.key)}
+							/>
+							{index < diagnoses.length - 1 && (
+								<div // BORDER
+									style={{
+										padding: "1rem",
+										borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+									}}
+								/>
+							)}
+						</div>
+					))}
 					<div // BORDER
 						style={{
 							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-						}}
-					></div>
-
-					<p // MIAMATOSOS UTERINA
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Diagnóstico por Miamatosos Uterina:
-					</p>
-					<div
-						style={{
-							display: "flex",
-							gap: "1rem",
-							alignItems: "center",
-							paddingLeft: "0.5rem",
-						}}
-					>
-						<RadioInput
-							name="uterinemya"
-							//checked={smokingStatus}
-							//onChange={() => handleSmokingChange(true)}
-							label="Sí"
-							//disabled={!isEditable}
-						/>
-						<RadioInput
-							name="nouterinemya"
-							//checked={!smokingStatus}
-							//onChange={() => handleSmokingChange(false)}
-							label="No"
-							//disabled={!isEditable}
-						/>
-					</div>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Medicamento:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese el medicamento administrado."
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 						}}
 					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Dósis:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Frecuencia:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<div // BORDER
-						style={{
-							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-						}}
-					></div>
-
-					<p // Endometriosis
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Diagnóstico por Endometriosis:
-					</p>
-					<div
-						style={{
-							display: "flex",
-							gap: "1rem",
-							alignItems: "center",
-							paddingLeft: "0.5rem",
-						}}
-					>
-						<RadioInput
-							name="endometriosis"
-							//checked={smokingStatus}
-							//onChange={() => handleSmokingChange(true)}
-							label="Sí"
-							//disabled={!isEditable}
-						/>
-						<RadioInput
-							name="noendometriosis"
-							//checked={!smokingStatus}
-							//onChange={() => handleSmokingChange(false)}
-							label="No"
-							//disabled={!isEditable}
-						/>
-					</div>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Medicamento:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese el medicamento administrado."
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Dósis:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Frecuencia:
-					</p>
-					<BaseInput
-						// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-						// onChange={}
-						// readOnly={!addingNew}
-						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
-						style={{
-							width: "60%",
-							height: "10%",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-
-					<div // BORDER
-						style={{
-							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-						}}
-					></div>
-
 					<div
 						style={{
 							display: "flex",
@@ -864,53 +751,18 @@ function ObGynView({
 						}}
 					>
 						<BaseButton
-							text="Agregar otro"
-							// onClick={handleSaveNonPathological}
-							style={{ width: "10%", height: "3rem" }}
+							text="Agregar otro diagnóstico"
+							onClick={addDiagnosis}
+							style={{ width: "25%", height: "3rem" }}
 						/>
 					</div>
 
 					<div // BORDER
 						style={{
 							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 						}}
-					></div>
-
-					<div
-						style={{
-							paddingTop: "2rem",
-							display: "flex",
-							justifyContent: "center",
-						}}
-					>
-						<>
-							<BaseButton
-								text="Guardar"
-								// onClick={handleSaveNewSurgery}
-								style={{ width: "20%", height: "3rem" }}
-							/>
-							<div style={{ width: "1rem" }} />
-							<BaseButton
-								text="Cancelar"
-								// onClick={handleCancel}
-								style={{
-									width: "20%",
-									height: "3rem",
-									backgroundColor: "#fff",
-									color: colors.primaryBackground,
-									border: `1.5px solid ${colors.primaryBackground}`,
-								}}
-							/>
-						</>
-					</div>
-
-					<div // BORDER
-						style={{
-							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-						}}
-					></div>
+					/>
 
 					<div
 						style={{
@@ -994,7 +846,10 @@ function ObGynView({
 								},
 								select: {},
 								option: {},
-								indicator: {},
+								indicator: {
+									top: "45%",
+									right: "4%",
+								},
 							}}
 						/>
 
@@ -1035,9 +890,9 @@ function ObGynView({
 						<div // BORDER
 							style={{
 								padding: "1rem",
-								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
-						></div>
+						/>
 
 						<p // Cirugia para no tener más hijos
 							style={{
@@ -1102,7 +957,10 @@ function ObGynView({
 								},
 								select: {},
 								option: {},
-								indicator: {},
+								indicator: {
+									top: "45%",
+									right: "4%",
+								},
 							}}
 						/>
 
@@ -1143,9 +1001,9 @@ function ObGynView({
 						<div // BORDER
 							style={{
 								padding: "1rem",
-								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
-						></div>
+						/>
 
 						<p // Operación por quistes ováricos
 							style={{
@@ -1210,7 +1068,10 @@ function ObGynView({
 								},
 								select: {},
 								option: {},
-								indicator: {},
+								indicator: {
+									top: "45%",
+									right: "4%",
+								},
 							}}
 						/>
 
@@ -1266,10 +1127,9 @@ function ObGynView({
 						<div // BORDER
 							style={{
 								padding: "1rem",
-								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
-						></div>
-
+						/>
 						<p // Operación por Resección de masas en mamas
 							style={{
 								paddingBottom: "0.5rem",
@@ -1333,7 +1193,10 @@ function ObGynView({
 								},
 								select: {},
 								option: {},
-								indicator: {},
+								indicator: {
+									top: "45%",
+									right: "4%",
+								},
 							}}
 						/>
 
@@ -1389,36 +1252,22 @@ function ObGynView({
 						<div // BORDER
 							style={{
 								padding: "1rem",
-								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
-						></div>
-
+						/>
 						<div
 							style={{
-								paddingTop: "3rem",
 								display: "flex",
 								justifyContent: "center",
+								alignItems: "center",
+								paddingTop: "1.5rem",
 							}}
 						>
-							<>
-								<BaseButton
-									text="Guardar"
-									// onClick={handleSaveNewSurgery}
-									style={{ width: "20%", height: "3rem" }}
-								/>
-								<div style={{ width: "1rem" }} />
-								<BaseButton
-									text="Cancelar"
-									// onClick={handleCancel}
-									style={{
-										width: "20%",
-										height: "3rem",
-										backgroundColor: "#fff",
-										color: colors.primaryBackground,
-										border: `1.5px solid ${colors.primaryBackground}`,
-									}}
-								/>
-							</>
+							<BaseButton
+								text="Guardar"
+								//onClick={handleSaveNonPathological}
+								style={{ width: "30%", height: "3rem" }}
+							/>
 						</div>
 					</div>
 				</div>

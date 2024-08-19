@@ -258,7 +258,7 @@ const obgynHistoryView = (
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
-	  <ObGynHistory
+		<ObGynHistory
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getObGynHistory={getGynecologicalHistory}
 			updateObGynHistory={updateGynecologicalHistory}
@@ -347,8 +347,8 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY,
 				element: obgynHistoryView,
-      },
-       {
+			},
+			{
 				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
 				element: psichiatricHistoryView,
 			},

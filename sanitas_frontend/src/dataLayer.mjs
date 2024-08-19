@@ -1083,7 +1083,6 @@ export const updatePsichiatricHistory = async (
 	}
 };
 
-
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1152,4 +1151,3 @@ export const updateGynecologicalHistory = async (
 		return { error: error.message };
 	}
 };
-
