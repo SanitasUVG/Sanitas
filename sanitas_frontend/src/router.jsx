@@ -35,6 +35,8 @@ import {
 	updateTraumatologicalHistory,
 	updateAllergicHistory,
 	updateGynecologicalHistory,
+	getPsichiatricHistory,
+	updatePsichiatricHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -49,6 +51,7 @@ import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
 import { ObGynHistory } from "./views/History/ObGyn";
+import { PsichiatricHistory } from "./views/History/Psichiatric";
 
 const useStore = createEmptyStore();
 
@@ -69,6 +72,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
 	OBGYN_HISTORY: "obgyn",
+	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
 
@@ -121,7 +125,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY}`,
 		);
 	},
-
+	navigateToPsiquiatric: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
+		);
+	},
 	// TODO: Add other Navigation routes...
 };
 
@@ -231,12 +239,26 @@ const allergicHistoryView = (
 	</RequireAuth>
 );
 
+const psichiatricHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updatePsichiatricHistory={updatePsichiatricHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const obgynHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
-		<ObGynHistory
+	  <ObGynHistory
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getObGynHistory={getGynecologicalHistory}
 			updateObGynHistory={updateGynecologicalHistory}
@@ -325,6 +347,10 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY,
 				element: obgynHistoryView,
+      },
+       {
+				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
+				element: psichiatricHistoryView,
 			},
 			// TODO: Add more routes...
 		],
