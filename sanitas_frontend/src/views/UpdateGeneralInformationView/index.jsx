@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -213,6 +213,7 @@ function UpdateColaboratorInformationSection({
 		}
 
 		const handleUpdatePatient = async () => {
+			toast.info("Guardando datos...");
 			setEditMode(false);
 			try {
 				const response = await updateData(patientData);
@@ -399,7 +400,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	};
 
 	const generalInformationResource = WrapPromise(getData(patientId));
-
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
 		const [updateError, setUpdateError] = useState("");
@@ -805,6 +806,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		}
 
 		const handleUpdatePatient = async () => {
+			toast.info("Guardando datos...");
 			setEditMode(false);
 			try {
 				const response = await updateData(patientData);
