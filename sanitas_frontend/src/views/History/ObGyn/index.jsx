@@ -293,6 +293,238 @@ function DiagnosisSection({ title, diagnosisKey, editable, isNew, onCancel }) {
 	);
 }
 
+function OperationSection({ title, operationKey, editable }) {
+	const [performed, setPerformed] = useState(false);
+	const [operationDetails, setOperationDetails] = useState([
+		{ year: null, complications: false },
+	]);
+
+	const addOperationDetail = () => {
+		if (operationKey === "breastresection" && operationDetails.length >= 2) {
+			return;
+		}
+		setOperationDetails([
+			...operationDetails,
+			{ year: null, complications: null },
+		]);
+	};
+
+	const canAddMore = () => {
+		if (operationKey === "breastresection" || operationKey === "ovariancysts") {
+			if (operationKey === "breastresection") {
+				return operationDetails.length < 2;
+			}
+			return true;
+		}
+		return false;
+	};
+
+	const handleComplicationChange = (index, value) => {
+		const updatedDetails = [...operationDetails];
+		updatedDetails[index].complications = value;
+		setOperationDetails(updatedDetails);
+	};
+
+	const removeOperationDetail = (index) => {
+		if (operationDetails.length > 1) {
+			// Evitar eliminar el detalle inicial
+			setOperationDetails(operationDetails.filter((_, idx) => idx !== index));
+		}
+	};
+
+	const yearOptions = [
+		{ label: "2024", value: "2024" },
+		{ label: "2023", value: "2023" },
+		{ label: "2022", value: "2022" },
+		{ label: "2021", value: "2021" },
+		{ label: "2020", value: "2020" },
+		{ label: "2019", value: "2019" },
+		{ label: "2018", value: "2018" },
+		{ label: "2017", value: "2017" },
+		{ label: "2016", value: "2016" },
+		{ label: "2015", value: "2015" },
+		{ label: "2014", value: "2014" },
+		{ label: "2013", value: "2013" },
+		{ label: "2012", value: "2012" },
+		{ label: "2011", value: "2011" },
+		{ label: "2010", value: "2010" },
+		// Agrega más años según sea necesario
+	];
+
+	return (
+		<div>
+			<p
+				style={{
+					paddingBottom: "0.5rem",
+					paddingTop: "2rem",
+					fontFamily: fonts.textFont,
+					fontSize: fontSize.textSize,
+					fontWeight: performed ? "bold" : "normal",
+				}}
+			>
+				{title}
+			</p>
+			<div
+				style={{
+					display: "flex",
+					gap: "1rem",
+					alignItems: "center",
+					paddingLeft: "0.5rem",
+				}}
+			>
+				<RadioInput
+					name={operationKey}
+					checked={performed}
+					onChange={() => setPerformed(true)}
+					label="Sí"
+					disabled={!editable}
+				/>
+				<RadioInput
+					name={operationKey}
+					checked={!performed}
+					onChange={() => setPerformed(false)}
+					label="No"
+					disabled={!editable}
+				/>
+			</div>
+			{performed &&
+				operationDetails.map((detail, index) => (
+					<div key={index}>
+						{index !== 0 && ( // No mostrar botón de cancelar para el primer elemento
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									width: "100%",
+								}}
+							>
+								<div
+									style={{
+										padding: "1rem",
+										borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+										width: "95%",
+										display: "flex",
+										justifyContent: "center",
+									}}
+								/>
+							</div>
+						)}
+
+						<p
+							style={{
+								paddingBottom: "0.5rem",
+								paddingTop: "2rem",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							¿En qué año?
+						</p>
+						<DropdownMenu
+							options={yearOptions}
+							style={{
+								container: {
+									width: "60%",
+									height: "10%",
+									paddingLeft: "0.5rem",
+								},
+								select: {},
+								option: {},
+								indicator: {
+									top: "48%",
+									right: "4%",
+								},
+							}}
+						/>
+
+						<p
+							style={{
+								paddingBottom: "0.5rem",
+								paddingTop: "1rem",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							¿Tuvo alguna complicación?:
+						</p>
+						<div
+							style={{
+								display: "flex",
+								gap: "1rem",
+								alignItems: "center",
+								paddingLeft: "0.5rem",
+							}}
+						>
+							<RadioInput
+								name={`complications-${index}`}
+								checked={detail.complications}
+								onChange={() => handleComplicationChange(index, true)}
+								label="Sí"
+								disabled={!editable}
+							/>
+							<RadioInput
+								name={`complications-${index}`}
+								checked={!detail.complications}
+								onChange={() => handleComplicationChange(index, false)}
+								label="No"
+								disabled={!editable}
+							/>
+						</div>
+						{index !== 0 && ( // No mostrar botón de cancelar para el primer elemento
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingTop: "1rem",
+								}}
+							>
+								<BaseButton
+									text="Cancelar nueva operación"
+									onClick={() => removeOperationDetail(index)}
+									style={{
+										width: "25%",
+										height: "3rem",
+										backgroundColor: "#fff",
+										color: colors.primaryBackground,
+										border: `1.5px solid ${colors.primaryBackground}`,
+									}}
+								/>
+							</div>
+						)}
+					</div>
+				))}
+
+			{performed && canAddMore() && (
+				<div>
+					<div
+						style={{
+							padding: "1rem",
+							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+						}}
+					/>
+
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							paddingTop: "2rem",
+						}}
+					>
+						<BaseButton
+							text="Agregar otra operación"
+							onClick={addOperationDetail}
+							style={{ width: "20%", height: "3rem" }}
+						/>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}
+
 function ObGynView({
 	id,
 	birthdayResource,
@@ -304,6 +536,18 @@ function ObGynView({
 	const [isPainful, setIsPainful] = useState(false);
 	const [medication, setMedication] = useState("");
 	const [isEditable, setIsEditable] = useState(true);
+
+	// TOTAL P SECTION
+
+	const [P, setP] = useState(0); // Partos vía vaginal
+	const [C, setC] = useState(0); // Cesáreas
+	const [A, setA] = useState(0); // Abortos
+	const [G, setG] = useState(0); // Suma total de P, C, y A
+
+	// Actualizar G cuando P, C, o A cambien
+	useEffect(() => {
+		setG(P + C + A); // G se actualiza como la suma de P, C, y A
+	}, [P, C, A]);
 
 	// GENERAL INFO SECTION
 
@@ -348,12 +592,11 @@ function ObGynView({
 		{ key: "endometriosis", title: "Diagnóstico por Endometriosis:" },
 	]);
 
-	// Función para añadir una nueva sección de diagnóstico
 	const addDiagnosis = () => {
 		const newDiagnosis = {
 			key: `diagnosis-${Date.now()}`,
 			title: "Nuevo Diagnóstico:",
-			isNew: true, // Este diagnóstico es nuevo y debería mostrar el campo adicional
+			isNew: true,
 		};
 		setDiagnoses([...diagnoses, newDiagnosis]);
 	};
@@ -362,24 +605,26 @@ function ObGynView({
 		setDiagnoses(diagnoses.filter((diagnosis) => diagnosis.key !== key));
 	};
 
-	const yearOptions = [
-		{ label: "2024", value: "2024" },
-		{ label: "2023", value: "2023" },
-		{ label: "2022", value: "2022" },
-		{ label: "2021", value: "2021" },
-		{ label: "2020", value: "2020" },
-		{ label: "2019", value: "2019" },
-		{ label: "2018", value: "2018" },
-		{ label: "2017", value: "2017" },
-		{ label: "2016", value: "2016" },
-		{ label: "2015", value: "2015" },
-		{ label: "2014", value: "2014" },
-		{ label: "2013", value: "2013" },
-		{ label: "2012", value: "2012" },
-		{ label: "2011", value: "2011" },
-		{ label: "2010", value: "2010" },
-		// Agrega más años según sea necesario
-	];
+	// OPERACIONES SECTION
+
+	const [operations, setOperations] = useState([
+		{
+			key: "hysterectomy",
+			title: "Operación por Histerectomía:",
+		},
+		{
+			key: "sterilization",
+			title: "Cirugía para no tener más hijos:",
+		},
+		{
+			key: "ovariancysts",
+			title: "Operación por Quistes Ováricos:",
+		},
+		{
+			key: "breastresection",
+			title: "Operación por Resección de masas en mamas:",
+		},
+	]);
 
 	return (
 		<div
@@ -551,9 +796,8 @@ function ObGynView({
 							G:
 						</p>
 						<BaseInput
-							// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-							// onChange={}
-							// readOnly={!addingNew}
+							value={G}
+							readOnly={true}
 							placeholder="Total de partos"
 							style={{
 								width: "100%",
@@ -593,9 +837,9 @@ function ObGynView({
 							P:
 						</p>
 						<BaseInput
-							// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-							// onChange={}
-							// readOnly={!addingNew}
+							value={P}
+							onChange={(e) => setP(Number(e.target.value) || 0)}
+							readOnly={!isEditable}
 							placeholder="# vía vaginal"
 							style={{
 								width: "100%",
@@ -635,9 +879,9 @@ function ObGynView({
 							C:
 						</p>
 						<BaseInput
-							// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-							// onChange={}
-							// readOnly={!addingNew}
+							value={C}
+							onChange={(e) => setC(Number(e.target.value) || 0)}
+							readOnly={!isEditable}
 							placeholder="# cesáreas"
 							style={{
 								width: "100%",
@@ -677,9 +921,9 @@ function ObGynView({
 							A:
 						</p>
 						<BaseInput
-							// value={selectedSurgery ? selectedSurgery.surgeryType : ""}
-							// onChange={}
-							// readOnly={!addingNew}
+							value={A}
+							onChange={(e) => setA(Number(e.target.value) || 0)}
+							readOnly={!isEditable}
 							placeholder="# abortos"
 							style={{
 								width: "100%",
@@ -783,472 +1027,23 @@ function ObGynView({
 							Operaciones del Paciente:{" "}
 						</p>
 
-						<p // Operación por Histerectomía
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Operación por Histerectomía:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="hysterectomy "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nohysterectomy"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿En qué año?
-						</p>
-
-						<DropdownMenu
-							options={yearOptions}
-							//value={selectedSurgery.surgeryYear}
-							//readOnly={!addingNew}
-							//onChange={(e) =>
-							//setSelectedSurgery({
-							//	...selectedSurgery,
-							//	surgeryYear: e.target.value,
-							//})
-							//}
-							style={{
-								container: {
-									width: "60%",
-									height: "10%",
-									paddingLeft: "0.5rem",
-								},
-								select: {},
-								option: {},
-								indicator: {
-									top: "45%",
-									right: "4%",
-								},
-							}}
-						/>
-
-						<p // Operación por Histerectomía
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿Tuvo alguma complicación?:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="complications "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nocomplications"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<div // BORDER
-							style={{
-								padding: "1rem",
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-							}}
-						/>
-
-						<p // Cirugia para no tener más hijos
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Cirugía para no tener más hijos:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="hysterectomy "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nohysterectomy"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿En qué año?
-						</p>
-
-						<DropdownMenu
-							options={yearOptions}
-							//value={selectedSurgery.surgeryYear}
-							//readOnly={!addingNew}
-							//onChange={(e) =>
-							//setSelectedSurgery({
-							//	...selectedSurgery,
-							//	surgeryYear: e.target.value,
-							//})
-							//}
-							style={{
-								container: {
-									width: "60%",
-									height: "10%",
-									paddingLeft: "0.5rem",
-								},
-								select: {},
-								option: {},
-								indicator: {
-									top: "45%",
-									right: "4%",
-								},
-							}}
-						/>
-
-						<p // Operación por Histerectomía
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿Tuvo alguma complicación?:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="complications "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nocomplications"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<div // BORDER
-							style={{
-								padding: "1rem",
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-							}}
-						/>
-
-						<p // Operación por quistes ováricos
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Operación por Quistes Ováricos:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="hysterectomy "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nohysterectomy"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿En qué año?
-						</p>
-
-						<DropdownMenu
-							options={yearOptions}
-							//value={selectedSurgery.surgeryYear}
-							//readOnly={!addingNew}
-							//onChange={(e) =>
-							//setSelectedSurgery({
-							//	...selectedSurgery,
-							//	surgeryYear: e.target.value,
-							//})
-							//}
-							style={{
-								container: {
-									width: "60%",
-									height: "10%",
-									paddingLeft: "0.5rem",
-								},
-								select: {},
-								option: {},
-								indicator: {
-									top: "45%",
-									right: "4%",
-								},
-							}}
-						/>
-
-						<p // Operación por Histerectomía
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿Tuvo alguma complicación?:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="complications "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nocomplications"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								paddingTop: "2rem",
-							}}
-						>
-							<BaseButton
-								text="Agregar otra operación"
-								// onClick={handleSaveNonPathological}
-								style={{ width: "20%", height: "3rem" }}
-							/>
-						</div>
-
-						<div // BORDER
-							style={{
-								padding: "1rem",
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-							}}
-						/>
-						<p // Operación por Resección de masas en mamas
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Operación por Resección de masas en mamas:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="mamas "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nomamams"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "2rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿En qué año?
-						</p>
-
-						<DropdownMenu
-							options={yearOptions}
-							//value={selectedSurgery.surgeryYear}
-							//readOnly={!addingNew}
-							//onChange={(e) =>
-							//setSelectedSurgery({
-							//	...selectedSurgery,
-							//	surgeryYear: e.target.value,
-							//})
-							//}
-							style={{
-								container: {
-									width: "60%",
-									height: "10%",
-									paddingLeft: "0.5rem",
-								},
-								select: {},
-								option: {},
-								indicator: {
-									top: "45%",
-									right: "4%",
-								},
-							}}
-						/>
-
-						<p // Operación por Histerectomía
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							¿Tuvo alguma complicación?:
-						</p>
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								alignItems: "center",
-								paddingLeft: "0.5rem",
-							}}
-						>
-							<RadioInput
-								name="complications "
-								//checked={smokingStatus}
-								//onChange={() => handleSmokingChange(true)}
-								label="Sí"
-								//disabled={!isEditable}
-							/>
-							<RadioInput
-								name="nocomplications"
-								//checked={!smokingStatus}
-								//onChange={() => handleSmokingChange(false)}
-								label="No"
-								//disabled={!isEditable}
-							/>
-						</div>
-
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								paddingTop: "2rem",
-							}}
-						>
-							<BaseButton
-								text="Agregar otra operación"
-								// onClick={handleSaveNonPathological}
-								style={{ width: "20%", height: "3rem" }}
-							/>
-						</div>
-
+						{operations.map((operation, index) => (
+							<div key={operation.key}>
+								<OperationSection
+									title={operation.title}
+									operationKey={operation.key}
+									editable={true}
+								/>
+								{index < operations.length - 1 && (
+									<div // BORDER
+										style={{
+											padding: "1rem",
+											borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+										}}
+									/>
+								)}
+							</div>
+						))}
 						<div // BORDER
 							style={{
 								padding: "1rem",
