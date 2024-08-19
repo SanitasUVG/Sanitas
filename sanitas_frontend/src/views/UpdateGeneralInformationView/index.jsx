@@ -578,6 +578,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 							setPatientData({ ...patientData, birthdate: e.target.value })
 						}
 						style={{ ...styles.input, ...GenInputStyle(8, 1) }}
+						disabled={!editMode}
 					/>
 				</div>
 
@@ -586,6 +587,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 					<DropdownMenu
 						options={dropdownOptions}
 						value={patientData.bloodType}
+						readOnly={!editMode}
 						onChange={(e) =>
 							setPatientData({ ...patientData, bloodType: e.target.value })
 						}
