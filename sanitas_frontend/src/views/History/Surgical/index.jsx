@@ -323,7 +323,7 @@ function SurgicalView({
 							key={`${surgery.surgeryYear}-${surgery.surgeryType}-${index}`}
 							type="surgical"
 							year={surgery.surgeryYear}
-							surgeryType={surgery.surgeryType}
+							reasonInfo={surgery.surgeryType}
 							onClick={() => handleSelectSurgery(surgery)}
 						/>
 					))
@@ -391,6 +391,12 @@ function SurgicalView({
 								surgeryYear: e.target.value,
 							})
 						}
+						style={{
+							container: { width: "95%", height: "10%" },
+							select: {},
+							option: {},
+							indicator: {},
+						}}
 					/>
 
 					<p

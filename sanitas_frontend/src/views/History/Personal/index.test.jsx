@@ -188,7 +188,7 @@ describe("PersonalHistory Component Tests", () => {
 
 		await waitFor(() =>
 			expect(toast.success).toHaveBeenCalledWith(
-				"Historial personal guardado con éxito.",
+				"Antecedente personal guardado con éxito.",
 			),
 		);
 	});

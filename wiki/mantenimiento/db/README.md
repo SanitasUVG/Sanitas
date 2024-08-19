@@ -675,7 +675,7 @@ los datos requeridos según la alergia.
 - Versión 1: La versión 1 contiene una propiedad `data` que es
   un array de objetos con la siguiente forma:
 
-  - medication, food, animals y others:
+  - medication, food, animals, dust, pollen, climateChange y others:
 
   ```json
   {
@@ -685,17 +685,109 @@ los datos requeridos según la alergia.
   }
   ```
 
-  - dust, pollen y climateChange:
-
-  ```json
-  {
-    "reaction": "String",
-    "severity": "String"
-  }
-  ```
-
 ### Antecedentes Psiquiátricos
+
+Los antecedentes psiquiátricos se organizan por tipo de condición psiquiátrica.
+Cada tipo de condición se almacena en un objeto JSON
+que lista los datos requeridos según la condición.
+
+```json
+{
+
+    "medicalHistory": {
+        "depression": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "anxiety": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "ocd": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "adhd": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "bipolar": {
+            "version": 1,
+            "data": {
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        },
+        "other": {
+            "version": 1,
+            "data": {
+                "ill": "",
+                "medication": "",
+                "dose": "",
+                "frecuency": "",
+                "ube": false
+            }
+        }
+    }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- Versión 1: La versión 1 contiene una propiedad `data`
+  que es un objeto con la siguiente forma:
+
+- depression, anxiety, bipolar, ocd, adhd:
+
+````json
+{
+  "medication": "String",
+  "dose": "String",
+  "frecuency": "String",
+  "ube": false
+}
+```
+
+- other:
+
+
+```json
+{
+    "ill": "String",
+    "medication": "String",
+    "dose": "String",
+    "frecuency": "String",
+    "ube": false
+}
+```
 
 ### Antecedentes Ginecoobstetricos
 
 ### Antecedentes no Patológicos
+````

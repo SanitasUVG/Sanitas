@@ -5,7 +5,7 @@ import { colors, fonts } from "src/theme.mjs";
  * @typedef {Object} InformationCardProps
  * @property {'surgical' | 'appointment' | 'family'} type - Distinguishes between surgical, appointment, and family types to render appropriate information.
  * @property {string} year - The year of the surgery or appointment.
- * @property {string} surgeryType - The type of surgery, only applicable if `type` is 'surgical'.
+ * @property {string} reasonInfo - The type of surgery, only applicable if `type` is 'surgical'.
  * @property {string} date - The date of the appointment, only applicable if `type` is 'appointment'.
  * @property {string} reason - The reason for the consultation, applicable only if `type` is 'appointment'.
  * @property {string} disease - The disease, only applicable if `type` is 'family'.
@@ -27,9 +27,9 @@ import { colors, fonts } from "src/theme.mjs";
 export default function InformationCard({
 	type,
 	year,
-	surgeryType,
+	reasonInfo,
 	date,
-	reason,
+	reasonAppointment,
 	disease,
 	relative,
 	onClick,
@@ -75,7 +75,7 @@ export default function InformationCard({
 						</p>
 						<p>
 							<span style={labelStyle}>Tipo de Cirugía:</span>{" "}
-							<span style={contentStyle}>{truncateText(surgeryType)}</span>
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
 						</p>
 					</>
 				);
@@ -88,7 +88,9 @@ export default function InformationCard({
 						</p>
 						<p>
 							<span style={labelStyle}>Motivo de Consulta:</span>{" "}
-							<span style={contentStyle}>{truncateText(reason)}</span>
+							<span style={contentStyle}>
+								{truncateText(reasonAppointment)}
+							</span>
 						</p>
 					</>
 				);
@@ -114,7 +116,7 @@ export default function InformationCard({
 						</p>
 						<p>
 							<span style={labelStyle}>Medicamento/Tratamiento:</span>{" "}
-							<span style={contentStyle}>{truncateText(surgeryType)}</span>
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
 						</p>
 					</>
 				);
@@ -128,6 +130,47 @@ export default function InformationCard({
 						<p>
 							<span style={labelStyle}>Año:</span>{" "}
 							<span style={contentStyle}>{year}</span>
+						</p>
+					</>
+				);
+			case "allergy":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Alérgico a:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Reacción:</span>{" "}
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
+						</p>
+					</>
+				);
+
+			case "traumatological":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Año:</span>{" "}
+							<span style={contentStyle}>{year}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Fractura de:</span>{" "}
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
+						</p>
+					</>
+				);
+
+			case "psichiatric":
+				return (
+					<>
+						<p>
+							<span style={labelStyle}>Enfermedad:</span>{" "}
+							<span style={contentStyle}>{disease}</span>
+						</p>
+						<p>
+							<span style={labelStyle}>Medicamento:</span>{" "}
+							<span style={contentStyle}>{truncateText(reasonInfo)}</span>
 						</p>
 					</>
 				);

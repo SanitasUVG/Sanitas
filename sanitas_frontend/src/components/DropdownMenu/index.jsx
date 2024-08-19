@@ -22,27 +22,27 @@ import { useState } from "react";
 export default function DropdownMenu({
 	value,
 	onChange,
-	readOnly = false,
+	disabled = false,
 	options,
 	style = {},
 }) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const toggleDropdown = () => {
-		if (!readOnly) {
+		if (!disabled) {
 			setIsOpen(!isOpen);
 		}
 	};
 
 	const handleDropdownChange = (e) => {
-		if (!readOnly) {
+		if (!disabled) {
 			onChange(e);
 			setIsOpen(false);
 		}
 	};
 
 	const handleDropdownBlur = () => {
-		if (isOpen && !readOnly) {
+		if (isOpen && !disabled) {
 			setIsOpen(false);
 		}
 	};
@@ -93,7 +93,7 @@ export default function DropdownMenu({
 				onMouseDown={toggleDropdown}
 				onBlur={handleDropdownBlur}
 				style={defaultStyles.select}
-				readOnly={readOnly}
+				disabled={disabled}
 			>
 				{options.map((option) => (
 					<option

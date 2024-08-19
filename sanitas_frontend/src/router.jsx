@@ -31,6 +31,10 @@ import {
 	updateStudentPatientInformation,
 	updateSurgicalHistory,
 	updateTraumatologicalHistory,
+	getAllergicHistory,
+	updateAllergicHistory,
+	getPsichiatricHistory,
+	updatePsichiatricHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -42,7 +46,9 @@ import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
-import { TraumatologicHistory } from "./views/UpdateTraumatologicalHistoryView";
+import { TraumatologicHistory } from "./views/History/Traumatological";
+import { AllergicHistory } from "./views/History/Allergic";
+import { PsichiatricHistory } from "./views/History/Psichiatric";
 
 const useStore = createEmptyStore();
 
@@ -61,6 +67,8 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	FAMILIAR_HISTORY: "familiar",
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
+	ALLERGIC_HISTORY: "allergic",
+	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
 
@@ -103,69 +111,137 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY}`,
 		);
 	},
+	navigateToAllergies: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToPsiquiatric: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
+		);
+	},
 	// TODO: Add other Navigation routes...
 };
 
 const updateInfoView = (
-	<UpdateInfoView
-		getGeneralPatientInformation={getGeneralPatientInformation}
-		updateGeneralPatientInformation={updateGeneralPatientInformation}
-		getStudentPatientInformation={getStudentPatientInformation}
-		updateStudentPatientInformation={updateStudentPatientInformation}
-		getCollaboratorInformation={getCollaboratorInformation}
-		updateCollaboratorInformation={updateCollaboratorInformation}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<UpdateInfoView
+			getGeneralPatientInformation={getGeneralPatientInformation}
+			updateGeneralPatientInformation={updateGeneralPatientInformation}
+			getStudentPatientInformation={getStudentPatientInformation}
+			updateStudentPatientInformation={updateStudentPatientInformation}
+			getCollaboratorInformation={getCollaboratorInformation}
+			updateCollaboratorInformation={updateCollaboratorInformation}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const surgicalHistoryView = (
-	<SurgicalHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getSurgicalHistory={getSurgicalHistory}
-		updateSurgicalHistory={updateSurgicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<SurgicalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getSurgicalHistory={getSurgicalHistory}
+			updateSurgicalHistory={updateSurgicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const traumatologicalHistoryView = (
-	<TraumatologicHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getTraumatologicHistory={getTraumatologicalHistory}
-		updateTraumatologicalHistory={updateTraumatologicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<TraumatologicHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getTraumatologicHistory={getTraumatologicalHistory}
+			updateTraumatologicalHistory={updateTraumatologicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const familiarHistoryView = (
-	<FamiliarHistory
-		getFamiliarHistory={getFamilyHistory}
-		updateFamiliarHistory={updateFamilyHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<FamiliarHistory
+			getFamiliarHistory={getFamilyHistory}
+			updateFamiliarHistory={updateFamilyHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const personalHistoryView = (
-	<PersonalHistory
-		getBirthdayPatientInfo={getGeneralPatientInformation}
-		getPersonalHistory={getPersonalHistory}
-		updatePersonalHistory={updatePersonalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PersonalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getPersonalHistory={getPersonalHistory}
+			updatePersonalHistory={updatePersonalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 const nonPathologicalHistoryView = (
-	<NonPathologicalHistory
-		getNonPathologicalHistory={getNonPathologicalHistory}
-		getBloodTypePatientInfo={getGeneralPatientInformation}
-		updateNonPathologicalHistory={updateNonPathologicalHistory}
-		sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		useStore={useStore}
-	/>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<NonPathologicalHistory
+			getNonPathologicalHistory={getNonPathologicalHistory}
+			getBloodTypePatientInfo={getGeneralPatientInformation}
+			updateNonPathologicalHistory={updateNonPathologicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const allergicHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<AllergicHistory
+			getAllergicHistory={getAllergicHistory}
+			updateAllergicHistory={updateAllergicHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const psichiatricHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updatePsichiatricHistory={updatePsichiatricHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
 );
 
 export const ROUTES = [
@@ -239,6 +315,14 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.NONPATHOLOGICAL_HISTORY,
 				element: nonPathologicalHistoryView,
+			},
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY,
+				element: allergicHistoryView,
+			},
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
+				element: psichiatricHistoryView,
 			},
 			// TODO: Add more routes...
 		],

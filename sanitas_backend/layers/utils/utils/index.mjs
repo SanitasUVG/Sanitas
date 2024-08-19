@@ -1,3 +1,19 @@
+import { jwtDecode } from "jwt-decode";
+
+/**
+ * Decodes de data of a valid JWT.
+ * This function assumes the decoded JWT doesn't have a field named `error`.
+ * @param {string} jwt - The JWT token to decode.
+ * @returns {*|{error: *}} The JWT token or an object with `error` if an error ocurred.
+ */
+export function decodeJWT(jwt) {
+	try {
+		return jwtDecode(jwt);
+	} catch (error) {
+		return { error };
+	}
+}
+
 /**
  * @typedef {Object} DBPatient
  * @property {number} id
@@ -269,6 +285,12 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
  * @property {null|MedicalConditionData} cambio_de_clima_data - Allergic medical history data for climate change.
  * @property {null|MedicalConditionData} animales_data - Allergic medical history data for animals.
  * @property {null|MedicalConditionData} otros_data - Allergic medical history data for other allergies.
+ * @property {null|MedicalConditionData} depresion_data - Psychiatric medical history data for depression.
+ * @property {null|MedicalConditionData} ansiedad_data - Psychiatric medical history data for anxiety.
+ * @property {null|MedicalConditionData} toc_data - Psychiatric medical history data for Obsessive-Compulsive Disorder (OCD).
+ * @property {null|MedicalConditionData} tdah_data - Psychiatric medical history data for Attention-Deficit/Hyperactivity Disorder (ADHD).
+ * @property {null|MedicalConditionData} bipolaridad_data - Psychiatric medical history data for bipolar disorder.
+ * @property {null|MedicalConditionData} otro_data - Psychiatric medical history data for other conditions not listed separately.
  */
 
 /**
@@ -633,6 +655,192 @@ export function mapToAPIAllergicHistory(dbData) {
 			climateChange: formatResponse(dbData.cambio_de_clima_data),
 			animals: formatResponse(dbData.animales_data),
 			others: formatResponse(dbData.otros_data),
+		},
+	};
+}
+
+/**
+ * @typedef {Object} GynecologicalHistoryDB
+ * @property {number} id_paciente - The unique identifier of the patient.
+ * * @property {GynecologicalHistoryEntry} edad_primera_menstruacion_data - Data about the first menstrual period.
+ * @property {GynecologicalHistoryEntry} ciclos_regulares_data - Data about the regularity of menstrual cycles.
+ * @property {GynecologicalHistoryEntry} menstruacion_dolorosa_data - Data about painful menstruation.
+ * @property {GynecologicalHistoryEntry} num_embarazos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_partos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_cesareas - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} num_abortos - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalIllnessEntry} medicacion_quistes_ovaricos_data - Data about ovarian cysts.
+ * @property {GynecologicalIllnessEntry} medicacion_miomatosis_data - Data about uterine myomatosis.
+ * @property {GynecologicalIllnessEntry} medicacion_endometriosis_data - Data about endometriosis.
+ * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data- Data about other diagnosed conditions.
+ * @property {GynecologicalSurgeryEntry[]} cirugia_quistes_ovaricos_data - Data about surgeries for ovarian cysts.
+ * @property {GynecologicalSurgeryEntry} cirugia_histerectomia_data - Data about hysterectomy surgeries.
+ * @property {GynecologicalSurgeryEntry} cirugia_esterilizacion_data - Data about sterilization surgeries.
+ * @property {GynecologicalSurgeryEntry[]} cirugia_reseccion_masas_data - An array of data about breast mass resection surgeries.
+ */
+
+/**
+ * @typedef {Object} GynecologicalHistoryEntry
+ * @property {number} version - The version of the data format.
+ * @property {Object} data - Detailed data about the gynecological condition or treatment.
+ */
+
+/**
+ * @typedef {Object} PregnancyData
+ * @property {number} totalPregnancies - Total number of pregnancies.
+ * @property {number} vaginalDeliveries - Number of vaginal deliveries.
+ * @property {number} cesareanSections - Number of cesarean sections.
+ * @property {number} abortions - Number of abortions.
+ */
+
+/**
+ * @typedef {Object} GynecologicalSurgeryEntry
+ * @property {number} year - The year the surgery took place.
+ * @property {boolean} complications - Indicates whether there were complications.
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessMedication
+ * @property {number} medication - The year the surgery took place.
+ * @property {boolean} dosage - Indicates whether there were complications.
+ * @property {boolean} frequency - Indicates whether there were complications.
+
+ */
+
+/**
+ * @typedef {Object} GynecologicalIllnessEntry
+ * @property {GynecologicalIllnessMedication} medication - The year the surgery took place.
+ */
+
+/**
+ * @typedef {Object} GynecologicalMedicalHistory
+ * @property {GynecologicalHistoryEntry} medicalHistory.firstMenstrualPeriod - Data about the first menstrual period.
+ * @property {GynecologicalHistoryEntry} medicalHistory.regularCycles - Data about the regularity of menstrual cycles.
+ * @property {GynecologicalHistoryEntry} medicalHistory.painfulMenstruation - Data about painful menstruation.
+ * @property {GynecologicalHistoryEntry} medicalHistory.pregnancies - Data about pregnancies including detailed breakdown.
+ * @property {GynecologicalHistoryEntry} medicalHistory.diagnosedIllnesses - Data about diagnosed gynecological illnesses.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.ovarianCysts - Data about ovarian cysts.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.uterineMyomatosis - Data about uterine myomatosis.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.endometriosis - Data about endometriosis.
+ * @property {GynecologicalIllnessEntry} medicalHistory.diagnosedIllnesses.otherCondition - Data about other diagnosed conditions.
+ * @property {GynecologicalHistoryEntry} medicalHistory.hasSurgeries - Data about surgeries related to gynecological issues.
+ * @property {GynecologicalSurgeryEntry[]} medicalHistory.hasSurgeries.ovarianCystsSurgery - Data about surgeries for ovarian cysts.
+ * @property {GynecologicalSurgeryEntry} medicalHistory.hasSurgeries.hysterectomy - Data about hysterectomy surgeries.
+ * @property {GynecologicalSurgeryEntry} medicalHistory.hasSurgeries.sterilizationSurgery - Data about sterilization surgeries.
+ * @property {GynecologicalSurgeryEntry[]} medicalHistory.hasSurgeries.breastMassResection - An array of data about breast mass resection surgeries.
+ */
+
+/**
+ * @typedef {Object} APIGynecologicalHistory
+ * @property {number} patientId - The ID of the patient.
+ * @property {GynecologicalMedicalHistory} medicalHistory - The medical history structured data.
+ */
+
+/**
+ * Maps database gynecological history data to the API format.
+ * @param {GynecologicalHistoryDB} dbData - The raw database data.
+ * @returns {APIGynecologicalHistory} The formatted gynecological history for API response.
+ */
+
+export function mapToAPIGynecologicalHistory(dbData) {
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: {
+			firstMenstrualPeriod: dbData.edad_primera_menstruacion_data,
+			regularCycles: dbData.ciclos_regulares_data,
+			painfulMenstruation: dbData.menstruacion_dolorosa_data,
+			pregnancies: {
+				version: 1,
+				data: {
+					totalPregnancies: dbData.num_embarazos,
+					vaginalDeliveries: dbData.num_partos,
+					cesareanSections: dbData.num_cesareas,
+					abortions: dbData.num_abortos,
+				},
+			},
+			diagnosedIllnesses: {
+				version: 1,
+				data: {
+					ovarianCysts: dbData.medicacion_quistes_ovaricos_data,
+					uterineMyomatosis: dbData.medicacion_miomatosis_data,
+					endometriosis: dbData.medicacion_endometriosis_data,
+					otherCondition: dbData.medicacion_otra_condicion_data,
+				},
+			},
+			hasSurgeries: {
+				version: 1,
+				data: {
+					ovarianCystsSurgery: dbData.cirugia_quistes_ovaricos_data,
+					hysterectomy: dbData.cirugia_histerectomia_data,
+					sterilizationSurgery: dbData.cirugia_esterilizacion_data,
+					breastMassResection: dbData.cirugia_reseccion_masas_data,
+				},
+			},
+		},
+	};
+}
+
+/**
+ * @typedef {Object} PsychiatricMedicalHistory
+ * @property {null|MedicalConditionData} medicalHistory.depression - Psychiatric medical history data for depression.
+ * @property {null|MedicalConditionData} medicalHistory.anxiety - Psychiatric medical history data for anxiety.
+ * @property {null|MedicalConditionData} medicalHistory.ocd - Psychiatric medical history data for OCD (Obsessive-Compulsive Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.adhd - Psychiatric medical history data for ADHD (Attention-Deficit/Hyperactivity Disorder).
+ * @property {null|MedicalConditionData} medicalHistory.bipolar - Psychiatric medical history data for bipolar disorder.
+ * @property {null|MedicalConditionData} medicalHistory.other - Psychiatric medical history data for other conditions.
+ */
+
+/**
+ * @typedef {Object} PsychiatricMedicalHistoryAPI
+ * @property {number} patientId - The unique identifier of the patient.
+ * @property {PsychiatricMedicalHistory} medicalHistory - An object containing formatted psychiatric medical history data.
+ */
+
+/**
+ * Converts the database records for a patient's psychiatric medical history from the raw format to a structured API response format.
+ * This function checks if each psychiatric condition data exists; if not, it returns a default structure with an empty array.
+ * It handles the transformation of nested data where applicable.
+ *
+ * @param {DBData} dbData - The raw database data containing fields for various psychiatric conditions of a patient.
+ * @returns {PsychiatricMedicalHistory} A structured object containing the patientId and a detailed psychiatricHistory,
+ *                   where each condition is formatted according to the MedicalConditionData specification.
+ */
+export function mapToAPIPsychiatricHistory(dbData) {
+	const formatResponse = (data) => {
+		if (!data) return { version: 1, data: [] };
+		if (typeof data === "string") {
+			try {
+				return JSON.parse(data);
+			} catch (_error) {
+				return { version: 1, data: [] };
+			}
+		}
+		return data;
+	};
+
+	const medicalHistory = {};
+	const keys = Object.keys(dbData);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		if (key !== "id_paciente") {
+			// Asegúrate de que el campo no sea undefined antes de intentar reemplazar
+			if (key) {
+				medicalHistory[key.replace("_data", "")] = dbData[key]
+					? formatResponse(dbData[key])
+					: {};
+			}
+		}
+	}
+
+	return {
+		patientId: dbData.id_paciente,
+		medicalHistory: {
+			depression: formatResponse(dbData.depresion_data),
+			anxiety: formatResponse(dbData.ansiedad_data),
+			ocd: formatResponse(dbData.toc_data),
+			adhd: formatResponse(dbData.tdah_data),
+			bipolar: formatResponse(dbData.bipolaridad_data),
+			other: formatResponse(dbData.otro_data),
 		},
 	};
 }
