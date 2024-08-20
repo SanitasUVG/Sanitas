@@ -160,6 +160,7 @@ export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/family-history`,
 		familyHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
@@ -275,7 +276,7 @@ export async function updatePatientAllergicHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/allergic-history`,
 		allergicHistoryData,
-		{headers: createAuthorizationHeader(createDoctorJWT())}
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
