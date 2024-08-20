@@ -117,6 +117,7 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}/patient/surgical-history`,
 		surgicalData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	// Validate the response
