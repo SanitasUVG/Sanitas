@@ -312,6 +312,7 @@ export async function updatePatientGynecologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/gyneco-history`,
 		gynecologicalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 }
 /**

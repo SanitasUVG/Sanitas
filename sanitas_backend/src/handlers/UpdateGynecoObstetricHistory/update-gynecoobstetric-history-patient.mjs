@@ -1,6 +1,10 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPIGynecologicalHistory } from "utils/index.mjs";
+import {
+	createResponse,
+	decodeJWT,
+	mapToAPIGynecologicalHistory,
+} from "utils/index.mjs";
 
 export const updateGynecologicalHistoryHandler = async (event, context) => {
 	withRequest(event, context);
@@ -13,13 +17,44 @@ export const updateGynecologicalHistoryHandler = async (event, context) => {
 			.build();
 	}
 
+	logger.info({ headers: event.headers }, "Received headers...");
+	const jwt = event.headers.Authorization;
+
+	logger.info({ jwt }, "Parsing JWT...");
+	const tokenInfo = decodeJWT(jwt);
+	if (tokenInfo.error) {
+		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		return responseBuilder
+			.setStatusCode(400)
+			.setBody({ error: "JWT couldn't be parsed" })
+			.build();
+	}
+	const { email } = tokenInfo;
+	logger.info({ tokenInfo }, "JWT Parsed!");
+
 	let client;
 	try {
 		const url = process.env.POSTGRES_URL;
 		logger.info({ url }, "Connecting to DB...");
-		client = await getPgClient(url);
+		client = getPgClient(url);
 		await client.connect();
 		logger.info("Connected!");
+
+		logger.info({ email }, "Checking if the email is a doctor...");
+		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
+		if (!itsDoctor) {
+			const msg = "Unauthorized, you're not a doctor!";
+			const body = { error: msg };
+			logger.error(body, msg);
+			return responseBuilder.setStatusCode(401).setBody(body).build();
+		}
+		logger.info(`${email} is a doctor!`);
 
 		const { patientId, medicalHistory } = JSON.parse(event.body);
 		if (!patientId) {
