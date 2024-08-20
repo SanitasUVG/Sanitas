@@ -257,6 +257,7 @@ export async function updatePatientNonPathologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/nonpatological-history`,
 		nonPathologicalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 }
 /**
