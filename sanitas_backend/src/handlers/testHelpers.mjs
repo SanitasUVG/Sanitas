@@ -227,6 +227,7 @@ export async function updatePatientTraumatologicHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/traumatological-history`,
 		traumatologicHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 	expect(response.status).toBe(200);
 }
