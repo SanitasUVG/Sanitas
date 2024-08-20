@@ -275,6 +275,7 @@ export async function updatePatientAllergicHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/allergic-history`,
 		allergicHistoryData,
+		{headers: createAuthorizationHeader(createDoctorJWT())}
 	);
 
 	expect(response.status).toBe(200);
