@@ -346,6 +346,7 @@ export async function updatePatientPsychiatricHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/psychiatric-history`,
 		psychiatricHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
