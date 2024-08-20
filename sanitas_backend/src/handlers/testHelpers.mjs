@@ -182,6 +182,7 @@ export async function updatePatientPersonalHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/personal-history`,
 		personalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
