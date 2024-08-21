@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
     devenv = {
-      url = "github:cachix/devenv";
+      url = "github:ElrohirGT/devenv/feat-add-custom-pg-hba-conf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -127,7 +127,7 @@
               listen_addresses = postgresHost;
               port = postgresPort;
               initialScript = dbInitFile;
-              hbaConf = builtins.readFile ./pg_hba.conf;
+              customPgHbaFile = ./pg_hba.conf;
               settings = {
                 log_connections = true;
                 log_statement = "all";
