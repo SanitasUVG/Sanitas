@@ -117,6 +117,7 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}/patient/surgical-history`,
 		surgicalData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	// Validate the response
@@ -160,6 +161,7 @@ export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/family-history`,
 		familyHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
@@ -181,6 +183,7 @@ export async function updatePatientPersonalHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/personal-history`,
 		personalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
@@ -224,6 +227,7 @@ export async function updatePatientTraumatologicHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/traumatological-history`,
 		traumatologicHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 	expect(response.status).toBe(200);
 }
@@ -256,6 +260,7 @@ export async function updatePatientNonPathologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/nonpatological-history`,
 		nonPathologicalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 }
 /**
@@ -275,6 +280,7 @@ export async function updatePatientAllergicHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/allergic-history`,
 		allergicHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
@@ -310,6 +316,7 @@ export async function updatePatientGynecologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/gyneco-history`,
 		gynecologicalHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 }
 /**
@@ -341,6 +348,7 @@ export async function updatePatientPsychiatricHistory(
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/psychiatric-history`,
 		psychiatricHistoryData,
+		{ headers: createAuthorizationHeader(createDoctorJWT()) },
 	);
 
 	expect(response.status).toBe(200);
