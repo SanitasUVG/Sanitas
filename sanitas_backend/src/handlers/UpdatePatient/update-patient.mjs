@@ -102,7 +102,7 @@ export const updatePatientHandler = async (event, context) => {
 			patientData.contactPhone2 || null,
 			patientData.bloodType || null,
 			patientData.address || null,
-			patientData.insuranceId || null,
+			patientData.insurance || null,
 			patientData.birthdate ? new Date(patientData.birthdate) : null,
 			patientData.phone || null,
 			patientData.cui || null,

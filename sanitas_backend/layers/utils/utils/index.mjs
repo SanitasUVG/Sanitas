@@ -57,7 +57,7 @@ export function decodeJWT(jwt) {
  *
  * @property {string|null} bloodType
  * @property {string|null} address
- * @property {number | undefined} insuranceId
+ * @property {string | undefined} insurance
  * @property {string} birthdate
  * @property {string|null} phone
  */
@@ -100,7 +100,7 @@ export function mapToAPIPatient(dbPatient) {
 
 		tipo_sangre: bloodType,
 		direccion: address,
-		id_seguro: insuranceId,
+		seguro: insurance,
 		fecha_nacimiento: birthdate,
 		telefono: phone,
 	} = dbPatient;
@@ -123,7 +123,7 @@ export function mapToAPIPatient(dbPatient) {
 
 		bloodType,
 		address,
-		insuranceId,
+		insurance,
 		birthdate,
 		phone,
 	};

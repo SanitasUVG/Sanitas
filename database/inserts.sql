@@ -43,7 +43,7 @@ INSERT INTO PACIENTE (
     '987650123',
     'O+',
     'Calle Falsa 123, Ciudad',
-    1,
+    'El Roble',
     '1990-01-01',
     '1234567890'
 ),
@@ -61,7 +61,7 @@ INSERT INTO PACIENTE (
     '876540123',
     'A-',
     'Avenida Siempre Viva 456, Ciudad',
-    2,
+    'IGSS',
     '1992-02-02',
     '2345678901'
 );
