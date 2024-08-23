@@ -122,6 +122,37 @@ export const checkCui = async (cui) => {
 };
 
 /**
+ * Asynchronously checks if a CUI (Unique Identity Code) exists in the system by making a GET request to the server.
+ *
+ * @param {string} cui - The CUI to be checked.
+ * @returns {Promise<Object>} A promise that resolves to an object containing a boolean `exists` indicating if the CUI is found, and the `cui` itself.
+ * @throws {Error} Throws an error if the request fails or if the server response is not OK.
+ */
+export const getRole = async () => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/role/`;
+	try {
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		return { result };
+	} catch (error) {
+		throw new Error("Error fetching CUI:", error);
+	}
+};
+
+/**
  * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
  *
  * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
@@ -551,6 +582,67 @@ export const updateSurgicalHistory = async (
 		}
 		return { error: error.message };
 	}
+};
+
+/**
+ * Updates the surgical history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the surgical events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} surgicalEvents - An array of objects where each object contains details about a surgical event.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentSurgicalHistory = async (
+	patientId,
+	surgicalEvents,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+	? await getSession()
+	: await mockGetSession(true);
+if (sessionResponse.error) {
+	return { error: sessionResponse.error };
+}
+
+if (!sessionResponse.result.isValid()) {
+	return { error: "Invalid session!" };
+}
+
+const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+const url = `${PROTECTED_URL}/patient/student-surgical-history`;
+
+const payload = {
+	patientId: patientId,
+	medicalHistory: {
+		surgeries: {
+			version: currentVersion,
+			data: surgicalEvents.map((event) => ({
+				surgeryType: event.surgeryType,
+				surgeryYear: event.surgeryYear,
+				complications: event.complications,
+			})),
+		},
+	},
+};
+
+try {
+	const response = await axios.post(url, payload, {
+		headers: { Authorization: token },
+	});
+	if (response.status !== 200) {
+		return { error: `Unexpected status code: ${response.status}` };
+	}
+	return { result: response.data };
+} catch (error) {
+	if (error.response) {
+		return { error: error.response.data };
+	}
+	if (error.request) {
+		return { error: "No response received" };
+	}
+	return { error: error.message };
+}
 };
 
 /**
