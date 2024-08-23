@@ -184,7 +184,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		(category) => Array.isArray(category.data) && category.data.length > 0,
 	);
 
-	useEffect(() => {}, []);
+	useEffect(() => { }, []);
 
 	// Event handlers for adding, editing, and saving allergic history records
 	const handleOpenNewForm = () => {
@@ -212,8 +212,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 
 		toast.info("Guardando antecedente alérgico...");
 
-		// Log para verificar que selectedAllergie está correcto
-		console.log("Selected Allergie antes de guardar:", selectedAllergie);
 
 		const updatedAllergy = {
 			name: selectedAllergie.whichAllergie,
@@ -252,8 +250,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 				[selectedAllergie.selectedMed]: updatedCategory,
 			};
 		}
-		// Log para verificar updatedMedicalHistory antes de enviarlo
-		console.log("Historial médico actualizado:", updatedMedicalHistory);
+
 
 		try {
 			const response = await updateAllergicHistory(id, updatedMedicalHistory);
@@ -281,8 +278,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		setIsEditable(false);
 		setAddingNew(false);
 
-		// Log para verificar que la alergia seleccionada se está configurando correctamente
-		console.log("Alergia seleccionada para editar:", allergy);
 	};
 
 	const handleFieldChange = (fieldName, value) => {
