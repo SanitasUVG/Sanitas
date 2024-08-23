@@ -9,6 +9,10 @@ import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} AllergicHistoryProps
@@ -141,6 +145,9 @@ export function AllergicHistory({
 function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 	const [selectedAllergie, setSelectedAllergie] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
+	const [isEditable, setIsEditable] = useState(false);
+
+	const isFirstTime = addingNew;
 
 	const allergicHistoryResult = allergicHistoryResource.read();
 
@@ -177,7 +184,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		(category) => Array.isArray(category.data) && category.data.length > 0,
 	);
 
-	useEffect(() => {}, []);
+	useEffect(() => { }, []);
 
 	// Event handlers for adding, editing, and saving allergic history records
 	const handleOpenNewForm = () => {
@@ -187,10 +194,12 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 			reactionType: "",
 		});
 		setAddingNew(true);
+		setIsEditable(true)
 	};
 
 	// Save the new Allergic record to the database
 	const handleSaveNewAllergie = async () => {
+
 		if (
 			!(
 				selectedAllergie.selectedMed &&
@@ -204,39 +213,56 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 
 		toast.info("Guardando antecedente alérgico...");
 
-		// Crear el nuevo registro de alergia
-		const newAllergy = {
+		// Log para verificar que selectedAllergie está correcto
+		console.log("Selected Allergie antes de guardar:", selectedAllergie);
+
+		const updatedAllergy = {
 			name: selectedAllergie.whichAllergie,
 			severity: selectedAllergie.reactionType,
 		};
 
-		// Obtener la categoría actual (ej. medicamento, comida, etc.)
-		const currentCategoryData =
-			AllergicHistory[selectedAllergie.selectedMed]?.data || [];
+		let updatedMedicalHistory;
 
-		// Si la categoría ya tiene datos, usamos su versión, de lo contrario, establecemos la versión en 1
-		const currentVersion =
-			AllergicHistory[selectedAllergie.selectedMed]?.version || 1;
+		if (isFirstTime) {
+			// Si es la primera vez, agrega un nuevo registro
+			const currentCategoryData =
+				AllergicHistory[selectedAllergie.selectedMed]?.data || [];
 
-		// Actualizar la categoría con el nuevo registro
-		const updatedCategory = {
-			version: currentVersion,
-			data: [...currentCategoryData, newAllergy],
-		};
+			const currentVersion =
+				AllergicHistory[selectedAllergie.selectedMed]?.version || 1;
 
-		// Actualizar el historial médico con la nueva categoría
-		const updatedMedicalHistory = {
-			...AllergicHistory,
-			[selectedAllergie.selectedMed]: updatedCategory,
-		};
+			const updatedCategory = {
+				version: currentVersion,
+				data: [...currentCategoryData, updatedAllergy],
+			};
+
+			updatedMedicalHistory = {
+				...AllergicHistory,
+				[selectedAllergie.selectedMed]: updatedCategory,
+			};
+		} else {
+			// Si estamos editando, reemplaza directamente los datos de la categoría seleccionada
+			const updatedCategory = {
+				...AllergicHistory[selectedAllergie.selectedMed],
+				data: [updatedAllergy], // Reemplaza con el nuevo dato actualizado
+			};
+
+			// Actualiza todo el historial médico con la categoría seleccionada actualizada
+			updatedMedicalHistory = {
+				...AllergicHistory,
+				[selectedAllergie.selectedMed]: updatedCategory,
+			};
+		}
+		// Log para verificar updatedMedicalHistory antes de enviarlo
+		console.log("Historial médico actualizado:", updatedMedicalHistory);
 
 		try {
 			const response = await updateAllergicHistory(id, updatedMedicalHistory);
 			if (!response.error) {
-				// Actualizar el estado con el historial médico actualizado
-				setAllergicHistory(updatedMedicalHistory);
+				setAllergicHistory(updatedMedicalHistory); // Actualiza el estado local
 				setAddingNew(false);
 				setSelectedAllergie(null);
+				setIsEditable(false);
 				toast.success("Antecedente alérgico guardado con éxito.");
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
@@ -245,13 +271,26 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
+
+	// Seleccionar una tarjeta para editarla
 	const handleSelectAllergie = (allergy) => {
 		setSelectedAllergie({
 			selectedMed: allergy.selectedMed || "climateChange", // Este valor debe ser dinámico según el tipo de alergia
 			whichAllergie: allergy.name || allergy.source || allergy.type,
 			reactionType: allergy.severity,
 		});
+		setIsEditable(false);
+		setAddingNew(false);
+
+		// Log para verificar que la alergia seleccionada se está configurando correctamente
+		console.log("Alergia seleccionada para editar:", allergy);
 	};
+
+
+
+
+
+
 
 	const handleFieldChange = (fieldName, value) => {
 		setSelectedAllergie((prevAllergie) => ({
@@ -371,7 +410,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 					<DropdownMenu
 						options={allergyOptions}
 						value={selectedAllergie?.selectedMed || "medication"}
-						readOnly={!addingNew}
+						disabled={!addingNew}
 						onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
 						style={{
 							container: { width: "80%" },
@@ -401,6 +440,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
+						disabled={!isEditable}
 					/>
 
 					<p
@@ -427,6 +467,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							checked={selectedAllergie?.reactionType === "Cutánea"}
 							onChange={() => handleFieldChange("reactionType", "Cutánea")}
 							style={{ label: { fontFamily: fonts.textFont } }}
+							disabled={!isEditable}
 						/>
 						<RadioInput
 							label="Respiratoria"
@@ -434,6 +475,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							checked={selectedAllergie?.reactionType === "Respiratoria"}
 							onChange={() => handleFieldChange("reactionType", "Respiratoria")}
 							style={{ label: { fontFamily: fonts.textFont } }}
+							disabled={!isEditable}
 						/>
 						<RadioInput
 							label="Ambos"
@@ -441,6 +483,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							checked={selectedAllergie?.reactionType === "Ambos"}
 							onChange={() => handleFieldChange("reactionType", "Ambos")}
 							style={{ label: { fontFamily: fonts.textFont } }}
+							disabled={!isEditable}
 						/>
 					</div>
 
@@ -451,6 +494,18 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							justifyContent: "center",
 						}}
 					>
+						<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+							<div style={{ display: "flex", justifyContent: "flex-end" }}>
+								{!addingNew && (isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton icon={CheckIcon} onClick={handleSaveNewAllergie} />
+										<IconButton icon={CancelIcon} onClick={() => setIsEditable(false)} />
+									</div>
+								) : (
+									<IconButton icon={EditIcon} onClick={() => setIsEditable(true)} />
+								))}
+							</div>
+						</div>
 						{addingNew && (
 							<>
 								<BaseButton
