@@ -18,7 +18,7 @@ import CancelIcon from "@tabler/icons/outline/x.svg";
  * @typedef {Object} TraumatologicHistoryProps
  * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
  * @property {Function} getTraumatologicHistory - Function to fetch the traumatologic history of a patient.
- * @property {Function} updateTraumatologicHistory - Function to update or add new traumatologic records for a patient.
+ * @property {Function} updateTraumatologicalHistory - Function to update or add new traumatologic records for a patient.
  * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
@@ -151,8 +151,6 @@ function TraumatologicView({
 	const [yearOptions, setYearOptions] = useState([]);
 	const [isEditable, setIsEditable] = useState(false);
 
-	const isFirstTime = addingNew;
-
 	const birthYearResult = birthdayResource.read();
 	const traumatologicHistoryResult = traumatologicHistoryResource.read();
 
@@ -209,12 +207,13 @@ function TraumatologicView({
 			treatment: null,
 		});
 		setAddingNew(true);
+		setIsEditable(true);
 	};
 
 	const handleSaveNewTrauma = async () => {
 		if (
 			!(selectedTrauma.whichBone && selectedTrauma.year) ||
-			selectedTrauma.treatment === null
+			selectedTrauma.treatment === undefined
 		) {
 			toast.error(
 				"Complete todos los campos requeridos, incluyendo el tipo de tratamiento.",
@@ -222,59 +221,56 @@ function TraumatologicView({
 			return;
 		}
 
-		console.log("Selected Trauma before saving:", selectedTrauma);
-
 		toast.info("Guardando antecedente traumatológico...");
+		const updatedData = [...traumatologicHistory.data];
 
-		const updatedTraumatologicHistory = {
-			data: [...traumatologicHistory.data, selectedTrauma],
-			version: traumatologicHistory.version,
-		};
+		if (selectedTrauma.index !== undefined) {
+			// Si se encuentra el índice, actualizar el registro existente
+			updatedData[selectedTrauma.index] = selectedTrauma;
+		} else {
+			// Si no se encuentra el registro, añadir como nuevo
+			updatedData.push(selectedTrauma);
+		}
 
-		console.log(
-			"Updated Traumatologic History before sending:",
-			updatedTraumatologicHistory,
-		); // Verifica cómo se ha formado el historial completo
-
-		updatedTraumatologicHistory.data.sort((a, b) => b.year - a.year);
+		updatedData.sort(
+			(a, b) => Number.parseInt(b.year) - Number.parseInt(a.year),
+		);
 
 		try {
 			const response = await updateTraumatologicalHistory(
 				id,
-				updatedTraumatologicHistory.data,
+				updatedData,
 				traumatologicHistory.version,
 			);
 
-			console.log("Response from server:", response);
-
 			if (!response.error) {
-				setTraumatologicHistory(updatedTraumatologicHistory);
+				setTraumatologicHistory({ ...traumatologicHistory, data: updatedData });
 				setAddingNew(false);
+				setIsEditable(false);
 				setSelectedTrauma(null);
 				toast.success("Antecedente traumatológico guardado con éxito.");
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
-		} catch (_error) {
-			toast.error(
-				"Hubo un error interno al guardar el registro traumatológico.",
-			);
+		} catch (error) {
+			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
 
-
-	const handleSelectTrauma = (traumatological) => {
+	const handleSelectTrauma = (trauma, index) => {
 		setSelectedTrauma({
-			whichBone: traumatological.whichBone,
-			year: traumatological.year,
-			treatment: traumatological.treatment,
+			...trauma,
+			index: index,
 		});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
-		setAddingNew(false);
+		console.log("Canceling current operation, resetting form...");
 		setSelectedTrauma(null);
+		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	return (
@@ -335,7 +331,7 @@ function TraumatologicView({
 							type="traumatological"
 							year={trauma.year}
 							reasonInfo={trauma.whichBone}
-							onClick={() => handleSelectTrauma(trauma)}
+							onClick={() => handleSelectTrauma(trauma, index)}
 						/>
 					))
 				)}
@@ -432,7 +428,7 @@ function TraumatologicView({
 						<RadioInput
 							label="Cirugía"
 							name="treatment"
-							disabled={!addingNew}
+							disabled={!isEditable}
 							checked={selectedTrauma?.treatment === "Cirugía"}
 							onChange={() =>
 								setSelectedTrauma({
@@ -441,12 +437,11 @@ function TraumatologicView({
 								})
 							}
 							style={{ label: { fontFamily: fonts.textFont } }}
-							disabled={!isEditable}
 						/>
 						<RadioInput
 							label="Conservador (yeso, canal, inmovilizador)"
 							name="treatment"
-							disabled={!addingNew}
+							disabled={!isEditable}
 							checked={selectedTrauma?.treatment === "Conservador"}
 							onChange={() =>
 								setSelectedTrauma({
@@ -455,7 +450,6 @@ function TraumatologicView({
 								})
 							}
 							style={{ label: { fontFamily: fonts.textFont } }}
-							disabled={!isEditable}
 						/>
 					</div>
 
@@ -466,34 +460,6 @@ function TraumatologicView({
 							justifyContent: "center",
 						}}
 					>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								width: "100%",
-							}}
-						>
-							<div style={{ display: "flex", justifyContent: "flex-end" }}>
-								{!addingNew &&
-									(isEditable ? (
-										<div style={{ display: "flex", gap: "1rem" }}>
-											<IconButton
-												icon={CheckIcon}
-												onClick={handleSaveNewTrauma}
-											/>
-											<IconButton
-												icon={CancelIcon}
-												onClick={() => setIsEditable(false)}
-											/>
-										</div>
-									) : (
-										<IconButton
-											icon={EditIcon}
-											onClick={() => setIsEditable(true)}
-										/>
-									))}
-							</div>
-						</div>
 						{addingNew && (
 							<>
 								<BaseButton
@@ -515,6 +481,30 @@ function TraumatologicView({
 								/>
 							</>
 						)}
+					</div>
+					<div
+						style={{ display: "flex", flexDirection: "column", width: "100%" }}
+					>
+						<div style={{ display: "flex", justifyContent: "flex-end" }}>
+							{!addingNew &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNewTrauma}
+										/>
+										<IconButton
+											icon={CancelIcon}
+											onClick={() => setIsEditable(false)}
+										/>
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
 					</div>
 				</div>
 			) : null}
