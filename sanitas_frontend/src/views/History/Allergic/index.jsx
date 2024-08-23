@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -184,8 +184,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		(category) => Array.isArray(category.data) && category.data.length > 0,
 	);
 
-	useEffect(() => { }, []);
-
 	// Event handlers for adding, editing, and saving allergic history records
 	const handleOpenNewForm = () => {
 		setSelectedAllergie({
@@ -212,7 +210,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 
 		toast.info("Guardando antecedente alérgico...");
 
-
 		const updatedAllergy = {
 			name: selectedAllergie.whichAllergie,
 			severity: selectedAllergie.reactionType,
@@ -221,7 +218,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		let updatedMedicalHistory;
 
 		if (isFirstTime) {
-			// Si es la primera vez, agrega un nuevo registro
 			const currentCategoryData =
 				AllergicHistory[selectedAllergie.selectedMed]?.data || [];
 
@@ -238,24 +234,21 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 				[selectedAllergie.selectedMed]: updatedCategory,
 			};
 		} else {
-			// Si estamos editando, reemplaza directamente los datos de la categoría seleccionada
 			const updatedCategory = {
 				...AllergicHistory[selectedAllergie.selectedMed],
 				data: [updatedAllergy], // Reemplaza con el nuevo dato actualizado
 			};
 
-			// Actualiza todo el historial médico con la categoría seleccionada actualizada
 			updatedMedicalHistory = {
 				...AllergicHistory,
 				[selectedAllergie.selectedMed]: updatedCategory,
 			};
 		}
 
-
 		try {
 			const response = await updateAllergicHistory(id, updatedMedicalHistory);
 			if (!response.error) {
-				setAllergicHistory(updatedMedicalHistory); // Actualiza el estado local
+				setAllergicHistory(updatedMedicalHistory);
 				setAddingNew(false);
 				setSelectedAllergie(null);
 				setIsEditable(false);
@@ -268,16 +261,14 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		}
 	};
 
-	// Seleccionar una tarjeta para editarla
 	const handleSelectAllergie = (allergy) => {
 		setSelectedAllergie({
-			selectedMed: allergy.selectedMed || "climateChange", // Este valor debe ser dinámico según el tipo de alergia
+			selectedMed: allergy.selectedMed || "climateChange",
 			whichAllergie: allergy.name || allergy.source || allergy.type,
 			reactionType: allergy.severity,
 		});
 		setIsEditable(false);
 		setAddingNew(false);
-
 	};
 
 	const handleFieldChange = (fieldName, value) => {
@@ -359,9 +350,9 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							return (
 								<InformationCard
 									key={`${category}-${allergy.name || allergy.id}`}
-									type="allergy" // Ajusta esto según sea necesario
-									disease={allergy.name || "Sin Nombre"} // Ajusta esto para reflejar correctamente la alergia
-									reasonInfo={allergy.severity || "Sin Severidad"} // Ajusta esto para reflejar correctamente la severidad
+									type="allergy"
+									disease={allergy.name || "Sin Nombre"}
+									reasonInfo={allergy.severity || "Sin Severidad"}
 									onClick={() =>
 										handleSelectAllergie({ ...allergy, selectedMed: category })
 									}
@@ -477,39 +468,39 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 
 					<div
 						style={{
+							display: "flex",
+							flexDirection: "column",
+							width: "100%",
+						}}
+					>
+						<div style={{ display: "flex", justifyContent: "flex-end" }}>
+							{!addingNew &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNewAllergie}
+										/>
+										<IconButton
+											icon={CancelIcon}
+											onClick={() => setIsEditable(false)}
+										/>
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
+					</div>
+					<div
+						style={{
 							paddingTop: "5rem",
 							display: "flex",
 							justifyContent: "center",
 						}}
 					>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								width: "100%",
-							}}
-						>
-							<div style={{ display: "flex", justifyContent: "flex-end" }}>
-								{!addingNew &&
-									(isEditable ? (
-										<div style={{ display: "flex", gap: "1rem" }}>
-											<IconButton
-												icon={CheckIcon}
-												onClick={handleSaveNewAllergie}
-											/>
-											<IconButton
-												icon={CancelIcon}
-												onClick={() => setIsEditable(false)}
-											/>
-										</div>
-									) : (
-										<IconButton
-											icon={EditIcon}
-											onClick={() => setIsEditable(true)}
-										/>
-									))}
-							</div>
-						</div>
 						{addingNew && (
 							<>
 								<BaseButton
