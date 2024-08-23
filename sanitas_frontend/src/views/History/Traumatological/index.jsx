@@ -1,6 +1,10 @@
 import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
+import IconButton from "src/components/Button/Icon";
 import BaseButton from "src/components/Button/Base/index";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -143,7 +147,7 @@ function TraumatologicView({
 	updateTraumatologicalHistory,
 }) {
 	const [selectedTrauma, setSelectedTrauma] = useState(null);
-	const [addingNew, setAddingNew] = useState(false);
+	const [isEditable, setisEditable] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
 
 	const birthYearResult = birthdayResource.read();
@@ -201,59 +205,62 @@ function TraumatologicView({
 			year: currentYear.toString(),
 			treatment: null,
 		});
-		setAddingNew(true);
+		setisEditable(true);
 	};
 
 	const handleSaveNewTrauma = async () => {
-		if (
-			!(selectedTrauma.whichBone && selectedTrauma.year) ||
-			selectedTrauma.treatment === null
-		) {
-			toast.error(
-				"Complete todos los campos requeridos, incluyendo el tipo de tratamiento.",
-			);
+		if (!(selectedTrauma.whichBone && selectedTrauma.year) || selectedTrauma.treatment === null) {
+			toast.error("Complete todos los campos requeridos, incluyendo el tipo de tratamiento.");
 			return;
 		}
-
-		console.log("Selected Trauma before saving:", selectedTrauma);
-
+	
 		toast.info("Guardando antecedente traumatológico...");
-
-		const updatedTraumatologicHistory = {
-			data: [...traumatologicHistory.data, selectedTrauma],
-			version: traumatologicHistory.version,
-		};
-
-		console.log(
-			"Updated Traumatologic History before sending:",
-			updatedTraumatologicHistory,
-		); // Verifica cómo se ha formado el historial completo
-
-		updatedTraumatologicHistory.data.sort((a, b) => b.year - a.year);
-
+	
+		// Copia los datos actuales
+		let updatedTraumaData = [...traumatologicHistory.data];
+	
+		// Busca el índice del trauma existente que coincida con el hueso
+		const traumaIndex = updatedTraumaData.findIndex(
+			(trauma) => trauma.whichBone === selectedTrauma.whichBone
+		);
+	
+		if (traumaIndex !== -1) {
+			// Si el trauma ya existe, actualiza ese objeto
+			updatedTraumaData[traumaIndex] = selectedTrauma;
+		} else {
+			// Si no existe, agrega el nuevo trauma
+			updatedTraumaData.push(selectedTrauma);
+		}
+	
+		// Ordena los traumas por año
+		updatedTraumaData.sort((a, b) => Number.parseInt(b.year) - Number.parseInt(a.year));
+	
 		try {
 			const response = await updateTraumatologicalHistory(
 				id,
-				updatedTraumatologicHistory.data,
+				updatedTraumaData,
 				traumatologicHistory.version,
 			);
-
-			console.log("Response from server:", response);
-
+	
 			if (!response.error) {
-				setTraumatologicHistory(updatedTraumatologicHistory);
-				setAddingNew(false);
+				// Actualiza el estado local con los nuevos datos
+				setTraumatologicHistory({
+					data: updatedTraumaData,
+					version: traumatologicHistory.version + 1,
+				});
+				setisEditable(false);
 				setSelectedTrauma(null);
 				toast.success("Antecedente traumatológico guardado con éxito.");
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
 		} catch (_error) {
-			toast.error(
-				"Hubo un error interno al guardar el registro traumatológico.",
-			);
+			toast.error("Hubo un error interno al guardar el registro traumatológico.");
 		}
 	};
+	
+	
+	
 
 	const handleSelectTrauma = (traumatological) => {
 		setSelectedTrauma({
@@ -261,12 +268,47 @@ function TraumatologicView({
 			year: traumatological.year,
 			treatment: traumatological.treatment,
 		});
-		setAddingNew(false);
+		setisEditable(false);
 	};
 
+	const handleEdit = () => {
+		setisEditable(true);
+	};
+/** 
+	const handleSaveEdit = async () => {
+		// Validation logic
+		if (!selectedTrauma.whichBone || !selectedTrauma.year || selectedTrauma.treatment === null) {
+			toast.error("Complete todos los campos requeridos.");
+			return;
+		}
+
+		// Logic for saving the edited trauma
+		const updatedTraumatologicHistory = {
+			...traumatologicHistory,
+			data: traumatologicHistory.data.map((trauma) =>
+				trauma.year === selectedTrauma.year ? selectedTrauma : trauma
+			),
+		};
+
+		// API call to update the traumatologic history
+		try {
+			const response = await updateTraumatologicalHistory(id, updatedTraumatologicHistory.data, traumatologicHistory.version);
+			if (!response.error) {
+				setTraumatologicHistory(updatedTraumatologicHistory);
+				setisEditable(false);
+				toast.success("Antecedente traumatológico editado con éxito.");
+			} else {
+				toast.error(`Error al editar: ${response.error}`);
+			}
+		} catch (_error) {
+			toast.error("Hubo un error interno al editar el registro.");
+		}
+	};
+/** */
 	const handleCancel = () => {
-		setAddingNew(false);
 		setSelectedTrauma(null);
+		setisEditable(false);
+		toast.info("Edición cancelada.");
 	};
 
 	return (
@@ -333,7 +375,7 @@ function TraumatologicView({
 				)}
 			</div>
 
-			{addingNew || selectedTrauma ? (
+			{isEditable || selectedTrauma ? (
 				<div
 					style={{
 						border: `1px solid ${colors.primaryBackground}`,
@@ -365,7 +407,7 @@ function TraumatologicView({
 							})
 						}
 						placeholder="Ingrese el hueso fracturado"
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						style={{
 							width: "95%",
 							height: "2.5rem",
@@ -387,7 +429,7 @@ function TraumatologicView({
 					<DropdownMenu
 						options={yearOptions}
 						value={selectedTrauma.year}
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						onChange={(e) =>
 							setSelectedTrauma({
 								...selectedTrauma,
@@ -423,7 +465,7 @@ function TraumatologicView({
 						<RadioInput
 							label="Cirugía"
 							name="treatment"
-							disabled={!addingNew}
+							disabled={!isEditable}
 							checked={selectedTrauma?.treatment === "Cirugía"}
 							onChange={() =>
 								setSelectedTrauma({
@@ -434,9 +476,9 @@ function TraumatologicView({
 							style={{ label: { fontFamily: fonts.textFont } }}
 						/>
 						<RadioInput
-							label="Conservador (yeso, canal, inmovilizador)"
+							label="Conservador"
 							name="treatment"
-							disabled={!addingNew}
+							disabled={!isEditable}
 							checked={selectedTrauma?.treatment === "Conservador"}
 							onChange={() =>
 								setSelectedTrauma({
@@ -448,35 +490,26 @@ function TraumatologicView({
 						/>
 					</div>
 
-					<div
-						style={{
-							paddingTop: "5rem",
-							display: "flex",
-							justifyContent: "center",
-						}}
-					>
-						{addingNew && (
-							<>
-								<BaseButton
-									text="Guardar"
-									onClick={handleSaveNewTrauma}
-									style={{ width: "30%", height: "3rem" }}
-								/>
-								<div style={{ width: "1rem" }} />
-								<BaseButton
-									text="Cancelar"
-									onClick={handleCancel}
-									style={{
-										width: "30%",
-										height: "3rem",
-										backgroundColor: "#fff",
-										color: colors.primaryBackground,
-										border: `1.5px solid ${colors.primaryBackground}`,
-									}}
-								/>
-							</>
-						)}
-					</div>
+					{isEditable ? (
+						<div style={{ display: "flex", justifyContent: "space-between" }}>
+							<IconButton
+								icon={CheckIcon}
+								onClick={handleSaveNewTrauma}
+								tooltip="Confirmar"
+							/>
+							<IconButton
+								icon={CancelIcon}
+								onClick={handleCancel}
+								tooltip="Cancelar"
+							/>
+						</div>
+					) : (
+						<IconButton
+							icon={EditIcon}
+							onClick={() => setisEditable(true)}
+							tooltip="Editar"
+						/>
+					)}
 				</div>
 			) : null}
 		</div>
