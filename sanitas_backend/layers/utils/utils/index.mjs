@@ -245,7 +245,7 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
  * @returns {APICollaborator} The collaborator object the API must return.
  */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-	const {  codigo: code, area, id_paciente: idPatient } = dbCollaborator;
+	const { codigo: code, area, id_paciente: idPatient } = dbCollaborator;
 	return {
 		code,
 		area,
@@ -254,13 +254,13 @@ export function mapToAPICollaboratorInfo(dbCollaborator) {
 }
 
 /**
-	* Maps an APICollaborator into a DBCollaborator
-	* @param {APICollaborator} apiCollaborator 
-	* @returns {DBCollaborator}
-	*/
+ * Maps an APICollaborator into a DBCollaborator
+ * @param {APICollaborator} apiCollaborator
+ * @returns {DBCollaborator}
+ */
 export function mapToDBCollaborator(apiCollaborator) {
-	const {code: codigo, area, idPatient: id_paciente} = apiCollaborator;
-	return {codigo, area, id_paciente}
+	const { code: codigo, area, idPatient: id_paciente } = apiCollaborator;
+	return { codigo, area, id_paciente };
 }
 
 /**

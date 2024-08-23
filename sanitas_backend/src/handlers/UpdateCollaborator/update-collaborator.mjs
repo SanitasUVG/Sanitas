@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPICollaboratorInfo, mapToDBCollaboratorInfo } from "utils/index.mjs";
+import { createResponse, mapToAPICollaboratorInfo } from "utils/index.mjs";
 
 export const updateCollaboratorHandler = async (event, context) => {
 	withRequest(event, context);
@@ -8,7 +8,10 @@ export const updateCollaboratorHandler = async (event, context) => {
 
 	const responseBuilder = createResponse().addCORSHeaders("PUT");
 	if (event.httpMethod !== "PUT") {
-		return responseBuilder.setStatusCode(405).setBody({error: "Method Not Allowed"}).build();
+		return responseBuilder
+			.setStatusCode(405)
+			.setBody({ error: "Method Not Allowed" })
+			.build();
 	}
 
 	/** @type {import("utils/index.mjs").APICollaborator} */
@@ -30,12 +33,18 @@ export const updateCollaboratorHandler = async (event, context) => {
 
 		if (!collaboratorData.code) {
 			logger.error("No code provided!");
-			return responseBuilder.setStatusCode(400).setBody({error: "Invalid input: Missing or empty required fields."}).build()
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ error: "Invalid input: Missing or empty required fields." })
+				.build();
 		}
 
 		if (!collaboratorData.idPatient) {
 			logger.error("No patientId provided!");
-			return responseBuilder.setStatusCode(400).setBody({error: "Invalid input: Missing or empty required fields."}).build()
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ error: "Invalid input: Missing or empty required fields." })
+				.build();
 		}
 
 		const query = `
@@ -67,18 +76,22 @@ export const updateCollaboratorHandler = async (event, context) => {
 		}
 
 		const updatedCollaborator = result.rows[0];
-		const apiUpdatedCollaborator = mapToAPICollaboratorInfo(updatedCollaborator);
-		logger.info({apiUpdatedCollaborator}, "Datos del colaborador actualizados exitosamente.");
+		const apiUpdatedCollaborator =
+			mapToAPICollaboratorInfo(updatedCollaborator);
+		logger.info(
+			{ apiUpdatedCollaborator },
+			"Datos del colaborador actualizados exitosamente.",
+		);
 
 		return responseBuilder
 			.setStatusCode(200)
 			.setBody(apiUpdatedCollaborator)
 			.build();
 	} catch (error) {
-		logger.error({error}, "Error querying database:");
+		logger.error({ error }, "Error querying database:");
 		await client?.end();
 
-if (error.code === "23503") {
+		if (error.code === "23503") {
 			return responseBuilder
 				.setStatusCode(404)
 				.setBody({ error: "Patient not found with the provided ID." })
