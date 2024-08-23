@@ -1,52 +1,6 @@
 import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { mapToAPIPatient } from "utils";
-import { createResponse, decodeJWT } from "utils/index.mjs";
-
-function mapToDbPatient(apiPatient) {
-	const {
-		id,
-		cui,
-		isWoman: es_mujer,
-		email: correo,
-		names: nombres,
-		lastNames: apellidos,
-
-		contactName1: nombre_contacto1,
-		contactKinship1: parentesco_contacto1,
-		contactPhone1: telefono_contacto1,
-
-		contactName2: nombre_contacto2,
-		contactKinship2: parentesco_contacto2,
-		contactPhone2: telefono_contacto2,
-
-		bloodType: tipo_sangre,
-		address: direccion,
-		insuranceId: id_seguro,
-		birthdate: fecha_nacimiento,
-		phone: telefono,
-	} = apiPatient;
-
-	return {
-		id,
-		cui,
-		es_mujer,
-		correo,
-		nombres,
-		apellidos,
-		nombre_contacto1,
-		parentesco_contacto1,
-		telefono_contacto1,
-		nombre_contacto2,
-		parentesco_contacto2,
-		telefono_contacto2,
-		tipo_sangre,
-		direccion,
-		id_seguro,
-		fecha_nacimiento,
-		telefono,
-	};
-}
+import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: The function isn't that complex, it's just really large.
 export const updatePatientHandler = async (event, context) => {
@@ -74,8 +28,8 @@ export const updatePatientHandler = async (event, context) => {
 	const { email } = tokenInfo;
 	logger.info({ tokenInfo }, "JWT Parsed!");
 
-	const apiPatientData = JSON.parse(event.body);
-	const patientData = mapToDbPatient(apiPatientData);
+	/** @type {import("utils/index.mjs").APIPatient} */
+	const patientData = JSON.parse(event.body);
 	logger.info(process.env, "Las variables de entorno son:");
 
 	let client;
@@ -138,24 +92,22 @@ export const updatePatientHandler = async (event, context) => {
 
 		const values = [
 			patientData.id,
-			patientData.nombres || null,
-			patientData.apellidos || null,
-			patientData.nombre_contacto1 || null,
-			patientData.parentesco_contacto1 || null,
-			patientData.telefono_contacto1 || null,
-			patientData.nombre_contacto2 || null,
-			patientData.parentesco_contacto2 || null,
-			patientData.telefono_contacto2 || null,
-			patientData.tipo_sangre || null,
-			patientData.direccion || null,
-			patientData.id_seguro || null,
-			patientData.fecha_nacimiento
-				? new Date(patientData.fecha_nacimiento)
-				: null,
-			patientData.telefono || null,
+			patientData.names || null,
+			patientData.lastNames || null,
+			patientData.contactName1 || null,
+			patientData.contactKinship1 || null,
+			patientData.contactPhone1 || null,
+			patientData.contactName2 || null,
+			patientData.contactKinship2 || null,
+			patientData.contactPhone2 || null,
+			patientData.bloodType || null,
+			patientData.address || null,
+			patientData.insuranceId || null,
+			patientData.birthdate ? new Date(patientData.birthdate) : null,
+			patientData.phone || null,
 			patientData.cui || null,
-			patientData.correo || null,
-			patientData.es_mujer !== null ? patientData.es_mujer : null,
+			patientData.email || null,
+			patientData.isWoman !== null ? patientData.isWoman : null,
 		];
 
 		logger.info({ query, values }, "Consulta SQL y valores:");
