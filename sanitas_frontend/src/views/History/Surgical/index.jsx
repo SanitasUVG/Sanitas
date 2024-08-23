@@ -11,7 +11,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**
- * @typedef {Object} SurgicalHistoryProps
+ * @typedef {Object} StudentSurgicalHistoryProps
  * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
  * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
  * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
@@ -20,7 +20,7 @@ import WrapPromise from "src/utils/promiseWrapper";
  *
  * Component to manage and display a patient's surgical history, allowing users to add and view records.
  *
- * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
+ * @param {StudentSurgicalHistoryProps} props - The props passed to the StudentSurgicalHistory component.
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
 export function SurgicalHistory({
@@ -147,6 +147,7 @@ function SurgicalView({
 	birthdayResource,
 	surgicalHistoryResource,
 	updateSurgicalHistory,
+	getRoleResource
 }) {
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);

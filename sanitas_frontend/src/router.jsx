@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import WrapPromise from "src/utils/promiseWrapper";
 import RequireAuth from "src/components/RequireAuth";
 import {
 	getSession,
@@ -30,11 +31,13 @@ import {
 	updatePersonalHistory,
 	updateStudentPatientInformation,
 	updateSurgicalHistory,
+	updateStudentSurgicalHistory,
 	updateTraumatologicalHistory,
 	getAllergicHistory,
 	updateAllergicHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
+	getRole
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -42,6 +45,7 @@ import { FamiliarHistory } from "./views/History/Familiar";
 import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
+import { StudentSurgicalHistory } from "./views/History/Students/StudentSurgical"
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -49,6 +53,7 @@ import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
+import StudentWelcomeView from "./views/StudentWelcomeView";
 
 const useStore = createEmptyStore();
 
@@ -58,6 +63,8 @@ export const NAV_PATHS = {
 	LOGIN_USER: "/login",
 	ADD_PATIENT: "/new",
 	UPDATE_PATIENT: "/update",
+	STUDENT_WELCOME: "/student-welcome",	
+	PATIENT_FORM: "/form"
 };
 
 export const UPDATE_PATIENT_NAV_PATHS = {
@@ -68,9 +75,13 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
-	PSICHIATRIC_HISTORY: "psichiatric",
+	PSICHIATRIC_HISTORY: "psichiatric"
 	// TODO: Add other Navigation routes...
 };
+
+export const PATIENT_FORM_NAV_PATHS = {
+	STUDENT_SURGICAL_HISTORY: "student-surgical"
+}
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
@@ -124,6 +135,12 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	// TODO: Add other Navigation routes...
 };
 
+const navigateToStu = (navigate) => {
+	navigate(
+		`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.GENERAL_INFORMATION}`,
+	);
+}
+
 const updateInfoView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -151,6 +168,21 @@ const surgicalHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getSurgicalHistory={getSurgicalHistory}
 			updateSurgicalHistory={updateSurgicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentSurgicalHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentSurgicalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getStudentSurgicalHistory={getSurgicalHistory}
+			updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
@@ -271,7 +303,16 @@ export const ROUTES = [
 	{
 		path: NAV_PATHS.LOGIN_USER,
 		element: (
-			<LoginView loginUser={IS_PRODUCTION ? signInUser : mockSingInUser} />
+			<LoginView 
+				loginUser={IS_PRODUCTION ? signInUser : mockSingInUser}  
+				getRole={getRole}
+			/>
+		),
+	},
+	{		
+		path: NAV_PATHS.STUDENT_WELCOME,
+		element: (
+			<StudentWelcomeView/>
 		),
 	},
 	{
@@ -323,8 +364,22 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
 				element: psichiatricHistoryView,
-			},
+			}
 			// TODO: Add more routes...
 		],
 	},
+	{
+		path: NAV_PATHS.PATIENT_FORM,
+		element: <Outlet />,
+		children: [
+			{
+				index: true,
+				element: studentSurgicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
+				element: studentSurgicalHistoryView,
+			},
+		]
+	}
 ];
