@@ -262,6 +262,7 @@ function TraumatologicView({
 		}
 	};
 
+
 	const handleSelectTrauma = (traumatological) => {
 		setSelectedTrauma({
 			whichBone: traumatological.whichBone,
@@ -372,13 +373,13 @@ function TraumatologicView({
 							})
 						}
 						placeholder="Ingrese el hueso fracturado"
-						readOnly={!addingNew}
 						style={{
 							width: "95%",
 							height: "2.5rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
+						disabled={!isEditable}
 					/>
 
 					<p
@@ -407,6 +408,7 @@ function TraumatologicView({
 							option: {},
 							indicator: {},
 						}}
+						disabled={!isEditable}
 					/>
 
 					<p
@@ -439,6 +441,7 @@ function TraumatologicView({
 								})
 							}
 							style={{ label: { fontFamily: fonts.textFont } }}
+							disabled={!isEditable}
 						/>
 						<RadioInput
 							label="Conservador (yeso, canal, inmovilizador)"
@@ -452,6 +455,7 @@ function TraumatologicView({
 								})
 							}
 							style={{ label: { fontFamily: fonts.textFont } }}
+							disabled={!isEditable}
 						/>
 					</div>
 
