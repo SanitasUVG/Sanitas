@@ -1,45 +1,19 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils";
-
-// Funciones de mapeo
-function mapToAPICollaborator(dbCollaborator) {
-	const { codigo: code, area, id_paciente: idPatient } = dbCollaborator;
-
-	return {
-		code,
-		area,
-		idPatient,
-	};
-}
-
-function mapToDbCollaborator(apiCollaborator) {
-	const { code: codigo, area, idPatient: id_paciente } = apiCollaborator;
-
-	return {
-		codigo,
-		area,
-		id_paciente,
-	};
-}
+import { createResponse, mapToAPICollaboratorInfo, mapToDBCollaboratorInfo } from "utils/index.mjs";
 
 export const updateCollaboratorHandler = async (event, context) => {
 	withRequest(event, context);
-
 	logger.info({ event }, "Event received:");
 
+	const responseBuilder = createResponse().addCORSHeaders("PUT");
 	if (event.httpMethod !== "PUT") {
-		throw new Error(
-			`updateCollaboratorHandler solo acepta el método PUT, intentaste: ${event.httpMethod}`,
-		);
+		return responseBuilder.setStatusCode(405).setBody({error: "Method Not Allowed"}).build();
 	}
 
-	const apiCollaboratorData = JSON.parse(event.body);
-	logger.info({ apiCollaboratorData }, "Parsed API Collaborator Data:");
-
-	const collaboratorData = mapToDbCollaborator(apiCollaboratorData);
-	logger.info({ collaboratorData }, "Mapped DB Collaborator Data:");
-
+	/** @type {import("utils/index.mjs").APICollaborator} */
+	const collaboratorData = JSON.parse(event.body);
+	logger.info({ collaboratorData }, "Parsed API Collaborator Data:");
 	logger.info(process.env, "Las variables de entorno son:");
 
 	let client;
@@ -54,54 +28,65 @@ export const updateCollaboratorHandler = async (event, context) => {
 			"Actualizando datos del colaborador en la base de datos...",
 		);
 
-		if (!collaboratorData.codigo) {
-			throw new Error("Código es requerido.");
+		if (!collaboratorData.code) {
+			logger.error("No code provided!");
+			return responseBuilder.setStatusCode(400).setBody({error: "Invalid input: Missing or empty required fields."}).build()
+		}
+
+		if (!collaboratorData.idPatient) {
+			logger.error("No patientId provided!");
+			return responseBuilder.setStatusCode(400).setBody({error: "Invalid input: Missing or empty required fields."}).build()
 		}
 
 		const query = `
-      UPDATE colaborador
-      SET 
-        area = COALESCE($2, area),
-        id_paciente = COALESCE($3, id_paciente)
-      WHERE codigo = $1
-      RETURNING *
-    `;
+			INSERT INTO colaborador (id_paciente, codigo, area)
+			VALUES ($1, $2, $3)
+			ON CONFLICT (id_paciente) DO UPDATE
+			SET codigo = COALESCE(EXCLUDED.codigo, colaborador.codigo),
+					area = COALESCE(EXCLUDED.area, colaborador.area)
+			RETURNING *;
+		`;
 		const values = [
-			collaboratorData.codigo,
+			collaboratorData.idPatient || null,
+			collaboratorData.code,
 			collaboratorData.area || null,
-			collaboratorData.id_paciente || null,
 		];
 
-		logger.info({ query, values }, "Consulta SQL y valores:");
-
+		logger.info({ query, values }, "Inserting/Updating values in DB...");
 		const result = await client.query(query, values);
-		logger.info({ result }, "Query result:");
+		logger.info("Done inserting/updating!");
 
 		if (result.rowCount === 0) {
-			throw new Error(
-				"No se encontraron registros con el código proporcionado.",
-			);
+			logger.error("No value was inserted/updated in the DB!");
+			return responseBuilder
+				.setStatusCode(404)
+				.setBody({
+					message: "Failed to insert or update traumatologic history.",
+				})
+				.build();
 		}
 
 		const updatedCollaborator = result.rows[0];
-		logger.info({ updatedCollaborator }, "Updated Collaborator Data:");
+		const apiUpdatedCollaborator = mapToAPICollaboratorInfo(updatedCollaborator);
+		logger.info({apiUpdatedCollaborator}, "Datos del colaborador actualizados exitosamente.");
 
-		const apiUpdatedCollaborator = mapToAPICollaborator(updatedCollaborator);
-
-		logger.info("Datos del colaborador actualizados exitosamente.");
-
-		return createResponse()
+		return responseBuilder
 			.setStatusCode(200)
-			.addCORSHeaders()
 			.setBody(apiUpdatedCollaborator)
 			.build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		logger.error({error}, "Error querying database:");
 		await client?.end();
 
-		return createResponse()
+if (error.code === "23503") {
+			return responseBuilder
+				.setStatusCode(404)
+				.setBody({ error: "Patient not found with the provided ID." })
+				.build();
+		}
+
+		return responseBuilder
 			.setStatusCode(500)
-			.addCORSHeaders()
 			.setBody({ error: "Internal Server Error" })
 			.build();
 	}

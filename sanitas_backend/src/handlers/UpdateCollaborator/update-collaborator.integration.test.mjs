@@ -1,14 +1,14 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import { LOCAL_API_URL } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}/patient/collaborator/`;
 
-describe("Collaborator Handler", () => {
+describe("Collaborator PUT endpoint", () => {
 	const collaboratorId = 2;
 	const fakeCollaboratorId = 9999;
 
-	it("should return 403 if no ID is provided", async () => {
+	test("should return 403 if no ID is provided", async () => {
 		try {
 			await axios.get(API_URL); // Petición GET sin ID
 		} catch (error) {
@@ -16,7 +16,7 @@ describe("Collaborator Handler", () => {
 		}
 	});
 
-	it("should return a collaborator", async () => {
+	test("should return a collaborator", async () => {
 		const response = await axios.get(API_URL + collaboratorId);
 
 		expect(response).toBeDefined();
@@ -29,7 +29,7 @@ describe("Collaborator Handler", () => {
 		expect(collaborator.patientId).toBe(2);
 	});
 
-	it("should not find a collaborator", async () => {
+	test("should not find a collaborator", async () => {
 		try {
 			await axios.get(API_URL + fakeCollaboratorId);
 		} catch (error) {

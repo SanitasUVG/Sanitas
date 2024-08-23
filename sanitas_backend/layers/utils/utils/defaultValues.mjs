@@ -349,3 +349,4 @@ export const genDefaultPsychiatricHistory = () => ({
 		data: { ill: "", medication: "", dose: "", frecuency: "", ube: false },
 	},
 });
+
