@@ -71,9 +71,7 @@ describe("Update Patient integration tests", () => {
 
 		// Verificar que el error sea el esperado
 		expect(response.status).toBe(400);
-		expect(response.data.error).toBe(
-			"No se encontraron registros con el ID proporcionado.",
-		);
+		expect(response.data.error).toBe("No patient with the given ID found!");
 	});
 
 	test("a patient can't call the endpoint", async () => {

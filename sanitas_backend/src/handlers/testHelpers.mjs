@@ -35,6 +35,15 @@ export const generateUniqueCUI = () => {
 };
 
 /**
+ * @returns {string} The randomly generated student carnet
+ */
+export const generateRandomCarnet = () => {
+	const timestamp = Date.now();
+	const randomNum = Math.floor(Math.random() * 100);
+	return `${randomNum}${timestamp}`.slice(0, 10);
+};
+
+/**
  * Creates an Authorization header for the axios library.
  * @param {string} jwt - The JWT token to use for authorization.
  * @returns { {Authorization: string} }

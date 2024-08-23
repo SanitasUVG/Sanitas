@@ -46,15 +46,36 @@ describe("Collaborator PUT endpoint", () => {
 			validateStatus: () => true,
 		});
 
-		if (response.status !== 200) {
+		if (response.status !== 404) {
 			console.log(response.data);
 		}
-		expect(response.status).toBe(400);
+		expect(response.status).toBe(404);
 
 		const responseBody = response.data;
 		expect(responseBody.error).toEqual(
 			"Patient not found with the provided ID.",
 		);
+	});
+
+	test("Can't repeat collaborator code two times", async () => {
+		const headers = createAuthorizationHeader(createDoctorJWT());
+		const payload = generateValidPayload(1);
+		payload.code = "C0876";
+
+		await axios.put(API_URL, payload, {
+			headers,
+		});
+
+		payload.idPatient = 2;
+		const response = await axios.put(API_URL, payload, {
+			headers,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toEqual(400);
+		expect(response.data).toEqual({
+			error: "Collaborator code already exists!",
+		});
 	});
 
 	test("a patient can't call the endpoint", async () => {

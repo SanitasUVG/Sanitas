@@ -124,18 +124,17 @@ export const updateCollaboratorHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error({ error }, "Error querying database:");
-		await client?.end();
 
 		if (error.code === "23503") {
 			return responseBuilder
-				.setStatusCode(400)
+				.setStatusCode(404)
 				.setBody({ error: "Patient not found with the provided ID." })
 				.build();
 		}
 
 		if (error.code === "23505") {
 			return responseBuilder
-				.setStatusCode(404)
+				.setStatusCode(400)
 				.setBody({ error: "Collaborator code already exists!" })
 				.build();
 		}
@@ -144,5 +143,8 @@ export const updateCollaboratorHandler = async (event, context) => {
 			.setStatusCode(500)
 			.setBody({ error: "Internal Server Error" })
 			.build();
+	} finally {
+		client?.end();
+		logger.info("Database connection closed!");
 	}
 };
