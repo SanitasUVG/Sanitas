@@ -1,39 +1,87 @@
 import { describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}/patient/collaborator/`;
 
+/**
+ * Creates a valid payload for this endpoint.
+ * @param {number} idPatient
+ * @returns {import("utils/index.mjs").APICollaborator}
+ */
+function generateValidPayload(idPatient) {
+	return {
+		idPatient,
+		code: "C002",
+		area: "Computación",
+	};
+}
+
 describe("Collaborator PUT endpoint", () => {
-	const collaboratorId = 2;
-	const fakeCollaboratorId = 9999;
+	test("can update collaborator data", async () => {
+		const payload = generateValidPayload(1);
+		const headers = createAuthorizationHeader(createDoctorJWT());
+		const response = await axios.put(API_URL, payload, { headers });
 
-	test("should return 403 if no ID is provided", async () => {
-		try {
-			await axios.get(API_URL); // Petición GET sin ID
-		} catch (error) {
-			expect(error.response.status).toBe(403);
-		}
-	});
-
-	test("should return a collaborator", async () => {
-		const response = await axios.get(API_URL + collaboratorId);
-
-		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
 
 		const collaborator = response.data;
-		expect(collaborator).toBeDefined();
-		expect(collaborator.code).toBe("C001");
-		expect(collaborator.area).toBe("Administración");
-		expect(collaborator.patientId).toBe(2);
+		expect(collaborator.idPatient).toBe(1);
+		expect(collaborator.code).toBe(payload.code);
+		expect(collaborator.area).toBe(payload.area);
 	});
 
-	test("should not find a collaborator", async () => {
-		try {
-			await axios.get(API_URL + fakeCollaboratorId);
-		} catch (error) {
-			expect(error.response.status).toBe(404);
+	test("fails with nonexistent patient id", async () => {
+		const payload = generateValidPayload(99999);
+		payload.code = "CU004";
+		const headers = createAuthorizationHeader(createDoctorJWT());
+		const response = await axios.put(API_URL, payload, {
+			headers,
+			validateStatus: () => true,
+		});
+
+		if (response.status !== 200) {
+			console.log(response.data);
 		}
+		expect(response.status).toBe(400);
+
+		const responseBody = response.data;
+		expect(responseBody.error).toEqual(
+			"Patient not found with the provided ID.",
+		);
+	});
+
+	test("a patient can't call the endpoint", async () => {
+		const payload = generateValidPayload(1);
+		const patientHeaders = createAuthorizationHeader(createPatientJWT());
+
+		const response = await axios.put(API_URL, payload, {
+			headers: patientHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.data).toEqual({
+			error: "Unauthorized, you're not a doctor!",
+		});
+	});
+
+	test("can't be called by a malformed JWT", async () => {
+		const payload = generateValidPayload(1);
+		const invalidAuthorization = createAuthorizationHeader(createInvalidJWT());
+
+		const response = await axios.put(API_URL, payload, {
+			headers: invalidAuthorization,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
 });
