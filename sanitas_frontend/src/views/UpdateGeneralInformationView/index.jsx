@@ -28,7 +28,7 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @property {string|null} contactPhone2
  * @property {string|null} bloodType
  * @property {string|null} address
- * @property {number | undefined} insuranceId
+ * @property {string | undefined} insurance
  * @property {string} birthdate
  * @property {string|null} phone
  */
@@ -409,6 +409,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
 		const response = generalInformationResource.read();
 
+		/** @type {[PatientInfo, (data: PatientInfo) => void]} */
 		const [patientData, setPatientData] = useState({
 			...response.result,
 			birthdate: formatDate(response.result?.birthdate),
@@ -606,13 +607,13 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 						disabled={!editMode}
 					/>
 
-					<label style={styles.label}>ID del seguro:</label>
+					<label style={styles.label}>Seguro:</label>
 					<div style={{ paddingBottom: "2rem", width: "100%" }}>
 						<BaseInput
-							type="number"
-							value={patientData.insuranceId || ""}
+							type="text"
+							value={patientData.insurance || ""}
 							onChange={(e) =>
-								setPatientData({ ...patientData, insuranceId: e.target.value })
+								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={{ width: "18.75rem" }}
 							disabled={!editMode}

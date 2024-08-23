@@ -1,7 +1,3 @@
-INSERT INTO SEGURO (NOMBRE, ESTADO_ACTIVO) VALUES
-('Seguro Vida', TRUE),
-('Seguro Salud', TRUE);
-
 INSERT INTO USUARIO (EMAIL, TIPO) VALUES
 ('admin@example.com', 'Administrador'),
 ('doctor1@example.com', 'Doctor'),
@@ -25,7 +21,7 @@ INSERT INTO PACIENTE (
     TELEFONO_CONTACTO2,
     TIPO_SANGRE,
     DIRECCION,
-    ID_SEGURO,
+    SEGURO,
     FECHA_NACIMIENTO,
     TELEFONO
 ) VALUES

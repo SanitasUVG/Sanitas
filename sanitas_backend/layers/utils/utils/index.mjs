@@ -33,14 +33,14 @@ export function decodeJWT(jwt) {
  *
  * @property {string|null} tipo_sangre
  * @property {string|null} direccion
- * @property {number | null} id_seguro
+ * @property {string | null} seguro
  * @property {string} fecha_nacimiento
  * @property {string|null} telefono
  */
 
 /**
  * @typedef {Object} APIPatient
- * @property {number} id
+ * @property {number} patientId
  * @property {string} cui
  * @property {boolean} isWoman
  * @property {string|null} email
@@ -83,7 +83,7 @@ export function decodeJWT(jwt) {
  */
 export function mapToAPIPatient(dbPatient) {
 	const {
-		id,
+		id: patientId,
 		cui,
 		es_mujer: isWoman,
 		correo: email,
@@ -106,7 +106,7 @@ export function mapToAPIPatient(dbPatient) {
 	} = dbPatient;
 
 	return {
-		id,
+		patientId,
 		cui,
 		email,
 		isWoman,

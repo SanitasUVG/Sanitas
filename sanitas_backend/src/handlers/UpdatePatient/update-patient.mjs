@@ -60,7 +60,7 @@ export const updatePatientHandler = async (event, context) => {
 			"Actualizando datos del paciente en la base de datos...",
 		);
 
-		if (!patientData.id) {
+		if (!patientData.patientId) {
 			return responseBuilder
 				.setStatusCode(400)
 				.setBody({ error: "ID es requerido" })
@@ -80,7 +80,7 @@ export const updatePatientHandler = async (event, context) => {
         telefono_contacto2 = COALESCE($9, telefono_contacto2),
         tipo_sangre = COALESCE($10, tipo_sangre),
         direccion = COALESCE($11, direccion),
-        id_seguro = COALESCE($12, id_seguro),
+        seguro = COALESCE($12, seguro),
         fecha_nacimiento = COALESCE($13, fecha_nacimiento),
         telefono = COALESCE($14, telefono),
         cui = COALESCE($15, cui),
@@ -91,7 +91,7 @@ export const updatePatientHandler = async (event, context) => {
     `;
 
 		const values = [
-			patientData.id,
+			patientData.patientId,
 			patientData.names || null,
 			patientData.lastNames || null,
 			patientData.contactName1 || null,
@@ -115,6 +115,7 @@ export const updatePatientHandler = async (event, context) => {
 		const result = await client.query(query, values);
 
 		if (result.rowCount === 0) {
+			logger.error("No se encontraron registros con el ID proporcionado");
 			return responseBuilder
 				.setStatusCode(400)
 				.setBody({

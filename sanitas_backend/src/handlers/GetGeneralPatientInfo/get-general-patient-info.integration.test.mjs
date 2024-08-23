@@ -25,7 +25,7 @@ describe("Get patient integration tests", () => {
 
 		const user = response.data;
 		expect(user).toBeDefined();
-		expect(user.id).toBe(patientId);
+		expect(user.patientId).toBe(patientId);
 		expect(user.cui).toBe(cui);
 		expect(user.isWoman).toBe(false);
 		expect(user.names).toBe("Flabio André");

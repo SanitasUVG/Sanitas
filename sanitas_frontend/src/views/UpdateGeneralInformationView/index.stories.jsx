@@ -19,6 +19,7 @@ export default {
 
 const examplePatientData = {
 	id: 6969,
+	cui: 1234234568712,
 	names: "Johnaaaa",
 	lastNames: "Doee",
 	isWoman: false,
@@ -79,6 +80,9 @@ export const WithPatientData = {
 		getGeneralPatientInformation: mockGetGeneralPatientInformation,
 		getStudentPatientInformation: mockGetStudentPatientInformation,
 		getCollaboratorInformation: mockGetCollaboratorInformation,
+		updateGeneralPatientInformation: async (a) => ({ result: a }),
+		updateStudentPatientInformation: async (a) => ({ result: a }),
+		updateCollaboratorInformation: async (a) => ({ result: a }),
 		useStore: correctStore,
 		sidebarConfig: {
 			userInformation: {
@@ -97,6 +101,9 @@ export const ErrorState = {
 		getGeneralPatientInformation: mockGetGeneralPatientInformation,
 		getStudentPatientInformation: mockGetStudentPatientInformation,
 		getCollaboratorInformation: mockGetCollaboratorInformation,
+		updateGeneralPatientInformation: async () => ({ error: "MockError" }),
+		updateStudentPatientInformation: async () => ({ error: "MockError" }),
+		updateCollaboratorInformation: async () => ({ error: "MockError" }),
 		useStore: incorrectStore,
 		sidebarConfig: {
 			userInformation: {
