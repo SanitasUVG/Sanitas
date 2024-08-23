@@ -184,7 +184,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		(category) => Array.isArray(category.data) && category.data.length > 0,
 	);
 
-	useEffect(() => { }, []);
+	useEffect(() => {}, []);
 
 	// Event handlers for adding, editing, and saving allergic history records
 	const handleOpenNewForm = () => {
@@ -194,12 +194,11 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 			reactionType: "",
 		});
 		setAddingNew(true);
-		setIsEditable(true)
+		setIsEditable(true);
 	};
 
 	// Save the new Allergic record to the database
 	const handleSaveNewAllergie = async () => {
-
 		if (
 			!(
 				selectedAllergie.selectedMed &&
@@ -285,12 +284,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		// Log para verificar que la alergia seleccionada se está configurando correctamente
 		console.log("Alergia seleccionada para editar:", allergy);
 	};
-
-
-
-
-
-
 
 	const handleFieldChange = (fieldName, value) => {
 		setSelectedAllergie((prevAllergie) => ({
@@ -494,16 +487,32 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 							justifyContent: "center",
 						}}
 					>
-						<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								width: "100%",
+							}}
+						>
 							<div style={{ display: "flex", justifyContent: "flex-end" }}>
-								{!addingNew && (isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton icon={CheckIcon} onClick={handleSaveNewAllergie} />
-										<IconButton icon={CancelIcon} onClick={() => setIsEditable(false)} />
-									</div>
-								) : (
-									<IconButton icon={EditIcon} onClick={() => setIsEditable(true)} />
-								))}
+								{!addingNew &&
+									(isEditable ? (
+										<div style={{ display: "flex", gap: "1rem" }}>
+											<IconButton
+												icon={CheckIcon}
+												onClick={handleSaveNewAllergie}
+											/>
+											<IconButton
+												icon={CancelIcon}
+												onClick={() => setIsEditable(false)}
+											/>
+										</div>
+									) : (
+										<IconButton
+											icon={EditIcon}
+											onClick={() => setIsEditable(true)}
+										/>
+									))}
 							</div>
 						</div>
 						{addingNew && (
