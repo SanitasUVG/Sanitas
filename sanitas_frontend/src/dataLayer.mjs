@@ -599,50 +599,50 @@ export const updateStudentSurgicalHistory = async (
 	currentVersion,
 ) => {
 	const sessionResponse = IS_PRODUCTION
-	? await getSession()
-	: await mockGetSession(true);
-if (sessionResponse.error) {
-	return { error: sessionResponse.error };
-}
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
 
-if (!sessionResponse.result.isValid()) {
-	return { error: "Invalid session!" };
-}
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
 
-const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-const url = `${PROTECTED_URL}/patient/student-surgical-history`;
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-surgical-history`;
 
-const payload = {
-	patientId: patientId,
-	medicalHistory: {
-		surgeries: {
-			version: currentVersion,
-			data: surgicalEvents.map((event) => ({
-				surgeryType: event.surgeryType,
-				surgeryYear: event.surgeryYear,
-				complications: event.complications,
-			})),
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			surgeries: {
+				version: currentVersion,
+				data: surgicalEvents.map((event) => ({
+					surgeryType: event.surgeryType,
+					surgeryYear: event.surgeryYear,
+					complications: event.complications,
+				})),
+			},
 		},
-	},
-};
+	};
 
-try {
-	const response = await axios.post(url, payload, {
-		headers: { Authorization: token },
-	});
-	if (response.status !== 200) {
-		return { error: `Unexpected status code: ${response.status}` };
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
 	}
-	return { result: response.data };
-} catch (error) {
-	if (error.response) {
-		return { error: error.response.data };
-	}
-	if (error.request) {
-		return { error: "No response received" };
-	}
-	return { error: error.message };
-}
 };
 
 /**

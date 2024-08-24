@@ -16,4 +16,3 @@ export default {
 const Template = (args) => <StudentWelcomeView {...args} />;
 
 export const Default = Template.bind({});
-
