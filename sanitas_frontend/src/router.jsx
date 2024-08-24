@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import WrapPromise from "src/utils/promiseWrapper";
 import RequireAuth from "src/components/RequireAuth";
 import {
 	getSession,
@@ -37,7 +36,7 @@ import {
 	updateAllergicHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
-	getRole
+	getRole,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -45,7 +44,7 @@ import { FamiliarHistory } from "./views/History/Familiar";
 import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
-import { StudentSurgicalHistory } from "./views/History/Students/StudentSurgical"
+import { StudentSurgicalHistory } from "./views/History/Students/StudentSurgical";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -63,8 +62,8 @@ export const NAV_PATHS = {
 	LOGIN_USER: "/login",
 	ADD_PATIENT: "/new",
 	UPDATE_PATIENT: "/update",
-	STUDENT_WELCOME: "/student-welcome",	
-	PATIENT_FORM: "/form"
+	STUDENT_WELCOME: "/student-welcome",
+	PATIENT_FORM: "/form",
 };
 
 export const UPDATE_PATIENT_NAV_PATHS = {
@@ -75,13 +74,13 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
-	PSICHIATRIC_HISTORY: "psichiatric"
+	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
 
 export const PATIENT_FORM_NAV_PATHS = {
-	STUDENT_SURGICAL_HISTORY: "student-surgical"
-}
+	STUDENT_SURGICAL_HISTORY: "student-surgical",
+};
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
@@ -134,12 +133,6 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	},
 	// TODO: Add other Navigation routes...
 };
-
-const navigateToStu = (navigate) => {
-	navigate(
-		`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.GENERAL_INFORMATION}`,
-	);
-}
 
 const updateInfoView = (
 	<RequireAuth
@@ -303,17 +296,15 @@ export const ROUTES = [
 	{
 		path: NAV_PATHS.LOGIN_USER,
 		element: (
-			<LoginView 
-				loginUser={IS_PRODUCTION ? signInUser : mockSingInUser}  
+			<LoginView
+				loginUser={IS_PRODUCTION ? signInUser : mockSingInUser}
 				getRole={getRole}
 			/>
 		),
 	},
-	{		
+	{
 		path: NAV_PATHS.STUDENT_WELCOME,
-		element: (
-			<StudentWelcomeView/>
-		),
+		element: <StudentWelcomeView />,
 	},
 	{
 		path: NAV_PATHS.ADD_PATIENT,
@@ -364,7 +355,7 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
 				element: psichiatricHistoryView,
-			}
+			},
 			// TODO: Add more routes...
 		],
 	},
@@ -380,6 +371,6 @@ export const ROUTES = [
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
 				element: studentSurgicalHistoryView,
 			},
-		]
-	}
+		],
+	},
 ];

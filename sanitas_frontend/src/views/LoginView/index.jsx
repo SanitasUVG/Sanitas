@@ -54,7 +54,7 @@ export default function LoginView({ loginUser, getRole }) {
 		if (loginResource !== null && roleResource !== null) {
 			const loginResponse = loginResource.read();
 			const roleResponse = roleResource.read();
-			
+
 			if (loginResponse.error || roleResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 			} else {
@@ -62,7 +62,7 @@ export default function LoginView({ loginUser, getRole }) {
 					navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
 				} else {
 					navigate(NAV_PATHS.STUDENT_WELCOME, { replace: true });
-				}				
+				}
 			}
 
 			setLoginResource(null);

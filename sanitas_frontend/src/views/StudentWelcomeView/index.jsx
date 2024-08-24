@@ -3,8 +3,8 @@ import SanitasLogo from "src/assets/images/logoSanitas.png";
 import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import clinica from "src/assets/images/clinica.png";
 import BaseButton from "src/components/Button/Base/index";
-import { colors, fonts, fontSize } from "src/theme.mjs";
-import { NAV_PATHS, PATIENT_FORM_NAV_PATHS } from "src/router";
+import { fonts, fontSize } from "src/theme.mjs";
+import { NAV_PATHS, } from "src/router";
 
 export default function StudentWelcomeView() {
 	const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function StudentWelcomeView() {
 				backgroundColor: "#0F6838",
 				height: "100vh",
 				width: "100vw",
-				padding: "2rem"
+				padding: "2rem",
 			}}
 		>
 			<div
@@ -26,8 +26,8 @@ export default function StudentWelcomeView() {
 					width: "100%",
 					height: "122px",
 					borderRadius: "8.27px",
-					marginBottom: "66px"
-				}}	
+					marginBottom: "66px",
+				}}
 			>
 				<div
 					style={{
@@ -35,26 +35,26 @@ export default function StudentWelcomeView() {
 						flexDirection: "column",
 						justifyContent: "center",
 						height: "100%",
-					}}		>
-					<img 
-							style={{
-								width: "102.99px",
-								height: "100px",
-								gap: "0px",
-								opacity: "0px",
-
-							}}
-							src={uvgLogo} 
-							alt="uvgLogo"
-						></img>
-				</div>				
+					}}
+				>
+					<img
+						style={{
+							width: "102.99px",
+							height: "100px",
+							gap: "0px",
+							opacity: "0px",
+						}}
+						src={uvgLogo}
+						alt="uvgLogo"
+					/>
+				</div>
 				<div
 					style={{
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
 						height: "100%",
-					}}		
+					}}
 				>
 					<p
 						style={{
@@ -70,8 +70,8 @@ export default function StudentWelcomeView() {
 							lineHeight: "52.66px",
 							textAlign: "center",
 							color: "rgba(62, 139, 67, 1)",
-							alignItems: "center"
-						}}		
+							alignItems: "center",
+						}}
 					>
 						¡Bienvenid@ a Clínica UVG!
 					</p>
@@ -82,18 +82,19 @@ export default function StudentWelcomeView() {
 						flexDirection: "column",
 						justifyContent: "center",
 						height: "100%",
-					}}		
+					}}
 				>
 					<img
-					style={{
-						width: "135.99px",
-						height: "67px",
-						gap: "0px",
-						opacity: "0px",
-					}}		
-					src={SanitasLogo} 
-					alt="SanitasLogo"></img>
-				</div>			
+						style={{
+							width: "135.99px",
+							height: "67px",
+							gap: "0px",
+							opacity: "0px",
+						}}
+						src={SanitasLogo}
+						alt="SanitasLogo"
+					/>
+				</div>
 			</div>
 
 			<div
@@ -102,11 +103,11 @@ export default function StudentWelcomeView() {
 					justifyContent: "space-between",
 					minWidth: "805px",
 					height: "70%",
-					borderRadius: "8.27px"
+					borderRadius: "8.27px",
 				}}
 			>
 				<div
-					 style={{
+					style={{
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
@@ -114,7 +115,7 @@ export default function StudentWelcomeView() {
 						backgroundColor: "#FFFFFF",
 						padding: "77px",
 						borderRadius: "8.27px",
-					 }}
+					}}
 				>
 					<p
 						style={{
@@ -123,10 +124,13 @@ export default function StudentWelcomeView() {
 							fontWeight: "400",
 							lineHeight: "30px",
 							textAlign: "center",
-							marginBottom: "1.5em"
-						}}	
+							marginBottom: "1.5em",
+						}}
 					>
-						El siguiente formulario tiene como objetivo recolectar datos médicos esenciales para nuestra clínica médica. Con esta información, buscamos ofrecer una atención más precisa y personalizada a cada paciente que nos visite.  
+						El siguiente formulario tiene como objetivo recolectar datos médicos
+						esenciales para nuestra clínica médica. Con esta información,
+						buscamos ofrecer una atención más precisa y personalizada a cada
+						paciente que nos visite.
 					</p>
 					<p
 						style={{
@@ -135,10 +139,12 @@ export default function StudentWelcomeView() {
 							fontWeight: "700",
 							lineHeight: "30px",
 							textAlign: "center",
-							marginBottom: "1.5em"
+							marginBottom: "1.5em",
 						}}
 					>
-						Es importante destacar que los datos proporcionados en este formulario son confidenciales y solo las doctoras de la clínica tendrán acceso a ellos.
+						Es importante destacar que los datos proporcionados en este
+						formulario son confidenciales y solo las doctoras de la clínica
+						tendrán acceso a ellos.
 					</p>
 					<p
 						style={{
@@ -147,7 +153,7 @@ export default function StudentWelcomeView() {
 							fontWeight: "400",
 							lineHeight: "30px",
 							textAlign: "center",
-							marginBottom: "5em"
+							marginBottom: "5em",
 						}}
 					>
 						Agradecemos su colaboración y confianza.
@@ -165,7 +171,7 @@ export default function StudentWelcomeView() {
 							borderRadius: "8px",
 							opacity: "0px",
 						}}
-						onClick={() => navigate(NAV_PATHS.PATIENT_FORM, { replace: true })} 
+						onClick={() => navigate(NAV_PATHS.PATIENT_FORM, { replace: true })}
 					/>
 				</div>
 				<div
@@ -192,8 +198,7 @@ export default function StudentWelcomeView() {
 						}}
 						src={clinica}
 						alt="clinica"
-					>
-					</img>
+					/>
 					<div
 						style={{
 							width: "464px",
@@ -204,7 +209,7 @@ export default function StudentWelcomeView() {
 							marginRight: "1em",
 							backgroundColor: "#FFFFFF",
 							padding: "1em",
-							borderRadius: "8.27px"
+							borderRadius: "8.27px",
 						}}
 					>
 						<p
@@ -214,7 +219,7 @@ export default function StudentWelcomeView() {
 								fontWeight: "400",
 								lineHeight: "22.05px",
 								textAlign: "center",
-								marginBottom: "1.5em"
+								marginBottom: "1.5em",
 							}}
 						>
 							Para conocer más información de la clínica médica presiona aquí:

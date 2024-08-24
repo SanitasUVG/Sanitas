@@ -151,7 +151,6 @@ function SurgicalView({
 	birthdayResource,
 	surgicalHistoryResource,
 	updateSurgicalHistory,
-	getRoleResource
 }) {
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
