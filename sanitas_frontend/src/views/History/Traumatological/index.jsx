@@ -267,7 +267,6 @@ function TraumatologicView({
 	};
 
 	const handleCancel = () => {
-		console.log("Canceling current operation, resetting form...");
 		setSelectedTrauma(null);
 		setAddingNew(false);
 		setIsEditable(false);
