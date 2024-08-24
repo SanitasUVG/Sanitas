@@ -1,7 +1,7 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
 import { mapToAPIPatient } from "utils";
-import { createResponse } from "utils/index.mjs";
+import { createResponse, decodeJWT } from "utils/index.mjs";
 
 function mapToDbPatient(apiPatient) {
 	const {
@@ -51,6 +51,7 @@ function mapToDbPatient(apiPatient) {
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: The function isn't that complex, it's just really large.
 export const updatePatientHandler = async (event, context) => {
 	withRequest(event, context);
+	const responseBuilder = createResponse().addCORSHeaders("PUT");
 
 	if (event.httpMethod !== "PUT") {
 		throw new Error(
@@ -58,10 +59,23 @@ export const updatePatientHandler = async (event, context) => {
 		);
 	}
 
+	logger.info({ headers: event.headers }, "Received headers...");
+	const jwt = event.headers.Authorization;
+
+	logger.info({ jwt }, "Parsing JWT...");
+	const tokenInfo = decodeJWT(jwt);
+	if (tokenInfo.error) {
+		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		return responseBuilder
+			.setStatusCode(400)
+			.setBody({ error: "JWT couldn't be parsed" })
+			.build();
+	}
+	const { email } = tokenInfo;
+	logger.info({ tokenInfo }, "JWT Parsed!");
+
 	const apiPatientData = JSON.parse(event.body);
 	const patientData = mapToDbPatient(apiPatientData);
-	const responseBuilder = createResponse().addCORSHeaders("PUT");
-
 	logger.info(process.env, "Las variables de entorno son:");
 
 	let client;
@@ -70,6 +84,22 @@ export const updatePatientHandler = async (event, context) => {
 		logger.info(url, "Conectando a la base de datos...");
 		client = getPgClient(url);
 		await client.connect();
+		logger.info("Connected!");
+
+		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
+		if (!itsDoctor) {
+			const msg = "Unauthorized, you're not a doctor!";
+			const body = { error: msg };
+			logger.error(body, msg);
+			return responseBuilder.setStatusCode(401).setBody(body).build();
+		}
+		logger.info(`${email} is a doctor!`);
 
 		logger.info(
 			patientData,
