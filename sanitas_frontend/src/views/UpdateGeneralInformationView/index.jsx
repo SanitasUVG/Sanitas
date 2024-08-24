@@ -320,13 +320,6 @@ function UpdateColaboratorInformationSection({
  * @returns {JSX.Element}
  */
 function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -403,9 +396,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
 
 		const response = generalInformationResource.read();
 
@@ -427,10 +418,10 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		}
 
 		if (resourceUpdate !== null) {
+			setResourceUpdate(null);
 			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
 			if (response.error) {
+				toast.dismiss();
 				toast.error(
 					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
 				);
@@ -442,7 +433,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 					birthdate: formatDate(response.result.birthdate),
 				});
 			}
-			setResourceUpdate(null);
 		}
 
 		const handleUpdatePatient = async () => {
@@ -451,8 +441,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				return;
 			}
 			setEditMode(false);
-			setUpdateError("");
-			setIsLoading(true);
 			toast.dismiss(); // Clear existing toasts
 			const updateInformationResource = WrapPromise(updateData(patientData));
 			setResourceUpdate(updateInformationResource);
@@ -465,10 +453,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 			});
 			setEditMode(false);
 		};
-
-		if (isLoading) {
-			return <LoadingView />;
-		}
 
 		return (
 			<form style={styles.form}>
@@ -695,7 +679,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 						disabled={!editMode}
 					/>
 				</div>
-				<p style={errorPStyles}>{updateError}</p>
 			</form>
 		);
 	};
