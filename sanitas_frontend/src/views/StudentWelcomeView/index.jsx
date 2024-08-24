@@ -4,7 +4,7 @@ import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import clinica from "src/assets/images/clinica.png";
 import BaseButton from "src/components/Button/Base/index";
 import { fonts, fontSize } from "src/theme.mjs";
-import { NAV_PATHS, } from "src/router";
+import { NAV_PATHS } from "src/router";
 
 export default function StudentWelcomeView() {
 	const navigate = useNavigate();

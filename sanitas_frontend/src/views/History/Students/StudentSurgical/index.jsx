@@ -430,7 +430,7 @@ function StudentSurgicalView({
 									onClick={handleSaveNewSurgery}
 									style={{ width: "30%", height: "3rem" }}
 								/>
-								<div style={{ width: "1rem" }}/>
+								<div style={{ width: "1rem" }} />
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
