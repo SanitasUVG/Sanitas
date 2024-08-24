@@ -221,7 +221,13 @@ function TraumatologicView({
 			return;
 		}
 
-		toast.info("Guardando antecedente traumatológico...");
+		const isNewTrauma = selectedTrauma.index === undefined; // Determinar si es un nuevo registro
+		toast.info(
+			isNewTrauma
+				? "Guardando nuevo antecedente traumatológico..."
+				: "Actualizando antecedente traumatológico...",
+		);
+
 		const updatedData = [...traumatologicHistory.data];
 
 		if (selectedTrauma.index !== undefined) {
@@ -248,7 +254,11 @@ function TraumatologicView({
 				setAddingNew(false);
 				setIsEditable(false);
 				setSelectedTrauma(null);
-				toast.success("Antecedente traumatológico guardado con éxito.");
+				toast.success(
+					isNewTrauma
+						? "Antecedente traumatológico guardado con éxito."
+						: "Antecedente traumatológico actualizado con éxito.",
+				);
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
