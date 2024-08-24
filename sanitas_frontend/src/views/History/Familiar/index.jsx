@@ -9,6 +9,10 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} FamiliarHistoryProps
@@ -142,6 +146,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	// State hooks to manage the selected familiar disease and whether adding a new entry
 	const [selectedFamiliar, setSelectedFamiliar] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
+	const [isEditable, setIsEditable] = useState(false);
 
 	// Read the data from the resource and handle any potential errors
 	const familiarHistoryResult = familiarHistoryResource.read();
@@ -511,7 +516,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedFamiliar.disease || ""}
-							readOnly={!addingNew}
+							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
 								container: { width: "80%" },
@@ -619,7 +624,31 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 									/>
 								</>
 							)}
-
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									width: "100%",
+								}}
+							>
+								<div style={{ display: "flex", justifyContent: "flex-end" }}>
+									{!addingNew &&
+										(isEditable ? (
+											<div style={{ display: "flex", gap: "1rem" }}>
+												<IconButton
+													icon={CheckIcon}
+													onClick={handleSaveNewTrauma}
+												/>
+												<IconButton icon={CancelIcon} onClick={handleCancel} />
+											</div>
+										) : (
+											<IconButton
+												icon={EditIcon}
+												onClick={() => setIsEditable(true)}
+											/>
+										))}
+								</div>
+							</div>
 							{addingNew && (
 								<div
 									style={{
