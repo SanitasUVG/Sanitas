@@ -147,8 +147,27 @@ function PsichiatricView({
 
 	const [showOtherInput, setShowOtherInput] = useState(false);
 
+	const [depressionStatus, setDepressionStatus] = useState(false);
+	const [anxietyStatus, setAnxietyStatus] = useState(false);
+	const [medication, setMedication] = useState("");
+	const [dose, setDose] = useState("");
+	const [frequency, setFrequency] = useState("");
+	const [ubeStatus, setUbeStatus] = useState(false);
+
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
 
+	const {
+		depression = { data: [{ smokes: false, cigarettesPerDay: "", years: "" }] },
+		anxiety = { data: [{ drinks: false, drinksPerMonth: "" }] },
+		ocd = { data: [{ usesDrugs: false, drugType: "", frequency: "" }] },
+	} = psichiatricHistoryResult.result?.medicalHistory || {};
+
+	const isFirstTime = !(
+		depression.data.length ||
+		anxiety.data.length ||
+		ocd.data.length
+	);
+	const [isEditable, setIsEditable] = useState(isFirstTime);
 	let errorMessage = "";
 
 	if (psichiatricHistoryResult.error) {
@@ -344,19 +363,7 @@ function PsichiatricView({
 					overflowY: "auto",
 				}}
 			>
-				<div
-					style={{
-						paddingBottom: "0.5rem",
-					}}
-				>
-					<BaseButton
-						text="Agregar antecedente psiquiátrico"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
-
-				{errorMessage && (
+				{errorMessage ? (
 					<div
 						style={{
 							color: "red",
@@ -368,241 +375,300 @@ function PsichiatricView({
 					>
 						{errorMessage}
 					</div>
-				)}
-
-				{noPsichiatricData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
-						¡Parece que no hay antecedentes psiquiátricos! Agrega uno en el
-						botón de arriba.
-					</p>
 				) : (
-					Object.keys(PsichiatricHistory || {}).map((category) => {
-						const historyData = PsichiatricHistory[category]?.data;
-
-						// Verifica si hay datos válidos en los campos antes de renderizar la tarjeta
-						if (
-							historyData?.medication ||
-							historyData?.dose ||
-							historyData?.frecuency
-						) {
-							if (!(historyData?.ill === "")) {
-								return (
-									<InformationCard
-										key={category}
-										type="psichiatric"
-										disease={historyData?.ill}
-										reasonInfo={historyData?.medication || "Sin Medicamento"}
-										onClick={() => handleOnClickCard(category, historyData)}
-									/>
-								);
-							}
-
-							return (
-								<InformationCard
-									key={category}
-									type="psichiatric"
-									disease={categoryTranslations[category] || category}
-									reasonInfo={historyData?.medication || "Sin Medicamento"}
-									onClick={() => handleOnClickCard(category, historyData)}
-								/>
-							);
-						}
-
-						return null; // Si no hay datos válidos, no renderiza nada
-					})
-				)}
-			</div>
-
-			{addingNew || selectedHistory ? (
-				<div
-					style={{
-						border: `1px solid ${colors.primaryBackground}`,
-						borderRadius: "10px",
-						padding: "1rem",
-						height: "65vh",
-						flex: 1.5,
-						overflowY: "auto",
-						width: "100%",
-						paddingLeft: "2rem",
-					}}
-				>
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Seleccione la enfermedad:
-					</p>
-					<DropdownMenu
-						options={medicalHistoryOptions}
-						value={selectedHistory?.selectedIll || "depression"}
-						readOnly={!addingNew}
-						onChange={(e) => handleFieldChange("selectedIll", e.target.value)}
-						style={{
-							container: { width: "80%" },
-							select: {},
-							option: {},
-							indicator: {},
-						}}
-					/>
-					{showOtherInput && (
-						<div>
-							<p
+					<>
+						{isFirstTime && (
+							<div
 								style={{
-									paddingBottom: "0.5rem",
-									paddingTop: "1.5rem",
+									paddingTop: "1rem",
+									textAlign: "center",
+									color: colors.titleText,
+									fontWeight: "bold",
 									fontFamily: fonts.textFont,
 									fontSize: fontSize.textSize,
 								}}
 							>
-								Nombre de la enfermedad:
-							</p>
-							<BaseInput
-								value={selectedHistory?.ill || ""}
-								onChange={(e) => handleFieldChange("ill", e.target.value)}
-								placeholder="Ingrese el nombre de la enfermedad"
+								Por favor, ingrese los datos del paciente. Parece que es su
+								primera visita aquí.
+							</div>
+						)}
+						<div
+							style={{
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+								padding: "2rem 0 2rem 1rem",
+								display: "flex",
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "space-between",
+							}}
+						>
+							<div
 								style={{
-									width: "80%",
-									height: "2.5rem",
-									fontFamily: fonts.textFont,
-									fontSize: "1rem",
+									display: "flex",
+									alignItems: "start",
+									flexDirection: "column",
 								}}
-							/>
+							>
+								<p
+									style={{
+										paddingBottom: "0.5rem",
+										paddingTop: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									¿Tiene depresion?
+								</p>
+								<div
+									style={{
+										display: "flex",
+										gap: "1rem",
+										alignItems: "center",
+										paddingLeft: "0.5rem",
+										paddingBottom: "2rem",
+									}}
+								>
+									<RadioInput
+										label="Si"
+										name="ube"
+										checked={selectedHistory?.ube === true}
+										onChange={() => handleFieldChange("ube", true)}
+										style={{ label: { fontFamily: fonts.textFont } }}
+									/>
+									<RadioInput
+										label="No"
+										name="ube"
+										checked={selectedHistory?.ube === false}
+										onChange={() => handleFieldChange("ube", false)}
+										style={{ label: { fontFamily: fonts.textFont } }}
+									/>
+								</div>
+							</div>
+							{!isFirstTime &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNewHistory}
+										/>
+										<IconButton
+											icon={CancelIcon}
+											onClick={() => {
+												setIsEditable(false);
+											}}
+										/>
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
 						</div>
-					)}
+						<div
+							style={{
+								paddingLeft: "1rem",
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+							}}
+						>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "2rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								¿Fuma?
+							</p>
+							<div
+								style={{
+									display: "flex",
+									gap: "1rem",
+									alignItems: "center",
+									paddingBottom: "2rem",
+								}}
+							>
+								<RadioInput
+									name="smoking"
+									checked={depressionStatus}
+									onChange={() => handleSmokingChange(true)}
+									label="Sí"
+									disabled={!isEditable}
+								/>
+								<RadioInput
+									name="smoking"
+									checked={!depressionStatus}
+									onChange={() => handleSmokingChange(false)}
+									label="No"
+									disabled={!isEditable}
+								/>
+							</div>
+							{depressionStatus && (
+								<div style={{ display: "flex", flexDirection: "column" }}>
+									<div
+										style={{
+											display: "flex",
+											gap: "1rem",
+											paddingBottom: "2rem",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Cuántos cigarrillos al día?
+											</p>
+											<BaseInput
+												type="number"
+												value={cigarettesPerDay}
+												onChange={(e) => setCigarettesPerDay(e.target.value)}
+												placeholder="Ingrese cuántos cigarrillos al día"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Desde hace cuántos años?
+											</p>
+											<BaseInput
+												type="number"
+												value={smokingYears}
+												onChange={(e) => setSmokingYears(e.target.value)}
+												placeholder="Ingrese desde hace cuántos años"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
 
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Medicamento:
-					</p>
-					<BaseInput
-						value={selectedHistory.medication || ""}
-						onChange={(e) => handleFieldChange("medication", e.target.value)}
-						placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-						style={{
-							width: "80%",
-							height: "2.5rem",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Dosis:
-					</p>
-					<BaseInput
-						value={selectedHistory.dose || ""}
-						onChange={(e) => handleFieldChange("dose", e.target.value)}
-						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
-						style={{
-							width: "80%",
-							height: "2.5rem",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						Frecuencia:
-					</p>
-					<BaseInput
-						value={selectedHistory.frecuency || ""}
-						onChange={(e) => handleFieldChange("frecuency", e.target.value)}
-						placeholder="Ingrese cada cuándo administra el medicamento. (Ej. Cada dos días, cada 12 horas...)"
-						style={{
-							width: "80%",
-							height: "2.5rem",
-							fontFamily: fonts.textFont,
-							fontSize: "1rem",
-						}}
-					/>
-					<p
-						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						¿Tiene seguimiento en UBE?
-					</p>
-					<div
-						style={{
-							display: "flex",
-							gap: "1rem",
-							alignItems: "center",
-							paddingLeft: "0.5rem",
-							paddingBottom: "2rem",
-						}}
-					>
-						<RadioInput
-							label="Si"
-							name="ube"
-							checked={selectedHistory?.ube === true}
-							onChange={() => handleFieldChange("ube", true)}
-							style={{ label: { fontFamily: fonts.textFont } }}
-						/>
-						<RadioInput
-							label="No"
-							name="ube"
-							checked={selectedHistory?.ube === false}
-							onChange={() => handleFieldChange("ube", false)}
-							style={{ label: { fontFamily: fonts.textFont } }}
-						/>
-					</div>
+						<div
+							style={{
+								paddingLeft: "1rem",
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+							}}
+						>
+							<p
+								style={{
+									paddingBottom: "0.5rem",
+									paddingTop: "2rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								¿Consumes bebidas alcohólicas?
+							</p>
+							<div
+								style={{
+									display: "flex",
+									gap: "1rem",
+									alignItems: "center",
+									paddingBottom: "2rem",
+								}}
+							>
+								<RadioInput
+									name="alcoholConsumption"
+									checked={anxietyStatus}
+									onChange={() => handleAlcoholChange(true)}
+									label="Sí"
+									disabled={!isEditable}
+								/>
+								<RadioInput
+									name="alcoholConsumption"
+									checked={!anxietyStatus}
+									onChange={() => handleAlcoholChange(false)}
+									label="No"
+									disabled={!isEditable}
+								/>
+							</div>
+							{anxietyStatus && (
+								<div style={{ display: "flex", flexDirection: "column" }}>
+									<div
+										style={{
+											display: "flex",
+											gap: "1rem",
+											paddingBottom: "2rem",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿Cuántas bebidas alcohólicas consumes al mes?
+											</p>
+											<BaseInput
+												type="number"
+												value={drinksPerMonth}
+												onChange={(e) => setDrinksPerMonth(e.target.value)}
+												placeholder="Ingrese cuántas bebidas al mes"
+												min="1"
+												readOnly={!isEditable}
+												style={{
+													width: "20rem",
+													height: "2.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: "1rem",
+												}}
+											/>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
 
-					<div
-						style={{
-							paddingTop: "2rem",
-							display: "flex",
-							justifyContent: "center",
-						}}
-					>
-						{addingNew && (
-							<>
+						<div
+							style={{
+								paddingLeft: "1rem",
+							}}
+						></div>
+						{isFirstTime && (
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewHistory}
 									style={{ width: "30%", height: "3rem" }}
 								/>
-								<div style={{ width: "1rem" }} />
-								<BaseButton
-									text="Cancelar"
-									onClick={handleCancel}
-									style={{
-										width: "30%",
-										height: "3rem",
-										backgroundColor: "#fff",
-										color: colors.primaryBackground,
-										border: `1.5px solid ${colors.primaryBackground}`,
-									}}
-								/>
-							</>
+							</div>
 						)}
-					</div>
-				</div>
-			) : null}
+					</>
+				)}
+			</div>
 		</div>
 	);
 }
