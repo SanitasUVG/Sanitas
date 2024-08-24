@@ -40,7 +40,7 @@ export function SurgicalHistory({
 
 	const LoadingView = () => {
 		return (
-			<Throbber loadingMessage="Cargando información de los antecedentes quirúrjicos..." />
+			<Throbber loadingMessage="Cargando información de los antecedentes quirúrgicos..." />
 		);
 	};
 
@@ -92,7 +92,7 @@ export function SurgicalHistory({
 								fontSize: fontSize.titleSize,
 							}}
 						>
-							Antecedentes Quirúrjicos
+							Antecedentes Quirúrgicos
 						</h1>
 						<h3
 							style={{
@@ -103,7 +103,7 @@ export function SurgicalHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes quirúrjicos
+							Registro de antecedentes quirúrgicos
 						</h3>
 					</div>
 
@@ -156,6 +156,7 @@ function SurgicalView({
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
 	const [isEditable, setIsEditable] = useState(false);
+	const [originalSurgery, setOriginalSurgery] = useState(null);
 
 	const birthYearResult = birthdayResource.read();
 	const surgicalHistoryResult = surgicalHistoryResource.read();
@@ -229,15 +230,20 @@ function SurgicalView({
 			return;
 		}
 
-		toast.info("Guardando antecedente quirúrgico...");
+		const isNewSurgery = selectedSurgery.index === undefined; // Determinar si es un nuevo registro
+		toast.info(
+			isNewSurgery
+				? "Guardando nuevo antecedente quirúrgico..."
+				: "Actualizando antecedente quirúrgico...",
+		);
 
 		const updatedData = [...surgicalHistory.data];
 
-		if (selectedSurgery.index !== undefined) {
-			// Si se encuentra el índice, actualizar el registro existente
+		if (!isNewSurgery) {
+			// Actualizar el registro existente
 			updatedData[selectedSurgery.index] = selectedSurgery;
 		} else {
-			// Si no se encuentra el registro, añadir como nuevo
+			// Añadir como nuevo
 			updatedData.push(selectedSurgery);
 		}
 
@@ -256,7 +262,11 @@ function SurgicalView({
 				setAddingNew(false);
 				setIsEditable(false);
 				setSelectedSurgery(null);
-				toast.success("Antecedente quirúrgico guardado con éxito.");
+				toast.success(
+					isNewSurgery
+						? "Antecedente quirúrgico guardado con éxito."
+						: "Antecedente quirúrgico actualizado con éxito.",
+				);
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
@@ -267,6 +277,7 @@ function SurgicalView({
 
 	// Select a surgery record to view
 	const handleSelectSurgery = (surgery, index) => {
+		setOriginalSurgery({ ...surgery });
 		setSelectedSurgery({
 			...surgery,
 			index: index,
@@ -279,6 +290,20 @@ function SurgicalView({
 		setSelectedSurgery(null);
 		setAddingNew(false);
 		setIsEditable(false);
+	};
+
+	const handleCancelEdition = () => {
+		if (originalSurgery) {
+			setSelectedSurgery(originalSurgery);
+			setAddingNew(false);
+			setIsEditable(false);
+		} else {
+			setSelectedSurgery(null);
+			setAddingNew(false);
+			setIsEditable(false);
+		}
+
+		toast.info("Edición cancelada.");
 	};
 
 	return (
@@ -399,7 +424,7 @@ function SurgicalView({
 					<DropdownMenu
 						options={yearOptions}
 						value={selectedSurgery.surgeryYear}
-						readOnly={!isEditable}
+						disabled={!isEditable}
 						onChange={(e) =>
 							setSelectedSurgery({
 								...selectedSurgery,
@@ -411,7 +436,7 @@ function SurgicalView({
 							select: {},
 							option: {},
 							indicator: {
-								top: "45%",
+								top: "43%",
 								right: "4%",
 							},
 						}}
@@ -487,7 +512,7 @@ function SurgicalView({
 										/>
 										<IconButton
 											icon={CancelIcon}
-											onClick={() => setIsEditable(false)}
+											onClick={handleCancelEdition}
 										/>
 									</div>
 								) : (
