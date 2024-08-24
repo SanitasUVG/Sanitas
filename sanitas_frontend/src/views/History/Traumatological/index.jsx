@@ -201,12 +201,11 @@ function TraumatologicView({
 
 	// Event handlers for adding, editing, and saving trauma history records
 	const handleOpenNewForm = () => {
-		const newTrauma = {
+		setSelectedTrauma({
 			whichBone: "",
 			year: currentYear.toString(),
 			treatment: null,
-		};
-		setSelectedTrauma(newTrauma);
+		});
 		setAddingNew(true);
 		setIsEditable(true);
 	};
@@ -268,18 +267,19 @@ function TraumatologicView({
 	};
 
 	const handleCancel = () => {
-		// Restaurar los datos originales del historial traumatológico
-		setTraumatologicHistory({
-			data: sortedData, // Restaurar los datos originales
-			version: traumatologicHistoryData?.medicalHistory.traumas.version || 1,
-		});
-
-		setSelectedTrauma(null);
-		setAddingNew(false);
-		setIsEditable(false);
+		// Si estás añadiendo un nuevo trauma, cancela solo la operación de añadir
+		if (addingNew) {
+			setAddingNew(false);
+			setSelectedTrauma(null);
+		} else if (selectedTrauma !== null) {
+			// Si estás editando un trauma existente, simplemente deselecciona y desactiva la edición
+			setIsEditable(false);
+			setSelectedTrauma(null);
+		}
 
 		toast.info("Edición cancelada.");
 	};
+
 	return (
 		<div
 			style={{
