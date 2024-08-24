@@ -156,7 +156,6 @@ function SurgicalView({
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
 	const [isEditable, setIsEditable] = useState(false);
-	const [originalSurgery, setOriginalSurgery] = useState(null);
 
 	const birthYearResult = birthdayResource.read();
 	const surgicalHistoryResult = surgicalHistoryResource.read();
@@ -277,7 +276,6 @@ function SurgicalView({
 
 	// Select a surgery record to view
 	const handleSelectSurgery = (surgery, index) => {
-		setOriginalSurgery({ ...surgery });
 		setSelectedSurgery({
 			...surgery,
 			index: index,
@@ -287,23 +285,16 @@ function SurgicalView({
 	};
 
 	const handleCancel = () => {
-		setSelectedSurgery(null);
-		setAddingNew(false);
-		setIsEditable(false);
-	};
-
-	const handleCancelEdition = () => {
-		if (originalSurgery) {
-			setSelectedSurgery(originalSurgery);
+		if (addingNew) {
 			setAddingNew(false);
+			setSelectedSurgery(null);
 			setIsEditable(false);
-		} else {
+		} else if (selectedSurgery !== null) {
+			setIsEditable(false);
 			setSelectedSurgery(null);
 			setAddingNew(false);
-			setIsEditable(false);
+			toast.info("Edición cancelada.");
 		}
-
-		toast.info("Edición cancelada.");
 	};
 
 	return (
@@ -510,10 +501,7 @@ function SurgicalView({
 											icon={CheckIcon}
 											onClick={handleSaveNewSurgery}
 										/>
-										<IconButton
-											icon={CancelIcon}
-											onClick={handleCancelEdition}
-										/>
+										<IconButton icon={CancelIcon} onClick={handleCancel} />
 									</div>
 								) : (
 									<IconButton
