@@ -12,6 +12,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
+import Collapsable from "src/components/Collapsable";
 
 /**
  * @typedef {Object} PatientInfo
@@ -375,6 +376,14 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		},
 	};
 
+	/** @type {React.CSSProperties} */
+	const collapsableInnerStyle = {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5rem",
+		padding: "1rem",
+	};
+
 	const generalInformationResource = WrapPromise(getData(patientId));
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const Hijo = () => {
@@ -588,78 +597,111 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				</div>
 
 				<h2 style={styles.h2}>Contactos del paciente</h2>
-				<div style={styles.Secondsectionform}>
-					<label style={styles.label}>Nombre de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactName1 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactName1: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						// justifyContent: "space-around",
+						gap: "2rem",
+						padding: "1rem",
+					}}
+				>
+					<Collapsable
+						title="Contacto 1"
+						isCollapsed={!!patientData.contactPhone1}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-					<label style={styles.label}>Parentesco de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactKinship1 || ""}
-						onChange={(e) =>
-							setPatientData({
-								...patientData,
-								contactKinship1: e.target.value,
-							})
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
+							<label style={styles.label}>Parentesco de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-					<label style={styles.label}>Teléfono de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactPhone1 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactPhone1: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
+							<label style={styles.label}>Teléfono de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
+					<Collapsable
+						title="Contacto 2"
+						isCollapsed={!!patientData.contactPhone2}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-					<label style={styles.label}>Nombre de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactName2 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactName2: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
+							<label style={styles.label}>Parentesco de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-					<label style={styles.label}>Parentesco de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactKinship2 || ""}
-						onChange={(e) =>
-							setPatientData({
-								...patientData,
-								contactKinship2: e.target.value,
-							})
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Teléfono de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactPhone2 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactPhone2: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
+							<label style={styles.label}>Teléfono de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
 				</div>
 			</form>
 		);

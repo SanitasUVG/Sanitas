@@ -6,14 +6,19 @@ import downCaret from "@tabler/icons/filled/caret-down.svg";
 /**
  * @typedef {Object} CollapsableProps
  * @property {string} title
+ * @property {boolean} [isCollapsed=true] Controls whether this component is collapsed or not, by default starts collapsed.
  * @property {*} children - The components to render inside.
  */
 
 /**
  * @param {CollapsableProps} props
  */
-export default function Collapsable({ children, title }) {
-	const [isCollapsed, setIsCollapsed] = useState();
+export default function Collapsable({
+	children,
+	title,
+	isCollapsed: startsCollapsed,
+}) {
+	const [isCollapsed, setIsCollapsed] = useState(startsCollapsed ?? true);
 
 	return (
 		<div>
@@ -32,11 +37,12 @@ export default function Collapsable({ children, title }) {
 					flexDirection: "row",
 					alignItems: "center",
 					gap: "0.5rem",
+					width: "100%",
 				}}
 				onClick={() => setIsCollapsed(!isCollapsed)}
 			>
 				<img
-					src={isCollapsed ? downCaret : upCaret}
+					src={isCollapsed ? upCaret : downCaret}
 					alt="Caret simbol"
 					style={{
 						filter: "invert(100%)",
@@ -45,7 +51,15 @@ export default function Collapsable({ children, title }) {
 
 				<p style={{ textAlign: "center", flexGrow: 1 }}>{title}</p>
 			</button>
-			{isCollapsed ? <div>{children}</div> : null}
+			<div
+				style={{
+					transition: ".2s",
+					transformOrigin: "top center",
+					transform: isCollapsed ? "scaleY(0)" : "",
+				}}
+			>
+				{children}
+			</div>
 		</div>
 	);
 }
