@@ -829,7 +829,10 @@ function PsichiatricView({
 									}}
 								>
 									{depressionMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
@@ -1041,7 +1044,10 @@ function PsichiatricView({
 									}}
 								>
 									{anxietyMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
@@ -1253,7 +1259,10 @@ function PsichiatricView({
 									}}
 								>
 									{TOCMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
@@ -1466,7 +1475,10 @@ function PsichiatricView({
 									}}
 								>
 									{TDAHMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
@@ -1678,7 +1690,10 @@ function PsichiatricView({
 									}}
 								>
 									{bipolarMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
@@ -1913,7 +1928,10 @@ function PsichiatricView({
 										disabled={!isEditable}
 									/>
 									{otherMedications.map((medication, index) => (
-										<div key={index} style={{ marginBottom: "1rem" }}>
+										<div
+											key={`${medication.name}-${index}`}
+											style={{ marginBottom: "1rem" }}
+										>
 											<p
 												style={{
 													paddingBottom: "0.5rem",
