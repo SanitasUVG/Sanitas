@@ -202,7 +202,6 @@ function UpdateColaboratorInformationSection({
 		}
 
 		const handleUpdatePatient = async () => {
-			toast.info("Guardando datos...");
 			setEditMode(false);
 			try {
 				const response = await updateData(patientData);
@@ -425,7 +424,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				return;
 			}
 			setEditMode(false);
-			toast.dismiss(); // Clear existing toasts
 			const updateInformationResource = WrapPromise(updateData(patientData));
 			setResourceUpdate(updateInformationResource);
 		};
@@ -767,7 +765,6 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		}
 
 		const handleUpdatePatient = async () => {
-			toast.info("Guardando datos...");
 			setEditMode(false);
 			setResourceUpdate(WrapPromise(updateData(patientData)));
 		};
