@@ -41,16 +41,15 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1723594027,
-        "narHash": "sha256-9Ti2LYVyfdiho5RfIkou6U6yhiZnVHAQNmcPzt7Otzs=",
-        "owner": "ElrohirGT",
+        "lastModified": 1724504184,
+        "narHash": "sha256-gP6000c2+zHKJHAxCD3BftvAjmb4CPAZamRAHNxN2MM=",
+        "owner": "cachix",
         "repo": "devenv",
-        "rev": "11d0fa9ee755691ff0db2e3199174b1a20f19b6a",
+        "rev": "51338b58fd666f448db7486ec145dbe52db9b829",
         "type": "github"
       },
       "original": {
-        "owner": "ElrohirGT",
-        "ref": "feat-add-custom-pg-hba-conf",
+        "owner": "cachix",
         "repo": "devenv",
         "type": "github"
       }
