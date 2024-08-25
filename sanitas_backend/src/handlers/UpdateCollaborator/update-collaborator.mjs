@@ -75,7 +75,7 @@ export const updateCollaboratorHandler = async (event, context) => {
 		}
 
 		if (!collaboratorData.idPatient) {
-			logger.error("No patientId provided!");
+			logger.error("No idPatient provided!");
 			return responseBuilder
 				.setStatusCode(400)
 				.setBody({ error: "Invalid input: Missing or empty required fields." })

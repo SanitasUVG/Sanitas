@@ -115,13 +115,6 @@ function UpdateColaboratorInformationSection({
 	getData,
 	updateData,
 }) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -186,9 +179,7 @@ function UpdateColaboratorInformationSection({
 
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
 
 		const response = collaboratorInformationResource.read();
 
@@ -197,11 +188,10 @@ function UpdateColaboratorInformationSection({
 		});
 
 		if (resourceUpdate !== null) {
+			setResourceUpdate(null);
 			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
+				toast.error(
 					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
 				);
 			} else {
@@ -209,7 +199,6 @@ function UpdateColaboratorInformationSection({
 				setPatientData(response.result || {});
 				toast.success("¡Información actualizada exitosamente!");
 			}
-			setResourceUpdate(null);
 		}
 
 		const handleUpdatePatient = async () => {
@@ -220,7 +209,7 @@ function UpdateColaboratorInformationSection({
 				setPatientData(response.result || {});
 				toast.success("¡Información actualizada exitosamente!");
 			} catch (error) {
-				setUpdateError(
+				toast.error(
 					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${error.message}`,
 				);
 			}
@@ -230,10 +219,6 @@ function UpdateColaboratorInformationSection({
 			setPatientData({ ...response?.result });
 			setEditMode(false);
 		};
-
-		if (isLoading) {
-			return <LoadingView />;
-		}
 
 		return (
 			<form style={styles.form}>
@@ -287,7 +272,6 @@ function UpdateColaboratorInformationSection({
 						disabled={!editMode}
 					/>
 				</div>
-				<p style={errorPStyles}>{updateError}</p>
 			</form>
 		);
 	};
@@ -710,13 +694,6 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
  * @param {UpdateStudentInformationSectionProps} props
  */
 function UpdateStudentInformationSection({ patientId, getData, updateData }) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -765,9 +742,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 
 	const Hijo = () => {
 		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
 		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
 
 		const response = studentInformationResource.read();
 
@@ -776,43 +751,31 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 		});
 
 		if (resourceUpdate !== null) {
+			setResourceUpdate(null);
 			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
+				toast.dismiss();
+				toast.error(
 					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
 				);
 			} else {
 				setEditMode(false);
 				setPatientData(response.result || {});
+				toast.dismiss();
 				toast.success("¡Información actualizada exitosamente!");
 			}
-			setResourceUpdate(null);
 		}
 
 		const handleUpdatePatient = async () => {
 			toast.info("Guardando datos...");
 			setEditMode(false);
-			try {
-				const response = await updateData(patientData);
-				setPatientData(response.result || {});
-				toast.success("¡Información actualizada exitosamente!");
-			} catch (error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${error.message}`,
-				);
-			}
+			setResourceUpdate(WrapPromise(updateData(patientData)));
 		};
 
 		const handleCancelEdit = () => {
 			setPatientData({ ...response?.result });
 			setEditMode(false);
 		};
-
-		if (isLoading) {
-			return <LoadingView />;
-		}
 
 		return (
 			<form style={styles.form}>
@@ -845,9 +808,9 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 					<label style={styles.label}>Carnet:</label>
 					<BaseInput
 						type="text"
-						value={patientData.code}
+						value={patientData.carnet}
 						onChange={(e) =>
-							setPatientData({ ...patientData, code: e.target.value })
+							setPatientData({ ...patientData, carnet: e.target.value })
 						}
 						placeholder="Carnet"
 						style={{ ...styles.input, ...GenInputStyle(2, 1) }}
@@ -857,16 +820,15 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 					<label style={styles.label}>Carrera:</label>
 					<BaseInput
 						type="text"
-						value={patientData.area}
+						value={patientData.career}
 						onChange={(e) =>
-							setPatientData({ ...patientData, area: e.target.value })
+							setPatientData({ ...patientData, career: e.target.value })
 						}
 						placeholder="Carrera"
 						style={{ ...styles.input, ...GenInputStyle(2, 2) }}
 						disabled={!editMode}
 					/>
 				</div>
-				<p style={errorPStyles}>{updateError}</p>
 			</form>
 		);
 	};

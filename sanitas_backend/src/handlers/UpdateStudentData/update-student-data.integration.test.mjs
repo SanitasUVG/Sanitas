@@ -12,9 +12,9 @@ import {
 
 const API_URL = `${LOCAL_API_URL}patient/student`;
 
-function generateValidUpdate(patientId) {
+function generateValidUpdate(idPatient) {
 	return {
-		patientId,
+		idPatient,
 		carnet: generateRandomCarnet(),
 		career: "Lic. Computación",
 	};
@@ -22,7 +22,7 @@ function generateValidUpdate(patientId) {
 
 describe("Update patient student data integration tests", () => {
 	/** @type {number} */
-	let patientId;
+	let idPatient;
 
 	let insertedPatientData;
 
@@ -34,18 +34,18 @@ describe("Update patient student data integration tests", () => {
 			isWoman: true,
 		};
 		const { cui, names, lastNames, isWoman } = insertedPatientData;
-		patientId = await createTestPatient(cui, names, lastNames, isWoman);
+		idPatient = await createTestPatient(cui, names, lastNames, isWoman);
 	});
 
 	test("Normal case: Actualizar datos de un paciente existente", async () => {
-		const payload = generateValidUpdate(patientId);
+		const payload = generateValidUpdate(idPatient);
 		const received = await updateStudentInfo(
-			patientId,
+			idPatient,
 			payload.carnet,
 			payload.career,
 		);
 
-		expect(received.patientId).toBe(patientId);
+		expect(received.patientId).toBe(idPatient);
 		expect(received.carnet).toBe(payload.carnet);
 		expect(received.career).toBe(payload.career);
 	});
@@ -54,7 +54,7 @@ describe("Update patient student data integration tests", () => {
 		const patient2Id = await createTestPatient();
 
 		const headers = createAuthorizationHeader(createDoctorJWT());
-		const payload = generateValidUpdate(patientId);
+		const payload = generateValidUpdate(idPatient);
 		await axios.put(API_URL, payload, { headers });
 
 		payload.patientId = patient2Id;

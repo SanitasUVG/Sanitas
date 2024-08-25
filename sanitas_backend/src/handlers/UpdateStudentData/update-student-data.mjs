@@ -22,10 +22,10 @@ export const handler = async (event, context) => {
 	const responseBuilder = createResponse().addCORSHeaders("PUT");
 
 	logger.info({ body: event.body }, "Parsing request...");
-	const { patientId, carnet, career } = JSON.parse(event.body);
+	const { idPatient, carnet, career } = JSON.parse(event.body);
 	logger.info("Request body parsed!");
 
-	if (!patientId) {
+	if (!idPatient) {
 		logger.error("No patient ID provided!");
 		return responseBuilder
 			.setStatusCode(400)
@@ -59,7 +59,7 @@ export const handler = async (event, context) => {
 			carrera = COALESCE(EXCLUDED.carrera, estudiante.carrera)
 		RETURNING *;
 		`;
-		const params = [carnet, career, patientId];
+		const params = [carnet, career, idPatient];
 
 		logger.info({ sql, params }, "Updating/inserting data on DB...");
 		const { rows } = await client.query(sql, params);

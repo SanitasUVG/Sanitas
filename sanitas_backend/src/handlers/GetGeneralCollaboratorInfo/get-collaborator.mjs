@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPICollaboratorInfo } from "utils";
+import { createResponse, mapToAPICollaboratorInfo } from "utils/index.mjs";
 
 /**
  * Get the collaborator information endpoint handler.
@@ -52,7 +52,7 @@ export const getCollaboratorHandler = async (event, context) => {
 			return createResponse()
 				.setStatusCode(200)
 				.addCORSHeaders()
-				.setBody({ patientId: id, code: "", area: "" })
+				.setBody({ idPatient: id, code: "", area: "" })
 				.build();
 		}
 

@@ -83,7 +83,7 @@ export function decodeJWT(jwt) {
  */
 export function mapToAPIPatient(dbPatient) {
 	const {
-		id: patientId,
+		patientId,
 		cui,
 		es_mujer: isWoman,
 		correo: email,
@@ -205,7 +205,7 @@ export function createResponse() {
 
 /**
  * @typedef {Object} APIStudentInfo
- * @property {string} patientId
+ * @property {string} idPatient
  * @property {string} carnet
  * @property {string} career
  */
@@ -216,10 +216,10 @@ export function createResponse() {
  * @returns {APIStudentInfo} The API formatted student information.
  */
 export function mapToAPIStudentInfo(dbStudentInfo) {
-	const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
+	const { id_paciente: idPatient, carnet, carrera: career } = dbStudentInfo;
 
 	return {
-		patientId,
+		idPatient,
 		carnet,
 		career,
 	};
