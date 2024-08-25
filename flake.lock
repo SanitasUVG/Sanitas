@@ -389,7 +389,24 @@
       "inputs": {
         "devenv": "devenv",
         "nixpkgs": "nixpkgs_2",
+        "samcliPkgs": "samcliPkgs",
         "systems": "systems_3"
+      }
+    },
+    "samcliPkgs": {
+      "locked": {
+        "lastModified": 1720403430,
+        "narHash": "sha256-PUBgB5QpCcgA0PALzGW0gym6NsbrHQW92KVpuixgObU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "42c5e250a8a9162c3e962c78a4c393c5ac369093",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "42c5e250a8a9162c3e962c78a4c393c5ac369093",
+        "type": "github"
       }
     },
     "systems": {

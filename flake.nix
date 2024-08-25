@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    samcliPkgs.url = "github:nixos/nixpkgs/42c5e250a8a9162c3e962c78a4c393c5ac369093";
     systems.url = "github:nix-systems/default";
     devenv = {
       url = "github:cachix/devenv";
@@ -20,6 +21,7 @@
     nixpkgs,
     systems,
     devenv,
+    samcliPkgs,
     ...
   } @ inputs: let
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
@@ -78,6 +80,7 @@
 
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system;};
+      samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
       requiredPkgs = with pkgs; [
         jq
       ];
@@ -85,9 +88,9 @@
         nodejs_20
         yarn-berry
       ];
-      backendRequiredPkgs = with pkgs; [
-        awscli2
-        aws-sam-cli
+      backendRequiredPkgs = [
+        pkgs.awscli2
+        samcli
       ];
       strFromDBFile = file: builtins.readFile ./database/${file};
       dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
@@ -103,14 +106,14 @@
         inherit pkgs inputs;
         modules = [
           {
-            packages = with pkgs;
+            packages =
               [
                 # General
-                nodePackages.jsdoc
+                pkgs.nodePackages.jsdoc
 
                 # Database
-                postgresql
-                sqlfluff # SQL linter and formatter
+                pkgs.postgresql
+                pkgs.sqlfluff # SQL linter and formatter
               ]
               ++ requiredPkgs
               ++ frontendRequiredPkgs
