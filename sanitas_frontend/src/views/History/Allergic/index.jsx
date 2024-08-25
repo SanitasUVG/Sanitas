@@ -423,7 +423,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 						placeholder="Ingrese a cuál del tipo seleccionado"
 						style={{
 							width: "90%",
-							height: "2.5rem",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
