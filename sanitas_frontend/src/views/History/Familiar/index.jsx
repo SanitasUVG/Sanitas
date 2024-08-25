@@ -275,6 +275,17 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		}
 	};
 
+	const handleInputChange = (e) => {
+		const entries = e.target.value
+			.split(",")
+			.map((item) => item.trim())
+			.filter((item) => item.length);
+		setSelectedFamiliar({
+			...selectedFamiliar,
+			relatives: entries,
+		});
+	};
+
 	const isValidDiseaseSelection = () => {
 		if (
 			!(selectedFamiliar.disease && familiarHistory[selectedFamiliar.disease])
@@ -320,20 +331,47 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 			: selectedFamiliar.relative;
 	};
 
-	const updateFamiliarHistoryState = async (newEntry) => {
-		// Determina si se está añadiendo o actualizando basado en `addingNew` y `selectedFamiliar.index`
-		const isUpdating = isEditable && selectedFamiliar.index !== undefined;
-		toast.info(
-			isUpdating
-				? "Actualizando antecedente familiar..."
-				: "Guardando nuevo antecedente familiar...",
-		);
+	const updateFamiliarHistoryState = async () => {
+		if (
+			!selectedFamiliar.relatives.every((relative) => relative.trim().length)
+		) {
+			toast.error("No se pueden incluir nombres vacíos.");
+			return;
+		}
+
+		const isComplexDisease = [
+			"cancer",
+			"cardiacDiseases",
+			"renalDiseases",
+			"others",
+		].includes(selectedFamiliar.disease);
+		const newEntry = isComplexDisease
+			? {
+					who: selectedFamiliar.relatives.join(", "),
+					typeOfDisease: selectedFamiliar.typeOfDisease || undefined,
+					disease:
+						selectedFamiliar.disease === "others"
+							? selectedFamiliar.typeOfDisease
+							: undefined,
+				}
+			: selectedFamiliar.relatives;
 
 		const updatedData = [...familiarHistory[selectedFamiliar.disease].data];
+		const isUpdating = isEditable && selectedFamiliar.index !== undefined;
+
 		if (isUpdating) {
-			updatedData[selectedFamiliar.index] = newEntry; // Actualizar un registro existente
+			updatedData[selectedFamiliar.index] = newEntry;
 		} else {
-			updatedData.push(newEntry); // Añadir un nuevo registro
+			if (isComplexDisease) {
+				updatedData.push(newEntry);
+			} else {
+				// Añade todos los familiares como entradas individuales si no están ya presentes
+				selectedFamiliar.relatives.forEach((relative) => {
+					if (!updatedData.includes(relative.trim())) {
+						updatedData.push(relative.trim());
+					}
+				});
+			}
 		}
 
 		const updatedHistory = {
@@ -341,28 +379,26 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 			data: updatedData,
 		};
 
-		const updatedFamiliarHistory = {
-			...familiarHistory,
-			[selectedFamiliar.disease]: updatedHistory,
-		};
-
 		try {
-			const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
+			const response = await updateFamiliarHistory(id, updatedHistory);
 			if (!response.error) {
 				toast.success(
 					isUpdating
 						? "Antecedente familiar actualizado con éxito."
 						: "Antecedente familiar guardado con éxito.",
 				);
-				setFamiliarHistory(updatedFamiliarHistory);
+				setFamiliarHistory((prev) => ({
+					...prev,
+					[selectedFamiliar.disease]: updatedHistory,
+				}));
 				setSelectedFamiliar({});
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				throw new Error(response.error);
 			}
 		} catch (error) {
-			toast.error(`Error en la operación: ${error.message}`);
+			toast.error("Error en la operación: " + error.message);
 		}
 	};
 
@@ -489,24 +525,23 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
 						// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
 						else {
-							const displayedRelatives = data.join(", ");
-
-							return (
-								<InformationCard
-									key={diseaseKey}
-									type="family"
-									disease={displayedDisease}
-									relative={displayedRelatives}
-									onClick={() =>
-										handleSelectDiseaseCard(
-											diseaseKey,
-											{
-												who: displayedRelatives,
-											},
-											-1,
-										)
-									}
-								/>
+							// Muestra todos los familiares separados por comas y permite editar cada uno
+							return familiarHistory[selectedFamiliar.disease].data.map(
+								(relative, index) => (
+									<InformationCard
+										key={`${index}-${relative}`}
+										type="family"
+										disease={selectedFamiliar.disease}
+										relative={relative}
+										onClick={() =>
+											handleSelectDiseaseCard(
+												selectedFamiliar.disease,
+												{ who: relative },
+												index,
+											)
+										}
+									/>
+								),
 							);
 						}
 					})
@@ -576,15 +611,14 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										{translateDisease(selectedFamiliar.disease)}?
 									</p>
 									<BaseInput
-										value={selectedFamiliar.relative || ""}
-										onChange={(e) =>
-											setSelectedFamiliar({
-												...selectedFamiliar,
-												relative: e.target.value,
-											})
+										value={
+											selectedFamiliar.relatives
+												? selectedFamiliar.relatives.join(", ")
+												: ""
 										}
+										onChange={handleInputChange}
 										readOnly={!isEditable}
-										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+										placeholder="Ingrese el parentesco del familiar afectado. (Separado por ',')"
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
 								</>
