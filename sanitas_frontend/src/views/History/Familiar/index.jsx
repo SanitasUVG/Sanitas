@@ -225,6 +225,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		const initialDisease = "hypertension";
 		setSelectedFamiliar({ disease: initialDisease });
 		setAddingNew(true);
+		setIsEditable(true);
 		validateDisease(initialDisease);
 	};
 
@@ -238,28 +239,40 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	// Handler for selecting a disease card, setting state to show details without adding new data
-	const handleSelectDiseaseCard = (diseaseKey, entry) => {
+	const handleSelectDiseaseCard = (diseaseKey, entry, index) => {
 		setSelectedFamiliar({
 			disease: diseaseKey,
 			relative: entry.who,
 			typeOfDisease: entry.typeOfDisease || "",
+			index: index,
 		});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
 		setSelectedFamiliar({});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	// Changes the disease selection from the dropdown, resetting other fields
 	const handleDiseaseChange = (e) => {
 		const disease = e.target.value;
-		setSelectedFamiliar({
-			disease: disease,
-			relative: "",
-			typeOfDisease: "",
-		});
+		if (isEditable && selectedFamiliar.index !== undefined) {
+			// Mantener los datos existentes pero cambiar la enfermedad si es necesario
+			setSelectedFamiliar((prev) => ({
+				...prev,
+				disease: disease,
+			}));
+		} else {
+			// Resetear los campos si es una nueva entrada
+			setSelectedFamiliar({
+				disease: disease,
+				relative: "",
+				typeOfDisease: "",
+			});
+		}
 	};
 
 	const isValidDiseaseSelection = () => {
@@ -308,12 +321,21 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	const updateFamiliarHistoryState = async (newEntry) => {
-		toast.info("Guardando antecedente familiar...");
+		// Determina si se está añadiendo o actualizando basado en `addingNew` y `selectedFamiliar.index`
+		const isUpdating = isEditable && selectedFamiliar.index !== undefined;
+		toast.info(
+			isUpdating
+				? "Actualizando antecedente familiar..."
+				: "Guardando nuevo antecedente familiar...",
+		);
 
-		const updatedData = [
-			...familiarHistory[selectedFamiliar.disease].data,
-			newEntry,
-		];
+		const updatedData = [...familiarHistory[selectedFamiliar.disease].data];
+		if (isUpdating) {
+			updatedData[selectedFamiliar.index] = newEntry; // Actualizar un registro existente
+		} else {
+			updatedData.push(newEntry); // Añadir un nuevo registro
+		}
+
 		const updatedHistory = {
 			...familiarHistory[selectedFamiliar.disease],
 			data: updatedData,
@@ -326,17 +348,21 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
 		try {
 			const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
-
-			if (response.error) {
-				toast.error(`Error al guardar la información: ${response.error}`);
-			} else {
-				toast.success("Antecedente familiar guardado con éxito.");
+			if (!response.error) {
+				toast.success(
+					isUpdating
+						? "Antecedente familiar actualizado con éxito."
+						: "Antecedente familiar guardado con éxito.",
+				);
 				setFamiliarHistory(updatedFamiliarHistory);
 				setSelectedFamiliar({});
 				setAddingNew(false);
+				setIsEditable(false);
+			} else {
+				toast.error(`Error al guardar la información: ${response.error}`);
 			}
-		} catch (_error) {
-			toast.error("Error al conectar con el servidor");
+		} catch (error) {
+			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
 
@@ -441,9 +467,9 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 							diseaseKey === "renalDiseases" ||
 							diseaseKey === "others"
 						) {
-							return data.map((entry) => {
+							return data.map((entry, index) => {
 								const details = entry.who;
-								const uniqueKey = `${entry.disease}-${entry.date}`;
+								const uniqueKey = `${diseaseKey}-${entry.who}-${index}`;
 								if (diseaseKey === "others") {
 									displayedDisease = entry.disease;
 								}
@@ -453,7 +479,9 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										type="family"
 										disease={displayedDisease}
 										relative={details}
-										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+										onClick={() =>
+											handleSelectDiseaseCard(diseaseKey, entry, index)
+										}
 									/>
 								);
 							});
@@ -462,6 +490,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 						// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
 						else {
 							const displayedRelatives = data.join(", ");
+
 							return (
 								<InformationCard
 									key={diseaseKey}
@@ -469,9 +498,13 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 									disease={displayedDisease}
 									relative={displayedRelatives}
 									onClick={() =>
-										handleSelectDiseaseCard(diseaseKey, {
-											who: displayedRelatives,
-										})
+										handleSelectDiseaseCard(
+											diseaseKey,
+											{
+												who: displayedRelatives,
+											},
+											-1,
+										)
 									}
 								/>
 							);
@@ -550,7 +583,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 												relative: e.target.value,
 											})
 										}
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
@@ -592,7 +625,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 													? "Escriba la enfermedad"
 													: "Especifique el tipo de enfermedad (no obligatorio)"
 										}
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
 								</>
@@ -619,7 +652,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 											})
 										}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
 								</>
@@ -631,13 +664,19 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 									width: "100%",
 								}}
 							>
-								<div style={{ display: "flex", justifyContent: "flex-end" }}>
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "flex-end",
+										paddingTop: "2rem",
+									}}
+								>
 									{!addingNew &&
 										(isEditable ? (
 											<div style={{ display: "flex", gap: "1rem" }}>
 												<IconButton
 													icon={CheckIcon}
-													onClick={handleSaveNewTrauma}
+													onClick={handleSaveNewFamiliar}
 												/>
 												<IconButton icon={CancelIcon} onClick={handleCancel} />
 											</div>
