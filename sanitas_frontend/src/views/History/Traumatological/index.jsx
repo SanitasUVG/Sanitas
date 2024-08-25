@@ -277,17 +277,14 @@ function TraumatologicView({
 	};
 
 	const handleCancel = () => {
-		// Si estás añadiendo un nuevo trauma, cancela solo la operación de añadir
 		if (addingNew) {
 			setAddingNew(false);
 			setSelectedTrauma(null);
 		} else if (selectedTrauma !== null) {
-			// Si estás editando un trauma existente, simplemente deselecciona y desactiva la edición
 			setIsEditable(false);
 			setSelectedTrauma(null);
+			toast.info("Edición cancelada.");
 		}
-
-		toast.info("Edición cancelada.");
 	};
 
 	return (
