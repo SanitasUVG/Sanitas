@@ -15,7 +15,7 @@ import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
- * @typedef {Object} StudentSurgicalHistoryProps
+ * @typedef {Object} SurgicalHistoryProps
  * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
  * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
  * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
@@ -24,7 +24,7 @@ import CancelIcon from "@tabler/icons/outline/x.svg";
  *
  * Component to manage and display a patient's surgical history, allowing users to add and view records.
  *
- * @param {StudentSurgicalHistoryProps} props - The props passed to the StudentSurgicalHistory component.
+ * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
 export function SurgicalHistory({

@@ -2,12 +2,17 @@ import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
+import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
 import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -31,13 +36,11 @@ export function StudentSurgicalHistory({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const studentSurgicalHistoryResource = WrapPromise(
-		getStudentSurgicalHistory(id),
-	);
+	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 
 	const LoadingView = () => {
 		return (
-			<Throbber loadingMessage="Cargando información de los antecedentes quirúrjicos..." />
+			<Throbber loadingMessage="Cargando información de los antecedentes quirúrgicos..." />
 		);
 	};
 
@@ -51,6 +54,14 @@ export function StudentSurgicalHistory({
 				padding: "2rem",
 			}}
 		>
+			{/* <div
+				style={{
+					width: "25%",
+				}}
+			>
+				<DashboardSidebar {...sidebarConfig} />
+			</div> */}
+
 			<div
 				style={{
 					paddingLeft: "2rem",
@@ -81,7 +92,7 @@ export function StudentSurgicalHistory({
 								fontSize: fontSize.titleSize,
 							}}
 						>
-							Antecedentes Quirúrjicos
+							Antecedentes Quirúrgicos
 						</h1>
 						<h3
 							style={{
@@ -92,7 +103,7 @@ export function StudentSurgicalHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes quirúrjicos
+							Registro de antecedentes quirúrgicos
 						</h3>
 					</div>
 
@@ -107,10 +118,10 @@ export function StudentSurgicalHistory({
 						}}
 					>
 						<Suspense fallback={<LoadingView />}>
-							<StudentSurgicalView
+							<SurgicalView
 								id={id}
 								birthdayResource={birthdayResource}
-								studentSurgicalHistoryResource={studentSurgicalHistoryResource}
+								surgicalHistoryResource={surgicalHistoryResource}
 								updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 							/>
 						</Suspense>
@@ -122,33 +133,36 @@ export function StudentSurgicalHistory({
 }
 
 /**
- * @typedef {Object} StudentSurgicalViewProps
+ * @typedef {Object} SurgicalViewProps
  * @property {number} id - The patient's ID.
  * @property {Object} birthdayResource - Wrapped resource for fetching birthdate data.
- * @property {Object} studentSurgicalHistoryResource - Wrapped resource for fetching surgical history data.
+ * @property {Object} surgicalHistoryResource - Wrapped resource for fetching surgical history data.
  * @property {Function} updateStudentSurgicalHistory - Function to update the surgical history.
  *
  * Internal view component for managing the display and modification of a patient's surgical history, with options to add or edit records.
  *
- * @param {StudentSurgicalViewProps} props - Specific props for the StudentSurgicalView component.
+ * @param {SurgicalViewProps} props - Specific props for the SurgicalView component.
  * @returns {JSX.Element} - A detailed view for managing surgical history with interactivity to add or edit records.
  */
-function StudentSurgicalView({
+// TODO: Simplify so the linter doesn't trigger
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
+function SurgicalView({
 	id,
 	birthdayResource,
-	studentSurgicalHistoryResource,
+	surgicalHistoryResource,
 	updateStudentSurgicalHistory,
 }) {
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
+	const [isEditable, setIsEditable] = useState(false);
 
 	const birthYearResult = birthdayResource.read();
-	const studentSurgicalHistoryResult = studentSurgicalHistoryResource.read();
+	const surgicalHistoryResult = surgicalHistoryResource.read();
 
 	let errorMessage = "";
-	if (birthYearResult.error || studentSurgicalHistoryResult.error) {
-		const error = birthYearResult.error || studentSurgicalHistoryResult.error;
+	if (birthYearResult.error || surgicalHistoryResult.error) {
+		const error = birthYearResult.error || surgicalHistoryResult.error;
 		if (error?.response) {
 			const { status } = error.response;
 			if (status < 500) {
@@ -164,21 +178,20 @@ function StudentSurgicalView({
 	}
 
 	const birthYearData = birthYearResult.result;
-	const studentSurgicalHistoryData = studentSurgicalHistoryResult.result;
+	const surgicalHistoryData = surgicalHistoryResult.result;
 
-	const sortedData =
-		studentSurgicalHistoryData?.medicalHistory.surgeries.data || [];
+	const sortedData = surgicalHistoryData?.medicalHistory.surgeries.data || [];
 	sortedData.sort(
 		(a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear),
 	);
 
-	const [studentSurgicalHistory, setStudentSurgicalHistory] = useState({
+	const [surgicalHistory, setStudentSurgicalHistory] = useState({
 		data: sortedData,
-		version: studentSurgicalHistoryData?.medicalHistory.surgeries.version || 1,
+		version: surgicalHistoryData?.medicalHistory.surgeries.version || 1,
 	});
 
 	// No surgical data in API
-	const noSurgeryData = studentSurgicalHistory.data.length === 0;
+	const noSurgeryData = surgicalHistory.data.length === 0;
 	const currentYear = new Date().getFullYear();
 
 	const birthYear = birthYearData?.birthdate
@@ -203,41 +216,56 @@ function StudentSurgicalView({
 			complications: "",
 		});
 		setAddingNew(true);
+		setIsEditable(true);
 	};
 
 	// Save the new surgery record to the database
 	const handleSaveNewSurgery = async () => {
 		if (
-			!selectedSurgery.surgeryType ||
-			!selectedSurgery.surgeryYear ||
+			!(selectedSurgery.surgeryType && selectedSurgery.surgeryYear) ||
 			selectedSurgery.complications === undefined
 		) {
 			toast.error("Complete todos los campos requeridos.");
 			return;
 		}
 
-		toast.info("Guardando antecedente quirúrgico...");
+		const isNewSurgery = selectedSurgery.index === undefined; // Determinar si es un nuevo registro
+		toast.info(
+			isNewSurgery
+				? "Guardando nuevo antecedente quirúrgico..."
+				: "Actualizando antecedente quirúrgico...",
+		);
 
-		const updatedStudentSurgicalHistory = {
-			data: [...studentSurgicalHistory.data, selectedSurgery],
-			version: studentSurgicalHistory.version,
-		};
+		const updatedData = [...surgicalHistory.data];
 
-		updatedStudentSurgicalHistory.data.sort(
-			(a, b) => b.surgeryYear - a.surgeryYear,
+		if (!isNewSurgery) {
+			// Actualizar el registro existente
+			updatedData[selectedSurgery.index] = selectedSurgery;
+		} else {
+			// Añadir como nuevo
+			updatedData.push(selectedSurgery);
+		}
+
+		updatedData.sort(
+			(a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear),
 		);
 
 		try {
 			const response = await updateStudentSurgicalHistory(
 				id,
-				updatedStudentSurgicalHistory.data,
-				studentSurgicalHistory.version,
+				updatedData,
+				surgicalHistory.version,
 			);
 			if (!response.error) {
-				setStudentSurgicalHistory(updatedStudentSurgicalHistory);
+				setStudentSurgicalHistory({ ...surgicalHistory, data: updatedData });
 				setAddingNew(false);
+				setIsEditable(false);
 				setSelectedSurgery(null);
-				toast.success("Antecedente quirúrgico guardado con éxito.");
+				toast.success(
+					isNewSurgery
+						? "Antecedente quirúrgico guardado con éxito."
+						: "Antecedente quirúrgico actualizado con éxito.",
+				);
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
@@ -247,18 +275,26 @@ function StudentSurgicalView({
 	};
 
 	// Select a surgery record to view
-	const handleSelectSurgery = (surgery) => {
+	const handleSelectSurgery = (surgery, index) => {
 		setSelectedSurgery({
-			surgeryType: surgery.surgeryType,
-			surgeryYear: surgery.surgeryYear,
-			complications: surgery.complications,
+			...surgery,
+			index: index,
 		});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
-		setSelectedSurgery(null);
-		setAddingNew(false);
+		if (addingNew) {
+			setAddingNew(false);
+			setSelectedSurgery(null);
+			setIsEditable(false);
+		} else if (selectedSurgery !== null) {
+			setIsEditable(false);
+			setSelectedSurgery(null);
+			setAddingNew(false);
+			toast.info("Edición cancelada.");
+		}
 	};
 
 	return (
@@ -313,13 +349,13 @@ function StudentSurgicalView({
 						de arriba.
 					</p>
 				) : (
-					studentSurgicalHistory.data.map((surgery, index) => (
+					surgicalHistory.data.map((surgery, index) => (
 						<InformationCard
 							key={`${surgery.surgeryYear}-${surgery.surgeryType}-${index}`}
 							type="surgical"
 							year={surgery.surgeryYear}
-							surgeryType={surgery.surgeryType}
-							onClick={() => handleSelectSurgery(surgery)}
+							reasonInfo={surgery.surgeryType}
+							onClick={() => handleSelectSurgery(surgery, index)}
 						/>
 					))
 				)}
@@ -356,11 +392,11 @@ function StudentSurgicalView({
 								surgeryType: e.target.value,
 							})
 						}
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						placeholder="Ingrese acá el motivo o tipo de cirugía."
 						style={{
 							width: "95%",
-							height: "10%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -379,13 +415,22 @@ function StudentSurgicalView({
 					<DropdownMenu
 						options={yearOptions}
 						value={selectedSurgery.surgeryYear}
-						readOnly={!addingNew}
+						disabled={!isEditable}
 						onChange={(e) =>
 							setSelectedSurgery({
 								...selectedSurgery,
 								surgeryYear: e.target.value,
 							})
 						}
+						style={{
+							container: { width: "95%", height: "3rem" },
+							select: {},
+							option: {},
+							indicator: {
+								top: "43%",
+								right: "4%",
+							},
+						}}
 					/>
 
 					<p
@@ -406,11 +451,11 @@ function StudentSurgicalView({
 								complications: e.target.value,
 							})
 						}
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
 						style={{
 							width: "95%",
-							height: "10%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -444,6 +489,27 @@ function StudentSurgicalView({
 								/>
 							</>
 						)}
+					</div>
+					<div
+						style={{ display: "flex", flexDirection: "column", width: "100%" }}
+					>
+						<div style={{ display: "flex", justifyContent: "flex-end" }}>
+							{!addingNew &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNewSurgery}
+										/>
+										<IconButton icon={CancelIcon} onClick={handleCancel} />
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
 					</div>
 				</div>
 			) : null}
