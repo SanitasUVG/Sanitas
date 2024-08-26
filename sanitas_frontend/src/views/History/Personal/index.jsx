@@ -302,21 +302,27 @@ function PersonalView({
 			return;
 		}
 
-		if (
-			(selectedPersonal.disease === "cancer" &&
-				!selectedPersonal.typeOfDisease) ||
-			(selectedPersonal.disease === "myocardialInfarction" &&
-				!selectedPersonal.surgeryYear) ||
-			(selectedPersonal.disease === "hypertension" &&
-				!selectedPersonal.medicine)
-		) {
-			toast.info("Por favor, completa todos los campos requeridos.");
+		// Verifica si todos los campos requeridos están completos antes de proceder
+		if (selectedPersonal.disease === "cancer" && (!selectedPersonal.typeOfDisease || !selectedPersonal.treatment)) {
+			toast.info("Complete todos los campos requeridos");
 			return;
 		}
 
+		if (selectedPersonal.disease === "myocardialInfarction" && !selectedPersonal.surgeryYear) {
+			toast.info("Complete todos los campos requeridos");
+			return;
+		}
+
+		if (selectedPersonal.disease === "hypertension" && 
+			(!selectedPersonal.medicine || !selectedPersonal.dose || !selectedPersonal.frequency)) {
+			toast.info("Complete todos los campos requeridos");
+			return;
+		}
+
+	
 		// Prepara la nueva entrada para guardar
 		let newEntry = {};
-
+	
 		switch (selectedPersonal.disease) {
 			case "cancer":
 				newEntry = {
@@ -345,21 +351,21 @@ function PersonalView({
 				};
 				break;
 		}
-
+	
 		toast.info("Guardando antecedente personal...");
-
+	
 		let updatedPersonalHistory;
-
+	
 		if (addingNew) {
 			// Si es una entrada nueva, agrega la nueva entrada a la lista existente
 			const currentCategoryData =
 				personalHistory[selectedPersonal.disease]?.data || [];
-
+	
 			const updatedCategory = {
 				...personalHistory[selectedPersonal.disease],
 				data: [...currentCategoryData, newEntry],
 			};
-
+	
 			updatedPersonalHistory = {
 				...personalHistory,
 				[selectedPersonal.disease]: updatedCategory,
@@ -370,16 +376,16 @@ function PersonalView({
 				...personalHistory[selectedPersonal.disease],
 				data: [newEntry], // Reemplaza con el nuevo dato actualizado
 			};
-
+	
 			updatedPersonalHistory = {
 				...personalHistory,
 				[selectedPersonal.disease]: updatedCategory,
 			};
 		}
-
+	
 		try {
 			const response = await updatePersonalHistory(id, updatedPersonalHistory);
-
+	
 			if (!response.error) {
 				setPersonalHistory(updatedPersonalHistory);
 				setSelectedPersonal({});
@@ -392,6 +398,7 @@ function PersonalView({
 			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
+	
 
 	// Definitions of disease options for the dropdown
 	const diseaseOptions = [

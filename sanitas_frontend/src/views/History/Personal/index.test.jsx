@@ -171,25 +171,34 @@ describe("PersonalHistory Component Tests", () => {
 				/>
 			</Wrapper>,
 		);
-
+	
 		await waitFor(() => screen.getByText("Agregar antecedente personal"));
 		fireEvent.click(screen.getByText("Agregar antecedente personal"));
-
+	
 		await waitFor(() => screen.getByText("Guardar"));
-
-		fireEvent.change(
-			screen.getByPlaceholderText("Ingrese el tratamiento administrado"),
-			{
-				target: "Ibuprofeno",
-			},
-		);
-
+	
+		// Simula el llenado de los campos requeridos
+		fireEvent.change(screen.getByPlaceholderText("Ingrese el tratamiento administrado"), {
+			target: { value: "Ibuprofeno" },
+		});
+	
+		fireEvent.change(screen.getByPlaceholderText("Ingrese el tipo de enfermedad"), {
+			target: { value: "Tipo de Enfermedad" },
+		});
+	
+		// Llenar los demás campos según la enfermedad seleccionada
+		fireEvent.change(screen.getByPlaceholderText("Ingrese la dosis"), {
+			target: { value: "500mg" },
+		});
+	
+		fireEvent.change(screen.getByPlaceholderText("Ingrese la frecuencia"), {
+			target: { value: "2 veces al día" },
+		});
+	
 		fireEvent.click(screen.getByText("Guardar"));
-
+	
 		await waitFor(() =>
-			expect(toast.success).toHaveBeenCalledWith(
-				"Antecedente personal guardado con éxito.",
-			),
+			expect(toast.success).toHaveBeenCalledWith("Antecedente personal guardado con éxito.")
 		);
-	});
+	});	
 });
