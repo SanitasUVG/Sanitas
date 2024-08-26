@@ -395,7 +395,7 @@ function SurgicalView({
 						readOnly={!isEditable}
 						placeholder="Ingrese acá el motivo o tipo de cirugía."
 						style={{
-							width: "95%",
+							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -423,13 +423,10 @@ function SurgicalView({
 							})
 						}
 						style={{
-							container: { width: "95%", height: "3rem" },
+							container: { width: "90%" },
 							select: {},
 							option: {},
-							indicator: {
-								top: "43%",
-								right: "4%",
-							},
+							indicator: {},
 						}}
 					/>
 
@@ -454,7 +451,7 @@ function SurgicalView({
 						readOnly={!isEditable}
 						placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
 						style={{
-							width: "95%",
+							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
