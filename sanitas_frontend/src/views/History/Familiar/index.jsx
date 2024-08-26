@@ -250,10 +250,9 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 				"myocardialInfarction",
 			].includes(diseaseKey)
 		) {
-			// Concatenar todos los valores con comas para mostrar en el input
 			setSelectedFamiliar({
 				disease: diseaseKey,
-				relative: familiarHistory[diseaseKey].data.join(", "), // Unir todos los datos con comas
+				relative: [...familiarHistory[diseaseKey].data], 
 				index: index,
 			});
 		} else {
@@ -278,13 +277,11 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	const handleDiseaseChange = (e) => {
 		const disease = e.target.value;
 		if (isEditable && selectedFamiliar.index !== undefined) {
-			// Mantener los datos existentes pero cambiar la enfermedad si es necesario
 			setSelectedFamiliar((prev) => ({
 				...prev,
 				disease: disease,
 			}));
 		} else {
-			// Resetear los campos si es una nueva entrada
 			setSelectedFamiliar({
 				disease: disease,
 				relative: "",
@@ -324,7 +321,6 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	const prepareNewEntry = () => {
-		// Primero maneja los casos que requieren array de strings
 		if (
 			[
 				"hypertension",
@@ -335,22 +331,16 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 				"myocardialInfarction",
 			].includes(selectedFamiliar.disease)
 		) {
-			// Dividir el string de 'relative' en un array, eliminando espacios extra
 			return selectedFamiliar.relative.split(",").map((item) => item.trim());
 		} else {
-			// Maneja los casos con más detalles como cáncer, cardiac, renal y otros
-			return ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
-				selectedFamiliar.disease,
-			)
-				? {
-						who: selectedFamiliar.relative,
-						typeOfDisease: selectedFamiliar.typeOfDisease || "",
-						disease:
-							selectedFamiliar.disease === "others"
-								? selectedFamiliar.typeOfDisease
-								: undefined,
-					}
-				: selectedFamiliar.relative;
+			return selectedFamiliar.relative.split(",").map((relative) => ({
+				who: relative.trim(),
+				typeOfDisease: selectedFamiliar.typeOfDisease || "",
+				disease:
+					selectedFamiliar.disease === "others"
+						? selectedFamiliar.typeOfDisease
+						: undefined,
+			}));
 		}
 	};
 
@@ -363,24 +353,25 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		);
 
 		let updatedData = [...familiarHistory[selectedFamiliar.disease].data];
+
 		if (isUpdating) {
 			// Si es un array de strings como en 'hypertension', actualiza solo el elemento específico
-			if (
-				[
-					"hypertension",
-					"diabetesMellitus",
-					"hypothyroidism",
-					"asthma",
-					"convulsions",
-					"myocardialInfarction",
-				].includes(selectedFamiliar.disease)
-			) {
-				updatedData[selectedFamiliar.index] = newEntry[0]; // Actualiza el elemento en el índice específico, suponiendo que newEntry es un array con un solo elemento nuevo
+			if (Array.isArray(newEntry)) {
+				// Asumiendo que newEntry es un array con un solo elemento nuevo
+				updatedData = newEntry;
 			} else {
-				updatedData[selectedFamiliar.index] = newEntry; // Actualizar un registro existente con más detalles
+				// Actualizar un registro existente con más detalles para objetos
+				updatedData[selectedFamiliar.index] = newEntry;
 			}
 		} else {
-			updatedData.push(newEntry); // Añadir un nuevo registro
+			// Añadir nuevos datos
+			if (Array.isArray(newEntry)) {
+				// Si newEntry es un array de strings, concatena con el existente
+				updatedData = updatedData.concat(newEntry);
+			} else {
+				// Si es un objeto, añade el objeto al array
+				updatedData.push(newEntry);
+			}
 		}
 
 		const updatedHistory = {
@@ -416,7 +407,6 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	// Handles the saving of new or modified family medical history
 	const handleSaveNewFamiliar = async () => {
 		if (!isValidDiseaseSelection()) return;
-
 		const newEntry = prepareNewEntry();
 		await updateFamiliarHistoryState(newEntry);
 	};
@@ -630,7 +620,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 												relative: e.target.value,
 											})
 										}
-										readOnly={!isEditable}
+										readOnly={false}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
