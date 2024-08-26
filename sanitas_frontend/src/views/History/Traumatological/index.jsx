@@ -377,8 +377,8 @@ function TraumatologicView({
 						}
 						placeholder="Ingrese el hueso fracturado"
 						style={{
-							width: "95%",
-							height: "2.5rem",
+							width: "90%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -406,7 +406,7 @@ function TraumatologicView({
 							})
 						}
 						style={{
-							container: { width: "95%" },
+							container: { width: "90%" },
 							select: {},
 							option: {},
 							indicator: {},
