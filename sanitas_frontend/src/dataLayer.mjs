@@ -1096,7 +1096,7 @@ export const getGynecologicalHistory = async (patientId) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/patient/gynecological-history/${patientId}`; // CAMBIAR A  gyneco-history  LUEGO
+	const url = `${PROTECTED_URL}/patient/gyneco-history/${patientId}`;
 
 	try {
 		const response = await axios.get(url, {
@@ -1129,7 +1129,7 @@ export const updateGynecologicalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/patient/gynecological-history`; // CAMBIAR A  gyneco-history  LUEGO
+	const url = `${PROTECTED_URL}/patient/gyneco-history`;
 
 	const payload = {
 		patientId: patientId,
