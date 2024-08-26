@@ -596,7 +596,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedFamiliar.disease || ""}
-							disabled={!addingNew}
+							disabled={!isEditable}
 							onChange={handleDiseaseChange}
 							style={{
 								container: { width: "80%" },
