@@ -5,7 +5,7 @@ import downCaret from "@tabler/icons/filled/caret-down.svg";
 
 /**
  * @typedef {Object} CollapsableProps
- * @property {string} title
+ * @property {string} [title=""]
  * @property {boolean} [isCollapsed=true] Controls whether this component is collapsed or not, by default starts collapsed.
  * @property {*} children - The components to render inside.
  */
@@ -13,12 +13,14 @@ import downCaret from "@tabler/icons/filled/caret-down.svg";
 /**
  * @param {CollapsableProps} props
  */
-export default function Collapsable({
-	children,
-	title,
-	isCollapsed: startsCollapsed,
-}) {
-	const [isCollapsed, setIsCollapsed] = useState(startsCollapsed ?? true);
+export default function Collapsable(
+	{ children, title, isCollapsed: startsCollapsed } = {
+		childre: null,
+		title: "",
+		isCollapsed: true,
+	},
+) {
+	const [isCollapsed, setIsCollapsed] = useState(startsCollapsed);
 
 	return (
 		<div>

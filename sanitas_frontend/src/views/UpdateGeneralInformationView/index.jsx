@@ -608,7 +608,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 				>
 					<Collapsable
 						title="Contacto 1"
-						isCollapsed={!!patientData.contactPhone1}
+						isCollapsed={!patientData.contactPhone1}
 					>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto</label>
@@ -656,7 +656,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 					</Collapsable>
 					<Collapsable
 						title="Contacto 2"
-						isCollapsed={!!patientData.contactPhone2}
+						isCollapsed={!patientData.contactPhone2}
 					>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto</label>
