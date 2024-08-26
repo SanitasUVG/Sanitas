@@ -303,9 +303,12 @@ function PersonalView({
 		}
 
 		if (
-			(selectedPersonal.disease === "cancer" && !selectedPersonal.typeOfDisease) ||
-			(selectedPersonal.disease === "myocardialInfarction" && !selectedPersonal.surgeryYear) ||
-			(selectedPersonal.disease === "hypertension" && !selectedPersonal.medicine)
+			(selectedPersonal.disease === "cancer" &&
+				!selectedPersonal.typeOfDisease) ||
+			(selectedPersonal.disease === "myocardialInfarction" &&
+				!selectedPersonal.surgeryYear) ||
+			(selectedPersonal.disease === "hypertension" &&
+				!selectedPersonal.medicine)
 		) {
 			toast.info("Por favor, completa todos los campos requeridos.");
 			return;
@@ -648,6 +651,12 @@ function PersonalView({
 												surgeryYear: e.target.value,
 											})
 										}
+										styles={{
+											container: { width: "90%" },
+											select: {},
+											option: {},
+											indicator: {},
+										}}
 									/>
 								</React.Fragment>
 							)}
