@@ -279,8 +279,16 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 	};
 
 	const handleCancel = () => {
-		setSelectedAllergie(null);
-		setAddingNew(false);
+		if (addingNew) {
+			setAddingNew(false);
+			setSelectedAllergie(null);
+			setIsEditable(false);
+		} else if (selectedAllergie !== null) {
+			setIsEditable(false);
+			setSelectedAllergie(null);
+			setAddingNew(false);
+			toast.info("Edición cancelada.");
+		}
 	};
 
 	const allergyOptions = [
@@ -392,7 +400,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 						disabled={!addingNew}
 						onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
 						style={{
-							container: { width: "80%" },
+							container: { width: "90%" },
 							select: {},
 							option: {},
 							indicator: {},
@@ -414,8 +422,8 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 						onChange={(e) => handleFieldChange("whichAllergie", e.target.value)}
 						placeholder="Ingrese a cuál del tipo seleccionado"
 						style={{
-							width: "80%",
-							height: "2.5rem",
+							width: "90%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -481,10 +489,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 											icon={CheckIcon}
 											onClick={handleSaveNewAllergie}
 										/>
-										<IconButton
-											icon={CancelIcon}
-											onClick={() => setIsEditable(false)}
-										/>
+										<IconButton icon={CancelIcon} onClick={handleCancel} />
 									</div>
 								) : (
 									<IconButton
