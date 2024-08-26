@@ -252,7 +252,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		) {
 			setSelectedFamiliar({
 				disease: diseaseKey,
-				relative: [...familiarHistory[diseaseKey].data], 
+				relative: [...familiarHistory[diseaseKey].data],
 				index: index,
 			});
 		} else {
@@ -332,6 +332,8 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 			].includes(selectedFamiliar.disease)
 		) {
 			return selectedFamiliar.relative.split(",").map((item) => item.trim());
+
+			// biome-ignore lint/style/noUselessElse: Displays the info for cancer, renal, cardiac and other diseases
 		} else {
 			return selectedFamiliar.relative.split(",").map((relative) => ({
 				who: relative.trim(),
@@ -344,6 +346,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		}
 	};
 
+	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: It's the function to update the arrays and objects in JSON.
 	const updateFamiliarHistoryState = async (newEntry) => {
 		const isUpdating = isEditable && selectedFamiliar.index !== undefined;
 		toast.info(
@@ -355,22 +358,29 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		let updatedData = [...familiarHistory[selectedFamiliar.disease].data];
 
 		if (isUpdating) {
-			// Si es un array de strings como en 'hypertension', actualiza solo el elemento específico
-			if (Array.isArray(newEntry)) {
-				// Asumiendo que newEntry es un array con un solo elemento nuevo
-				updatedData = newEntry;
+			if (
+				Array.isArray(newEntry) &&
+				newEntry.every((item) => typeof item === "string")
+			) {
+				updatedData = newEntry; // For arrays of strings.
 			} else {
-				// Actualizar un registro existente con más detalles para objetos
-				updatedData[selectedFamiliar.index] = newEntry;
+				// Ensure that newEntry is not an array when updating an object.
+				const update = Array.isArray(newEntry) ? newEntry[0] : newEntry;
+				updatedData[selectedFamiliar.index] = update; // Update the specific object at the index.
 			}
 		} else {
-			// Añadir nuevos datos
-			if (Array.isArray(newEntry)) {
-				// Si newEntry es un array de strings, concatena con el existente
-				updatedData = updatedData.concat(newEntry);
+			if (
+				Array.isArray(newEntry) &&
+				newEntry.every((item) => typeof item === "string")
+			) {
+				updatedData = updatedData.concat(newEntry); // Concatenate if they are strings.
+			} else if (
+				Array.isArray(newEntry) &&
+				newEntry.some((item) => typeof item === "object")
+			) {
+				updatedData.push(...newEntry); // Add each object individually.
 			} else {
-				// Si es un objeto, añade el objeto al array
-				updatedData.push(newEntry);
+				updatedData.push(newEntry); // Add a single object.
 			}
 		}
 
