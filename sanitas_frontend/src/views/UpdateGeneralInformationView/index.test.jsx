@@ -169,6 +169,6 @@ describe("UpdateInfoView tests", () => {
 			</MemoryRouter>,
 		);
 
-		expect(screen.getAllByText("Cargando información del paciente..."));
+		expect(screen.getAllByText("Cargando datos de paciente..."));
 	});
 });
