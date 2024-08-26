@@ -61,6 +61,12 @@ export default function UpdateInfoView({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 
+	const [generalResource, collaboratorResource, studentResource] = [
+		getGeneralPatientInformation(id),
+		getCollaboratorInformation(id),
+		getStudentPatientInformation(id),
+	].map((s) => WrapPromise(s));
+
 	return (
 		<div
 			style={{
@@ -85,18 +91,15 @@ export default function UpdateInfoView({
 					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
 				>
 					<UpdateGeneralInformationSection
-						patientId={id}
-						getData={getGeneralPatientInformation}
+						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
 					/>
 					<UpdateColaboratorInformationSection
-						patientId={id}
-						getData={getCollaboratorInformation}
+						getData={collaboratorResource}
 						updateData={updateCollaboratorInformation}
 					/>
 					<UpdateStudentInformationSection
-						patientId={id}
-						getData={getStudentPatientInformation}
+						getData={studentResource}
 						updateData={updateStudentPatientInformation}
 					/>
 				</Suspense>
@@ -107,19 +110,14 @@ export default function UpdateInfoView({
 
 /**
  * @typedef {Object} UpdateColaboratorInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
  */
 
 /**
  * @param {UpdateColaboratorInformationSectionProps} props
  */
-function UpdateColaboratorInformationSection({
-	patientId,
-	getData,
-	updateData,
-}) {
+function UpdateColaboratorInformationSection({ getData, updateData }) {
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -180,8 +178,7 @@ function UpdateColaboratorInformationSection({
 		},
 	};
 
-	const collaboratorInformationResource = WrapPromise(getData(patientId));
-	const response = collaboratorInformationResource.read();
+	const response = getData.read();
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
@@ -267,8 +264,7 @@ function UpdateColaboratorInformationSection({
 
 /**
  * @typedef {Object} UpdateGeneralInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateGeneralPatientInformationAPICall} updateData
  */
 
@@ -276,7 +272,7 @@ function UpdateColaboratorInformationSection({
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
-function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
+function UpdateGeneralInformationSection({ getData, updateData }) {
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -357,8 +353,7 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 		padding: "1rem",
 	};
 
-	const generalInformationResource = WrapPromise(getData(patientId));
-	const response = generalInformationResource.read();
+	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
@@ -668,15 +663,14 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 
 /**
  * @typedef {Object} UpdateStudentInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
  */
 
 /**
  * @param {UpdateStudentInformationSectionProps} props
  */
-function UpdateStudentInformationSection({ patientId, getData, updateData }) {
+function UpdateStudentInformationSection({ getData, updateData }) {
 	const GenInputStyle = (labelRow, labelColumn) => {
 		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
 		const gridRow = `${labelRow} / ${labelRow + 1}`;
@@ -721,8 +715,7 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 	};
 
 	// Fetch the student information
-	const studentInformationResource = WrapPromise(getData(patientId));
-	const response = studentInformationResource.read();
+	const response = getData.read();
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
