@@ -850,3 +850,26 @@ export function mapToAPIPsychiatricHistory(dbData) {
 		},
 	};
 }
+
+/**
+ * Function to compare the DB data to the request data.
+ * @param {*[]} dbData
+ * @returns {boolean} True if the request data edits/deletes dbData.
+ */
+export function requestDataEditsDBData(requestData, dbData) {
+	dbData.forEach((dbElem, i) => {
+		const requestElem = requestData[i];
+
+		Object.keys(dbElem).forEach((key) => {
+			if (requestElem.hasOwnProperty(key)) {
+				if (
+					dbElem[key] !== requestElem[key] &&
+					dbElem[key].localeCompare("") !== 0
+				) {
+					return true;
+				}
+			}
+		});
+	});
+	return false;
+}

@@ -1,6 +1,11 @@
 import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT, mapToAPISurgicalHistory } from "utils/index.mjs";
+import {
+	createResponse,
+	decodeJWT,
+	mapToAPISurgicalHistory,
+	requestDataEditsDBData,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP POST request to update or create surgical history for a specific patient.
@@ -43,20 +48,20 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected!");
 
-		// const itsDoctor = await isDoctor(client, email);
-		// if (itsDoctor.error) {
-		// 	const msg = "An error occurred while trying to check if user is doctor!";
-		// 	logger.error({ error: itsDoctor.error }, msg);
-		// 	return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
-		// }
+		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
 
-		// if (itsDoctor) {
-		// 	const msg = "Unauthorized, you're a doctor!";
-		// 	const body = { error: msg };
-		// 	logger.error(body, msg);
-		// 	return responseBuilder.setStatusCode(401).setBody(body).build();
-		// }
-		// logger.info(`${email} is not a doctor!`);
+		if (itsDoctor) {
+			const msg = "Unauthorized, you're a doctor!";
+			const body = { error: msg };
+			logger.error(body, msg);
+			return responseBuilder.setStatusCode(401).setBody(body).build();
+		}
+		logger.info(`${email} is not a doctor!`);
 
 		logger.info({ eventBody: event.body }, "Parsing event body...");
 		/** @type {import("utils/defaultValues.mjs").APISurgicalHistory}  */
@@ -79,41 +84,36 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 			SELECT * FROM antecedentes_quirurgicos WHERE id_paciente = $1;
 		`;
 
-		logger.info({ getPatientQuery, studentSearchValues }, "Searching patient in DB...");
-		const patientResult = await client.query(getPatientQuery, studentSearchValues);
+		logger.info(
+			{ getPatientQuery, studentSearchValues },
+			"Searching patient in DB...",
+		);
+		const patientResult = await client.query(
+			getPatientQuery,
+			studentSearchValues,
+		);
 		logger.info("Done searching!");
 
 		if (patientResult.rowCount > 0) {
-			const oldData = patientResult.rows[0].antecedente_quirurgico_data.surgeries.data
-			const newData = medicalHistory.surgeries.data
+			const oldData =
+				patientResult.rows[0].antecedente_quirurgico_data.surgeries.data;
+			const newData = medicalHistory.surgeries.data;
 
-			let repeatingData = false
-			
-			logger.info({oldData}, "Data of the patient in DB currently...")
-			logger.info({medicalHistory}, "Data coming in...")
+			logger.info({ oldData }, "Data of the patient in DB currently...");
+			logger.info({ medicalHistory }, "Data coming in...");
 
-			oldData.some((e, index) => {
-				const tempProperty = newData[index]
-				Object.keys(e).some(key => {
-					if (tempProperty.hasOwnProperty(key)) {
-						if (e[key] !== tempProperty[key] && e[key].localeCompare("") !== 0) {
-							repeatingData = true
-							return true
-						}
-					}
-				})
-
-				return repeatingData
-			})
+			const repeatingData = requestDataEditsDBData(newData, oldData);
 
 			if (repeatingData) {
 				logger.error("Student trying to update info already saved!");
 				return responseBuilder
 					.setStatusCode(400)
-					.setBody({ error: "Invalid input: Students cannot update saved info." })
+					.setBody({
+						error: "Invalid input: Students cannot update saved info.",
+					})
 					.build();
 			}
-		}		
+		}
 
 		const values = [id, true, medicalHistory];
 
@@ -128,7 +128,7 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 
 		logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
 		const result = await client.query(upsertQuery, values);
-		logger.info("Done inserting/updating!");	
+		logger.info("Done inserting/updating!");
 
 		await client.query("commit");
 
@@ -148,8 +148,7 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 		return responseBuilder
 			.setStatusCode(200)
 			.setBody(formattedResponse)
-			.build();	
-
+			.build();
 	} catch (error) {
 		await client.query("rollback");
 		logger.error(
