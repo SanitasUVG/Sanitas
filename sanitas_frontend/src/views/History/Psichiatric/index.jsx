@@ -33,6 +33,11 @@ export function PsichiatricHistory({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	const psichiatricHistoryResource = WrapPromise(getPsichiatricHistory(id));
+	const [_reload, setReload] = useState(false); // Controls reload toggling for refetching data
+
+	const triggerReload = () => {
+		setReload((prev) => !prev);
+	};
 
 	const LoadingView = () => {
 		return (
@@ -118,6 +123,7 @@ export function PsichiatricHistory({
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
 								updatePsichiatricHistory={updatePsichiatricHistory}
+								triggerReload={triggerReload}
 							/>
 						</Suspense>
 					</div>
@@ -132,8 +138,9 @@ export function PsichiatricHistory({
  * @property {number} id - The patient's ID.
  * @property {Object} psichiatricHistoryResource - Wrapped resource for fetching psichiatric history data.
  * @property {Function} updatePsichiatricHistory - Function to update the Allergic history.
- *
+ * @property {Function} triggerReload - Function to trigger reloading of data.
  * Internal view component for managing the display and modification of a patient's psichiatric history, with options to add or edit records.
+ *
  *
  * @param {PsichiatricViewProps} props - Specific props for the PsichiatricViewiew component.
  * @returns {JSX.Element} - A detailed view for managing Psichiatric history with interactivity to add or edit records.
@@ -143,6 +150,7 @@ function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
 	updatePsichiatricHistory,
+	triggerReload,
 }) {
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
 	const psichiatricHistoryData = psichiatricHistoryResult.result || {};
@@ -156,6 +164,30 @@ function PsichiatricView({
 			...depressionMedications,
 			{ medication: "", dose: "", frequency: "" },
 		]);
+	};
+
+	const removeLastDepressionMedication = () => {
+		setDepressionMedications((prevMedications) => prevMedications.slice(0, -1));
+	};
+
+	const removeLastAnxietyMedication = () => {
+		setAnxietyMedications((prevMedications) => prevMedications.slice(0, -1));
+	};
+
+	const removeLastTOCMedication = () => {
+		setTOCMedications((prevMedications) => prevMedications.slice(0, -1));
+	};
+
+	const removeLastTDAHMedication = () => {
+		setTDAHMedications((prevMedications) => prevMedications.slice(0, -1));
+	};
+
+	const removeLastBipolarMedication = () => {
+		setBipolarMedications((prevMedications) => prevMedications.slice(0, -1));
+	};
+
+	const removeLastOtherMedication = () => {
+		setOtherMedications((prevMedications) => prevMedications.slice(0, -1));
 	};
 
 	const handleDepressionMedicationChange = (index, field, value) => {
@@ -587,20 +619,13 @@ function PsichiatricView({
 			if (!result.error) {
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				setIsEditable(false);
+				triggerReload();
 			} else {
 				toast.error(`Error al guardar los antecedentes: ${result.error}`);
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);
 		}
-	};
-
-	const handleCancel = () => {
-		if (isEditable) {
-			setIsEditable(false);
-		}
-
-		toast.info("Edición cancelada.");
 	};
 
 	const [depressionUBE, setDepressionUBE] = useState(
@@ -640,6 +665,229 @@ function PsichiatricView({
 			? other.data[0].ube
 			: false,
 	);
+
+	const [originalDepressionMedications, setOriginalDepressionMedications] =
+		useState([]);
+	const [originalAnxietyMedications, setOriginalAnxietyMedications] = useState(
+		[],
+	);
+	const [originalTOCMedications, setOriginalTOCMedications] = useState([]);
+	const [originalTDAHMedications, setOriginalTDAHMedications] = useState([]);
+	const [originalBipolarMedications, setOriginalBipolarMedications] = useState(
+		[],
+	);
+	const [originalOtherMedications, setOriginalOtherMedications] = useState([]);
+	const [originalDepressionUBE, setOriginalDepressionUBE] = useState(false);
+	const [originalAnxietyUBE, setOriginalAnxietyUBE] = useState(false);
+	const [originalTOCUBE, setOriginalTOCUBE] = useState(false);
+	const [originalTDAHUBE, setOriginalTDAHUBE] = useState(false);
+	const [originalBipolarUBE, setOriginalBipolarUBE] = useState(false);
+	const [originalOtherUBE, setOriginalOtherUBE] = useState(false);
+	const [originalOtherIllness, setOriginalOtherIllness] = useState("");
+
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
+	useEffect(() => {
+		// Guardar los medicamentos para Depresión
+		const initialDepressionMedications = depression.data.map((item) => ({
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialDepressionMedications) !==
+			JSON.stringify(originalDepressionMedications)
+		) {
+			setDepressionMedications(initialDepressionMedications);
+			setOriginalDepressionMedications(
+				JSON.parse(JSON.stringify(initialDepressionMedications)),
+			);
+		}
+
+		// Guardar los medicamentos para Ansiedad
+		const initialAnxietyMedications = anxiety.data.map((item) => ({
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialAnxietyMedications) !==
+			JSON.stringify(originalAnxietyMedications)
+		) {
+			setAnxietyMedications(initialAnxietyMedications);
+			setOriginalAnxietyMedications(
+				JSON.parse(JSON.stringify(initialAnxietyMedications)),
+			);
+		}
+
+		// Guardar los medicamentos para TOC
+		const initialTOCMedications = ocd.data.map((item) => ({
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialTOCMedications) !==
+			JSON.stringify(originalTOCMedications)
+		) {
+			setTOCMedications(initialTOCMedications);
+			setOriginalTOCMedications(
+				JSON.parse(JSON.stringify(initialTOCMedications)),
+			);
+		}
+
+		// Guardar los medicamentos para TDAH
+		const initialTDAHMedications = adhd.data.map((item) => ({
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialTDAHMedications) !==
+			JSON.stringify(originalTDAHMedications)
+		) {
+			setTDAHMedications(initialTDAHMedications);
+			setOriginalTDAHMedications(
+				JSON.parse(JSON.stringify(initialTDAHMedications)),
+			);
+		}
+
+		// Guardar los medicamentos para Trastorno Bipolar
+		const initialBipolarMedications = bipolar.data.map((item) => ({
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialBipolarMedications) !==
+			JSON.stringify(originalBipolarMedications)
+		) {
+			setBipolarMedications(initialBipolarMedications);
+			setOriginalBipolarMedications(
+				JSON.parse(JSON.stringify(initialBipolarMedications)),
+			);
+		}
+
+		// Guardar los medicamentos para Otros
+		const initialOtherMedications = other.data.map((item) => ({
+			illness: item.illness || "",
+			medication: item.medication || "",
+			dose: item.dose || "",
+			frequency: item.frequency || "",
+		}));
+		if (
+			JSON.stringify(initialOtherMedications) !==
+			JSON.stringify(originalOtherMedications)
+		) {
+			setOtherMedications(initialOtherMedications);
+			setOriginalOtherMedications(
+				JSON.parse(JSON.stringify(initialOtherMedications)),
+			);
+		}
+
+		// Guardar las opciones UBE para Depresión
+		if (depression.data[0].ube !== originalDepressionUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setDepressionUBE(depression.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalDepressionUBE(depression.data[0].ube || false);
+		}
+
+		// Guardar las opciones UBE para Ansiedad
+		if (anxiety.data[0].ube !== originalAnxietyUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setAnxietyUBE(anxiety.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalAnxietyUBE(anxiety.data[0].ube || false);
+		}
+
+		// Guardar las opciones UBE para TOC
+		if (ocd.data[0].ube !== originalTOCUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setTOCUBE(ocd.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalTOCUBE(ocd.data[0].ube || false);
+		}
+
+		// Guardar las opciones UBE para TDAH
+		if (adhd.data[0].ube !== originalTDAHUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setTDAHUBE(adhd.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalTDAHUBE(adhd.data[0].ube || false);
+		}
+
+		// Guardar las opciones UBE para Trastorno Bipolar
+		if (bipolar.data[0].ube !== originalBipolarUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setBipolarUBE(bipolar.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalBipolarUBE(bipolar.data[0].ube || false);
+		}
+
+		// Guardar las opciones UBE para Otros
+		if (other.data[0].ube !== originalOtherUBE) {
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOtherUBE(other.data[0].ube || false);
+			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+			setOriginalOtherUBE(other.data[0].ube || false);
+		}
+
+		// Guardar la condición en Otros
+		if (other.data[0].illness !== originalOtherIllness) {
+			setOtherIllness(other.data[0].illness || "");
+
+			setOriginalOtherIllness(other.data[0].illness || "");
+		}
+	}, [
+		depression.data,
+		anxiety.data,
+		ocd.data,
+		adhd.data,
+		bipolar.data,
+		other.data,
+		originalAnxietyMedications,
+		originalBipolarMedications,
+		originalOtherIllness,
+		originalTOCUBE,
+		originalTOCMedications,
+		originalTDAHUBE,
+		originalTDAHMedications,
+		originalOtherUBE,
+		originalDepressionUBE,
+		originalAnxietyUBE,
+		originalBipolarUBE,
+		originalDepressionMedications,
+		originalOtherMedications,
+	]);
+
+	const handleCancel = () => {
+		// Restaurar los valores originales desde los estados guardados
+		setDepressionMedications(
+			JSON.parse(JSON.stringify(originalDepressionMedications)),
+		);
+		setAnxietyMedications(
+			JSON.parse(JSON.stringify(originalAnxietyMedications)),
+		);
+		setTOCMedications(JSON.parse(JSON.stringify(originalTOCMedications)));
+		setTDAHMedications(JSON.parse(JSON.stringify(originalTDAHMedications)));
+		setBipolarMedications(
+			JSON.parse(JSON.stringify(originalBipolarMedications)),
+		);
+		setOtherMedications(JSON.parse(JSON.stringify(originalOtherMedications)));
+
+		setDepressionUBE(originalDepressionUBE);
+		setAnxietyUBE(originalAnxietyUBE);
+		setTOCUBE(originalTOCUBE);
+		setTDAHUBE(originalTDAHUBE);
+		setBipolarUBE(originalBipolarUBE);
+		setOtherUBE(originalOtherUBE);
+
+		setOtherIllness(originalOtherIllness);
+
+		// Salir del modo de edición
+		setIsEditable(false);
+		toast.info("Edición cancelada.");
+	};
 
 	const handleDepressionChange = (newStatus) => {
 		setDepressionStatus(newStatus);
@@ -768,7 +1016,7 @@ function PsichiatricView({
 						<div
 							style={{
 								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
+								padding: "0 0 2rem 1rem",
 								display: "flex",
 								flexDirection: "column",
 								justifyContent: "space-between",
@@ -784,7 +1032,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "0.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -852,7 +1100,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -880,7 +1128,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -908,7 +1156,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -969,7 +1217,19 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && depressionMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastDepressionMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -999,7 +1259,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "1rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1067,7 +1327,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1095,7 +1355,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1123,7 +1383,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1184,7 +1444,19 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && anxietyMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastAnxietyMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -1214,7 +1486,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "1rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1282,7 +1554,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1310,7 +1582,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1338,7 +1610,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1399,7 +1671,19 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && TOCMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastTOCMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -1429,7 +1713,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "1rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1498,7 +1782,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1526,7 +1810,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1554,7 +1838,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1615,7 +1899,19 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && TDAHMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastTDAHMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -1645,7 +1941,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "1rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1713,7 +2009,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1741,7 +2037,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1769,7 +2065,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1831,11 +2127,22 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && bipolarMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastBipolarMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
-												disabled={!isEditable}
 											/>
 										)}
 									</div>
@@ -1845,6 +2152,7 @@ function PsichiatricView({
 
 						<div
 							style={{
+								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
 								padding: "2rem 0 2rem 1rem",
 								display: "flex",
 								flexDirection: "column",
@@ -1861,7 +2169,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										paddingTop: "1rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1951,7 +2259,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese el medicamento administrado"
+												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -1979,7 +2287,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la dosis"
+												placeholder="Ingrese cuánto (opcional)"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -2007,7 +2315,7 @@ function PsichiatricView({
 														e.target.value,
 													)
 												}
-												placeholder="Ingrese la frecuencia"
+												placeholder="Ingrese cada cuánto administra el medicamento"
 												style={{
 													width: "90%",
 													height: "3rem",
@@ -2069,7 +2377,19 @@ function PsichiatricView({
 												style={{
 													width: "30%",
 													height: "3rem",
-													backgroundColor: "#fff",
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										)}
+										<div style={{ width: "1rem" }} />
+										{isEditable && otherMedications.length > 1 && (
+											<BaseButton
+												text="Cancelar Medicamento"
+												onClick={removeLastOtherMedication}
+												style={{
+													width: "30%",
+													height: "3rem",
+													backgroundColor: colors.error,
 													color: colors.primaryBackground,
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -2086,6 +2406,7 @@ function PsichiatricView({
 									display: "flex",
 									justifyContent: "center",
 									alignItems: "center",
+									paddingTop: "2rem",
 								}}
 							>
 								<BaseButton

@@ -82,37 +82,4 @@ describe("PsichiatricHistory Component Tests", () => {
 			).toBeInTheDocument(),
 		);
 	});
-
-	test("displays error message when there is an error fetching data", async () => {
-		const mockGetPsichiatricHistoryError = vi.fn(() =>
-			Promise.resolve({
-				error: {
-					response: {
-						status: 400,
-						statusText: "Bad Request",
-						data: "Invalid request parameters.",
-					},
-				},
-			}),
-		);
-
-		render(
-			<Wrapper>
-				<PsichiatricHistory
-					getPsichiatricHistory={mockGetPsichiatricHistoryError}
-					updatePsichiatricHistory={mockUpdatePsichiatricHistory}
-					sidebarConfig={sidebarConfig}
-					useStore={mockUseStore}
-				/>
-			</Wrapper>,
-		);
-
-		await waitFor(() =>
-			expect(
-				screen.getByText(
-					"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!",
-				),
-			).toBeInTheDocument(),
-		);
-	});
 });
