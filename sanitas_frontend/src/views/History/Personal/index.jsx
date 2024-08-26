@@ -302,6 +302,15 @@ function PersonalView({
 			return;
 		}
 
+		if (
+			(selectedPersonal.disease === "cancer" && !selectedPersonal.typeOfDisease) ||
+			(selectedPersonal.disease === "myocardialInfarction" && !selectedPersonal.surgeryYear) ||
+			(selectedPersonal.disease === "hypertension" && !selectedPersonal.medicine)
+		) {
+			toast.info("Por favor, completa todos los campos requeridos.");
+			return;
+		}
+
 		// Prepara la nueva entrada para guardar
 		let newEntry = {};
 
@@ -790,7 +799,7 @@ function PersonalView({
 								<div style={{ display: "flex", justifyContent: "flex-end" }}>
 									{!addingNew &&
 										(isEditable ? (
-											<div style={{ display: "flex", gap: "1rem" }}>
+											<div style={{ display: "flex", gap: "3rem" }}>
 												<IconButton
 													icon={CheckIcon}
 													onClick={handleSaveNewPersonal}
