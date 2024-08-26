@@ -26,7 +26,7 @@ describe("Student Handler", () => {
 		expect(user).toBeDefined();
 		expect(user.carnet).toBe("A01234567");
 		expect(user.career).toBe("Ingeniería en CC y TI");
-		expect(user.patientId).toBe(1);
+		expect(user.idPatient).toBe(1);
 	});
 
 	it("should not found a patiend", async () => {

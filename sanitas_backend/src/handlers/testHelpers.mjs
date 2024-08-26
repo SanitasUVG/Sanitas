@@ -103,7 +103,7 @@ export async function updateStudentInfo(
 	career = "Lic. Computación",
 ) {
 	const payload = {
-		patientId: id,
+		idPatient: id,
 		carnet,
 		career,
 	};

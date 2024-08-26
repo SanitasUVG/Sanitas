@@ -45,7 +45,7 @@ describe("Update patient student data integration tests", () => {
 			payload.career,
 		);
 
-		expect(received.patientId).toBe(idPatient);
+		expect(received.idPatient).toBe(idPatient);
 		expect(received.carnet).toBe(payload.carnet);
 		expect(received.career).toBe(payload.career);
 	});
@@ -57,7 +57,7 @@ describe("Update patient student data integration tests", () => {
 		const payload = generateValidUpdate(idPatient);
 		await axios.put(API_URL, payload, { headers });
 
-		payload.patientId = patient2Id;
+		payload.idPatient = patient2Id;
 		const response = await axios.put(API_URL, payload, {
 			headers,
 			validateStatus: () => true,

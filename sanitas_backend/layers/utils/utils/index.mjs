@@ -83,7 +83,7 @@ export function decodeJWT(jwt) {
  */
 export function mapToAPIPatient(dbPatient) {
 	const {
-		patientId,
+		id: patientId,
 		cui,
 		es_mujer: isWoman,
 		correo: email,
