@@ -630,7 +630,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 												relative: e.target.value,
 											})
 										}
-										readOnly={false}
+										readOnly={!isEditable}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
