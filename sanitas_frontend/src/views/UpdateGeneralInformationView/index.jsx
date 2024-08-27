@@ -211,7 +211,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 				style={{
 					display: "flex",
 					justifyContent: "space-between",
-					alignItems: "center",
+					alignItems: "start",
 					paddingRight: "1rem",
 				}}
 			>
@@ -272,13 +272,6 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @returns {JSX.Element}
  */
 function UpdateGeneralInformationSection({ getData, updateData }) {
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -607,7 +600,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 				</div>
 			</div>
 
-			<div >
+			<div>
 				<h2 style={styles.h2}>Contactos del paciente:</h2>
 				<div
 					style={{
@@ -615,7 +608,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 						flexDirection: "row",
 						gap: "2rem",
 						width: "100%",
-						paddingTop: "3rem"
+						paddingTop: "3rem",
 					}}
 				>
 					<Collapsable
@@ -808,7 +801,7 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 				style={{
 					display: "flex",
 					justifyContent: "space-between",
-					alignItems: "center",
+					alignItems: "start",
 					paddingRight: "1rem",
 				}}
 			>

@@ -51,7 +51,9 @@ export default function Collapsable(
 					}}
 				/>
 
-				<p style={{ textAlign: "center", flexGrow: 1, fontWeight: "bold" }}>{title}</p>
+				<p style={{ textAlign: "center", flexGrow: 1, fontWeight: "normal" }}>
+					{title}
+				</p>
 			</button>
 			<div
 				style={{
