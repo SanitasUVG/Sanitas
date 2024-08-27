@@ -195,7 +195,7 @@ function SurgicalView({
 	const currentYear = new Date().getFullYear();
 
 	const birthYear = birthYearData?.birthdate
-		? new Date(birthYearData.birthdate).getFullYear()
+		? new Date(birthYearData.birthdate).getUTCFullYear()
 		: null;
 
 	useEffect(() => {
