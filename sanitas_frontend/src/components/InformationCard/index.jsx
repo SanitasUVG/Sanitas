@@ -103,7 +103,7 @@ export default function InformationCard({
 						</p>
 						<p>
 							<span style={labelStyle}>Familiar:</span>{" "}
-							<span style={contentStyle}>{relative}</span>
+							<span style={contentStyle}>{truncateText(relative)}</span>
 						</p>
 					</>
 				);
