@@ -9,6 +9,10 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} SurgicalHistoryProps
@@ -36,7 +40,7 @@ export function SurgicalHistory({
 
 	const LoadingView = () => {
 		return (
-			<Throbber loadingMessage="Cargando información de los antecedentes quirúrjicos..." />
+			<Throbber loadingMessage="Cargando información de los antecedentes quirúrgicos..." />
 		);
 	};
 
@@ -88,7 +92,7 @@ export function SurgicalHistory({
 								fontSize: fontSize.titleSize,
 							}}
 						>
-							Antecedentes Quirúrjicos
+							Antecedentes Quirúrgicos
 						</h1>
 						<h3
 							style={{
@@ -99,7 +103,7 @@ export function SurgicalHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes quirúrjicos
+							Registro de antecedentes quirúrgicos
 						</h3>
 					</div>
 
@@ -151,6 +155,7 @@ function SurgicalView({
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
+	const [isEditable, setIsEditable] = useState(false);
 
 	const birthYearResult = birthdayResource.read();
 	const surgicalHistoryResult = surgicalHistoryResource.read();
@@ -211,6 +216,7 @@ function SurgicalView({
 			complications: "",
 		});
 		setAddingNew(true);
+		setIsEditable(true);
 	};
 
 	// Save the new surgery record to the database
@@ -223,26 +229,43 @@ function SurgicalView({
 			return;
 		}
 
-		toast.info("Guardando antecedente quirúrgico...");
+		const isNewSurgery = selectedSurgery.index === undefined; // Determinar si es un nuevo registro
+		toast.info(
+			isNewSurgery
+				? "Guardando nuevo antecedente quirúrgico..."
+				: "Actualizando antecedente quirúrgico...",
+		);
 
-		const updatedSurgicalHistory = {
-			data: [...surgicalHistory.data, selectedSurgery],
-			version: surgicalHistory.version,
-		};
+		const updatedData = [...surgicalHistory.data];
 
-		updatedSurgicalHistory.data.sort((a, b) => b.surgeryYear - a.surgeryYear);
+		if (!isNewSurgery) {
+			// Actualizar el registro existente
+			updatedData[selectedSurgery.index] = selectedSurgery;
+		} else {
+			// Añadir como nuevo
+			updatedData.push(selectedSurgery);
+		}
+
+		updatedData.sort(
+			(a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear),
+		);
 
 		try {
 			const response = await updateSurgicalHistory(
 				id,
-				updatedSurgicalHistory.data,
+				updatedData,
 				surgicalHistory.version,
 			);
 			if (!response.error) {
-				setSurgicalHistory(updatedSurgicalHistory);
+				setSurgicalHistory({ ...surgicalHistory, data: updatedData });
 				setAddingNew(false);
+				setIsEditable(false);
 				setSelectedSurgery(null);
-				toast.success("Antecedente quirúrgico guardado con éxito.");
+				toast.success(
+					isNewSurgery
+						? "Antecedente quirúrgico guardado con éxito."
+						: "Antecedente quirúrgico actualizado con éxito.",
+				);
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
@@ -252,18 +275,26 @@ function SurgicalView({
 	};
 
 	// Select a surgery record to view
-	const handleSelectSurgery = (surgery) => {
+	const handleSelectSurgery = (surgery, index) => {
 		setSelectedSurgery({
-			surgeryType: surgery.surgeryType,
-			surgeryYear: surgery.surgeryYear,
-			complications: surgery.complications,
+			...surgery,
+			index: index,
 		});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
-		setSelectedSurgery(null);
-		setAddingNew(false);
+		if (addingNew) {
+			setAddingNew(false);
+			setSelectedSurgery(null);
+			setIsEditable(false);
+		} else if (selectedSurgery !== null) {
+			setIsEditable(false);
+			setSelectedSurgery(null);
+			setAddingNew(false);
+			toast.info("Edición cancelada.");
+		}
 	};
 
 	return (
@@ -324,7 +355,7 @@ function SurgicalView({
 							type="surgical"
 							year={surgery.surgeryYear}
 							reasonInfo={surgery.surgeryType}
-							onClick={() => handleSelectSurgery(surgery)}
+							onClick={() => handleSelectSurgery(surgery, index)}
 						/>
 					))
 				)}
@@ -361,11 +392,11 @@ function SurgicalView({
 								surgeryType: e.target.value,
 							})
 						}
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						placeholder="Ingrese acá el motivo o tipo de cirugía."
 						style={{
-							width: "95%",
-							height: "10%",
+							width: "90%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -384,7 +415,7 @@ function SurgicalView({
 					<DropdownMenu
 						options={yearOptions}
 						value={selectedSurgery.surgeryYear}
-						readOnly={!addingNew}
+						disabled={!isEditable}
 						onChange={(e) =>
 							setSelectedSurgery({
 								...selectedSurgery,
@@ -392,7 +423,7 @@ function SurgicalView({
 							})
 						}
 						style={{
-							container: { width: "95%", height: "10%" },
+							container: { width: "90%" },
 							select: {},
 							option: {},
 							indicator: {},
@@ -417,11 +448,11 @@ function SurgicalView({
 								complications: e.target.value,
 							})
 						}
-						readOnly={!addingNew}
+						readOnly={!isEditable}
 						placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
 						style={{
-							width: "95%",
-							height: "10%",
+							width: "90%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -455,6 +486,27 @@ function SurgicalView({
 								/>
 							</>
 						)}
+					</div>
+					<div
+						style={{ display: "flex", flexDirection: "column", width: "100%" }}
+					>
+						<div style={{ display: "flex", justifyContent: "flex-end" }}>
+							{!addingNew &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveNewSurgery}
+										/>
+										<IconButton icon={CancelIcon} onClick={handleCancel} />
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
 					</div>
 				</div>
 			) : null}
