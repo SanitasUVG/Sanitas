@@ -334,11 +334,6 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 			gap: "20px",
 			paddingTop: "10px",
 		},
-		Secondsectionform: {
-			display: "grid",
-			gap: "20px",
-			paddingTop: "10px",
-		},
 		input: {
 			maxWidth: "18.75rem",
 		},
@@ -350,6 +345,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		flexDirection: "column",
 		gap: "0.5rem",
 		padding: "1rem",
+		border: `.1rem solid ${colors.primaryBackground}`,
+		borderRadius: "0 0 5% 5%",
+		transform: "translateY(-1%)",
 	};
 
 	const response = getData.read();
@@ -447,7 +445,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 			{/* BODY */}
 			<div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
 				{/* FIRST COLUMN*/}
-				<div style={columnStyles}>
+				<div style={{ ...columnStyles, paddingLeft: "0" }}>
 					<div style={inputContainerStyles}>
 						<label style={styles.label}>Nombres:</label>
 						<BaseInput
@@ -609,15 +607,15 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 				</div>
 			</div>
 
-			<div style={styles.Secondsectionform}>
-				<h2 style={styles.h2}>Contactos del paciente</h2>
+			<div >
+				<h2 style={styles.h2}>Contactos del paciente:</h2>
 				<div
 					style={{
 						display: "flex",
 						flexDirection: "row",
-						// justifyContent: "space-around",
 						gap: "2rem",
-						padding: "1rem",
+						width: "100%",
+						paddingTop: "3rem"
 					}}
 				>
 					<Collapsable
@@ -625,7 +623,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 						isCollapsed={!patientData.contactPhone1}
 					>
 						<div style={collapsableInnerStyle}>
-							<label style={styles.label}>Nombre de contacto</label>
+							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactName1 || ""}
@@ -635,11 +633,11 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactName1: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 
-							<label style={styles.label}>Parentesco de contacto</label>
+							<label style={styles.label}>Parentesco de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactKinship1 || ""}
@@ -649,11 +647,11 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactKinship1: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 
-							<label style={styles.label}>Teléfono de contacto</label>
+							<label style={styles.label}>Teléfono de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactPhone1 || ""}
@@ -663,7 +661,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactPhone1: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 						</div>
@@ -673,7 +671,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 						isCollapsed={!patientData.contactPhone2}
 					>
 						<div style={collapsableInnerStyle}>
-							<label style={styles.label}>Nombre de contacto</label>
+							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactName2 || ""}
@@ -683,11 +681,11 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactName2: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 
-							<label style={styles.label}>Parentesco de contacto</label>
+							<label style={styles.label}>Parentesco de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactKinship2 || ""}
@@ -697,11 +695,11 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactKinship2: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 
-							<label style={styles.label}>Teléfono de contacto</label>
+							<label style={styles.label}>Teléfono de contacto:</label>
 							<BaseInput
 								type="text"
 								value={patientData.contactPhone2 || ""}
@@ -711,7 +709,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 										contactPhone2: e.target.value,
 									})
 								}
-								style={styles.input}
+								style={inputStyles}
 								disabled={!editMode}
 							/>
 						</div>

@@ -30,7 +30,7 @@ export default function Collapsable(
 					backgroundColor: colors.primaryBackground,
 					color: "white",
 					borderWidth: "0",
-					borderRadius: "0.2rem",
+					borderRadius: "0.3rem",
 					padding: "0.5rem 1.2rem",
 					fontFamily: fonts.titleFont,
 					fontSize: fontSize.subtitleSize,
@@ -51,7 +51,7 @@ export default function Collapsable(
 					}}
 				/>
 
-				<p style={{ textAlign: "center", flexGrow: 1 }}>{title}</p>
+				<p style={{ textAlign: "center", flexGrow: 1, fontWeight: "bold" }}>{title}</p>
 			</button>
 			<div
 				style={{
