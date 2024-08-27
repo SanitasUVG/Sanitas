@@ -9,6 +9,10 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} FamiliarHistoryProps
@@ -142,6 +146,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	// State hooks to manage the selected familiar disease and whether adding a new entry
 	const [selectedFamiliar, setSelectedFamiliar] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
+	const [isEditable, setIsEditable] = useState(false);
 
 	// Read the data from the resource and handle any potential errors
 	const familiarHistoryResult = familiarHistoryResource.read();
@@ -220,6 +225,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 		const initialDisease = "hypertension";
 		setSelectedFamiliar({ disease: initialDisease });
 		setAddingNew(true);
+		setIsEditable(true);
 		validateDisease(initialDisease);
 	};
 
@@ -233,28 +239,55 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	// Handler for selecting a disease card, setting state to show details without adding new data
-	const handleSelectDiseaseCard = (diseaseKey, entry) => {
-		setSelectedFamiliar({
-			disease: diseaseKey,
-			relative: entry.who,
-			typeOfDisease: entry.typeOfDisease || "",
-		});
+	const handleSelectDiseaseCard = (diseaseKey, entry, index) => {
+		if (
+			[
+				"hypertension",
+				"diabetesMellitus",
+				"hypothyroidism",
+				"asthma",
+				"convulsions",
+				"myocardialInfarction",
+			].includes(diseaseKey)
+		) {
+			setSelectedFamiliar({
+				disease: diseaseKey,
+				relative: [...familiarHistory[diseaseKey].data],
+				index: index,
+			});
+		} else {
+			setSelectedFamiliar({
+				disease: diseaseKey,
+				relative: entry.who,
+				typeOfDisease: entry.typeOfDisease || "",
+				index: index,
+			});
+		}
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
 		setSelectedFamiliar({});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	// Changes the disease selection from the dropdown, resetting other fields
 	const handleDiseaseChange = (e) => {
 		const disease = e.target.value;
-		setSelectedFamiliar({
-			disease: disease,
-			relative: "",
-			typeOfDisease: "",
-		});
+		if (isEditable && selectedFamiliar.index !== undefined) {
+			setSelectedFamiliar((prev) => ({
+				...prev,
+				disease: disease,
+			}));
+		} else {
+			setSelectedFamiliar({
+				disease: disease,
+				relative: "",
+				typeOfDisease: "",
+			});
+		}
 	};
 
 	const isValidDiseaseSelection = () => {
@@ -288,27 +321,69 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 	};
 
 	const prepareNewEntry = () => {
-		return ["cancer", "cardiacDiseases", "renalDiseases", "others"].includes(
-			selectedFamiliar.disease,
-		)
-			? {
-					who: selectedFamiliar.relative,
-					typeOfDisease: selectedFamiliar.typeOfDisease || "",
-					disease:
-						selectedFamiliar.disease === "others"
-							? selectedFamiliar.typeOfDisease
-							: undefined,
-				}
-			: selectedFamiliar.relative;
+		if (
+			[
+				"hypertension",
+				"diabetesMellitus",
+				"hypothyroidism",
+				"asthma",
+				"convulsions",
+				"myocardialInfarction",
+			].includes(selectedFamiliar.disease)
+		) {
+			return selectedFamiliar.relative.split(",").map((item) => item.trim());
+
+			// biome-ignore lint/style/noUselessElse: Displays the info for cancer, renal, cardiac and other diseases
+		} else {
+			return selectedFamiliar.relative.split(",").map((relative) => ({
+				who: relative.trim(),
+				typeOfDisease: selectedFamiliar.typeOfDisease || "",
+				disease:
+					selectedFamiliar.disease === "others"
+						? selectedFamiliar.typeOfDisease
+						: undefined,
+			}));
+		}
 	};
 
+	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: It's the function to update the arrays and objects in JSON.
 	const updateFamiliarHistoryState = async (newEntry) => {
-		toast.info("Guardando antecedente familiar...");
+		const isUpdating = isEditable && selectedFamiliar.index !== undefined;
+		toast.info(
+			isUpdating
+				? "Actualizando antecedente familiar..."
+				: "Guardando nuevo antecedente familiar...",
+		);
 
-		const updatedData = [
-			...familiarHistory[selectedFamiliar.disease].data,
-			newEntry,
-		];
+		let updatedData = [...familiarHistory[selectedFamiliar.disease].data];
+
+		if (isUpdating) {
+			if (
+				Array.isArray(newEntry) &&
+				newEntry.every((item) => typeof item === "string")
+			) {
+				updatedData = newEntry; // For arrays of strings.
+			} else {
+				// Ensure that newEntry is not an array when updating an object.
+				const update = Array.isArray(newEntry) ? newEntry[0] : newEntry;
+				updatedData[selectedFamiliar.index] = update; // Update the specific object at the index.
+			}
+		} else {
+			if (
+				Array.isArray(newEntry) &&
+				newEntry.every((item) => typeof item === "string")
+			) {
+				updatedData = updatedData.concat(newEntry); // Concatenate if they are strings.
+			} else if (
+				Array.isArray(newEntry) &&
+				newEntry.some((item) => typeof item === "object")
+			) {
+				updatedData.push(...newEntry); // Add each object individually.
+			} else {
+				updatedData.push(newEntry); // Add a single object.
+			}
+		}
+
 		const updatedHistory = {
 			...familiarHistory[selectedFamiliar.disease],
 			data: updatedData,
@@ -321,24 +396,27 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 
 		try {
 			const response = await updateFamiliarHistory(id, updatedFamiliarHistory);
-
-			if (response.error) {
-				toast.error(`Error al guardar la información: ${response.error}`);
-			} else {
-				toast.success("Antecedente familiar guardado con éxito.");
+			if (!response.error) {
+				toast.success(
+					isUpdating
+						? "Antecedente familiar actualizado con éxito."
+						: "Antecedente familiar guardado con éxito.",
+				);
 				setFamiliarHistory(updatedFamiliarHistory);
 				setSelectedFamiliar({});
 				setAddingNew(false);
+				setIsEditable(false);
+			} else {
+				toast.error(`Error al guardar la información: ${response.error}`);
 			}
-		} catch (_error) {
-			toast.error("Error al conectar con el servidor");
+		} catch (error) {
+			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
 
 	// Handles the saving of new or modified family medical history
 	const handleSaveNewFamiliar = async () => {
 		if (!isValidDiseaseSelection()) return;
-
 		const newEntry = prepareNewEntry();
 		await updateFamiliarHistoryState(newEntry);
 	};
@@ -436,9 +514,9 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 							diseaseKey === "renalDiseases" ||
 							diseaseKey === "others"
 						) {
-							return data.map((entry) => {
+							return data.map((entry, index) => {
 								const details = entry.who;
-								const uniqueKey = `${entry.disease}-${entry.date}`;
+								const uniqueKey = `${diseaseKey}-${entry.who}-${index}`;
 								if (diseaseKey === "others") {
 									displayedDisease = entry.disease;
 								}
@@ -448,7 +526,9 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										type="family"
 										disease={displayedDisease}
 										relative={details}
-										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+										onClick={() =>
+											handleSelectDiseaseCard(diseaseKey, entry, index)
+										}
 									/>
 								);
 							});
@@ -457,6 +537,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 						// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
 						else {
 							const displayedRelatives = data.join(", ");
+
 							return (
 								<InformationCard
 									key={diseaseKey}
@@ -464,9 +545,13 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 									disease={displayedDisease}
 									relative={displayedRelatives}
 									onClick={() =>
-										handleSelectDiseaseCard(diseaseKey, {
-											who: displayedRelatives,
-										})
+										data.forEach((relative, index) =>
+											handleSelectDiseaseCard(
+												diseaseKey,
+												{ who: relative },
+												index,
+											),
+										)
 									}
 								/>
 							);
@@ -511,7 +596,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedFamiliar.disease || ""}
-							readOnly={!addingNew}
+							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
 								container: { width: "80%" },
@@ -545,7 +630,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 												relative: e.target.value,
 											})
 										}
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
@@ -587,7 +672,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 													? "Escriba la enfermedad"
 													: "Especifique el tipo de enfermedad (no obligatorio)"
 										}
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
 								</>
@@ -614,12 +699,42 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 											})
 										}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										readOnly={!addingNew}
+										readOnly={!isEditable}
 										style={{ width: "90%", height: "2.5rem" }}
 									/>
 								</>
 							)}
-
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									width: "100%",
+								}}
+							>
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "flex-end",
+										paddingTop: "2rem",
+									}}
+								>
+									{!addingNew &&
+										(isEditable ? (
+											<div style={{ display: "flex", gap: "1rem" }}>
+												<IconButton
+													icon={CheckIcon}
+													onClick={handleSaveNewFamiliar}
+												/>
+												<IconButton icon={CancelIcon} onClick={handleCancel} />
+											</div>
+										) : (
+											<IconButton
+												icon={EditIcon}
+												onClick={() => setIsEditable(true)}
+											/>
+										))}
+								</div>
+							</div>
 							{addingNew && (
 								<div
 									style={{
