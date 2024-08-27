@@ -124,14 +124,18 @@ export const checkCui = async (cui) => {
 /**
  * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
  *
+ * @callback SubmitPatientDataCallback
  * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
  * @param {string} patientData.cui - The unique identifier for the patient.
  * @param {string} patientData.names - The first and middle names of the patient.
  * @param {string} patientData.surnames - The last names of the patient.
  * @param {string} patientData.sex - The sex of the patient, expected to be 'F' for female or 'M' for male based on a boolean condition.
  * @param {string} patientData.birthDate - The birth date of the patient.
- * @returns {Promise<number>} A promise that resolves to the response data from the server.
- * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
+ * @returns {Promise<Result<number, *>>} A promise that resolves to the response data from the server.
+ */
+
+/**
+ * @type {SubmitPatientDataCallback}
  */
 export const submitPatientData = async (patientData) => {
 	const sessionResponse = IS_PRODUCTION
