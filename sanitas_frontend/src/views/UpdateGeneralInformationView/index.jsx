@@ -129,7 +129,6 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 		form: {
 			padding: "2rem",
 			border: "1px solid #ddd",
-			borderRadius: "5px",
 		},
 		label: {
 			fontSize: fontSize.textSize,
@@ -401,8 +400,32 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		setEditMode(false);
 	};
 
+	/**@type {React.CSSProperties} */
+	const inputContainerStyles = {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5rem",
+	};
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		height: "3rem",
+	};
+	/**@type {React.CSSProperties} */
+	const columnStyles = {
+		padding: "1rem",
+		display: "flex",
+		flexDirection: "column",
+		gap: "1rem",
+	};
+
 	return (
-		<form style={styles.form}>
+		<div
+			style={{
+				padding: "2rem",
+				borderBottom: "1px solid #ddd",
+			}}
+		>
+			{/* HEADER */}
 			<div
 				style={{
 					display: "flex",
@@ -420,250 +443,288 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
 				)}
 			</div>
-			<div style={styles.firstsectionform}>
-				<label style={styles.label}>Nombres:</label>
-				<BaseInput
-					type="text"
-					value={patientData.names}
-					onChange={(e) =>
-						setPatientData({ ...patientData, names: e.target.value })
-					}
-					placeholder="Nombres"
-					style={{ ...styles.input, ...GenInputStyle(2, 1) }}
-					disabled={!editMode}
-				/>
 
-				<label style={styles.label}>Apellidos:</label>
-				<BaseInput
-					type="text"
-					value={patientData.lastNames}
-					onChange={(e) =>
-						setPatientData({ ...patientData, lastNames: e.target.value })
-					}
-					style={{ ...styles.input, ...GenInputStyle(2, 2) }}
-					disabled={!editMode}
-				/>
+			{/* BODY */}
+			<div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+				{/* FIRST COLUMN*/}
+				<div style={columnStyles}>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Nombres:</label>
+						<BaseInput
+							type="text"
+							value={patientData.names}
+							onChange={(e) =>
+								setPatientData({ ...patientData, names: e.target.value })
+							}
+							placeholder="Nombres"
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
 
-				<label style={styles.label}>CUI:</label>
-				<BaseInput
-					type="text"
-					value={patientData.cui}
-					onChange={(e) =>
-						setPatientData({ ...patientData, cui: e.target.value })
-					}
-					placeholder="CUI"
-					style={{ ...styles.input, ...GenInputStyle(4, 1) }}
-					disabled={!editMode}
-				/>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>CUI:</label>
+						<BaseInput
+							type="text"
+							value={patientData.cui}
+							onChange={(e) =>
+								setPatientData({ ...patientData, cui: e.target.value })
+							}
+							placeholder="CUI"
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
 
-				<label style={styles.label}>Email:</label>
-				<BaseInput
-					type="email"
-					value={patientData.email || ""}
-					onChange={(e) =>
-						setPatientData({ ...patientData, email: e.target.value })
-					}
-					style={{ ...styles.input, ...GenInputStyle(4, 2) }}
-					disabled={!editMode}
-				/>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Sexo:</label>
+						<div
+							style={{
+								display: "flex",
+								gap: "2rem",
+								height: "3rem",
+							}}
+						>
+							<RadioInput
+								type="radio"
+								name="gender"
+								value="female"
+								label="Femenino"
+								checked={patientData.isWoman}
+								onChange={() =>
+									setPatientData({ ...patientData, isWoman: true })
+								}
+								disabled={!editMode}
+							/>
+							<RadioInput
+								type="radio"
+								name="gender"
+								value="male"
+								label="Masculino"
+								checked={!patientData.isWoman}
+								onChange={() =>
+									setPatientData({ ...patientData, isWoman: false })
+								}
+								disabled={!editMode}
+							/>
+						</div>
+					</div>
 
-				<label style={styles.label}>Sexo:</label>
-				<div style={{ ...styles.SexInput, ...GenInputStyle(6, 1) }}>
-					<RadioInput
-						type="radio"
-						name="gender"
-						value="female"
-						label="Femenino"
-						checked={patientData.isWoman}
-						onChange={() => setPatientData({ ...patientData, isWoman: true })}
-						disabled={!editMode}
-					/>
-					<RadioInput
-						type="radio"
-						name="gender"
-						value="male"
-						label="Masculino"
-						checked={!patientData.isWoman}
-						onChange={() => setPatientData({ ...patientData, isWoman: false })}
-						disabled={!editMode}
-					/>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Fecha de nacimiento:</label>
+						<DateInput
+							value={patientData.birthdate}
+							readOnly={!editMode}
+							onChange={(e) =>
+								setPatientData({ ...patientData, birthdate: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Tipo de sangre:</label>
+						<DropdownMenu
+							options={dropdownOptions}
+							value={patientData.bloodType}
+							readOnly={!editMode}
+							onChange={(e) =>
+								setPatientData({ ...patientData, bloodType: e.target.value })
+							}
+							style={{
+								container: { width: "100%" },
+								select: { height: "3rem" },
+							}}
+							disabled={!editMode}
+						/>
+					</div>
 				</div>
 
-				<label style={styles.label}>Teléfono:</label>
-				<BaseInput
-					type="text"
-					value={patientData.phone || ""}
-					onChange={(e) =>
-						setPatientData({ ...patientData, phone: e.target.value })
-					}
-					style={{ ...styles.input, ...GenInputStyle(6, 2) }}
-					disabled={!editMode}
-				/>
+				{/* SECOND COLUMN*/}
+				<div style={columnStyles}>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Apellidos:</label>
+						<BaseInput
+							type="text"
+							value={patientData.lastNames}
+							onChange={(e) =>
+								setPatientData({ ...patientData, lastNames: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
 
-				<label style={styles.label}>Fecha de nacimiento:</label>
-				<DateInput
-					value={patientData.birthdate}
-					readOnly={!editMode}
-					onChange={(e) =>
-						setPatientData({ ...patientData, birthdate: e.target.value })
-					}
-					style={{ ...styles.input, ...GenInputStyle(8, 1) }}
-					disabled={!editMode}
-				/>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Email:</label>
+						<BaseInput
+							type="email"
+							value={patientData.email || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, email: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Teléfono:</label>
+						<BaseInput
+							type="text"
+							value={patientData.phone || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, phone: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Dirección:</label>
+						<BaseInput
+							type="text"
+							value={patientData.address || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, address: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Seguro:</label>
+						<BaseInput
+							type="text"
+							value={patientData.insurance || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, insurance: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+				</div>
 			</div>
 
 			<div style={styles.Secondsectionform}>
-				<label style={styles.label}>Tipo de sangre:</label>
-				<DropdownMenu
-					options={dropdownOptions}
-					value={patientData.bloodType}
-					readOnly={!editMode}
-					onChange={(e) =>
-						setPatientData({ ...patientData, bloodType: e.target.value })
-					}
-					style={{ ...styles.input, ...GenInputStyle(8, 2) }}
-					disabled={!editMode}
-				/>
+				<h2 style={styles.h2}>Contactos del paciente</h2>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						// justifyContent: "space-around",
+						gap: "2rem",
+						padding: "1rem",
+					}}
+				>
+					<Collapsable
+						title="Contacto 1"
+						isCollapsed={!patientData.contactPhone1}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-				<label style={styles.label}>Dirección:</label>
-				<BaseInput
-					type="text"
-					value={patientData.address || ""}
-					onChange={(e) =>
-						setPatientData({ ...patientData, address: e.target.value })
-					}
-					style={styles.input}
-					disabled={!editMode}
-				/>
+							<label style={styles.label}>Parentesco de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
 
-				<label style={styles.label}>Seguro:</label>
-				<div style={{ paddingBottom: "2rem", width: "100%" }}>
-					<BaseInput
-						type="text"
-						value={patientData.insurance || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, insurance: e.target.value })
-						}
-						style={{ width: "18.75rem" }}
-						disabled={!editMode}
-					/>
+							<label style={styles.label}>Teléfono de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone1: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
+					<Collapsable
+						title="Contacto 2"
+						isCollapsed={!patientData.contactPhone2}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Parentesco de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Teléfono de contacto</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone2: e.target.value,
+									})
+								}
+								style={styles.input}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
 				</div>
 			</div>
-
-			<h2 style={styles.h2}>Contactos del paciente</h2>
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					// justifyContent: "space-around",
-					gap: "2rem",
-					padding: "1rem",
-				}}
-			>
-				<Collapsable
-					title="Contacto 1"
-					isCollapsed={!patientData.contactPhone1}
-				>
-					<div style={collapsableInnerStyle}>
-						<label style={styles.label}>Nombre de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactName1 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactName1: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-
-						<label style={styles.label}>Parentesco de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactKinship1 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactKinship1: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-
-						<label style={styles.label}>Teléfono de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactPhone1 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactPhone1: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-					</div>
-				</Collapsable>
-				<Collapsable
-					title="Contacto 2"
-					isCollapsed={!patientData.contactPhone2}
-				>
-					<div style={collapsableInnerStyle}>
-						<label style={styles.label}>Nombre de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactName2 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactName2: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-
-						<label style={styles.label}>Parentesco de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactKinship2 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactKinship2: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-
-						<label style={styles.label}>Teléfono de contacto</label>
-						<BaseInput
-							type="text"
-							value={patientData.contactPhone2 || ""}
-							onChange={(e) =>
-								setPatientData({
-									...patientData,
-									contactPhone2: e.target.value,
-								})
-							}
-							style={styles.input}
-							disabled={!editMode}
-						/>
-					</div>
-				</Collapsable>
-			</div>
-		</form>
+		</div>
 	);
 }
 
 /**
  * @typedef {Object} UpdateStudentInformationSectionProps
- * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource <*>} getData
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
  */
 
