@@ -31,11 +31,18 @@ CREATE TABLE PACIENTE (
     FOREIGN KEY (ID_SEGURO) REFERENCES SEGURO (ID)
 );
 
+CREATE TABLE CUENTA_PACIENTE (
+    EMAIL VARCHAR(50) PRIMARY KEY,
+    CUI_PACIENTE VARCHAR(24) NOT NULL UNIQUE REFERENCES PACIENTE (CUI)
+);
+COMMENT ON TABLE CUENTA_PACIENTE IS
+'Used to save the relation between a cognito account and a patient';
+
 CREATE TABLE DOCTOR (
     EMAIL VARCHAR(100) NOT NULL PRIMARY KEY
 );
 COMMENT ON TABLE DOCTOR IS
-'This table is used for saving all user emails that have the role of a doctor.';
+'Used for saving all user emails that have the role of a doctor.';
 
 
 CREATE TABLE ESTUDIANTE (

@@ -575,6 +575,19 @@ Resources:
 
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  linkAccountToPatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/LinkAccountToPatient/link-account-to-patient.handler
+      Description: Links a cognito account to an existing patient.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /account/link
+            Method: POST
+            RestApiId: !Ref SanitasAPI
 
   SanitasAPI:
     Type: AWS::Serverless::Api

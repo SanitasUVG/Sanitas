@@ -1,7 +1,17 @@
 import { expect } from "@jest/globals";
+import jwt from "jwt-simple";
 import axios from "axios";
 
 export const LOCAL_API_URL = "http://127.0.0.1:3000/";
+
+/**
+ * Creates a JWT.
+ * @param {*} data - The payload for the JWT.
+ * @returns {string} The created JWT.
+ */
+export function createJWT(data) {
+	return jwt.encode(data, "super-duper-secret-key-:3");
+}
 
 /**
  * Creates a valid JWT for the email: doctor@gmail.com
@@ -32,6 +42,15 @@ export const generateUniqueCUI = () => {
 	const timestamp = Date.now();
 	const randomNum = Math.floor(Math.random() * 10000);
 	return `${timestamp}${randomNum}`;
+};
+
+/**
+ * @returns {string} The randomly generated email.
+ */
+export const generateUniqueEmail = () => {
+	const timestamp = Date.now();
+	const randomNum = Math.floor(Math.random() * 100000);
+	return `${timestamp}${randomNum}@gmail.com`;
 };
 
 /**
@@ -352,4 +371,21 @@ export async function updatePatientPsychiatricHistory(
 	);
 
 	expect(response.status).toBe(200);
+}
+
+/**
+ * Links an email to a patient.
+ * @param {string} patientCUI - The CUI of the patient.
+ * @param {string} accountEmail - The email of the "cognito" account.
+ * @returns {number} The patient Id.
+ */
+export async function linkToTestAccount(accountEmail, patientCUI) {
+	const response = await axios.post(
+		`${LOCAL_API_URL}account/link`,
+		{ cui: patientCUI },
+		{ headers: createAuthorizationHeader(createJWT(accountEmail)) },
+	);
+
+	expect(response.status).toBe(200);
+	return response.data;
 }
