@@ -330,7 +330,7 @@ function PersonalView({
 		);
 
 		if (missingFields.length > 0) {
-			toast.info("Complete todos los campos requeridos.");
+			toast.error("Complete todos los campos requeridos.");
 			return;
 		}
 
@@ -523,7 +523,7 @@ function PersonalView({
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedPersonal.disease || ""}
-							disabled={!isEditable}
+							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
 								container: { width: "80%" },
@@ -783,7 +783,7 @@ function PersonalView({
 								<div style={{ display: "flex", justifyContent: "flex-end" }}>
 									{!addingNew &&
 										(isEditable ? (
-											<div style={{ display: "flex", gap: "3rem" }}>
+											<div style={{ display: "flex", gap: "1rem" }}>
 												<IconButton
 													icon={CheckIcon}
 													onClick={handleSaveNewPersonal}
