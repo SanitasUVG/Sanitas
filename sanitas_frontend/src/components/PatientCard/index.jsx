@@ -69,6 +69,7 @@ export default function PatientCard({
 		},
 		patientName: {
 			...style.patientName,
+			fontFamily: fonts.titleFont,
 		},
 		patientAge: {
 			fontWeight: "normal",
