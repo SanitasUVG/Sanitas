@@ -16,7 +16,7 @@ export default function StudentWelcomeView() {
 				height: "100vh",
 				width: "100vw",
 				padding: "2rem",
-				overflowX: "hidden"
+				overflowX: "hidden",
 			}}
 		>
 			<div
@@ -116,7 +116,7 @@ export default function StudentWelcomeView() {
 						backgroundColor: "#FFFFFF",
 						padding: "77px",
 						borderRadius: "8.27px",
-						overflowY: "scroll"
+						overflowY: "scroll",
 					}}
 				>
 					<p
