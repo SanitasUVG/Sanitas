@@ -1,34 +1,47 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	createTestPatient,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/student-surgical-history`;
 
-describe("Update Student Surgical History integration tests", () => {
+function generateValidUpdate(patientId) {
+	return {
+		patientId,
+		medicalHistory: {
+			surgeries: {
+				version: 1,
+				data: [
+					{
+						surgeryType: "Appendectomy",
+						surgeryYear: "2023",
+						complications: "None",
+					},
+				],
+			},
+		},
+	};
+}
+
+describe("Update Surgical History integration tests", () => {
+	const validHeaders = createAuthorizationHeader(createDoctorJWT());
 	let patientId;
 
 	beforeAll(async () => {
 		patientId = await createTestPatient(); // Create a patient and get the ID
 	});
 
-	test("Update existing student surgical history", async () => {
-		const studentSurgicalHistoryData = {
-			patientId,
-			medicalHistory: {
-				surgeries: {
-					version: 1,
-					data: [
-						{
-							surgeryType: "Appendectomy",
-							surgeryYear: "2023",
-							complications: "None",
-						},
-					],
-				},
-			},
-		};
-
-		const response = await axios.post(API_URL, studentSurgicalHistoryData);
+	test("Update existing surgical history", async () => {
+		const surgicalHistoryData = generateValidUpdate(patientId);
+		const response = await axios.put(API_URL, surgicalHistoryData, {
+			headers: validHeaders,
+		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -38,12 +51,12 @@ describe("Update Student Surgical History integration tests", () => {
 		expect(id).toBe(patientId);
 		expect(medicalHistory.surgeries.data.length).toBe(1);
 		expect(medicalHistory.surgeries.data[0].surgeryType).toBe(
-			studentSurgicalHistoryData.medicalHistory.surgeries.data[0].surgeryType,
+			surgicalHistoryData.medicalHistory.surgeries.data[0].surgeryType,
 		);
 	});
 
-	test("Fail to update student surgical history with invalid ID", async () => {
-		const studentSurgicalHistoryData = {
+	test("Fail to update surgical history with invalid ID", async () => {
+		const surgicalHistoryData = {
 			patientId: "999999", // Assuming this ID does not exist
 			medicalHistory: {
 				surgeries: [
@@ -56,7 +69,8 @@ describe("Update Student Surgical History integration tests", () => {
 			},
 		};
 
-		const response = await axios.post(API_URL, studentSurgicalHistoryData, {
+		const response = await axios.put(API_URL, surgicalHistoryData, {
+			headers: validHeaders,
 			validateStatus: () => true, // Ensures axios does not throw an error for non-2xx status
 		});
 
@@ -65,7 +79,7 @@ describe("Update Student Surgical History integration tests", () => {
 		expect(response.data.error).toBe("Patient not found with the provided ID."); // Updated to match new error message
 	});
 
-	test("Fail to update student surgical history due to missing required fields", async () => {
+	test("Fail to update surgical history due to missing required fields", async () => {
 		// NOTE: Notice it doesn't have a patientId
 		const incompleteData = {
 			medicalHistory: {
@@ -79,7 +93,8 @@ describe("Update Student Surgical History integration tests", () => {
 			},
 		};
 
-		const response = await axios.post(API_URL, incompleteData, {
+		const response = await axios.put(API_URL, incompleteData, {
+			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
@@ -88,5 +103,32 @@ describe("Update Student Surgical History integration tests", () => {
 		expect(response.data.error).toBe(
 			"Invalid input: Missing or empty required fields.",
 		);
+	});
+	test("a patient can't call the endpoint", async () => {
+		const postData = generateValidUpdate(patientId);
+		const specialHeaders = createAuthorizationHeader(createPatientJWT());
+
+		const response = await axios.put(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.data).toEqual({
+			error: "Unauthorized, you're not a doctor!",
+		});
+	});
+
+	test("can't be called by a malformed JWT", async () => {
+		const postData = generateValidUpdate(patientId);
+		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
+
+		const response = await axios.put(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
 });
