@@ -375,15 +375,15 @@ export async function updatePatientPsychiatricHistory(
 
 /**
  * Links an email to a patient.
- * @param {string} patientCUI - The CUI of the patient.
  * @param {string} accountEmail - The email of the "cognito" account.
- * @returns {number} The patient Id.
+ * @param {string} patientCUI - The CUI of the patient.
+ * @returns {Promise<*>} The patient Id.
  */
 export async function linkToTestAccount(accountEmail, patientCUI) {
 	const response = await axios.post(
 		`${LOCAL_API_URL}account/link`,
 		{ cui: patientCUI },
-		{ headers: createAuthorizationHeader(createJWT(accountEmail)) },
+		{ headers: createAuthorizationHeader(createJWT({email: accountEmail})) },
 	);
 
 	expect(response.status).toBe(200);
