@@ -118,17 +118,10 @@ export default function UpdateInfoView({
  * @param {UpdateColaboratorInformationSectionProps} props
  */
 function UpdateColaboratorInformationSection({ getData, updateData }) {
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
 	const styles = {
 		form: {
-			padding: "2rem",
-			border: "1px solid #ddd",
+			padding: "3rem 2rem",
+			borderBottom: "1px solid #ddd",
 		},
 		label: {
 			fontSize: fontSize.textSize,
@@ -175,6 +168,12 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 		input: {
 			maxWidth: "18.75rem",
 		},
+	};
+
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		width: "90%",
+		height: "3rem",
 	};
 
 	const response = getData.read();
@@ -228,34 +227,50 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 			<div
 				style={{
 					display: "grid",
-					gridTemplateColumns: "30% 30%",
-					rowGap: "0.5rem",
-					columnGap: "2rem",
+					gridTemplateColumns: "50% 50%",
 				}}
 			>
-				<label style={styles.label}>Código:</label>
-				<BaseInput
-					type="text"
-					value={patientData.code}
-					onChange={(e) =>
-						setPatientData({ ...patientData, code: e.target.value })
-					}
-					placeholder="Código"
-					style={{ ...styles.input, ...GenInputStyle(2, 1) }}
-					disabled={!editMode}
-				/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: ".5rem",
+						paddingRight: "1rem",
+					}}
+				>
+					<label style={styles.label}>Código:</label>
+					<BaseInput
+						type="text"
+						value={patientData.code}
+						onChange={(e) =>
+							setPatientData({ ...patientData, code: e.target.value })
+						}
+						placeholder="Código"
+						style={inputStyles}
+						disabled={!editMode}
+					/>
+				</div>
 
-				<label style={styles.label}>Área:</label>
-				<BaseInput
-					type="text"
-					value={patientData.area}
-					onChange={(e) =>
-						setPatientData({ ...patientData, area: e.target.value })
-					}
-					placeholder="Área"
-					style={{ ...styles.input, ...GenInputStyle(2, 2) }}
-					disabled={!editMode}
-				/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: ".5rem",
+						paddingLeft: "1rem",
+					}}
+				>
+					<label style={styles.label}>Área:</label>
+					<BaseInput
+						type="text"
+						value={patientData.area}
+						onChange={(e) =>
+							setPatientData({ ...patientData, area: e.target.value })
+						}
+						placeholder="Área"
+						style={inputStyles}
+						disabled={!editMode}
+					/>
+				</div>
 			</div>
 		</form>
 	);
@@ -341,6 +356,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		border: `.1rem solid ${colors.primaryBackground}`,
 		borderRadius: "0 0 5% 5%",
 		transform: "translateY(-1%)",
+		width: "30vw",
 	};
 
 	const response = getData.read();
@@ -400,6 +416,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 	/**@type {React.CSSProperties} */
 	const inputStyles = {
 		height: "3rem",
+		width: "90%",
 	};
 	/**@type {React.CSSProperties} */
 	const columnStyles = {
@@ -523,7 +540,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, bloodType: e.target.value })
 							}
 							style={{
-								container: { width: "100%" },
+								container: { width: "90%" },
 								select: { height: "3rem" },
 							}}
 							disabled={!editMode}
@@ -606,9 +623,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 					style={{
 						display: "flex",
 						flexDirection: "row",
+						// justifyContent: "space-around",
 						gap: "2rem",
 						width: "100%",
-						paddingTop: "3rem",
+						paddingTop: "2rem",
 					}}
 				>
 					<Collapsable
@@ -723,17 +741,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
  * @param {UpdateStudentInformationSectionProps} props
  */
 function UpdateStudentInformationSection({ getData, updateData }) {
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
 	const styles = {
 		form: {
-			padding: "2rem",
-			border: "1px solid #ddd",
+			padding: "3rem 2rem",
 			borderRadius: "5px",
 		},
 		label: {
@@ -760,9 +770,6 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 			display: "grid",
 			gap: "20px",
 			paddingTop: "10px",
-		},
-		input: {
-			maxWidth: "18.75rem",
 		},
 	};
 
@@ -795,6 +802,12 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 		setEditMode(false);
 	};
 
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		width: "90%",
+		height: "3rem",
+	};
+
 	return (
 		<form style={styles.form}>
 			<div
@@ -818,34 +831,50 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 			<div
 				style={{
 					display: "grid",
-					gridTemplateColumns: "30% 30%",
-					rowGap: "0.5rem",
-					columnGap: "2rem",
+					gridTemplateColumns: "50% 50%",
 				}}
 			>
-				<label style={styles.label}>Carnet:</label>
-				<BaseInput
-					type="text"
-					value={patientData.carnet}
-					onChange={(e) =>
-						setPatientData({ ...patientData, carnet: e.target.value })
-					}
-					placeholder="Carnet"
-					style={{ ...styles.input, ...GenInputStyle(2, 1) }}
-					disabled={!editMode}
-				/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						paddingRight: "1rem",
+						gap: ".5rem",
+					}}
+				>
+					<label style={styles.label}>Carnet:</label>
+					<BaseInput
+						type="text"
+						value={patientData.carnet}
+						onChange={(e) =>
+							setPatientData({ ...patientData, carnet: e.target.value })
+						}
+						placeholder="Carnet"
+						style={inputStyles}
+						disabled={!editMode}
+					/>
+				</div>
 
-				<label style={styles.label}>Carrera:</label>
-				<BaseInput
-					type="text"
-					value={patientData.career}
-					onChange={(e) =>
-						setPatientData({ ...patientData, career: e.target.value })
-					}
-					placeholder="Carrera"
-					style={{ ...styles.input, ...GenInputStyle(2, 2) }}
-					disabled={!editMode}
-				/>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						paddingLeft: "1rem",
+						gap: ".5rem",
+					}}
+				>
+					<label style={styles.label}>Carrera:</label>
+					<BaseInput
+						type="text"
+						value={patientData.career}
+						onChange={(e) =>
+							setPatientData({ ...patientData, career: e.target.value })
+						}
+						placeholder="Carrera"
+						style={inputStyles}
+						disabled={!editMode}
+					/>
+				</div>
 			</div>
 		</form>
 	);
