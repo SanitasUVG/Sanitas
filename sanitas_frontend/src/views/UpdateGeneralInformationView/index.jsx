@@ -12,6 +12,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
+import Collapsable from "src/components/Collapsable";
 
 /**
  * @typedef {Object} PatientInfo
@@ -28,7 +29,7 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @property {string|null} contactPhone2
  * @property {string|null} bloodType
  * @property {string|null} address
- * @property {number | undefined} insuranceId
+ * @property {string | undefined} insurance
  * @property {string} birthdate
  * @property {string|null} phone
  */
@@ -60,6 +61,12 @@ export default function UpdateInfoView({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 
+	const [generalResource, collaboratorResource, studentResource] = [
+		getGeneralPatientInformation(id),
+		getCollaboratorInformation(id),
+		getStudentPatientInformation(id),
+	].map((s) => WrapPromise(s));
+
 	return (
 		<div
 			style={{
@@ -80,21 +87,22 @@ export default function UpdateInfoView({
 					width: "99%",
 				}}
 			>
-				<UpdateGeneralInformationSection
-					patientId={id}
-					getData={getGeneralPatientInformation}
-					updateData={updateGeneralPatientInformation}
-				/>
-				<UpdateColaboratorInformationSection
-					patientId={id}
-					getData={getCollaboratorInformation}
-					updateData={updateCollaboratorInformation}
-				/>
-				<UpdateStudentInformationSection
-					patientId={id}
-					getData={getStudentPatientInformation}
-					updateData={updateStudentPatientInformation}
-				/>
+				<Suspense
+					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
+				>
+					<UpdateGeneralInformationSection
+						getData={generalResource}
+						updateData={updateGeneralPatientInformation}
+					/>
+					<UpdateColaboratorInformationSection
+						getData={collaboratorResource}
+						updateData={updateCollaboratorInformation}
+					/>
+					<UpdateStudentInformationSection
+						getData={studentResource}
+						updateData={updateStudentPatientInformation}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -102,38 +110,18 @@ export default function UpdateInfoView({
 
 /**
  * @typedef {Object} UpdateColaboratorInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
  */
 
 /**
  * @param {UpdateColaboratorInformationSectionProps} props
  */
-function UpdateColaboratorInformationSection({
-	patientId,
-	getData,
-	updateData,
-}) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
+function UpdateColaboratorInformationSection({ getData, updateData }) {
 	const styles = {
 		form: {
-			padding: "2rem",
-			border: "1px solid #ddd",
-			borderRadius: "5px",
+			padding: "3rem 2rem",
+			borderBottom: "1px solid #ddd",
 		},
 		label: {
 			fontSize: fontSize.textSize,
@@ -182,85 +170,72 @@ function UpdateColaboratorInformationSection({
 		},
 	};
 
-	const collaboratorInformationResource = WrapPromise(getData(patientId));
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		width: "90%",
+		height: "3rem",
+	};
 
-	const Hijo = () => {
-		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
-		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
+	const response = getData.read();
 
-		const response = collaboratorInformationResource.read();
+	const [editMode, setEditMode] = useState(false);
+	const [patientData, setPatientData] = useState({
+		...(response?.result || {}),
+	});
 
-		const [patientData, setPatientData] = useState({
-			...(response?.result || {}),
-		});
+	const handleUpdatePatient = async () => {
+		setEditMode(false);
+		toast.info("Actualizando datos de colaborador...");
 
-		if (resourceUpdate !== null) {
-			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
-			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
-				);
-			} else {
-				setEditMode(false);
-				setPatientData(response.result || {});
-				toast.success("¡Información actualizada exitosamente!");
-			}
-			setResourceUpdate(null);
+		const response = await updateData(patientData);
+		if (response.error) {
+			toast.error(
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+			);
+			return;
 		}
 
-		const handleUpdatePatient = async () => {
-			toast.info("Guardando datos...");
-			setEditMode(false);
-			try {
-				const response = await updateData(patientData);
-				setPatientData(response.result || {});
-				toast.success("¡Información actualizada exitosamente!");
-			} catch (error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${error.message}`,
-				);
-			}
-		};
+		setPatientData(response.result || {});
+		toast.success("¡Información actualizada exitosamente!");
+	};
 
-		const handleCancelEdit = () => {
-			setPatientData({ ...response?.result });
-			setEditMode(false);
-		};
+	const handleCancelEdit = () => {
+		setPatientData({ ...response?.result });
+		setEditMode(false);
+	};
 
-		if (isLoading) {
-			return <LoadingView />;
-		}
-
-		return (
-			<form style={styles.form}>
+	return (
+		<form style={styles.form}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "start",
+					paddingRight: "1rem",
+				}}
+			>
+				<h1 style={styles.h1}>Datos de Colaborador:</h1>
+				{editMode ? (
+					<div>
+						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
+						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
+					</div>
+				) : (
+					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
+				)}
+			</div>
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "50% 50%",
+				}}
+			>
 				<div
 					style={{
 						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
+						flexDirection: "column",
+						gap: ".5rem",
 						paddingRight: "1rem",
-					}}
-				>
-					<h1 style={styles.h1}>Datos de Colaborador:</h1>
-					{editMode ? (
-						<div>
-							<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-							<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-						</div>
-					) : (
-						<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-					)}
-				</div>
-				<div
-					style={{
-						display: "grid",
-						gridTemplateColumns: "30% 30%",
-						rowGap: "0.5rem",
-						columnGap: "2rem",
 					}}
 				>
 					<label style={styles.label}>Código:</label>
@@ -271,10 +246,19 @@ function UpdateColaboratorInformationSection({
 							setPatientData({ ...patientData, code: e.target.value })
 						}
 						placeholder="Código"
-						style={{ ...styles.input, ...GenInputStyle(2, 1) }}
+						style={inputStyles}
 						disabled={!editMode}
 					/>
+				</div>
 
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						gap: ".5rem",
+						paddingLeft: "1rem",
+					}}
+				>
 					<label style={styles.label}>Área:</label>
 					<BaseInput
 						type="text"
@@ -283,35 +267,18 @@ function UpdateColaboratorInformationSection({
 							setPatientData({ ...patientData, area: e.target.value })
 						}
 						placeholder="Área"
-						style={{ ...styles.input, ...GenInputStyle(2, 2) }}
+						style={inputStyles}
 						disabled={!editMode}
 					/>
 				</div>
-				<p style={errorPStyles}>{updateError}</p>
-			</form>
-		);
-	};
-
-	const LoadingView = () => {
-		return (
-			<div>
-				<h1 style={styles.h1}>Datos de Colaborador:</h1>
-				<Throbber loadingMessage="Cargando datos de colaborador..." />
 			</div>
-		);
-	};
-
-	return (
-		<Suspense fallback={<LoadingView />}>
-			<Hijo />
-		</Suspense>
+		</form>
 	);
 }
 
 /**
  * @typedef {Object} UpdateGeneralInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateGeneralPatientInformationAPICall} updateData
  */
 
@@ -319,21 +286,7 @@ function UpdateColaboratorInformationSection({
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
-function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
+function UpdateGeneralInformationSection({ getData, updateData }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -389,361 +342,407 @@ function UpdateGeneralInformationSection({ patientId, getData, updateData }) {
 			gap: "20px",
 			paddingTop: "10px",
 		},
-		Secondsectionform: {
-			display: "grid",
-			gap: "20px",
-			paddingTop: "10px",
-		},
 		input: {
 			maxWidth: "18.75rem",
 		},
 	};
 
-	const generalInformationResource = WrapPromise(getData(patientId));
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
-	const Hijo = () => {
-		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
-		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
+	/** @type {React.CSSProperties} */
+	const collapsableInnerStyle = {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5rem",
+		padding: "1rem",
+		border: `.1rem solid ${colors.primaryBackground}`,
+		borderRadius: "0 0 5% 5%",
+		transform: "translateY(-1%)",
+		width: "30vw",
+	};
 
-		const response = generalInformationResource.read();
+	const response = getData.read();
+	const [editMode, setEditMode] = useState(false);
 
-		const [patientData, setPatientData] = useState({
-			...response.result,
-			birthdate: formatDate(response.result?.birthdate),
-		});
+	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
+	const [patientData, setPatientData] = useState({
+		...response.result,
+		birthdate: formatDate(response.result?.birthdate),
+	});
 
+	if (response.error) {
+		return (
+			<div style={{ padding: "2rem" }}>
+				<h1 style={styles.h1}>
+					Error al buscar el paciente. Asegúrese de que el ID es correcto.
+				</h1>
+				<p>{response.error.toString()}</p>
+			</div>
+		);
+	}
+
+	const handleUpdatePatient = async () => {
+		if (patientData.cui.length !== 13) {
+			toast.info("El CUI debe contener exactamente 13 dígitos.");
+			return;
+		}
+
+		setEditMode(false);
+		toast.info("Actualizando datos generales...");
+
+		const response = await updateData(patientData);
 		if (response.error) {
-			return (
-				<div style={{ padding: "2rem" }}>
-					<h1 style={styles.h1}>
-						Error al buscar el paciente. Asegúrese de que el ID es correcto.
-					</h1>
-					<p>{response.error.toString()}</p>
-				</div>
+			toast.error(
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
 			);
 		}
 
-		if (resourceUpdate !== null) {
-			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
-			if (response.error) {
-				toast.error(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos! ${response.error.toString()}`,
-				);
-			} else {
-				toast.dismiss();
-				toast.success("¡Información actualizada exitosamente!");
-				setPatientData({
-					...response.result,
-					birthdate: formatDate(response.result.birthdate),
-				});
-			}
-			setResourceUpdate(null);
-		}
-
-		const handleUpdatePatient = async () => {
-			if (patientData.cui.length !== 13) {
-				toast.info("El CUI debe contener exactamente 13 dígitos.");
-				return;
-			}
-			setEditMode(false);
-			setUpdateError("");
-			setIsLoading(true);
-			toast.dismiss(); // Clear existing toasts
-			const updateInformationResource = WrapPromise(updateData(patientData));
-			setResourceUpdate(updateInformationResource);
-		};
-
-		const handleCancelEdit = () => {
-			setPatientData({
-				...response.result,
-				birthdate: formatDate(response.result.birthdate),
-			});
-			setEditMode(false);
-		};
-
-		if (isLoading) {
-			return <LoadingView />;
-		}
-
-		return (
-			<form style={styles.form}>
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}
-				>
-					<h1 style={styles.h1}>Datos Generales:</h1>
-					{editMode ? (
-						<div>
-							<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-							<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-						</div>
-					) : (
-						<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-					)}
-				</div>
-				<div style={styles.firstsectionform}>
-					<label style={styles.label}>Nombres:</label>
-					<BaseInput
-						type="text"
-						value={patientData.names}
-						onChange={(e) =>
-							setPatientData({ ...patientData, names: e.target.value })
-						}
-						placeholder="Nombres"
-						style={{ ...styles.input, ...GenInputStyle(2, 1) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Apellidos:</label>
-					<BaseInput
-						type="text"
-						value={patientData.lastNames}
-						onChange={(e) =>
-							setPatientData({ ...patientData, lastNames: e.target.value })
-						}
-						style={{ ...styles.input, ...GenInputStyle(2, 2) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>CUI:</label>
-					<BaseInput
-						type="text"
-						value={patientData.cui}
-						onChange={(e) =>
-							setPatientData({ ...patientData, cui: e.target.value })
-						}
-						placeholder="CUI"
-						style={{ ...styles.input, ...GenInputStyle(4, 1) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Email:</label>
-					<BaseInput
-						type="email"
-						value={patientData.email || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, email: e.target.value })
-						}
-						style={{ ...styles.input, ...GenInputStyle(4, 2) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Sexo:</label>
-					<div style={{ ...styles.SexInput, ...GenInputStyle(6, 1) }}>
-						<RadioInput
-							type="radio"
-							name="gender"
-							value="female"
-							label="Femenino"
-							checked={patientData.isWoman}
-							onChange={() => setPatientData({ ...patientData, isWoman: true })}
-							disabled={!editMode}
-						/>
-						<RadioInput
-							type="radio"
-							name="gender"
-							value="male"
-							label="Masculino"
-							checked={!patientData.isWoman}
-							onChange={() =>
-								setPatientData({ ...patientData, isWoman: false })
-							}
-							disabled={!editMode}
-						/>
-					</div>
-
-					<label style={styles.label}>Teléfono:</label>
-					<BaseInput
-						type="text"
-						value={patientData.phone || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, phone: e.target.value })
-						}
-						style={{ ...styles.input, ...GenInputStyle(6, 2) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Fecha de nacimiento:</label>
-					<DateInput
-						value={patientData.birthdate}
-						readOnly={!editMode}
-						onChange={(e) =>
-							setPatientData({ ...patientData, birthdate: e.target.value })
-						}
-						style={{ ...styles.input, ...GenInputStyle(8, 1) }}
-						disabled={!editMode}
-					/>
-				</div>
-
-				<div style={styles.Secondsectionform}>
-					<label style={styles.label}>Tipo de sangre:</label>
-					<DropdownMenu
-						options={dropdownOptions}
-						value={patientData.bloodType}
-						readOnly={!editMode}
-						onChange={(e) =>
-							setPatientData({ ...patientData, bloodType: e.target.value })
-						}
-						style={{ ...styles.input, ...GenInputStyle(8, 2) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Dirección:</label>
-					<BaseInput
-						type="text"
-						value={patientData.address || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, address: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>ID del seguro:</label>
-					<div style={{ paddingBottom: "2rem", width: "100%" }}>
-						<BaseInput
-							type="number"
-							value={patientData.insuranceId || ""}
-							onChange={(e) =>
-								setPatientData({ ...patientData, insuranceId: e.target.value })
-							}
-							style={{ width: "18.75rem" }}
-							disabled={!editMode}
-						/>
-					</div>
-				</div>
-
-				<h2 style={styles.h2}>Contactos del paciente</h2>
-				<div style={styles.Secondsectionform}>
-					<label style={styles.label}>Nombre de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactName1 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactName1: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Parentesco de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactKinship1 || ""}
-						onChange={(e) =>
-							setPatientData({
-								...patientData,
-								contactKinship1: e.target.value,
-							})
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Teléfono de contacto 1:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactPhone1 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactPhone1: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Nombre de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactName2 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactName2: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Parentesco de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactKinship2 || ""}
-						onChange={(e) =>
-							setPatientData({
-								...patientData,
-								contactKinship2: e.target.value,
-							})
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Teléfono de contacto 2:</label>
-					<BaseInput
-						type="text"
-						value={patientData.contactPhone2 || ""}
-						onChange={(e) =>
-							setPatientData({ ...patientData, contactPhone2: e.target.value })
-						}
-						style={styles.input}
-						disabled={!editMode}
-					/>
-				</div>
-				<p style={errorPStyles}>{updateError}</p>
-			</form>
-		);
+		setPatientData(response.result || {});
+		toast.success("¡Información actualizada exitosamente!");
 	};
 
-	const LoadingView = () => {
-		return (
-			<div>
-				<h1 style={styles.h1}>Datos Generales:</h1>
-				<Throbber loadingMessage="Cargando información del paciente..." />
-			</div>
-		);
+	const handleCancelEdit = () => {
+		setPatientData({
+			...response.result,
+			birthdate: formatDate(response.result.birthdate),
+		});
+		setEditMode(false);
+	};
+
+	/**@type {React.CSSProperties} */
+	const inputContainerStyles = {
+		display: "flex",
+		flexDirection: "column",
+		gap: "0.5rem",
+	};
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		height: "3rem",
+		width: "90%",
+	};
+	/**@type {React.CSSProperties} */
+	const columnStyles = {
+		padding: "1rem",
+		display: "flex",
+		flexDirection: "column",
+		gap: "1.5rem",
 	};
 
 	return (
-		<Suspense fallback={<LoadingView />}>
-			<Hijo />
-		</Suspense>
+		<div
+			style={{
+				padding: "2rem",
+				borderBottom: "1px solid #ddd",
+			}}
+		>
+			{/* HEADER */}
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+				}}
+			>
+				<h1 style={styles.h1}>Datos Generales:</h1>
+				{editMode ? (
+					<div>
+						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
+						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
+					</div>
+				) : (
+					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
+				)}
+			</div>
+
+			{/* BODY */}
+			<div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+				{/* FIRST COLUMN*/}
+				<div style={{ ...columnStyles, paddingLeft: "0" }}>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Nombres:</label>
+						<BaseInput
+							type="text"
+							value={patientData.names}
+							onChange={(e) =>
+								setPatientData({ ...patientData, names: e.target.value })
+							}
+							placeholder="Nombres"
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>CUI:</label>
+						<BaseInput
+							type="text"
+							value={patientData.cui}
+							onChange={(e) =>
+								setPatientData({ ...patientData, cui: e.target.value })
+							}
+							placeholder="CUI"
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Sexo:</label>
+						<div
+							style={{
+								display: "flex",
+								gap: "2rem",
+								height: "3rem",
+							}}
+						>
+							<RadioInput
+								type="radio"
+								name="gender"
+								value="female"
+								label="Femenino"
+								checked={patientData.isWoman}
+								onChange={() =>
+									setPatientData({ ...patientData, isWoman: true })
+								}
+								disabled={!editMode}
+							/>
+							<RadioInput
+								type="radio"
+								name="gender"
+								value="male"
+								label="Masculino"
+								checked={!patientData.isWoman}
+								onChange={() =>
+									setPatientData({ ...patientData, isWoman: false })
+								}
+								disabled={!editMode}
+							/>
+						</div>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Fecha de nacimiento:</label>
+						<DateInput
+							value={patientData.birthdate}
+							readOnly={!editMode}
+							onChange={(e) =>
+								setPatientData({ ...patientData, birthdate: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Tipo de sangre:</label>
+						<DropdownMenu
+							options={dropdownOptions}
+							value={patientData.bloodType}
+							readOnly={!editMode}
+							onChange={(e) =>
+								setPatientData({ ...patientData, bloodType: e.target.value })
+							}
+							style={{
+								container: { width: "90%" },
+								select: { height: "3rem" },
+							}}
+							disabled={!editMode}
+						/>
+					</div>
+				</div>
+
+				{/* SECOND COLUMN*/}
+				<div style={columnStyles}>
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Apellidos:</label>
+						<BaseInput
+							type="text"
+							value={patientData.lastNames}
+							onChange={(e) =>
+								setPatientData({ ...patientData, lastNames: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Email:</label>
+						<BaseInput
+							type="email"
+							value={patientData.email || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, email: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Teléfono:</label>
+						<BaseInput
+							type="text"
+							value={patientData.phone || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, phone: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Dirección:</label>
+						<BaseInput
+							type="text"
+							value={patientData.address || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, address: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+
+					<div style={inputContainerStyles}>
+						<label style={styles.label}>Seguro:</label>
+						<BaseInput
+							type="text"
+							value={patientData.insurance || ""}
+							onChange={(e) =>
+								setPatientData({ ...patientData, insurance: e.target.value })
+							}
+							style={inputStyles}
+							disabled={!editMode}
+						/>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h2 style={styles.h2}>Contactos del paciente:</h2>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						gap: "2rem",
+						width: "100%",
+						paddingTop: "2rem",
+					}}
+				>
+					<Collapsable
+						title="Contacto 1"
+						isCollapsed={!patientData.contactPhone1}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName1: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Parentesco de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship1: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Teléfono de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone1 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone1: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
+					<Collapsable
+						title="Contacto 2"
+						isCollapsed={!patientData.contactPhone2}
+					>
+						<div style={collapsableInnerStyle}>
+							<label style={styles.label}>Nombre de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactName2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactName2: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Parentesco de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactKinship2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactKinship2: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+
+							<label style={styles.label}>Teléfono de contacto:</label>
+							<BaseInput
+								type="text"
+								value={patientData.contactPhone2 || ""}
+								onChange={(e) =>
+									setPatientData({
+										...patientData,
+										contactPhone2: e.target.value,
+									})
+								}
+								style={inputStyles}
+								disabled={!editMode}
+							/>
+						</div>
+					</Collapsable>
+				</div>
+			</div>
+		</div>
 	);
 }
 
 /**
  * @typedef {Object} UpdateStudentInformationSectionProps
- * @property {number} patientId
- * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getData
+ * @property {import("src/utils/promiseWrapper").SuspenseResource <*>} getData
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
  */
 
 /**
  * @param {UpdateStudentInformationSectionProps} props
  */
-function UpdateStudentInformationSection({ patientId, getData, updateData }) {
-	/** @type React.CSSProperties */
-	const errorPStyles = {
-		fontFamily: fonts.textFont,
-		fontSize: fontSize.textSize,
-		color: colors.statusDenied,
-	};
-
-	const GenInputStyle = (labelRow, labelColumn) => {
-		const gridColumn = `${labelColumn} / ${labelColumn + 1}`;
-		const gridRow = `${labelRow} / ${labelRow + 1}`;
-
-		return { gridColumn, gridRow };
-	};
-
+function UpdateStudentInformationSection({ getData, updateData }) {
 	const styles = {
 		form: {
-			padding: "2rem",
-			border: "1px solid #ddd",
+			padding: "3rem 2rem",
 			borderRadius: "5px",
 		},
 		label: {
@@ -771,134 +770,111 @@ function UpdateStudentInformationSection({ patientId, getData, updateData }) {
 			gap: "20px",
 			paddingTop: "10px",
 		},
-		input: {
-			maxWidth: "18.75rem",
-		},
 	};
 
 	// Fetch the student information
-	const studentInformationResource = WrapPromise(getData(patientId));
+	const response = getData.read();
 
-	const Hijo = () => {
-		const [editMode, setEditMode] = useState(false);
-		const [updateError, setUpdateError] = useState("");
-		const [resourceUpdate, setResourceUpdate] = useState(null);
-		const [isLoading, setIsLoading] = useState(false);
+	const [editMode, setEditMode] = useState(false);
+	const [patientData, setPatientData] = useState({
+		...(response?.result || {}),
+	});
 
-		const response = studentInformationResource.read();
+	const handleUpdatePatient = async () => {
+		setEditMode(false);
+		toast.info("Actualizando datos de estudiante...");
 
-		const [patientData, setPatientData] = useState({
-			...(response?.result || {}),
-		});
-
-		if (resourceUpdate !== null) {
-			const response = resourceUpdate.read();
-			setIsLoading(false);
-			setUpdateError("");
-			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.toString()}`,
-				);
-			} else {
-				setEditMode(false);
-				setPatientData(response.result || {});
-				toast.success("¡Información actualizada exitosamente!");
-			}
-			setResourceUpdate(null);
+		const response = await updateData(patientData);
+		if (response.error) {
+			toast.error(
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+			);
+			return;
 		}
 
-		const handleUpdatePatient = async () => {
-			toast.info("Guardando datos...");
-			setEditMode(false);
-			try {
-				const response = await updateData(patientData);
-				setPatientData(response.result || {});
-				toast.success("¡Información actualizada exitosamente!");
-			} catch (error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${error.message}`,
-				);
-			}
-		};
+		setPatientData(response.result || {});
+		toast.success("¡Información actualizada exitosamente!");
+	};
 
-		const handleCancelEdit = () => {
-			setPatientData({ ...response?.result });
-			setEditMode(false);
-		};
+	const handleCancelEdit = () => {
+		setPatientData({ ...response?.result });
+		setEditMode(false);
+	};
 
-		if (isLoading) {
-			return <LoadingView />;
-		}
+	/**@type {React.CSSProperties} */
+	const inputStyles = {
+		width: "90%",
+		height: "3rem",
+	};
 
-		return (
-			<form style={styles.form}>
+	return (
+		<form style={styles.form}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "start",
+					paddingRight: "1rem",
+				}}
+			>
+				<h1 style={styles.h1}>Datos de Estudiante:</h1>
+				{editMode ? (
+					<div>
+						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
+						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
+					</div>
+				) : (
+					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
+				)}
+			</div>
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "50% 50%",
+				}}
+			>
 				<div
 					style={{
 						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
+						flexDirection: "column",
 						paddingRight: "1rem",
-					}}
-				>
-					<h1 style={styles.h1}>Datos de Estudiante:</h1>
-					{editMode ? (
-						<div>
-							<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-							<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-						</div>
-					) : (
-						<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-					)}
-				</div>
-				<div
-					style={{
-						display: "grid",
-						gridTemplateColumns: "30% 30%",
-						rowGap: "0.5rem",
-						columnGap: "2rem",
+						gap: ".5rem",
 					}}
 				>
 					<label style={styles.label}>Carnet:</label>
 					<BaseInput
 						type="text"
-						value={patientData.code}
+						value={patientData.carnet}
 						onChange={(e) =>
-							setPatientData({ ...patientData, code: e.target.value })
+							setPatientData({ ...patientData, carnet: e.target.value })
 						}
 						placeholder="Carnet"
-						style={{ ...styles.input, ...GenInputStyle(2, 1) }}
-						disabled={!editMode}
-					/>
-
-					<label style={styles.label}>Carrera:</label>
-					<BaseInput
-						type="text"
-						value={patientData.area}
-						onChange={(e) =>
-							setPatientData({ ...patientData, area: e.target.value })
-						}
-						placeholder="Carrera"
-						style={{ ...styles.input, ...GenInputStyle(2, 2) }}
+						style={inputStyles}
 						disabled={!editMode}
 					/>
 				</div>
-				<p style={errorPStyles}>{updateError}</p>
-			</form>
-		);
-	};
 
-	const LoadingView = () => {
-		return (
-			<div>
-				<h1 style={styles.h1}>Datos de Estudiante:</h1>
-				<Throbber loadingMessage="Cargando datos de estudiante..." />
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						paddingLeft: "1rem",
+						gap: ".5rem",
+					}}
+				>
+					<label style={styles.label}>Carrera:</label>
+					<BaseInput
+						type="text"
+						value={patientData.career}
+						onChange={(e) =>
+							setPatientData({ ...patientData, career: e.target.value })
+						}
+						placeholder="Carrera"
+						style={inputStyles}
+						disabled={!editMode}
+					/>
+				</div>
 			</div>
-		);
-	};
-
-	return (
-		<Suspense fallback={<LoadingView />}>
-			<Hijo />
-		</Suspense>
+		</form>
 	);
 }

@@ -23,7 +23,7 @@ erDiagram
         varchar telefono_contacto2
         varchar tipo_sangre
         varchar direccion
-        varchar id_seguro
+        varchar seguro
         date    fecha_nacimiento
         varchar telefono
     }
@@ -55,12 +55,6 @@ erDiagram
         varchar     nombre
         integer     cantidad
         serial      id_consulta
-    }
-
-    SEGURO {
-        serial  id
-        varchar nombre
-        boolean estado_activo
     }
 
     ESTUDIANTE {
