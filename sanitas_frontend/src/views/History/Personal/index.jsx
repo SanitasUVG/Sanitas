@@ -9,6 +9,10 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import IconButton from "src/components/Button/Icon";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} PersonalHistoryProps
@@ -152,6 +156,7 @@ function PersonalView({
 	const [selectedPersonal, setSelectedPersonal] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
+	const [isEditable, setIsEditable] = useState(false);
 
 	// Read the data from the resource and handle any potential errors
 	const personalHistoryResult = personalHistoryResource.read();
@@ -230,7 +235,7 @@ function PersonalView({
 
 	const birthYearData = birthYearResult.result;
 	const birthYear = birthYearData?.birthdate
-		? new Date(birthYearData.birthdate).getFullYear()
+		? new Date(birthYearData.birthdate).getUTCFullYear()
 		: null;
 
 	useEffect(() => {
@@ -248,6 +253,7 @@ function PersonalView({
 		const initialDisease = "hypertension";
 		setSelectedPersonal({ disease: initialDisease });
 		setAddingNew(true);
+		setIsEditable(true);
 		validateDisease(initialDisease);
 	};
 
@@ -267,11 +273,13 @@ function PersonalView({
 			...entry,
 		});
 		setAddingNew(false);
+		setIsEditable(false);
 	};
 
 	const handleCancel = () => {
 		setSelectedPersonal({});
 		setAddingNew(false);
+		toast.info("Edición cancelada");
 	};
 
 	// Changes the disease selection from the dropdown, resetting other fields
@@ -285,7 +293,6 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This function isn't that complex it's just large.
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -294,36 +301,37 @@ function PersonalView({
 			return;
 		}
 
-		// Prepare new entry for saving
-		let newEntry = {};
+		const diseaseFieldsMap = {
+			cancer: ["typeOfDisease", "treatment"],
+			myocardialInfarction: ["surgeryYear"],
+			hypertension: ["medicine", "frequency"],
+			diabetesMellitus: ["medicine", "frequency"],
+			hypothyroidism: ["medicine", "frequency"],
+			asthma: ["medicine", "frequency"],
+			convulsions: ["medicine", "frequency"],
+			cardiacDiseases: ["medicine", "frequency"],
+			renalDiseases: ["medicine", "frequency"],
+			default: ["typeOfDisease", "medicine", "frequency"],
+		};
 
-		switch (selectedPersonal.disease) {
-			case "cancer":
-				newEntry = {
-					typeOfDisease: selectedPersonal.typeOfDisease || "",
-					treatment: selectedPersonal.treatment || "",
-				};
-				break;
-			case "myocardialInfarction":
-				newEntry = {
-					surgeryYear: selectedPersonal.surgeryYear || "",
-				};
-				break;
-			case "hypertension":
-				newEntry = {
-					medicine: selectedPersonal.medicine || "",
-					dose: selectedPersonal.dose || "",
-					frequency: selectedPersonal.frequency || "",
-				};
-				break;
-			default:
-				newEntry = {
-					typeOfDisease: selectedPersonal.typeOfDisease || "",
-					medicine: selectedPersonal.medicine || "",
-					dose: selectedPersonal.dose || "",
-					frequency: selectedPersonal.frequency || "",
-				};
-				break;
+		// Get the required fields for the selected disease or use default fields
+		const requiredFields =
+			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+
+		// Prepare new entry for saving
+		const newEntry = {};
+		for (const field of requiredFields) {
+			newEntry[field] = selectedPersonal[field] || "";
+		}
+
+		// Validate required fields
+		const missingFields = requiredFields.filter(
+			(field) => !newEntry[field] || newEntry[field].trim() === "",
+		);
+
+		if (missingFields.length > 0) {
+			toast.error("Complete todos los campos requeridos.");
+			return;
 		}
 
 		toast.info("Guardando antecedente personal...");
@@ -515,7 +523,7 @@ function PersonalView({
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedPersonal.disease || ""}
-							readOnly={!addingNew}
+							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
 								container: { width: "80%" },
@@ -552,7 +560,7 @@ function PersonalView({
 												typeOfDisease: e.target.value,
 											})
 										}
-										readOnly={!addingNew}
+										disabled={!isEditable}
 										placeholder="Ingrese el tipo de cáncer"
 										style={{
 											width: "95%",
@@ -584,7 +592,7 @@ function PersonalView({
 												treatment: e.target.value,
 											})
 										}
-										readOnly={!addingNew}
+										disabled={!isEditable}
 										placeholder="Ingrese el tratamiento administrado"
 										style={{
 											width: "95%",
@@ -611,13 +619,19 @@ function PersonalView({
 									<DropdownMenu
 										options={yearOptions}
 										value={selectedPersonal.surgeryYear}
-										readOnly={!addingNew}
+										disabled={!isEditable}
 										onChange={(e) =>
 											setSelectedPersonal({
 												...selectedPersonal,
 												surgeryYear: e.target.value,
 											})
 										}
+										styles={{
+											container: { width: "90%" },
+											select: {},
+											option: {},
+											indicator: {},
+										}}
 									/>
 								</React.Fragment>
 							)}
@@ -653,7 +667,7 @@ function PersonalView({
 																typeOfDisease: e.target.value,
 															})
 														}
-														readOnly={!addingNew}
+														disabled={!isEditable}
 														placeholder="Ingrese el tipo de enfermedad"
 														style={{
 															width: "95%",
@@ -687,7 +701,7 @@ function PersonalView({
 													medicine: e.target.value,
 												})
 											}
-											readOnly={!addingNew}
+											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado"
 											style={{
 												width: "95%",
@@ -715,7 +729,7 @@ function PersonalView({
 													dose: e.target.value,
 												})
 											}
-											readOnly={!addingNew}
+											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado (opcional)"
 											style={{
 												width: "95%",
@@ -747,7 +761,7 @@ function PersonalView({
 													frequency: e.target.value,
 												})
 											}
-											readOnly={!addingNew}
+											disabled={!isEditable}
 											placeholder="Ingrese la frecuencia con la que toma el medicamento"
 											style={{
 												width: "95%",
@@ -759,34 +773,60 @@ function PersonalView({
 									</React.Fragment>
 								)}
 
-							{addingNew && (
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										paddingTop: "2rem",
-										gap: "1rem",
-									}}
-								>
-									<BaseButton
-										text="Guardar"
-										onClick={handleSaveNewPersonal}
-										style={{ width: "30%", height: "3rem" }}
-									/>
-									<BaseButton
-										text="Cancelar"
-										onClick={handleCancel}
-										style={{
-											width: "30%",
-											height: "3rem",
-											backgroundColor: "#fff",
-											color: colors.primaryBackground,
-											border: `1.5px solid ${colors.primaryBackground}`,
-										}}
-									/>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									width: "100%",
+								}}
+							>
+								<div style={{ display: "flex", justifyContent: "flex-end" }}>
+									{!addingNew &&
+										(isEditable ? (
+											<div style={{ display: "flex", gap: "1rem" }}>
+												<IconButton
+													icon={CheckIcon}
+													onClick={handleSaveNewPersonal}
+												/>
+												<IconButton icon={CancelIcon} onClick={handleCancel} />
+											</div>
+										) : (
+											<IconButton
+												icon={EditIcon}
+												onClick={() => setIsEditable(true)}
+											/>
+										))}
 								</div>
-							)}
+							</div>
+							<div
+								style={{
+									paddingTop: "5rem",
+									display: "flex",
+									justifyContent: "center",
+								}}
+							>
+								{addingNew && (
+									<>
+										<BaseButton
+											text="Guardar"
+											onClick={handleSaveNewPersonal}
+											style={{ width: "30%", height: "3rem" }}
+										/>
+										<div style={{ width: "1rem" }} />
+										<BaseButton
+											text="Cancelar"
+											onClick={handleCancel}
+											style={{
+												width: "30%",
+												height: "3rem",
+												backgroundColor: "#fff",
+												color: colors.primaryBackground,
+												border: `1.5px solid ${colors.primaryBackground}`,
+											}}
+										/>
+									</>
+								)}
+							</div>
 						</>
 					)}
 				</div>
