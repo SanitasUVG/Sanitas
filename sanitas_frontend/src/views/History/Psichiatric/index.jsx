@@ -687,156 +687,158 @@ function PsichiatricView({
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	useEffect(() => {
-		// Guardar los medicamentos para Depresión
-		const initialDepressionMedications = depression.data.map((item) => ({
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialDepressionMedications) !==
-			JSON.stringify(originalDepressionMedications)
-		) {
-			setDepressionMedications(initialDepressionMedications);
-			setOriginalDepressionMedications(
-				JSON.parse(JSON.stringify(initialDepressionMedications)),
-			);
-		}
+		if (!isFirstTime) {
+			// Guardar los medicamentos para Depresión
+			const initialDepressionMedications = depression.data.map((item) => ({
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialDepressionMedications) !==
+				JSON.stringify(originalDepressionMedications)
+			) {
+				setDepressionMedications(initialDepressionMedications);
+				setOriginalDepressionMedications(
+					JSON.parse(JSON.stringify(initialDepressionMedications)),
+				);
+			}
 
-		// Guardar los medicamentos para Ansiedad
-		const initialAnxietyMedications = anxiety.data.map((item) => ({
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialAnxietyMedications) !==
-			JSON.stringify(originalAnxietyMedications)
-		) {
-			setAnxietyMedications(initialAnxietyMedications);
-			setOriginalAnxietyMedications(
-				JSON.parse(JSON.stringify(initialAnxietyMedications)),
-			);
-		}
+			// Guardar los medicamentos para Ansiedad
+			const initialAnxietyMedications = anxiety.data.map((item) => ({
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialAnxietyMedications) !==
+				JSON.stringify(originalAnxietyMedications)
+			) {
+				setAnxietyMedications(initialAnxietyMedications);
+				setOriginalAnxietyMedications(
+					JSON.parse(JSON.stringify(initialAnxietyMedications)),
+				);
+			}
 
-		// Guardar los medicamentos para TOC
-		const initialTOCMedications = ocd.data.map((item) => ({
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialTOCMedications) !==
-			JSON.stringify(originalTOCMedications)
-		) {
-			setTOCMedications(initialTOCMedications);
-			setOriginalTOCMedications(
-				JSON.parse(JSON.stringify(initialTOCMedications)),
-			);
-		}
+			// Guardar los medicamentos para TOC
+			const initialTOCMedications = ocd.data.map((item) => ({
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialTOCMedications) !==
+				JSON.stringify(originalTOCMedications)
+			) {
+				setTOCMedications(initialTOCMedications);
+				setOriginalTOCMedications(
+					JSON.parse(JSON.stringify(initialTOCMedications)),
+				);
+			}
 
-		// Guardar los medicamentos para TDAH
-		const initialTDAHMedications = adhd.data.map((item) => ({
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialTDAHMedications) !==
-			JSON.stringify(originalTDAHMedications)
-		) {
-			setTDAHMedications(initialTDAHMedications);
-			setOriginalTDAHMedications(
-				JSON.parse(JSON.stringify(initialTDAHMedications)),
-			);
-		}
+			// Guardar los medicamentos para TDAH
+			const initialTDAHMedications = adhd.data.map((item) => ({
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialTDAHMedications) !==
+				JSON.stringify(originalTDAHMedications)
+			) {
+				setTDAHMedications(initialTDAHMedications);
+				setOriginalTDAHMedications(
+					JSON.parse(JSON.stringify(initialTDAHMedications)),
+				);
+			}
 
-		// Guardar los medicamentos para Trastorno Bipolar
-		const initialBipolarMedications = bipolar.data.map((item) => ({
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialBipolarMedications) !==
-			JSON.stringify(originalBipolarMedications)
-		) {
-			setBipolarMedications(initialBipolarMedications);
-			setOriginalBipolarMedications(
-				JSON.parse(JSON.stringify(initialBipolarMedications)),
-			);
-		}
+			// Guardar los medicamentos para Trastorno Bipolar
+			const initialBipolarMedications = bipolar.data.map((item) => ({
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialBipolarMedications) !==
+				JSON.stringify(originalBipolarMedications)
+			) {
+				setBipolarMedications(initialBipolarMedications);
+				setOriginalBipolarMedications(
+					JSON.parse(JSON.stringify(initialBipolarMedications)),
+				);
+			}
 
-		// Guardar los medicamentos para Otros
-		const initialOtherMedications = other.data.map((item) => ({
-			illness: item.illness || "",
-			medication: item.medication || "",
-			dose: item.dose || "",
-			frequency: item.frequency || "",
-		}));
-		if (
-			JSON.stringify(initialOtherMedications) !==
-			JSON.stringify(originalOtherMedications)
-		) {
-			setOtherMedications(initialOtherMedications);
-			setOriginalOtherMedications(
-				JSON.parse(JSON.stringify(initialOtherMedications)),
-			);
-		}
+			// Guardar los medicamentos para Otros
+			const initialOtherMedications = other.data.map((item) => ({
+				illness: item.illness || "",
+				medication: item.medication || "",
+				dose: item.dose || "",
+				frequency: item.frequency || "",
+			}));
+			if (
+				JSON.stringify(initialOtherMedications) !==
+				JSON.stringify(originalOtherMedications)
+			) {
+				setOtherMedications(initialOtherMedications);
+				setOriginalOtherMedications(
+					JSON.parse(JSON.stringify(initialOtherMedications)),
+				);
+			}
 
-		// Guardar las opciones UBE para Depresión
-		if (depression.data[0].ube !== originalDepressionUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setDepressionUBE(depression.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalDepressionUBE(depression.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para Depresión
+			if (depression.data[0].ube !== originalDepressionUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setDepressionUBE(depression.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalDepressionUBE(depression.data[0].ube || false);
+			}
 
-		// Guardar las opciones UBE para Ansiedad
-		if (anxiety.data[0].ube !== originalAnxietyUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setAnxietyUBE(anxiety.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalAnxietyUBE(anxiety.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para Ansiedad
+			if (anxiety.data[0].ube !== originalAnxietyUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setAnxietyUBE(anxiety.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalAnxietyUBE(anxiety.data[0].ube || false);
+			}
 
-		// Guardar las opciones UBE para TOC
-		if (ocd.data[0].ube !== originalTOCUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setTOCUBE(ocd.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalTOCUBE(ocd.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para TOC
+			if (ocd.data[0].ube !== originalTOCUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setTOCUBE(ocd.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalTOCUBE(ocd.data[0].ube || false);
+			}
 
-		// Guardar las opciones UBE para TDAH
-		if (adhd.data[0].ube !== originalTDAHUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setTDAHUBE(adhd.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalTDAHUBE(adhd.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para TDAH
+			if (adhd.data[0].ube !== originalTDAHUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setTDAHUBE(adhd.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalTDAHUBE(adhd.data[0].ube || false);
+			}
 
-		// Guardar las opciones UBE para Trastorno Bipolar
-		if (bipolar.data[0].ube !== originalBipolarUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setBipolarUBE(bipolar.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalBipolarUBE(bipolar.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para Trastorno Bipolar
+			if (bipolar.data[0].ube !== originalBipolarUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setBipolarUBE(bipolar.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalBipolarUBE(bipolar.data[0].ube || false);
+			}
 
-		// Guardar las opciones UBE para Otros
-		if (other.data[0].ube !== originalOtherUBE) {
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOtherUBE(other.data[0].ube || false);
-			// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
-			setOriginalOtherUBE(other.data[0].ube || false);
-		}
+			// Guardar las opciones UBE para Otros
+			if (other.data[0].ube !== originalOtherUBE) {
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOtherUBE(other.data[0].ube || false);
+				// biome-ignore lint/complexity/useSimplifiedLogicExpression: Ignoring simplified logic suggestion for this line
+				setOriginalOtherUBE(other.data[0].ube || false);
+			}
 
-		// Guardar la condición en Otros
-		if (other.data[0].illness !== originalOtherIllness) {
-			setOtherIllness(other.data[0].illness || "");
+			// Guardar la condición en Otros
+			if (other.data[0].illness !== originalOtherIllness) {
+				setOtherIllness(other.data[0].illness || "");
 
-			setOriginalOtherIllness(other.data[0].illness || "");
+				setOriginalOtherIllness(other.data[0].illness || "");
+			}
 		}
 	}, [
 		depression.data,
@@ -858,6 +860,7 @@ function PsichiatricView({
 		originalBipolarUBE,
 		originalDepressionMedications,
 		originalOtherMedications,
+		isFirstTime,
 	]);
 
 	const handleCancel = () => {
@@ -1084,9 +1087,10 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
 												Medicamento {index + 1}:
@@ -1311,9 +1315,10 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
 												Medicamento {index + 1}:
@@ -1538,9 +1543,10 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
 												Medicamento {index + 1}:
@@ -1766,7 +1772,7 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
 												}}
@@ -1993,9 +1999,10 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
 												Medicamento {index + 1}:
@@ -2243,9 +2250,10 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
+													paddingTop: "3rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
 												Medicamento {index + 1}:
