@@ -161,42 +161,49 @@ describe("PersonalHistory Component Tests", () => {
 
 	test("adds a new personal history record", async () => {
 		render(
-		  <Wrapper>
-			<PersonalHistory
-			  getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-			  getPersonalHistory={mockGetPersonalHistoryWithData}
-			  updatePersonalHistory={mockUpdatePersonalHistory}
-			  sidebarConfig={sidebarConfig}
-			  useStore={mockUseStore}
-			/>
-		  </Wrapper>,
+			<Wrapper>
+				<PersonalHistory
+					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
+					getPersonalHistory={mockGetPersonalHistoryWithData}
+					updatePersonalHistory={mockUpdatePersonalHistory}
+					sidebarConfig={sidebarConfig}
+					useStore={mockUseStore}
+				/>
+			</Wrapper>,
 		);
-	  
+
 		// Espera que aparezca el botón para agregar antecedentes personales
 		await waitFor(() => screen.getByText("Agregar antecedente personal"));
-	  
+
 		// Inicia el proceso de agregar un nuevo antecedente personal
 		const addButton = screen.getByText("Agregar antecedente personal");
 		fireEvent.click(addButton);
-	  
+
 		// Llenar el formulario con datos
-		const inputs = screen.getAllByPlaceholderText(/Ingrese el tratamiento administrado/i);
-		fireEvent.change(inputs[0], { target: { value: 'Aspirina' } });
-		fireEvent.change(inputs[1], { target: { value: '10mg' } });
-		fireEvent.change(screen.getByPlaceholderText(/Ingrese la frecuencia con la que toma el medicamento/i), { target: { value: 'Diaria' } });
-	  
+		const inputs = screen.getAllByPlaceholderText(
+			/Ingrese el tratamiento administrado/i,
+		);
+		fireEvent.change(inputs[0], { target: { value: "Aspirina" } });
+		fireEvent.change(inputs[1], { target: { value: "10mg" } });
+		fireEvent.change(
+			screen.getByPlaceholderText(
+				/Ingrese la frecuencia con la que toma el medicamento/i,
+			),
+			{ target: { value: "Diaria" } },
+		);
+
 		// Simula el clic en guardar
 		const saveButton = screen.getByText("Guardar");
 		fireEvent.click(saveButton);
-	  
+
 		// Verifica que el mensaje de éxito fue mostrado
 		await waitFor(() => {
-		  expect(toast.success).toHaveBeenCalledWith(
-			"Antecedente personal guardado con éxito.",
-		  );
+			expect(toast.success).toHaveBeenCalledWith(
+				"Antecedente personal guardado con éxito.",
+			);
 		});
-	  
+
 		// Verifica que la función updatePersonalHistory fue llamada
 		expect(mockUpdatePersonalHistory).toHaveBeenCalled();
-	  });
+	});
 });

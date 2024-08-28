@@ -293,7 +293,6 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -301,7 +300,7 @@ function PersonalView({
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return;
 		}
-	
+
 		const diseaseFieldsMap = {
 			cancer: ["typeOfDisease", "treatment"],
 			myocardialInfarction: ["surgeryYear"],
@@ -312,30 +311,31 @@ function PersonalView({
 			convulsions: ["medicine", "frequency"],
 			cardiacDiseases: ["medicine", "frequency"],
 			renalDiseases: ["medicine", "frequency"],
-			default: ["typeOfDisease", "medicine", "frequency"]
+			default: ["typeOfDisease", "medicine", "frequency"],
 		};
-	
+
 		// Get the required fields for the selected disease or use default fields
-		const requiredFields = diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
-	
+		const requiredFields =
+			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+
 		// Prepare new entry for saving
-		let newEntry = {};
-		requiredFields.forEach((field) => {
+		const newEntry = {};
+		for (const field of requiredFields) {
 			newEntry[field] = selectedPersonal[field] || "";
-		});
-	
+		}
+
 		// Validate required fields
 		const missingFields = requiredFields.filter(
-			(field) => !newEntry[field] || newEntry[field].trim() === ""
+			(field) => !newEntry[field] || newEntry[field].trim() === "",
 		);
-	
+
 		if (missingFields.length > 0) {
 			toast.info("Complete todos los campos requeridos.");
 			return;
 		}
-	
+
 		toast.info("Guardando antecedente personal...");
-	
+
 		// Update the data for the current disease
 		const updatedData = [
 			...personalHistory[selectedPersonal.disease].data,
@@ -345,15 +345,15 @@ function PersonalView({
 			...personalHistory[selectedPersonal.disease],
 			data: updatedData,
 		};
-	
+
 		const updatedPersonalHistory = {
 			...personalHistory,
 			[selectedPersonal.disease]: updatedHistory,
 		};
-	
+
 		try {
 			const response = await updatePersonalHistory(id, updatedPersonalHistory);
-	
+
 			if (response.error) {
 				toast.error(`Error al guardar la información: ${response.error}`);
 			} else {
@@ -367,8 +367,7 @@ function PersonalView({
 			toast.error("Error al conectar con el servidor");
 		}
 	};
-	
-	
+
 	// Definitions of disease options for the dropdown
 	const diseaseOptions = [
 		{ label: "Hipertensión arterial", value: "hypertension" },
