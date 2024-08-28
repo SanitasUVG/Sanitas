@@ -7,7 +7,6 @@ import {
 	generateUniqueEmail,
 	linkToTestAccount,
 	LOCAL_API_URL,
-	updatePatientFamilyHistory,
 } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}account/patient`;
@@ -17,7 +16,7 @@ describe("Get linked patient integration tests", () => {
 	let patientData;
 
 	beforeAll(async () => {
-		let patientId = await createTestPatient();
+		const patientId = await createTestPatient();
 		patientData = (
 			await axios.get(`${LOCAL_API_URL}patient/general/${patientId}`)
 		).data;

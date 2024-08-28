@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test, beforeEach } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -24,7 +24,7 @@ async function getPatientData(id) {
 describe("Link patient to an account integration tests", () => {
 	let patientData;
 	beforeEach(async () => {
-		let patientId = await createTestPatient();
+		const patientId = await createTestPatient();
 		patientData = await getPatientData(patientId);
 	});
 
