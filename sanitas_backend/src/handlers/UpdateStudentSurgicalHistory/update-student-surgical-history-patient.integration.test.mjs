@@ -30,7 +30,7 @@ function generateValidUpdate(patientId) {
 }
 
 describe("Update Surgical History integration tests", () => {
-	const validHeaders = createAuthorizationHeader(createDoctorJWT());
+	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
 	beforeAll(async () => {
@@ -39,7 +39,7 @@ describe("Update Surgical History integration tests", () => {
 
 	test("Update existing surgical history", async () => {
 		const surgicalHistoryData = generateValidUpdate(patientId);
-		const response = await axios.put(API_URL, surgicalHistoryData, {
+		const response = await axios.post(API_URL, surgicalHistoryData, {
 			headers: validHeaders,
 		});
 
@@ -69,7 +69,7 @@ describe("Update Surgical History integration tests", () => {
 			},
 		};
 
-		const response = await axios.put(API_URL, surgicalHistoryData, {
+		const response = await axios.post(API_URL, surgicalHistoryData, {
 			headers: validHeaders,
 			validateStatus: () => true, // Ensures axios does not throw an error for non-2xx status
 		});
@@ -93,7 +93,7 @@ describe("Update Surgical History integration tests", () => {
 			},
 		};
 
-		const response = await axios.put(API_URL, incompleteData, {
+		const response = await axios.post(API_URL, incompleteData, {
 			headers: validHeaders,
 			validateStatus: () => true,
 		});
@@ -104,18 +104,19 @@ describe("Update Surgical History integration tests", () => {
 			"Invalid input: Missing or empty required fields.",
 		);
 	});
+
 	test("a patient can't call the endpoint", async () => {
 		const postData = generateValidUpdate(patientId);
-		const specialHeaders = createAuthorizationHeader(createPatientJWT());
+		const specialHeaders = createAuthorizationHeader(createDoctorJWT());
 
-		const response = await axios.put(API_URL, postData, {
+		const response = await axios.post(API_URL, postData, {
 			headers: specialHeaders,
 			validateStatus: () => true,
 		});
 
 		expect(response.status).toBe(401);
 		expect(response.data).toEqual({
-			error: "Unauthorized, you're not a doctor!",
+			error: "Unauthorized, you're a doctor!",
 		});
 	});
 
@@ -123,7 +124,7 @@ describe("Update Surgical History integration tests", () => {
 		const postData = generateValidUpdate(patientId);
 		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
 
-		const response = await axios.put(API_URL, postData, {
+		const response = await axios.post(API_URL, postData, {
 			headers: specialHeaders,
 			validateStatus: () => true,
 		});
