@@ -857,7 +857,7 @@ export function mapToAPIPsychiatricHistory(dbData) {
  * @returns {boolean} True if the request data edits/deletes dbData.
  */
 export function requestDataEditsDBData(requestData, dbData) {
-	let deletesData = false
+	let deletesData = false;
 
 	dbData.some((dbElem, i) => {
 		const requestElem = requestData[i];
@@ -868,13 +868,13 @@ export function requestDataEditsDBData(requestData, dbData) {
 					dbElem[key] !== requestElem[key] &&
 					dbElem[key].localeCompare("") !== 0
 				) {
-					deletesData = true
+					deletesData = true;
 					return deletesData;
 				}
 			}
 		});
 
-		return deletesData
+		return deletesData;
 	});
 	return deletesData;
 }
