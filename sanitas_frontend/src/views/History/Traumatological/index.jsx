@@ -221,7 +221,13 @@ function TraumatologicView({
 			return;
 		}
 
-		toast.info("Guardando antecedente traumatológico...");
+		const isNewTrauma = selectedTrauma.index === undefined; // Determinar si es un nuevo registro
+		toast.info(
+			isNewTrauma
+				? "Guardando nuevo antecedente traumatológico..."
+				: "Actualizando antecedente traumatológico...",
+		);
+
 		const updatedData = [...traumatologicHistory.data];
 
 		if (selectedTrauma.index !== undefined) {
@@ -248,7 +254,11 @@ function TraumatologicView({
 				setAddingNew(false);
 				setIsEditable(false);
 				setSelectedTrauma(null);
-				toast.success("Antecedente traumatológico guardado con éxito.");
+				toast.success(
+					isNewTrauma
+						? "Antecedente traumatológico guardado con éxito."
+						: "Antecedente traumatológico actualizado con éxito.",
+				);
 			} else {
 				toast.error(`Error al guardar: ${response.error}`);
 			}
@@ -267,17 +277,14 @@ function TraumatologicView({
 	};
 
 	const handleCancel = () => {
-		// Si estás añadiendo un nuevo trauma, cancela solo la operación de añadir
 		if (addingNew) {
 			setAddingNew(false);
 			setSelectedTrauma(null);
 		} else if (selectedTrauma !== null) {
-			// Si estás editando un trauma existente, simplemente deselecciona y desactiva la edición
 			setIsEditable(false);
 			setSelectedTrauma(null);
+			toast.info("Edición cancelada.");
 		}
-
-		toast.info("Edición cancelada.");
 	};
 
 	return (
@@ -377,8 +384,8 @@ function TraumatologicView({
 						}
 						placeholder="Ingrese el hueso fracturado"
 						style={{
-							width: "95%",
-							height: "2.5rem",
+							width: "90%",
+							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
 						}}
@@ -406,7 +413,7 @@ function TraumatologicView({
 							})
 						}
 						style={{
-							container: { width: "95%" },
+							container: { width: "90%" },
 							select: {},
 							option: {},
 							indicator: {},
