@@ -69,7 +69,7 @@ export const createPatientHandler = async (event, context) => {
 
 				return responseBuilder
 					.setStatusCode(409)
-					.setBody({ error: "CUI already exist!" })
+					.setBody({ error: "CUI already exist." })
 					.build();
 			}
 
