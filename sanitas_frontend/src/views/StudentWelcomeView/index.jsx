@@ -16,6 +16,7 @@ export default function StudentWelcomeView() {
 				height: "100vh",
 				width: "100vw",
 				padding: "2rem",
+				overflowX: "hidden"
 			}}
 		>
 			<div
@@ -115,6 +116,7 @@ export default function StudentWelcomeView() {
 						backgroundColor: "#FFFFFF",
 						padding: "77px",
 						borderRadius: "8.27px",
+						overflowY: "scroll"
 					}}
 				>
 					<p
@@ -165,7 +167,7 @@ export default function StudentWelcomeView() {
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
 							width: "388px",
-							height: "43px",
+							minHeight: "43px",
 							padding: "0px 16px 0px 16px",
 							gap: "8px",
 							borderRadius: "8px",
@@ -177,7 +179,6 @@ export default function StudentWelcomeView() {
 				<div
 					style={{
 						minWidth: "464px",
-						minHeight: "393px",
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "space-between",
@@ -189,7 +190,7 @@ export default function StudentWelcomeView() {
 					<img
 						style={{
 							width: "464px",
-							height: "393px",
+							height: "200%",
 							top: "249px",
 							left: "851px",
 							gap: "0",
