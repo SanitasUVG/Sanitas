@@ -270,7 +270,7 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
 
 /**
  * @typedef {Object} APIStudentInformation
- * @property {number} patientId
+ * @property {number} idPatient
  * @property {string} career
  * @property {string} carnet
  */

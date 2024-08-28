@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
+	createAuthorizationHeader,
+	createDoctorJWT,
 	createTestPatient,
+	generateRandomCarnet,
 	generateUniqueCUI,
 	LOCAL_API_URL,
 	updateStudentInfo,
@@ -9,9 +12,17 @@ import {
 
 const API_URL = `${LOCAL_API_URL}patient/student`;
 
+function generateValidUpdate(idPatient) {
+	return {
+		idPatient,
+		carnet: generateRandomCarnet(),
+		career: "Lic. Computación",
+	};
+}
+
 describe("Update patient student data integration tests", () => {
 	/** @type {number} */
-	let patientId;
+	let idPatient;
 
 	let insertedPatientData;
 
@@ -23,65 +34,46 @@ describe("Update patient student data integration tests", () => {
 			isWoman: true,
 		};
 		const { cui, names, lastNames, isWoman } = insertedPatientData;
-		patientId = await createTestPatient(cui, names, lastNames, isWoman);
+		idPatient = await createTestPatient(cui, names, lastNames, isWoman);
 	});
 
 	test("Normal case: Actualizar datos de un paciente existente", async () => {
-		const payload = {
-			patientId,
-			carnet: "22386",
-			career: "Lic. Computación",
-		};
+		const payload = generateValidUpdate(idPatient);
+		const received = await updateStudentInfo(
+			idPatient,
+			payload.carnet,
+			payload.career,
+		);
 
-		const received = await updateStudentInfo(patientId);
-
-		expect(received.patientId).toBe(patientId);
+		expect(received.idPatient).toBe(idPatient);
 		expect(received.carnet).toBe(payload.carnet);
 		expect(received.career).toBe(payload.career);
 	});
 
-	test("Actualizar solamente carnet", async () => {
-		const payload = {
-			patientId,
-			carnet: "22386",
-		};
+	test("Can't repeat student carnet two times", async () => {
+		const patient2Id = await createTestPatient();
 
-		const response = await axios.put(API_URL, payload);
+		const headers = createAuthorizationHeader(createDoctorJWT());
+		const payload = generateValidUpdate(idPatient);
+		await axios.put(API_URL, payload, { headers });
 
-		expect(response.status).toBe(200);
+		payload.idPatient = patient2Id;
+		const response = await axios.put(API_URL, payload, {
+			headers,
+			validateStatus: () => true,
+		});
 
-		const { data: received } = response;
-		expect(received.carnet).toBe(payload.carnet);
-		expect(received.career).toBeNull();
-	});
-
-	test("Actualizar solamente carrera", async () => {
-		const payload = {
-			patientId,
-			career: "Lic. Química",
-		};
-
-		const response = await axios.put(API_URL, payload);
-
-		expect(response.status).toBe(200);
-
-		const { data: received } = response;
-		expect(received.career).toBe(payload.career);
-		expect(received.carnet).toBeNull();
+		expect(response.status).toEqual(400);
+		expect(response.data.error).toEqual("Student carnet already exists!");
 	});
 
 	test("Falla al no encontrar la ID", async () => {
-		const payload = {
-			patientId: 99999999,
-			carnet: "22386",
-			career: "22386",
-		};
-
+		const payload = generateValidUpdate(99999999);
 		const response = await axios.put(API_URL, payload, {
 			validateStatus: () => true,
 		});
 
-		expect(response.status).toBe(400);
+		expect(response.status).toBe(404);
 		expect(response.data.error).toBe("No patient with the given ID found!");
 	});
 });

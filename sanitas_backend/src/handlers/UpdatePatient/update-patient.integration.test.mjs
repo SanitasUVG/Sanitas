@@ -13,7 +13,7 @@ const API_URL = `${LOCAL_API_URL}/patient/general`;
 
 function generateValidUpdate(patientId) {
 	return {
-		id: patientId,
+		patientId,
 		names: "Juan Actualizado",
 		lastNames: "Pérez Actualizado",
 		phone: "5556789",
@@ -46,7 +46,7 @@ describe("Update Patient integration tests", () => {
 
 	test("Actualizar datos de un paciente sin proporcionar ningún campo para actualizar", async () => {
 		const patientData = {
-			id: patientId,
+			patientId,
 		};
 
 		const response = await axios.put(API_URL, patientData, {
@@ -60,7 +60,7 @@ describe("Update Patient integration tests", () => {
 
 	test("Actualizar datos de un paciente con una ID inexistente (debería fallar)", async () => {
 		const patientData = {
-			id: -1,
+			patientId: -1,
 			names: "Nombre Nuevo",
 		};
 

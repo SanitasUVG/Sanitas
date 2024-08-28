@@ -41,16 +41,15 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1723158735,
-        "narHash": "sha256-+ttPzSzu8eKYuXnmb15qsLClUQV6J5WLj5mzWgsMYYs=",
-        "owner": "ElrohirGT",
+        "lastModified": 1724504184,
+        "narHash": "sha256-gP6000c2+zHKJHAxCD3BftvAjmb4CPAZamRAHNxN2MM=",
+        "owner": "cachix",
         "repo": "devenv",
-        "rev": "09321a82506f60125ae3fa0353fae6647da7c965",
+        "rev": "51338b58fd666f448db7486ec145dbe52db9b829",
         "type": "github"
       },
       "original": {
-        "owner": "ElrohirGT",
-        "ref": "feat-add-custom-pg-hba-conf",
+        "owner": "cachix",
         "repo": "devenv",
         "type": "github"
       }
@@ -319,11 +318,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1722813957,
-        "narHash": "sha256-IAoYyYnED7P8zrBFMnmp7ydaJfwTnwcnqxUElC1I26Y=",
+        "lastModified": 1724224976,
+        "narHash": "sha256-Z/ELQhrSd7bMzTO8r7NZgi9g5emh+aRKoCdaAv5fiO0=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "cb9a96f23c491c081b38eab96d22fa958043c9fa",
+        "rev": "c374d94f1536013ca8e92341b540eba4c22f9c62",
         "type": "github"
       },
       "original": {
@@ -390,7 +389,24 @@
       "inputs": {
         "devenv": "devenv",
         "nixpkgs": "nixpkgs_2",
+        "samcliPkgs": "samcliPkgs",
         "systems": "systems_3"
+      }
+    },
+    "samcliPkgs": {
+      "locked": {
+        "lastModified": 1720403430,
+        "narHash": "sha256-PUBgB5QpCcgA0PALzGW0gym6NsbrHQW92KVpuixgObU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "42c5e250a8a9162c3e962c78a4c393c5ac369093",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "42c5e250a8a9162c3e962c78a4c393c5ac369093",
+        "type": "github"
       }
     },
     "systems": {

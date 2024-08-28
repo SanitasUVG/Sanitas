@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPIStudentInfo } from "utils";
+import { createResponse, mapToAPIStudentInfo } from "utils/index.mjs";
 
 /**
  * Get the student information endpoint handler.
@@ -42,9 +42,9 @@ export const handler = async (event, context) => {
 		logger.info(dbResponse, "Query done!");
 
 		if (dbResponse.rowCount === 0) {
-			/** @type {APIStudentInfo} */
+			/** @type {import("utils/index.mjs").APIStudentInfo} */
 			const defaultStudentInfo = {
-				patientId: id,
+				idPatient: id,
 				carnet: "",
 				career: "",
 			};

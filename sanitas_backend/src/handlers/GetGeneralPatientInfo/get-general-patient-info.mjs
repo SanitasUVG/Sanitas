@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { mapToAPIPatient } from "utils";
+import { mapToAPIPatient } from "utils/index.mjs";
 
 /**
  * Get the general patient information endpoint handler.

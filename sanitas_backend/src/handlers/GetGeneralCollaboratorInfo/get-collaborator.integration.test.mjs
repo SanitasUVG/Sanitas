@@ -26,7 +26,7 @@ describe("Collaborator Handler", () => {
 		expect(collaborator).toBeDefined();
 		expect(collaborator.code).toBe("C001");
 		expect(collaborator.area).toBe("Administración");
-		expect(collaborator.patientId).toBe(2);
+		expect(collaborator.idPatient).toBe(2);
 	});
 
 	it("should return default data", async () => {

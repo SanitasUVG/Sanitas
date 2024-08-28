@@ -18,7 +18,7 @@ const examplePatientData = {
 	contactPhone2: "987654321",
 	bloodType: "O+",
 	address: "123 Main St",
-	insuranceId: 12345,
+	insurance: "El Roble",
 	birthdate: "1980-01-02",
 	phone: "555-1234",
 };
@@ -83,7 +83,7 @@ describe("UpdateInfoView tests", () => {
 				expect(screen.getByDisplayValue("987654321")).toBeVisible();
 				expect(screen.getByDisplayValue("O+")).toBeVisible();
 				expect(screen.getByDisplayValue("123 Main St")).toBeVisible();
-				expect(screen.getByDisplayValue("12345")).toBeVisible();
+				expect(screen.getByDisplayValue("El Roble")).toBeVisible();
 				expect(screen.getByDisplayValue("1980-01-02")).toBeVisible();
 				expect(screen.getByDisplayValue("555-1234")).toBeVisible();
 			},
@@ -169,6 +169,6 @@ describe("UpdateInfoView tests", () => {
 			</MemoryRouter>,
 		);
 
-		expect(screen.getAllByText("Cargando información del paciente..."));
+		expect(screen.getAllByText("Cargando datos de paciente..."));
 	});
 });
