@@ -80,7 +80,7 @@ export const handler = async (event, context) => {
 		let errorMessage =
 			"The account couldn't be linked due to an internal error!";
 
-		if(error.code === "23503") {
+		if (error.code === "23503") {
 			statusCode = 404;
 			errorMessage = "No patient with the given CUI found!";
 		}

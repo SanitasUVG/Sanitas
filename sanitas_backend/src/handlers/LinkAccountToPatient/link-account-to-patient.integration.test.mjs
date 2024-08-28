@@ -6,6 +6,7 @@ import {
 	createTestPatient,
 	generateUniqueCUI,
 	generateUniqueEmail,
+	linkToTestAccount,
 	LOCAL_API_URL,
 } from "../testHelpers.mjs";
 
@@ -28,24 +29,18 @@ describe("Link patient to an account integration tests", () => {
 	});
 
 	test("Link existing patient to new account", async () => {
-		const payload = {
-			cui: patientData.cui,
-		};
-		const jwtData = createJWT({ email: generateUniqueEmail() });
-		const headers = createAuthorizationHeader(jwtData);
-
-		const response = await axios.post(API_URL, payload, { headers });
-		expect(response.status).toEqual(200);
-
-		const { linkedPatientId } = response.data;
+		const { linkedPatientId } = await linkToTestAccount(
+			generateUniqueEmail(),
+			patientData.cui,
+		);
 		expect(linkedPatientId).toEqual(patientData.id);
 	});
 
 	test("Fail if patient doesn't exists", async () => {
 		const payload = {
-			cui: generateUniqueCUI() // Random CUI, so a patient with it is really unlikely
-		}
-		const jwtData = createJWT({email: generateUniqueEmail()})
+			cui: generateUniqueCUI(), // Random CUI, so a patient with it is really unlikely
+		};
+		const jwtData = createJWT({ email: generateUniqueEmail() });
 		const headers = createAuthorizationHeader(jwtData);
 
 		const response = await axios.post(API_URL, payload, {
@@ -60,23 +55,27 @@ describe("Link patient to an account integration tests", () => {
 
 	test("Fail if a patient is already linked", async () => {
 		const payload = {
-			cui: patientData.cui
+			cui: patientData.cui,
 		};
-		const jwtData = createJWT({email: generateUniqueEmail()})
+		const jwtData = createJWT({ email: generateUniqueEmail() });
 		let headers = createAuthorizationHeader(jwtData);
 
-		 await axios.post(API_URL, payload, {
+		await axios.post(API_URL, payload, {
 			headers,
 			validateStatus: () => true,
-		})
+		});
 
-		headers = createAuthorizationHeader(createJWT({email: generateUniqueEmail()}))
+		headers = createAuthorizationHeader(
+			createJWT({ email: generateUniqueEmail() }),
+		);
 		const response = await axios.post(API_URL, payload, {
 			headers,
 			validateStatus: () => true,
-		})
+		});
 
-		expect(response.status).toEqual(409)
-		expect(response.data.error).toEqual("Patient is already linked to another account!")
-	})
+		expect(response.status).toEqual(409);
+		expect(response.data.error).toEqual(
+			"Patient is already linked to another account!",
+		);
+	});
 });

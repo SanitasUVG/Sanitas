@@ -383,7 +383,7 @@ export async function linkToTestAccount(accountEmail, patientCUI) {
 	const response = await axios.post(
 		`${LOCAL_API_URL}account/link`,
 		{ cui: patientCUI },
-		{ headers: createAuthorizationHeader(createJWT({email: accountEmail})) },
+		{ headers: createAuthorizationHeader(createJWT({ email: accountEmail })) },
 	);
 
 	expect(response.status).toBe(200);
