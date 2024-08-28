@@ -623,7 +623,6 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 					style={{
 						display: "flex",
 						flexDirection: "row",
-						// justifyContent: "space-around",
 						gap: "2rem",
 						width: "100%",
 						paddingTop: "2rem",
