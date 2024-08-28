@@ -589,6 +589,21 @@ Resources:
             Method: POST
             RestApiId: !Ref SanitasAPI
 
+  getLinkedPatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/GetLinkedPatient/get-linked-patient.handler
+      Description: Retrieves the linked patient id (if any) for the
+        given account.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /account/patient
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:

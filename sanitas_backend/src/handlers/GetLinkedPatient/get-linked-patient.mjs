@@ -41,7 +41,10 @@ export const handler = async (event, context) => {
 		logger.info("Connected!");
 
 		const query = `
-			SELECT id_paciente FROM CUENTA_PACIENTE WHERE email=$1 LIMIT 1;
+			SELECT id FROM paciente p
+				INNER JOIN cuenta_paciente cp ON cp.cui_paciente = p.cui
+			WHERE email=$1 
+			LIMIT 1
     `;
 		const args = [email];
 		logger.info({ query, args }, "Querying DB...");
@@ -52,16 +55,19 @@ export const handler = async (event, context) => {
 			logger.info("No patient is linked to this account!");
 			return responseBuilder
 				.setStatusCode(200)
-				.setBody({ idPatient: null })
+				.setBody({ linkedPatientId: null })
 				.build();
 		}
 
-		const idPatient = dbResponse.rows[0].id_paciente;
-		return responseBuilder.setStatusCode(200).setBody({ idPatient }).build();
+		const linkedPatientId = dbResponse.rows[0].id_paciente;
+		return responseBuilder
+			.setStatusCode(200)
+			.setBody({ linkedPatientId })
+			.build();
 	} catch (error) {
 		logger.error(
+			{ error },
 			"An error occurred while checking if an account has a linked patient",
-			error,
 		);
 
 		return responseBuilder

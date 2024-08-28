@@ -51,7 +51,7 @@ export const generateUniqueEmail = () => {
 	const timestamp = Date.now();
 	const randomNum = Math.floor(Math.random() * 100000);
 	return `${timestamp}${randomNum}@gmail.com`;
-}
+};
 
 /*
  * @returns {string} The randomly generated student carnet
