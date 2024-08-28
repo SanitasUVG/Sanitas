@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
 import { BaseInput } from "src/components/Input/index";
@@ -31,7 +30,6 @@ export function StudentSurgicalHistory({
 	getBirthdayPatientInfo,
 	getStudentSurgicalHistory,
 	updateStudentSurgicalHistory,
-	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
