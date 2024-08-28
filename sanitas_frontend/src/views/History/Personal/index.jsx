@@ -235,7 +235,7 @@ function PersonalView({
 
 	const birthYearData = birthYearResult.result;
 	const birthYear = birthYearData?.birthdate
-		? new Date(birthYearData.birthdate).getFullYear()
+		? new Date(birthYearData.birthdate).getUTCFullYear()
 		: null;
 
 	useEffect(() => {
@@ -301,105 +301,74 @@ function PersonalView({
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return;
 		}
-
-		// Verifica si todos los campos requeridos están completos antes de proceder
-		if (selectedPersonal.disease === "cancer" && (!selectedPersonal.typeOfDisease || !selectedPersonal.treatment)) {
-			toast.info("Complete todos los campos requeridos");
-			return;
-		}
-
-		if (selectedPersonal.disease === "myocardialInfarction" && !selectedPersonal.surgeryYear) {
-			toast.info("Complete todos los campos requeridos");
-			return;
-		}
-
-		if (selectedPersonal.disease === "hypertension" && 
-			(!selectedPersonal.medicine || !selectedPersonal.dose || !selectedPersonal.frequency)) {
-			toast.info("Complete todos los campos requeridos");
-			return;
-		}
-
 	
-		// Prepara la nueva entrada para guardar
+		const diseaseFieldsMap = {
+			cancer: ["typeOfDisease", "treatment"],
+			myocardialInfarction: ["surgeryYear"],
+			hypertension: ["medicine", "frequency"],
+			diabetesMellitus: ["medicine", "frequency"],
+			hypothyroidism: ["medicine", "frequency"],
+			asthma: ["medicine", "frequency"],
+			convulsions: ["medicine", "frequency"],
+			cardiacDiseases: ["medicine", "frequency"],
+			renalDiseases: ["medicine", "frequency"],
+			default: ["typeOfDisease", "medicine", "frequency"]
+		};
+	
+		// Get the required fields for the selected disease or use default fields
+		const requiredFields = diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+	
+		// Prepare new entry for saving
 		let newEntry = {};
+		requiredFields.forEach((field) => {
+			newEntry[field] = selectedPersonal[field] || "";
+		});
 	
-		switch (selectedPersonal.disease) {
-			case "cancer":
-				newEntry = {
-					typeOfDisease: selectedPersonal.typeOfDisease || "",
-					treatment: selectedPersonal.treatment || "",
-				};
-				break;
-			case "myocardialInfarction":
-				newEntry = {
-					surgeryYear: selectedPersonal.surgeryYear || "",
-				};
-				break;
-			case "hypertension":
-				newEntry = {
-					medicine: selectedPersonal.medicine || "",
-					dose: selectedPersonal.dose || "",
-					frequency: selectedPersonal.frequency || "",
-				};
-				break;
-			default:
-				newEntry = {
-					typeOfDisease: selectedPersonal.typeOfDisease || "",
-					medicine: selectedPersonal.medicine || "",
-					dose: selectedPersonal.dose || "",
-					frequency: selectedPersonal.frequency || "",
-				};
-				break;
+		// Validate required fields
+		const missingFields = requiredFields.filter(
+			(field) => !newEntry[field] || newEntry[field].trim() === ""
+		);
+	
+		if (missingFields.length > 0) {
+			toast.info("Complete todos los campos requeridos.");
+			return;
 		}
 	
 		toast.info("Guardando antecedente personal...");
 	
-		let updatedPersonalHistory;
+		// Update the data for the current disease
+		const updatedData = [
+			...personalHistory[selectedPersonal.disease].data,
+			newEntry,
+		];
+		const updatedHistory = {
+			...personalHistory[selectedPersonal.disease],
+			data: updatedData,
+		};
 	
-		if (addingNew) {
-			// Si es una entrada nueva, agrega la nueva entrada a la lista existente
-			const currentCategoryData =
-				personalHistory[selectedPersonal.disease]?.data || [];
-	
-			const updatedCategory = {
-				...personalHistory[selectedPersonal.disease],
-				data: [...currentCategoryData, newEntry],
-			};
-	
-			updatedPersonalHistory = {
-				...personalHistory,
-				[selectedPersonal.disease]: updatedCategory,
-			};
-		} else {
-			// Si es una edición, reemplaza la entrada existente
-			const updatedCategory = {
-				...personalHistory[selectedPersonal.disease],
-				data: [newEntry], // Reemplaza con el nuevo dato actualizado
-			};
-	
-			updatedPersonalHistory = {
-				...personalHistory,
-				[selectedPersonal.disease]: updatedCategory,
-			};
-		}
+		const updatedPersonalHistory = {
+			...personalHistory,
+			[selectedPersonal.disease]: updatedHistory,
+		};
 	
 		try {
 			const response = await updatePersonalHistory(id, updatedPersonalHistory);
 	
-			if (!response.error) {
+			if (response.error) {
+				toast.error(`Error al guardar la información: ${response.error}`);
+			} else {
+				toast.success("Antecedente personal guardado con éxito.");
 				setPersonalHistory(updatedPersonalHistory);
 				setSelectedPersonal({});
 				setAddingNew(false);
-				toast.success("Antecedente personal guardado con éxito.");
-			} else {
-				toast.error(`Error al guardar: ${response.error}`);
 			}
 		} catch (error) {
-			toast.error(`Error en la operación: ${error.message}`);
+			console.error(error);
+			toast.error("Error al conectar con el servidor");
 		}
 	};
 	
-
+	
 	// Definitions of disease options for the dropdown
 	const diseaseOptions = [
 		{ label: "Hipertensión arterial", value: "hypertension" },
