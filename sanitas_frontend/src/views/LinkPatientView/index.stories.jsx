@@ -1,7 +1,8 @@
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { LinkPatientView } from ".";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import { NAV_PATHS } from "src/router";
 
 export default {
 	title: "Views/LinkPatientView",
@@ -11,7 +12,17 @@ export default {
 			<>
 				<ToastContainer />
 				<MemoryRouter>
-					<Story />
+					<Routes>
+						<Route path="/" element={<Story />} />
+						<Route
+							path={NAV_PATHS.PATIENT_FORM}
+							element={<h1>Formulario paciente</h1>}
+						/>
+						<Route
+							path={NAV_PATHS.CREATE_PATIENT}
+							element={<h1>Formulario de creación de paciente!</h1>}
+						/>
+					</Routes>
 				</MemoryRouter>
 			</>
 		),
@@ -29,8 +40,9 @@ export const PatientExistsButIsntLinked = {
 export const PatientIsAlreadyLinked = {
 	args: {
 		linkAccount: async () => {
+			const error = "Patient is already linked to another account!";
 			return {
-				error: new Error("Patient is already linked to another account!"),
+				error: { error },
 			};
 		},
 	},
@@ -39,7 +51,8 @@ export const PatientIsAlreadyLinked = {
 export const PatientDoesntExist = {
 	args: {
 		linkAccount: async () => {
-			return { error: new Error("No patient with the given CUI found!") };
+			const error = "No patient with the given CUI found!";
+			return { error: { error } };
 		},
 	},
 };
