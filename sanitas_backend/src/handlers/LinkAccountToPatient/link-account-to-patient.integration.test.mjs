@@ -23,8 +23,9 @@ async function getPatientData(id) {
 
 describe("Link patient to an account integration tests", () => {
 	let patientData;
+	let patientId;
 	beforeEach(async () => {
-		const patientId = await createTestPatient();
+		patientId = await createTestPatient();
 		patientData = await getPatientData(patientId);
 	});
 
@@ -33,7 +34,7 @@ describe("Link patient to an account integration tests", () => {
 			generateUniqueEmail(),
 			patientData.cui,
 		);
-		expect(linkedPatientId).toEqual(patientData.id);
+		expect(linkedPatientId).toEqual(patientId);
 	});
 
 	test("Fail if patient doesn't exists", async () => {
