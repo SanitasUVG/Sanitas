@@ -1178,3 +1178,39 @@ export const updatePsichiatricHistory = async (
 		return { error: error.message };
 	}
 };
+
+/**
+ * @callback LinkAccountToPatientCallback
+ * @param {string} cui
+ * @returns {Promise<Result<number, *>>}
+ */
+
+/**
+ * @type {LinkAccountToPatientCallback}
+ */
+export const linkAccountToPatient = async (cui) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/account/link`;
+
+	const payload = { cui };
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		return { result: response.data };
+	} catch (error) {
+		return { error: error };
+	}
+};
