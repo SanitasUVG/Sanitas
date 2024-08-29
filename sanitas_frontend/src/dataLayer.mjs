@@ -131,7 +131,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(false);
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -148,7 +148,7 @@ export const getRole = async () => {
 		});
 		return { result };
 	} catch (error) {
-		throw new Error("Error fetching CUI:", error);
+		return { error };
 	}
 };
 

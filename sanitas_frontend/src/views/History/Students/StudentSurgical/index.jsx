@@ -265,7 +265,7 @@ function SurgicalView({
 						: "Antecedente quirúrgico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(`Error al guardar: ${response.error.error}`);
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);
