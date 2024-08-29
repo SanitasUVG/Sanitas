@@ -15,13 +15,14 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @typedef {Object} LoginViewProps
  * @property {import("src/cognito.mjs").CognitoLoginUserCallback} loginUser - The callback to login a user.
+ * @property {import("src/cognito.mjs").CognitoLoginUserCallback} getRole - The callback to login a user.
  */
 
 /**
  * @param {LoginViewProps} props
  */
 
-export default function LoginView({ loginUser }) {
+export default function LoginView({ loginUser, getRole }) {
 	const { width, height } = useWindowSize();
 
 	/** @type React.CSSStyleDeclaration */
@@ -42,20 +43,30 @@ export default function LoginView({ loginUser }) {
 		const [errorMessage, setErrorMessage] = useState("");
 		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
 		const [loginResource, setLoginResource] = useState(null);
+		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
+		const [roleResource, setGetRoleResource] = useState(null);
 
 		const handleLogin = () => {
 			setLoginResource(WrapPromise(loginUser(username, password)));
+			setGetRoleResource(WrapPromise(getRole()));
 		};
 
-		if (loginResource !== null) {
-			const response = loginResource.read();
-			if (response.error) {
+		if (loginResource !== null && roleResource !== null) {
+			const loginResponse = loginResource.read();
+			const roleResponse = roleResource.read();
+
+			if (loginResponse.error || roleResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 			} else {
-				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
+				if (roleResponse.result === "DOCTOR") {
+					navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
+				} else {
+					navigate(NAV_PATHS.STUDENT_WELCOME, { replace: true });
+				}
 			}
 
 			setLoginResource(null);
+			setGetRoleResource(null);
 		}
 
 		return (
