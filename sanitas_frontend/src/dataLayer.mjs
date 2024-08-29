@@ -131,7 +131,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -188,7 +188,7 @@ export const submitPatientData = async (patientData) => {
 				cui: patientData.cui,
 				names: patientData.names,
 				lastNames: patientData.surnames,
-				isWoman: patientData.sex ? "F" : "M",
+				isWoman: patientData.sex,
 				birthdate: patientData.birthDate,
 			},
 			{
@@ -1191,7 +1191,7 @@ export const updatePsichiatricHistory = async (
 export const linkAccountToPatient = async (cui) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1211,6 +1211,36 @@ export const linkAccountToPatient = async (cui) => {
 		});
 		return { result: response.data };
 	} catch (error) {
-		return { error: error };
+		return { error: error.response.data };
+	}
+};
+
+/**
+ * @callback GetLinkedPatientCallback
+ * @returns {Promise<Result<number, *>>} If the promise is succesfull the result will contain the patientId associated to this account.
+ */
+
+export const getLinkedPatient = async () => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/account/patient`;
+
+	try {
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
 	}
 };

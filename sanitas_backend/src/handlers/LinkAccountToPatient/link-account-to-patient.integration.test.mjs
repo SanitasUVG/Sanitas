@@ -50,6 +50,8 @@ describe("Link patient to an account integration tests", () => {
 
 		// Verify the error is as expected
 		expect(response.status).toBe(404);
+
+		// NOTE: This error message is used on the frontend!
 		expect(response.data.error).toBe("No patient with the given CUI found!");
 	});
 

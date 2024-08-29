@@ -1,7 +1,7 @@
 import { MemoryRouter } from "react-router-dom";
 import { LinkPatientView } from ".";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.min.css';
+import "react-toastify/dist/ReactToastify.min.css";
 
 export default {
 	title: "Views/LinkPatientView",

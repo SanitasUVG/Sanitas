@@ -3,7 +3,9 @@ import logoSanitas from "src/assets/images/logoSanitas.png";
 import { BaseInput } from "src/components/Input";
 import BaseButton from "src/components/Button/Base";
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
 
 /**
  * @typedef {Object} LinkPatientViewProps
@@ -15,16 +17,40 @@ import { toast, ToastContainer } from "react-toastify";
  * @param {LinkPatientViewProps}
  */
 export function LinkPatientView({ linkAccount }) {
+	const navigate = useNavigate();
 	const [cui, setCui] = useState("");
 
 	const handleLinking = async () => {
+		if (cui.trim().length !== 13) {
+			toast.error("CUI inválido!");
+			return;
+		}
+
 		toast.info("Buscando paciente...");
 		const response = await linkAccount(cui);
 		if (response.error) {
-			toast.error(`Lo sentimos ha ocurrido un error! ${error.toString()}`);
-			return;
+			const message = response.error.error;
+			if (message !== "No patient with the given CUI found!") {
+				toast.error(
+					`Lo sentimos ha ocurrido un error! ${response.error.error}`,
+				);
+				return;
+			}
+
+			toast.info(
+				"El paciente no existe! Redirigiendo al formulario de creación...",
+			);
+			setTimeout(() => {
+				navigate(NAV_PATHS.CREATE_PATIENT, { state: { cui } });
+			}, 3000);
+		} else {
+			toast.info(
+				"Paciente encontrado! Redirigiendo al formulario de actualización...",
+			);
+			setTimeout(() => {
+				navigate(NAV_PATHS.PATIENT_FORM);
+			}, 3000);
 		}
-		// TODO: Navigate to patient form...
 	};
 
 	return (
@@ -54,6 +80,7 @@ export function LinkPatientView({ linkAccount }) {
 						width: "40%",
 						alignSelf: "center",
 					}}
+					alt="Logo Sanitas"
 				/>
 				<p
 					style={{

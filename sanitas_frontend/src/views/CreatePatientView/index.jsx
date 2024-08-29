@@ -30,7 +30,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
  *
  * @param {CreatePatientViewProps} props - Component properties.
  */
-export function AddPatientView({ submitPatientData, useStore }) {
+export function CreatePatientView({ submitPatientData, useStore }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -39,7 +39,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		cui: location.state?.cui ?? "",
 		names: "",
 		surnames: "",
-		sex: null,
+		sex: true,
 		birthDate: "",
 	});
 
@@ -104,9 +104,11 @@ export function AddPatientView({ submitPatientData, useStore }) {
 			);
 			return;
 		}
+
+		toast.success("Paciente creado!");
 		const id = response.result;
 		setSelectedPatientId(id);
-		navigate(NAV_PATHS.UPDATE_PATIENT, { replace: true });
+		navigate(NAV_PATHS.PATIENT_FORM);
 	};
 
 	/**@type {React.CSSProperties} */
@@ -225,11 +227,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 						</div>
 						<div style={inputContainerStyles}>
 							<label style={labelStyles}>CUI del Paciente:</label>
-							<BaseInput
-								type="text"
-								value={patientData.names}
-								readOnly={true}
-							/>
+							<BaseInput type="text" value={patientData.cui} readOnly={true} />
 						</div>
 						<div style={inputContainerStyles}>
 							<label style={labelStyles}>Fecha de Nacimiento:</label>
@@ -253,8 +251,8 @@ export function AddPatientView({ submitPatientData, useStore }) {
 							<label style={labelStyles}>Apellidos del paciente:</label>
 							<BaseInput
 								type="text"
-								value={patientData.names}
-								onChange={(e) => handleChange("names", e.target.value)}
+								value={patientData.surnames}
+								onChange={(e) => handleChange("surnames", e.target.value)}
 								placeholder="Apellidos:"
 							/>
 						</div>
