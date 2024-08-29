@@ -22,6 +22,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
  * @typedef {Object} CreatePatientViewProps
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} submitPatientData
+ * @property {import("src/dataLayer.mjs").LinkAccountToPatientCallback} linkPatient
  */
 
 /**
@@ -30,7 +31,11 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
  *
  * @param {CreatePatientViewProps} props - Component properties.
  */
-export function CreatePatientView({ submitPatientData, useStore }) {
+export function CreatePatientView({
+	submitPatientData,
+	useStore,
+	linkPatient,
+}) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -82,15 +87,6 @@ export function CreatePatientView({ submitPatientData, useStore }) {
 		return true;
 	};
 
-	/**
-	 * Handles changes to the gender radio buttons.
-	 * Updates the patient's gender in the state based on the selected option.
-	 * @param {boolean} isFemale - The selected gender.
-	 */
-	const handleGenderChange = (isFemale) => {
-		setPatientData({ ...patientData, sex: isFemale });
-	};
-
 	const handleSubmit = async () => {
 		if (!validateFormData()) {
 			return;
@@ -101,6 +97,14 @@ export function CreatePatientView({ submitPatientData, useStore }) {
 		if (response.error) {
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar el paciente. ${response.error}`,
+			);
+			return;
+		}
+
+		const linkPatientResponse = await linkPatient(patientData.cui);
+		if (linkPatientResponse.error) {
+			toast.error(
+				"Lo sentimos! Ha ocurrido un error linkeando tu paciente con tu cuenta.",
 			);
 			return;
 		}
@@ -268,14 +272,14 @@ export function CreatePatientView({ submitPatientData, useStore }) {
 								<RadioInput
 									name="gender"
 									checked={!patientData.sex}
-									onChange={() => handleGenderChange(false)}
+									onChange={() => handleChange("sex", false)}
 									label="Masculino"
 									style={{ fontFamily: fonts.textFont }}
 								/>
 								<RadioInput
 									name="gender"
 									checked={patientData.sex}
-									onChange={() => handleGenderChange(true)}
+									onChange={() => handleChange("sex", true)}
 									label="Femenino"
 									style={{
 										fontFamily: fonts.textFont,
