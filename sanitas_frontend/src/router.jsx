@@ -324,6 +324,7 @@ export const ROUTES = [
 			<CreatePatientView
 				useStore={useStore}
 				submitPatientData={submitPatientData}
+				linkAccount={linkAccountToPatient}
 			/>
 		),
 	},

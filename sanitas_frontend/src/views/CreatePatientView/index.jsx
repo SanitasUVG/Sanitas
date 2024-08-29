@@ -22,7 +22,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
  * @typedef {Object} CreatePatientViewProps
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} submitPatientData
- * @property {import("src/dataLayer.mjs").LinkAccountToPatientCallback} linkPatient
+ * @property {import("src/dataLayer.mjs").LinkAccountToPatientCallback} linkAccount
  */
 
 /**
@@ -34,7 +34,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 export function CreatePatientView({
 	submitPatientData,
 	useStore,
-	linkPatient,
+	linkAccount,
 }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 	const location = useLocation();
@@ -101,7 +101,7 @@ export function CreatePatientView({
 			return;
 		}
 
-		const linkPatientResponse = await linkPatient(patientData.cui);
+		const linkPatientResponse = await linkAccount(patientData.cui);
 		if (linkPatientResponse.error) {
 			toast.error(
 				"Lo sentimos! Ha ocurrido un error linkeando tu paciente con tu cuenta.",
