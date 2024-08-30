@@ -142,16 +142,15 @@ export function CreatePatientView({
 		<div
 			style={{
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem 3rem",
 			}}
 		>
 			<div
 				style={{
-					height: "100%",
 					display: "flex",
 					flexDirection: "column",
-					justifyContent: "space-between",
+					gap: "2rem",
 				}}
 			>
 				{/* HEADER */}
@@ -316,6 +315,7 @@ export function CreatePatientView({
 						style={{
 							alignSelf: "center",
 							width: "30%",
+							height: "2.5rem",
 						}}
 					/>
 				</div>

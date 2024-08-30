@@ -102,7 +102,7 @@ export function LinkPatientView({ linkAccount }) {
 						paddingBottom: "3rem",
 					}}
 				>
-					Necesitamos tu CUI para poder registrarte dentro del sistema y buscar
+					¡Necesitamos tu CUI para poder registrarte dentro del sistema y buscar
 					si ya tienes un paciente registrado!
 				</p>
 
@@ -138,16 +138,14 @@ export function LinkPatientView({ linkAccount }) {
 							style={{
 								height: "3rem",
 								flexGrow: 1,
+								borderColor: isValidCUI(cui.trim())
+									? "#5B6670"
+									: colors.statusDenied,
 							}}
 						/>
 						<BaseButton
 							text="Buscar"
-							style={{
-								height: "3rem",
-								backgroundColor: isValidCUI(cui.trim())
-									? colors.primaryBackground
-									: colors.statusDenied,
-							}}
+							style={{ height: "3rem" }}
 							onClick={handleLinking}
 						/>
 					</div>
