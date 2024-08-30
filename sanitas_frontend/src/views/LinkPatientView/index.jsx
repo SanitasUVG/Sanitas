@@ -20,8 +20,16 @@ export function LinkPatientView({ linkAccount }) {
 	const navigate = useNavigate();
 	const [cui, setCui] = useState("");
 
-	const handleLinking = async () => {
+	const isValidCUI = (cui) => {
 		if (cui.trim().length !== 13) {
+			return false;
+		}
+
+		return true;
+	};
+
+	const handleLinking = async () => {
+		if (!isValidCUI(cui.trim())) {
 			toast.error("CUI inválido!");
 			return;
 		}
@@ -32,20 +40,20 @@ export function LinkPatientView({ linkAccount }) {
 			const message = response.error.error;
 			if (message !== "No patient with the given CUI found!") {
 				toast.error(
-					`Lo sentimos ha ocurrido un error! ${response.error.error}`,
+					`¡Lo sentimos ha ocurrido un error!\n${response.error.error}`,
 				);
 				return;
 			}
 
 			toast.info(
-				"El paciente no existe! Redirigiendo al formulario de creación...",
+				"¡El paciente no existe! Redirigiendo al formulario de creación...",
 			);
 			setTimeout(() => {
 				navigate(NAV_PATHS.CREATE_PATIENT, { state: { cui } });
 			}, 3000);
 		} else {
 			toast.info(
-				"Paciente encontrado! Redirigiendo al formulario de actualización...",
+				"¡Paciente encontrado! Redirigiendo al formulario de actualización...",
 			);
 			setTimeout(() => {
 				navigate(NAV_PATHS.PATIENT_FORM);
@@ -134,7 +142,12 @@ export function LinkPatientView({ linkAccount }) {
 						/>
 						<BaseButton
 							text="Buscar"
-							style={{ height: "3rem" }}
+							style={{
+								height: "3rem",
+								backgroundColor: isValidCUI(cui.trim())
+									? colors.primaryBackground
+									: colors.statusDenied,
+							}}
 							onClick={handleLinking}
 						/>
 					</div>
