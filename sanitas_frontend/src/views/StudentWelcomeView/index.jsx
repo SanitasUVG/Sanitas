@@ -173,7 +173,7 @@ export default function StudentWelcomeView() {
 							borderRadius: "8px",
 							opacity: "0px",
 						}}
-						onClick={() => navigate(NAV_PATHS.PATIENT_FORM, { replace: true })}
+						onClick={() => navigate(NAV_PATHS.PATIENT_LINK, { replace: true })}
 					/>
 				</div>
 				<div
