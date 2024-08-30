@@ -1,6 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPIStudentInfo } from "utils";
+import { createResponse, mapToAPIStudentInfo } from "utils/index.mjs";
 
 /**
  * @param {import('aws-lambda').APIGatewayProxyEvent} event
@@ -22,14 +22,22 @@ export const handler = async (event, context) => {
 	const responseBuilder = createResponse().addCORSHeaders("PUT");
 
 	logger.info({ body: event.body }, "Parsing request...");
-	const { patientId, carnet, career } = JSON.parse(event.body);
+	const { idPatient, carnet, career } = JSON.parse(event.body);
 	logger.info("Request body parsed!");
 
-	if (!patientId) {
+	if (!idPatient) {
 		logger.error("No patient ID provided!");
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "No patientId was given!" })
+			.build();
+	}
+
+	if (!carnet) {
+		logger.error("No student carnet provided!");
+		return responseBuilder
+			.setStatusCode(400)
+			.setBody({ error: "No student carnet was given!" })
 			.build();
 	}
 
@@ -51,7 +59,7 @@ export const handler = async (event, context) => {
 			carrera = COALESCE(EXCLUDED.carrera, estudiante.carrera)
 		RETURNING *;
 		`;
-		const params = [carnet, career, patientId];
+		const params = [carnet, career, idPatient];
 
 		logger.info({ sql, params }, "Updating/inserting data on DB...");
 		const { rows } = await client.query(sql, params);
@@ -63,15 +71,21 @@ export const handler = async (event, context) => {
 			.setBody(mapToAPIStudentInfo(studentData))
 			.build();
 	} catch (error) {
-		const invalidIdRegex = /Key \(.*\)=\(.*\) is not present in table ".*"\./;
-		const isInvalidIdError = invalidIdRegex.test(error.detail);
-		logger.error({ error, isInvalidIdError }, "Checking error type...");
+		logger.error({ error }, "Error querying database:");
 
-		if (isInvalidIdError) {
+		if (error.code === "23503") {
 			logger.error("A patient with the given ID doesn't exists!");
 			return responseBuilder
-				.setStatusCode(400)
+				.setStatusCode(404)
 				.setBody({ error: "No patient with the given ID found!" })
+				.build();
+		}
+
+		if (error.code === "23505") {
+			logger.error("A student with the same carnet already exsits!");
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ error: "Student carnet already exists!" })
 				.build();
 		}
 

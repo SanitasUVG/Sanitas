@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
 import { BaseInput } from "src/components/Input/index";
@@ -15,28 +14,27 @@ import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
- * @typedef {Object} SurgicalHistoryProps
+ * @typedef {Object} StudentSurgicalHistoryProps
  * @property {Function} getBirthdayPatientInfo - Function to fetch the patient's birthdate.
- * @property {Function} getSurgicalHistory - Function to fetch the surgical history of a patient.
- * @property {Function} updateSurgicalHistory - Function to update or add new surgical records for a patient.
+ * @property {Function} getStudentSurgicalHistory - Function to fetch the surgical history of a patient.
+ * @property {Function} updateStudentSurgicalHistory - Function to update or add new surgical records for a patient.
  * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
  * Component to manage and display a patient's surgical history, allowing users to add and view records.
  *
- * @param {SurgicalHistoryProps} props - The props passed to the SurgicalHistory component.
+ * @param {StudentSurgicalHistoryProps} props - The props passed to the StudentSurgicalHistory component.
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
-export function SurgicalHistory({
+export function StudentSurgicalHistory({
 	getBirthdayPatientInfo,
-	getSurgicalHistory,
-	updateSurgicalHistory,
-	sidebarConfig,
+	getStudentSurgicalHistory,
+	updateStudentSurgicalHistory,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const surgicalHistoryResource = WrapPromise(getSurgicalHistory(id));
+	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 
 	const LoadingView = () => {
 		return (
@@ -54,13 +52,13 @@ export function SurgicalHistory({
 				padding: "2rem",
 			}}
 		>
-			<div
+			{/* <div
 				style={{
 					width: "25%",
 				}}
 			>
 				<DashboardSidebar {...sidebarConfig} />
-			</div>
+			</div> */}
 
 			<div
 				style={{
@@ -122,7 +120,7 @@ export function SurgicalHistory({
 								id={id}
 								birthdayResource={birthdayResource}
 								surgicalHistoryResource={surgicalHistoryResource}
-								updateSurgicalHistory={updateSurgicalHistory}
+								updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 							/>
 						</Suspense>
 					</div>
@@ -137,7 +135,7 @@ export function SurgicalHistory({
  * @property {number} id - The patient's ID.
  * @property {Object} birthdayResource - Wrapped resource for fetching birthdate data.
  * @property {Object} surgicalHistoryResource - Wrapped resource for fetching surgical history data.
- * @property {Function} updateSurgicalHistory - Function to update the surgical history.
+ * @property {Function} updateStudentSurgicalHistory - Function to update the surgical history.
  *
  * Internal view component for managing the display and modification of a patient's surgical history, with options to add or edit records.
  *
@@ -150,7 +148,7 @@ function SurgicalView({
 	id,
 	birthdayResource,
 	surgicalHistoryResource,
-	updateSurgicalHistory,
+	updateStudentSurgicalHistory,
 }) {
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
@@ -185,7 +183,7 @@ function SurgicalView({
 		(a, b) => Number.parseInt(b.surgeryYear) - Number.parseInt(a.surgeryYear),
 	);
 
-	const [surgicalHistory, setSurgicalHistory] = useState({
+	const [surgicalHistory, setStudentSurgicalHistory] = useState({
 		data: sortedData,
 		version: surgicalHistoryData?.medicalHistory.surgeries.version || 1,
 	});
@@ -195,7 +193,7 @@ function SurgicalView({
 	const currentYear = new Date().getFullYear();
 
 	const birthYear = birthYearData?.birthdate
-		? new Date(birthYearData.birthdate).getUTCFullYear()
+		? new Date(birthYearData.birthdate).getFullYear()
 		: null;
 
 	useEffect(() => {
@@ -251,13 +249,13 @@ function SurgicalView({
 		);
 
 		try {
-			const response = await updateSurgicalHistory(
+			const response = await updateStudentSurgicalHistory(
 				id,
 				updatedData,
 				surgicalHistory.version,
 			);
 			if (!response.error) {
-				setSurgicalHistory({ ...surgicalHistory, data: updatedData });
+				setStudentSurgicalHistory({ ...surgicalHistory, data: updatedData });
 				setAddingNew(false);
 				setIsEditable(false);
 				setSelectedSurgery(null);
@@ -267,7 +265,7 @@ function SurgicalView({
 						: "Antecedente quirúrgico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(`Error al guardar: ${response.error.error}`);
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);
@@ -395,7 +393,7 @@ function SurgicalView({
 						readOnly={!isEditable}
 						placeholder="Ingrese acá el motivo o tipo de cirugía."
 						style={{
-							width: "90%",
+							width: "95%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -423,10 +421,13 @@ function SurgicalView({
 							})
 						}
 						style={{
-							container: { width: "90%" },
+							container: { width: "95%", height: "3rem" },
 							select: {},
 							option: {},
-							indicator: {},
+							indicator: {
+								top: "43%",
+								right: "4%",
+							},
 						}}
 					/>
 
@@ -451,7 +452,7 @@ function SurgicalView({
 						readOnly={!isEditable}
 						placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
 						style={{
-							width: "90%",
+							width: "95%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",

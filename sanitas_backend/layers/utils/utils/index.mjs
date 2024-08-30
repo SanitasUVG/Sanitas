@@ -33,14 +33,14 @@ export function decodeJWT(jwt) {
  *
  * @property {string|null} tipo_sangre
  * @property {string|null} direccion
- * @property {number | null} id_seguro
+ * @property {string | null} seguro
  * @property {string} fecha_nacimiento
  * @property {string|null} telefono
  */
 
 /**
  * @typedef {Object} APIPatient
- * @property {number} id
+ * @property {number} patientId
  * @property {string} cui
  * @property {boolean} isWoman
  * @property {string|null} email
@@ -57,7 +57,7 @@ export function decodeJWT(jwt) {
  *
  * @property {string|null} bloodType
  * @property {string|null} address
- * @property {number | undefined} insuranceId
+ * @property {string | undefined} insurance
  * @property {string} birthdate
  * @property {string|null} phone
  */
@@ -83,7 +83,7 @@ export function decodeJWT(jwt) {
  */
 export function mapToAPIPatient(dbPatient) {
 	const {
-		id,
+		id: patientId,
 		cui,
 		es_mujer: isWoman,
 		correo: email,
@@ -100,13 +100,13 @@ export function mapToAPIPatient(dbPatient) {
 
 		tipo_sangre: bloodType,
 		direccion: address,
-		id_seguro: insuranceId,
+		seguro: insurance,
 		fecha_nacimiento: birthdate,
 		telefono: phone,
 	} = dbPatient;
 
 	return {
-		id,
+		patientId,
 		cui,
 		email,
 		isWoman,
@@ -123,7 +123,7 @@ export function mapToAPIPatient(dbPatient) {
 
 		bloodType,
 		address,
-		insuranceId,
+		insurance,
 		birthdate,
 		phone,
 	};
@@ -205,7 +205,7 @@ export function createResponse() {
 
 /**
  * @typedef {Object} APIStudentInfo
- * @property {string} patientId
+ * @property {string} idPatient
  * @property {string} carnet
  * @property {string} career
  */
@@ -216,10 +216,10 @@ export function createResponse() {
  * @returns {APIStudentInfo} The API formatted student information.
  */
 export function mapToAPIStudentInfo(dbStudentInfo) {
-	const { id_paciente: patientId, carnet, carrera: career } = dbStudentInfo;
+	const { id_paciente: idPatient, carnet, carrera: career } = dbStudentInfo;
 
 	return {
-		patientId,
+		idPatient,
 		carnet,
 		career,
 	};
@@ -227,7 +227,6 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
 
 /**
  * @typedef {Object} DBCollaborator
- * @property {number} id
  * @property {string} codigo
  * @property {string} area
  * @property {number} id_paciente
@@ -235,10 +234,9 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
 
 /**
  * @typedef {Object} APICollaborator
- * @property {number} id
- * @property {string} codigo
+ * @property {string} code
  * @property {string} area
- * @property {number} patientId
+ * @property {number} idPatient
  */
 
 /**
@@ -247,14 +245,22 @@ export function mapToAPIStudentInfo(dbStudentInfo) {
  * @returns {APICollaborator} The collaborator object the API must return.
  */
 export function mapToAPICollaboratorInfo(dbCollaborator) {
-	const { id, codigo: code, area, id_paciente: patientId } = dbCollaborator;
-
+	const { codigo: code, area, id_paciente: idPatient } = dbCollaborator;
 	return {
-		id,
 		code,
 		area,
-		patientId,
+		idPatient,
 	};
+}
+
+/**
+ * Maps an APICollaborator into a DBCollaborator
+ * @param {APICollaborator} apiCollaborator
+ * @returns {DBCollaborator}
+ */
+export function mapToDBCollaborator(apiCollaborator) {
+	const { code: codigo, area, idPatient: id_paciente } = apiCollaborator;
+	return { codigo, area, id_paciente };
 }
 
 /**
@@ -843,4 +849,32 @@ export function mapToAPIPsychiatricHistory(dbData) {
 			other: formatResponse(dbData.otro_data),
 		},
 	};
+}
+
+/**
+ * Function to compare the DB data to the request data.
+ * @param {*[]} dbData
+ * @returns {boolean} True if the request data edits/deletes dbData.
+ */
+export function requestDataEditsDBData(requestData, dbData) {
+	let deletesData = false;
+
+	dbData.some((dbElem, i) => {
+		const requestElem = requestData[i];
+
+		Object.keys(dbElem).some((key) => {
+			if (requestElem.hasOwn(key)) {
+				if (
+					dbElem[key] !== requestElem[key] &&
+					dbElem[key].localeCompare("") !== 0
+				) {
+					deletesData = true;
+					return deletesData;
+				}
+			}
+		});
+
+		return deletesData;
+	});
+	return deletesData;
 }
