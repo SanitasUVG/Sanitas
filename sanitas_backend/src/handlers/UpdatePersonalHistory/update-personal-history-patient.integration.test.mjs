@@ -1,10 +1,139 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	createTestPatient,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/personal-history`;
 
+function generateValidUpdate(patientId) {
+	return {
+		patientId,
+		medicalHistory: {
+			hypertension: {
+				version: 1,
+				data: [
+					{
+						medicine: "Medicina random 1",
+						dose: "5ml",
+						frequency: "3 veces al día",
+					},
+					{
+						medicine: "Medicina random 2",
+						dose: "10ml",
+						frequency: "Una vez al día",
+					},
+				],
+			},
+			diabetesMellitus: {
+				version: 1,
+				data: [
+					{
+						medicine: "Medicina random 4",
+						dose: "2 pastillas",
+						frequency: "Cada 8 horas",
+					},
+				],
+			},
+			hypothyroidism: {
+				version: 1,
+				data: [
+					{
+						medicine: "Medicina random 4",
+						dose: "2 pastillas",
+						frequency: "Cada 8 horas",
+					},
+				],
+			},
+			asthma: {
+				version: 1,
+				data: [
+					{
+						medicine: "Medicina random 4",
+						dose: "2 pastillas",
+						frequency: "Cada 8 horas",
+					},
+				],
+			},
+			convulsions: {
+				version: 1,
+				data: [
+					{
+						medicine: "Medicina random 4",
+						dose: "2 pastillas",
+						frequency: "Cada 8 horas",
+					},
+				],
+			},
+			myocardialInfarction: {
+				version: 1,
+				data: [2012, 2016],
+			},
+			cancer: {
+				version: 1,
+				data: [
+					{
+						typeOfCancer: "Breast",
+						treatment: "Operation",
+					},
+				],
+			},
+			cardiacDiseases: {
+				version: 1,
+				data: [
+					{
+						typeOfDisease: "Hypertrophy",
+						medicine: "Medicina random 5",
+						dose: "5ml",
+						frequency: "1 vez al día",
+					},
+					{
+						typeOfDisease: "Hypertrophy 2",
+						medicine: "Medicina random 5",
+						dose: "5ml",
+						frequency: "1 vez al día",
+					},
+				],
+			},
+			renalDiseases: {
+				version: 1,
+				data: [
+					{
+						typeOfDisease: "Hypertrophy 2",
+						medicine: "Medicina random 5",
+						dose: "5ml",
+						frequency: "1 vez al día",
+					},
+					{
+						typeOfDisease: "Hypertrophy 2",
+						medicine: "Medicina random 5",
+						dose: "5ml",
+						frequency: "1 vez al día",
+					},
+				],
+			},
+			others: {
+				version: 1,
+				data: [
+					{
+						typeOfDisease: "Hypertrophy 2",
+						medicine: "Medicina random 5",
+						dose: "5ml",
+						frequency: "1 vez al día",
+					},
+				],
+			},
+		},
+	};
+}
+
 describe("Update Personal Medical History integration tests", () => {
+	const validHeaders = createAuthorizationHeader(createDoctorJWT());
 	let patientId;
 
 	beforeAll(async () => {
@@ -12,126 +141,10 @@ describe("Update Personal Medical History integration tests", () => {
 	});
 
 	test("Update existing personal medical history", async () => {
-		const personalHistoryData = {
-			patientId,
-			medicalHistory: {
-				hypertension: {
-					version: 1,
-					data: [
-						{
-							medicine: "Medicina random 1",
-							dose: "5ml",
-							frequency: "3 veces al día",
-						},
-						{
-							medicine: "Medicina random 2",
-							dose: "10ml",
-							frequency: "Una vez al día",
-						},
-					],
-				},
-				diabetesMellitus: {
-					version: 1,
-					data: [
-						{
-							medicine: "Medicina random 4",
-							dose: "2 pastillas",
-							frequency: "Cada 8 horas",
-						},
-					],
-				},
-				hypothyroidism: {
-					version: 1,
-					data: [
-						{
-							medicine: "Medicina random 4",
-							dose: "2 pastillas",
-							frequency: "Cada 8 horas",
-						},
-					],
-				},
-				asthma: {
-					version: 1,
-					data: [
-						{
-							medicine: "Medicina random 4",
-							dose: "2 pastillas",
-							frequency: "Cada 8 horas",
-						},
-					],
-				},
-				convulsions: {
-					version: 1,
-					data: [
-						{
-							medicine: "Medicina random 4",
-							dose: "2 pastillas",
-							frequency: "Cada 8 horas",
-						},
-					],
-				},
-				myocardialInfarction: {
-					version: 1,
-					data: [2012, 2016],
-				},
-				cancer: {
-					version: 1,
-					data: [
-						{
-							typeOfCancer: "Breast",
-							treatment: "Operation",
-						},
-					],
-				},
-				cardiacDiseases: {
-					version: 1,
-					data: [
-						{
-							typeOfDisease: "Hypertrophy",
-							medicine: "Medicina random 5",
-							dose: "5ml",
-							frequency: "1 vez al día",
-						},
-						{
-							typeOfDisease: "Hypertrophy 2",
-							medicine: "Medicina random 5",
-							dose: "5ml",
-							frequency: "1 vez al día",
-						},
-					],
-				},
-				renalDiseases: {
-					version: 1,
-					data: [
-						{
-							typeOfDisease: "Hypertrophy 2",
-							medicine: "Medicina random 5",
-							dose: "5ml",
-							frequency: "1 vez al día",
-						},
-						{
-							typeOfDisease: "Hypertrophy 2",
-							medicine: "Medicina random 5",
-							dose: "5ml",
-							frequency: "1 vez al día",
-						},
-					],
-				},
-				others: {
-					version: 1,
-					data: [
-						{
-							typeOfDisease: "Hypertrophy 2",
-							medicine: "Medicina random 5",
-							dose: "5ml",
-							frequency: "1 vez al día",
-						},
-					],
-				},
-			},
-		};
-
-		const response = await axios.put(API_URL, personalHistoryData);
+		const personalHistoryData = generateValidUpdate(patientId);
+		const response = await axios.put(API_URL, personalHistoryData, {
+			headers: validHeaders,
+		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -289,6 +302,7 @@ describe("Update Personal Medical History integration tests", () => {
 		};
 
 		const response = await axios.put(API_URL, personalHistoryData, {
+			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
@@ -311,11 +325,40 @@ describe("Update Personal Medical History integration tests", () => {
 		};
 
 		const response = await axios.put(API_URL, incompleteData, {
+			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("Invalid input: Missing patientId.");
+	});
+
+	test("a patient can't call the endpoint", async () => {
+		const postData = generateValidUpdate(patientId);
+
+		const specialHeaders = createAuthorizationHeader(createPatientJWT());
+		const response = await axios.put(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.data).toEqual({
+			error: "Unauthorized, you're not a doctor!",
+		});
+	});
+
+	test("can't be called by a malformed JWT", async () => {
+		const postData = generateValidUpdate(patientId);
+
+		const specialHeaders = createAuthorizationHeader(createInvalidJWT());
+		const response = await axios.put(API_URL, postData, {
+			headers: specialHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
 });

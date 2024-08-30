@@ -1,10 +1,18 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
-import { createTestPatient, LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	createTestPatient,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/family-history`;
 
 describe("Update Family Medical History integration tests", () => {
+	const validHeaders = createAuthorizationHeader(createDoctorJWT());
 	let patientId;
 
 	beforeAll(async () => {
@@ -78,7 +86,9 @@ describe("Update Family Medical History integration tests", () => {
 			},
 		};
 
-		const response = await axios.put(API_URL, familyHistoryData);
+		const response = await axios.put(API_URL, familyHistoryData, {
+			headers: validHeaders,
+		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -183,6 +193,7 @@ describe("Update Family Medical History integration tests", () => {
 		};
 
 		const response = await axios.put(API_URL, familyHistoryData, {
+			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
@@ -205,11 +216,168 @@ describe("Update Family Medical History integration tests", () => {
 		};
 
 		const response = await axios.put(API_URL, incompleteData, {
+			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("Invalid input: Missing patientId.");
+	});
+
+	test("a patient can't call the endpoint", async () => {
+		const familyHistoryData = {
+			patientId,
+			medicalHistory: {
+				hypertension: {
+					version: 1,
+					data: ["Father", "Mother"],
+				},
+				diabetesMellitus: {
+					version: 1,
+					data: ["Mother", "Brother"],
+				},
+				hypothyroidism: {
+					version: 1,
+					data: ["Grandmother"],
+				},
+				asthma: {
+					version: 1,
+					data: [],
+				},
+				convulsions: {
+					version: 1,
+					data: ["Uncle"],
+				},
+				myocardialInfarction: {
+					version: 1,
+					data: [],
+				},
+				cancer: {
+					version: 1,
+					data: [
+						{
+							who: "Mother",
+							typeOfCancer: "Breast",
+						},
+					],
+				},
+				cardiacDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Father",
+							typeOfDisease: "Hypertrophy",
+						},
+					],
+				},
+				renalDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Grandfather",
+							typeOfDisease: "Renal Failure",
+						},
+					],
+				},
+				others: {
+					version: 1,
+					data: [
+						{
+							who: "Brother",
+							disease: "Psoriasis",
+						},
+					],
+				},
+			},
+		};
+
+		const patientHeaders = createAuthorizationHeader(createPatientJWT());
+		const response = await axios.put(API_URL, familyHistoryData, {
+			headers: patientHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(401);
+		expect(response.data).toEqual({
+			error: "Unauthorized, you're not a doctor!",
+		});
+	});
+
+	test("can't be called by a malformed JWT", async () => {
+		const familyHistoryData = {
+			patientId,
+			medicalHistory: {
+				hypertension: {
+					version: 1,
+					data: ["Father", "Mother"],
+				},
+				diabetesMellitus: {
+					version: 1,
+					data: ["Mother", "Brother"],
+				},
+				hypothyroidism: {
+					version: 1,
+					data: ["Grandmother"],
+				},
+				asthma: {
+					version: 1,
+					data: [],
+				},
+				convulsions: {
+					version: 1,
+					data: ["Uncle"],
+				},
+				myocardialInfarction: {
+					version: 1,
+					data: [],
+				},
+				cancer: {
+					version: 1,
+					data: [
+						{
+							who: "Mother",
+							typeOfCancer: "Breast",
+						},
+					],
+				},
+				cardiacDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Father",
+							typeOfDisease: "Hypertrophy",
+						},
+					],
+				},
+				renalDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Grandfather",
+							typeOfDisease: "Renal Failure",
+						},
+					],
+				},
+				others: {
+					version: 1,
+					data: [
+						{
+							who: "Brother",
+							disease: "Psoriasis",
+						},
+					],
+				},
+			},
+		};
+
+		const invalidAuthorization = createAuthorizationHeader(createInvalidJWT());
+		const response = await axios.put(API_URL, familyHistoryData, {
+			headers: invalidAuthorization,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
 });
