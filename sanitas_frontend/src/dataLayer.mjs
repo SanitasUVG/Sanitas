@@ -131,7 +131,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -155,14 +155,18 @@ export const getRole = async () => {
 /**
  * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
  *
+ * @callback SubmitPatientDataCallback
  * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
  * @param {string} patientData.cui - The unique identifier for the patient.
  * @param {string} patientData.names - The first and middle names of the patient.
  * @param {string} patientData.surnames - The last names of the patient.
  * @param {string} patientData.sex - The sex of the patient, expected to be 'F' for female or 'M' for male based on a boolean condition.
  * @param {string} patientData.birthDate - The birth date of the patient.
- * @returns {Promise<number>} A promise that resolves to the response data from the server.
- * @throws {Error} Throws an error if the server responds with an error status or if any other error occurs during the request.
+ * @returns {Promise<Result<number, *>>} A promise that resolves to the response data from the server.
+ */
+
+/**
+ * @type {SubmitPatientDataCallback}
  */
 export const submitPatientData = async (patientData) => {
 	const sessionResponse = IS_PRODUCTION
@@ -184,7 +188,7 @@ export const submitPatientData = async (patientData) => {
 				cui: patientData.cui,
 				names: patientData.names,
 				lastNames: patientData.surnames,
-				isWoman: patientData.sex ? "F" : "M",
+				isWoman: patientData.sex,
 				birthdate: patientData.birthDate,
 			},
 			{
@@ -1175,6 +1179,7 @@ export const updatePsichiatricHistory = async (
 	}
 };
 
+
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1241,5 +1246,72 @@ export const updateGynecologicalHistory = async (
 			return { error: error.response.data };
 		}
 		return { error: error.message };
+	}
+};
+
+
+/**
+ * @callback LinkAccountToPatientCallback
+ * @param {string} cui
+ * @returns {Promise<Result<number, *>>}
+ */
+
+/**
+ * @type {LinkAccountToPatientCallback}
+ */
+export const linkAccountToPatient = async (cui) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/account/link`;
+
+	const payload = { cui };
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		return { result: response.data };
+	} catch (error) {
+		return { error: error.response.data };
+	}
+};
+
+/**
+ * @callback GetLinkedPatientCallback
+ * @returns {Promise<Result<number, *>>} If the promise is succesfull the result will contain the patientId associated to this account.
+ */
+
+export const getLinkedPatient = async () => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/account/patient`;
+
+	try {
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
 	}
 };

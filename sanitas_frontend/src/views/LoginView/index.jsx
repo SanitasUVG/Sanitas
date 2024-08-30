@@ -16,13 +16,21 @@ import useWindowSize from "src/utils/useWindowSize";
  * @typedef {Object} LoginViewProps
  * @property {import("src/cognito.mjs").CognitoLoginUserCallback} loginUser - The callback to login a user.
  * @property {import("src/cognito.mjs").CognitoLoginUserCallback} getRole - The callback to login a user.
+ * @property {import("src/dataLayer.mjs").GetLinkedPatientCallback} getLinkedPatient - The callback to get the patient linked to this account.
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
  * @param {LoginViewProps} props
  */
 
-export default function LoginView({ loginUser, getRole }) {
+export default function LoginView({
+	loginUser,
+	getRole,
+	getLinkedPatient,
+	useStore,
+}) {
+	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 	const { width, height } = useWindowSize();
 
 	/** @type React.CSSStyleDeclaration */
@@ -45,28 +53,54 @@ export default function LoginView({ loginUser, getRole }) {
 		const [loginResource, setLoginResource] = useState(null);
 		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
 		const [roleResource, setGetRoleResource] = useState(null);
+		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
+		const [getLinkedPatientResource, setLinkedPatientResource] = useState(null);
 
 		const handleLogin = () => {
 			setLoginResource(WrapPromise(loginUser(username, password)));
 			setGetRoleResource(WrapPromise(getRole()));
+			setLinkedPatientResource(WrapPromise(getLinkedPatient()));
 		};
 
-		if (loginResource !== null && roleResource !== null) {
+		const handleSuspenseLogin = () => {
 			const loginResponse = loginResource.read();
 			const roleResponse = roleResource.read();
 
 			if (loginResponse.error || roleResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
-			} else {
-				if (roleResponse.result === "DOCTOR") {
-					navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
-				} else {
-					navigate(NAV_PATHS.STUDENT_WELCOME, { replace: true });
-				}
+				return;
 			}
 
+			if (roleResponse.result === "DOCTOR") {
+				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
+				return;
+			}
+
+			const linkedPatientResponse = loginResource.read();
+			if (linkedPatientResponse.error) {
+				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+				return;
+			}
+
+			const { linkedPatientId } = linkedPatientResponse.result;
+			if (!linkedPatientId) {
+				navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
+			} else {
+				setSelectedPatientId(linkedPatientId);
+				navigate(NAV_PATHS.PATIENT_FORM, { replace: true });
+			}
+		};
+
+		if (
+			loginResource !== null &&
+			roleResource !== null &&
+			getLinkedPatientResource !== null
+		) {
 			setLoginResource(null);
 			setGetRoleResource(null);
+			setLinkedPatientResource(null);
+
+			handleSuspenseLogin();
 		}
 
 		return (
