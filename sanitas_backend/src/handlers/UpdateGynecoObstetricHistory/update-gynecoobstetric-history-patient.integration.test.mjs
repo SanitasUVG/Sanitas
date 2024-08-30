@@ -62,7 +62,7 @@ function generateValidUpdate(patientId) {
 								illness: "illness A",
 								medication: "Med D",
 								dosage: "500mg",
-                frequency: "Once a day",
+								frequency: "Once a day",
 							},
 						},
 					],
