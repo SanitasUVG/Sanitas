@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -10,6 +10,10 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import { useRef } from "react";
+import CheckIcon from "@tabler/icons/outline/check.svg";
+import EditIcon from "@tabler/icons/outline/edit.svg";
+import CancelIcon from "@tabler/icons/outline/x.svg";
+import IconButton from "src/components/Button/Icon";
 
 export function ObGynHistory({
 	getBirthdayPatientInfo,
@@ -19,13 +23,28 @@ export function ObGynHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const obgynHistoryResource = WrapPromise(getObGynHistory(id));
+	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	const LoadingView = () => {
 		return (
 			<Throbber loadingMessage="Cargando información de los antecedentes ginecoobstétricos..." />
 		);
+	};
+
+	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[id, reload, getBirthdayPatientInfo],
+	);
+	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
+	const obgynHistoryResource = useMemo(
+		() => WrapPromise(getObGynHistory(id)),
+		[id, reload, getObGynHistory],
+	);
+
+	// Triggers a state change to force reloading of data
+	const triggerReload = () => {
+		setReload((prev) => !prev);
 	};
 
 	return (
@@ -107,6 +126,7 @@ export function ObGynHistory({
 								birthdayResource={birthdayResource}
 								obgynHistoryResource={obgynHistoryResource}
 								updateObGynHistory={updateObGynHistory}
+								triggerReload={triggerReload}
 							/>
 						</Suspense>
 					</div>
@@ -186,7 +206,7 @@ function DiagnosisSection({
 							});
 						}}
 						label="Sí"
-						disabled={!editable}
+						disabled={editable}
 					/>
 					<RadioInput
 						name={diagnosisKey}
@@ -200,7 +220,7 @@ function DiagnosisSection({
 							setFrequency("");
 						}}
 						label="No"
-						disabled={!editable}
+						disabled={editable}
 					/>
 				</div>
 			)}
@@ -222,7 +242,7 @@ function DiagnosisSection({
 							<BaseInput
 								value={diagnosisName}
 								onChange={(e) => setDiagnosisName(e.target.value)}
-								readOnly={!editable}
+								readOnly={editable}
 								placeholder="Ingrese el nombre del diagnóstico."
 								style={{
 									width: "60%",
@@ -248,7 +268,7 @@ function DiagnosisSection({
 					<BaseInput
 						value={medication}
 						onChange={(e) => setMedication(e.target.value)}
-						readOnly={!editable}
+						readOnly={editable}
 						placeholder="Ingrese el medicamento administrado."
 						style={{
 							width: "60%",
@@ -270,7 +290,7 @@ function DiagnosisSection({
 					<BaseInput
 						value={dose}
 						onChange={(e) => setDose(e.target.value)}
-						readOnly={!editable}
+						readOnly={editable}
 						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
 							width: "60%",
@@ -294,7 +314,7 @@ function DiagnosisSection({
 					<BaseInput
 						value={frequency}
 						onChange={(e) => setFrequency(e.target.value)}
-						readOnly={!editable}
+						readOnly={editable}
 						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
 						style={{
 							width: "60%",
@@ -389,7 +409,6 @@ function OperationSection({
 
 	const addOperationDetail = () => {
 		if (!canAddMore()) return;
-
 		const newDetail = { year: null, complications: false };
 		const newDetails = [...operationDetails, newDetail];
 		setOperationDetails(newDetails);
@@ -410,6 +429,7 @@ function OperationSection({
 	};
 
 	const handleComplicationChange = (index, value) => {
+		if (!editable) return;
 		const updatedDetails = [...operationDetails];
 		updatedDetails[index].complications = value;
 		setOperationDetails(updatedDetails);
@@ -445,6 +465,7 @@ function OperationSection({
 	}, [birthYear, currentYear]);
 
 	const handleYearChange = (index, year) => {
+		if (!editable) return;
 		const updatedDetails = [...operationDetails];
 		updatedDetails[index].year = year || "";
 		setOperationDetails(updatedDetails);
@@ -477,14 +498,14 @@ function OperationSection({
 					checked={performed}
 					onChange={() => handlePerformedChangeInternal(true)}
 					label="Sí"
-					disabled={!editable}
+					disabled={editable}
 				/>
 				<RadioInput
 					name={operationKey}
 					checked={!performed}
 					onChange={() => handlePerformedChangeInternal(false)}
 					label="No"
-					disabled={!editable}
+					disabled={editable}
 				/>
 			</div>
 			{performed &&
@@ -526,6 +547,7 @@ function OperationSection({
 						<DropdownMenu
 							options={yearOptions}
 							value={detail.year}
+							disabled={editable}
 							onChange={(e) => handleYearChange(index, e.target.value)}
 							style={{
 								container: {
@@ -565,14 +587,14 @@ function OperationSection({
 								checked={detail.complications}
 								onChange={() => handleComplicationChange(index, true)}
 								label="Sí"
-								disabled={!editable}
+								disabled={editable}
 							/>
 							<RadioInput
 								name={`complications-${index}`}
 								checked={!detail.complications}
 								onChange={() => handleComplicationChange(index, false)}
 								label="No"
-								disabled={!editable}
+								disabled={editable}
 							/>
 						</div>
 						{index !== 0 && (
@@ -635,6 +657,7 @@ function ObGynView({
 	birthdayResource,
 	obgynHistoryResource,
 	updateObGynHistory,
+	triggerReload,
 }) {
 	const gynecologicalHistoryResult = obgynHistoryResource.read();
 
@@ -718,7 +741,15 @@ function ObGynView({
 			: "",
 	);
 
-	const [isEditable, setIsEditable] = useState(true);
+	const isFirstTime = !(
+		gynecologicalHistoryResult.result?.medicalHistory?.firstMenstrualPeriod
+			?.data?.age ||
+		gynecologicalHistoryResult.result?.medicalHistory?.diagnosedIllnesses?.data
+			.length ||
+		gynecologicalHistoryResult.result?.medicalHistory?.hasSurgeries?.data.length
+	);
+
+	const [isEditable, setIsEditable] = useState(isFirstTime);
 
 	// TOTAL P SECTION
 
@@ -1065,6 +1096,12 @@ function ObGynView({
 		"endometriosis",
 	];
 
+	// Canceling update
+	const handleCancel = () => {
+		setIsEditable(false);
+		toast.info("Edición cancelada.");
+	};
+
 	const formattedDiagnosedIllnesses = {
 		version: diagnosedIllnesses?.version || 1,
 		data: diagnoses.reduce((acc, diagnosis) => {
@@ -1136,6 +1173,7 @@ function ObGynView({
 		const result = await updateObGynHistory(id, medicalHistory);
 		if (!result.error) {
 			toast.success("Antecedentes ginecoobstétricos actualizados con éxito.");
+			triggerReload();
 			setIsEditable(false);
 		} else {
 			toast.error(
@@ -1143,6 +1181,10 @@ function ObGynView({
 			);
 		}
 	};
+
+	useEffect(() => {
+		console.log("isEditable changed to:", isEditable);
+	}, [isEditable]);
 
 	return (
 		<div
@@ -1176,16 +1218,58 @@ function ObGynView({
 					</div>
 				) : (
 					<>
-						<p
+						{isFirstTime && (
+							<div
+								style={{
+									padding: "1rem 0 1rem 0",
+									textAlign: "center",
+									color: colors.titleText,
+									fontWeight: "bold",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								Por favor, ingrese los datos del paciente. Parece que es su
+								primera visita aquí.
+							</div>
+						)}
+
+						<div
 							style={{
-								paddingTop: "1rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.subtitleSize,
-								fontWeight: "bold",
+								display: "flex",
+								flexDirection: "row",
+								justifyContent: "space-between",
+								alignItems: "center", // Opcional para alinear los ítems verticalmente
+								width: "100%",
 							}}
 						>
-							Información General:{" "}
-						</p>
+							<p
+								style={{
+									paddingTop: "1rem",
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.subtitleSize,
+									fontWeight: "bold",
+								}}
+							>
+								Información General:{" "}
+							</p>
+
+							{!isFirstTime &&
+								(isEditable ? (
+									<div style={{ display: "flex", gap: "1rem" }}>
+										<IconButton
+											icon={CheckIcon}
+											onClick={handleSaveGynecologicalHistory}
+										/>
+										<IconButton icon={CancelIcon} onClick={handleCancel} />
+									</div>
+								) : (
+									<IconButton
+										icon={EditIcon}
+										onClick={() => setIsEditable(true)}
+									/>
+								))}
+						</div>
 
 						<p
 							style={{
@@ -1501,7 +1585,7 @@ function ObGynView({
 									<DiagnosisSection
 										title={diagnosis.title}
 										diagnosisKey={diagnosis.key}
-										editable={true}
+										editable={!isEditable}
 										isNew={diagnosis.isNew}
 										onCancel={() => removeDiagnosis(diagnosis.key)}
 										diagnosisDetails={getDiagnosisDetails(diagnosis.key)}
@@ -1523,31 +1607,36 @@ function ObGynView({
 									borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 								}}
 							/>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									paddingTop: "2rem",
-								}}
-							>
-								<BaseButton
-									text="Agregar otro diagnóstico"
-									onClick={addDiagnosis}
-									style={{ width: "25%", height: "3rem" }}
-								/>
-							</div>
+
+							{(isFirstTime || isEditable) && (
+								<div>
+									<div
+										style={{
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "center",
+											paddingTop: "2rem",
+										}}
+									>
+										<BaseButton
+											text="Agregar otro diagnóstico"
+											onClick={addDiagnosis}
+											style={{ width: "25%", height: "3rem" }}
+										/>
+									</div>
+
+									<div
+										style={{
+											padding: "1rem",
+											borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+										}}
+									/>
+								</div>
+							)}
 
 							<div
 								style={{
-									padding: "1rem",
-									borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-								}}
-							/>
-
-							<div
-								style={{
-									padding: "1rem",
+									padding: "1rem 0 1rem 0",
 									height: "65vh",
 									flex: 1.5,
 									width: "100%",
@@ -1569,7 +1658,7 @@ function ObGynView({
 										<OperationSection
 											title={operation.title}
 											operationKey={operation.key}
-											editable={true}
+											editable={!isEditable}
 											birthdayResource={birthdayResource}
 											operationDetailsResource={mapOperationDetails(
 												operation.key,
@@ -1593,20 +1682,23 @@ function ObGynView({
 										borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 									}}
 								/>
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										paddingTop: "1.5rem",
-									}}
-								>
-									<BaseButton
-										text="Guardar"
-										onClick={handleSaveGynecologicalHistory}
-										style={{ width: "30%", height: "3rem" }}
-									/>
-								</div>
+
+								{isFirstTime && (
+									<div
+										style={{
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "center",
+											paddingTop: "1.5rem",
+										}}
+									>
+										<BaseButton
+											text="Guardar"
+											onClick={handleSaveGynecologicalHistory}
+											style={{ width: "30%", height: "3rem" }}
+										/>
+									</div>
+								)}
 							</div>
 						</div>
 					</>
