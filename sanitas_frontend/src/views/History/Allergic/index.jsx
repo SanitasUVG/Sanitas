@@ -501,7 +501,7 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 					</div>
 					<div
 						style={{
-							paddingTop: "5rem",
+							paddingTop: "3rem",
 							display: "flex",
 							justifyContent: "center",
 						}}

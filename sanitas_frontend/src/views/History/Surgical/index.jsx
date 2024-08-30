@@ -424,7 +424,7 @@ function SurgicalView({
 						}
 						style={{
 							container: { width: "90%" },
-							select: {},
+							select: { height: "3rem"},
 							option: {},
 							indicator: {},
 						}}
@@ -460,7 +460,7 @@ function SurgicalView({
 
 					<div
 						style={{
-							paddingTop: "5rem",
+							paddingTop: "3rem",
 							display: "flex",
 							justifyContent: "center",
 						}}

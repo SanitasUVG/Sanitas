@@ -512,7 +512,7 @@ function PersonalView({
 						<p
 							style={{
 								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
+								paddingTop: "0.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: fontSize.textSize,
 								fontWeight: "bold",
@@ -563,8 +563,8 @@ function PersonalView({
 										disabled={!isEditable}
 										placeholder="Ingrese el tipo de cáncer"
 										style={{
-											width: "95%",
-											height: "10%",
+											width: "90%",
+											height: "3rem",
 											fontFamily: fonts.textFont,
 											fontSize: "1rem",
 										}}
@@ -595,8 +595,8 @@ function PersonalView({
 										disabled={!isEditable}
 										placeholder="Ingrese el tratamiento administrado"
 										style={{
-											width: "95%",
-											height: "10%",
+											width: "90%",
+											height: "3rem",
 											fontFamily: fonts.textFont,
 											fontSize: "1rem",
 										}}
@@ -605,7 +605,11 @@ function PersonalView({
 							)}
 
 							{selectedPersonal.disease === "myocardialInfarction" && (
-								<React.Fragment>
+								<div
+									style={{
+										width: "100%",
+									}}
+								>
 									<p
 										style={{
 											paddingBottom: "0.5rem",
@@ -633,7 +637,7 @@ function PersonalView({
 											indicator: {},
 										}}
 									/>
-								</React.Fragment>
+								</div>
 							)}
 
 							{selectedPersonal.disease !== "cancer" &&
@@ -670,8 +674,8 @@ function PersonalView({
 														disabled={!isEditable}
 														placeholder="Ingrese el tipo de enfermedad"
 														style={{
-															width: "95%",
-															height: "10%",
+															width: "90%",
+															height: "3rem",
 															fontFamily: fonts.textFont,
 															fontSize: "1rem",
 														}}
@@ -704,8 +708,8 @@ function PersonalView({
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado"
 											style={{
-												width: "95%",
-												height: "10%",
+												width: "90%",
+												height: "3rem",
 												fontFamily: fonts.textFont,
 												fontSize: "1rem",
 											}}
@@ -732,8 +736,8 @@ function PersonalView({
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado (opcional)"
 											style={{
-												width: "95%",
-												height: "10%",
+												width: "90%",
+												height: "3rem",
 												fontFamily: fonts.textFont,
 												fontSize: "1rem",
 											}}
@@ -764,8 +768,8 @@ function PersonalView({
 											disabled={!isEditable}
 											placeholder="Ingrese la frecuencia con la que toma el medicamento"
 											style={{
-												width: "95%",
-												height: "10%",
+												width: "90%",
+												height: "3rem",
 												fontFamily: fonts.textFont,
 												fontSize: "1rem",
 											}}
@@ -780,7 +784,13 @@ function PersonalView({
 									width: "100%",
 								}}
 							>
-								<div style={{ display: "flex", justifyContent: "flex-end" }}>
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "flex-end",
+										paddingTop: "1rem",
+									}}
+								>
 									{!addingNew &&
 										(isEditable ? (
 											<div style={{ display: "flex", gap: "1rem" }}>
@@ -800,7 +810,7 @@ function PersonalView({
 							</div>
 							<div
 								style={{
-									paddingTop: "5rem",
+									paddingTop: "1rem",
 									display: "flex",
 									justifyContent: "center",
 								}}
