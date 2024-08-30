@@ -37,6 +37,8 @@ import {
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
 	getRole,
+	linkAccountToPatient,
+	getLinkedPatient,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -53,6 +55,8 @@ import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
+import { LinkPatientView } from "./views/LinkPatientView";
+import { CreatePatientView } from "./views/CreatePatientView";
 
 const useStore = createEmptyStore();
 
@@ -62,8 +66,10 @@ export const NAV_PATHS = {
 	LOGIN_USER: "/login",
 	ADD_PATIENT: "/new",
 	UPDATE_PATIENT: "/update",
-	STUDENT_WELCOME: "/student-welcome",
+	PATIENT_WELCOME: "/welcome",
 	PATIENT_FORM: "/form",
+	PATIENT_LINK: "/link",
+	CREATE_PATIENT: "/create",
 };
 
 export const UPDATE_PATIENT_NAV_PATHS = {
@@ -299,12 +305,28 @@ export const ROUTES = [
 			<LoginView
 				loginUser={IS_PRODUCTION ? signInUser : mockSingInUser}
 				getRole={getRole}
+				getLinkedPatient={getLinkedPatient}
+				useStore={useStore}
 			/>
 		),
 	},
 	{
-		path: NAV_PATHS.STUDENT_WELCOME,
+		path: NAV_PATHS.PATIENT_WELCOME,
 		element: <StudentWelcomeView />,
+	},
+	{
+		path: NAV_PATHS.PATIENT_LINK,
+		element: <LinkPatientView linkAccount={linkAccountToPatient} />,
+	},
+	{
+		path: NAV_PATHS.CREATE_PATIENT,
+		element: (
+			<CreatePatientView
+				useStore={useStore}
+				submitPatientData={submitPatientData}
+				linkAccount={linkAccountToPatient}
+			/>
+		),
 	},
 	{
 		path: NAV_PATHS.ADD_PATIENT,
@@ -365,7 +387,7 @@ export const ROUTES = [
 		children: [
 			{
 				index: true,
-				element: studentSurgicalHistoryView,
+				element: <h1>WIP: Here goes the patient form!</h1>,
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
