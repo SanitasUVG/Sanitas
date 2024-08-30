@@ -9,6 +9,7 @@ import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import { useRef } from "react";
 
 export function ObGynHistory({
 	getBirthdayPatientInfo,
@@ -136,21 +137,18 @@ function DiagnosisSection({
 
 	const showFields = isNew || diagnosed;
 
+	const handleDiagnosedChangeRef = useRef(handleDiagnosedChange);
+	handleDiagnosedChangeRef.current = handleDiagnosedChange;
+
 	useEffect(() => {
-		handleDiagnosedChange(diagnosisKey, true, {
+		const stableHandleDiagnosedChange = handleDiagnosedChangeRef.current;
+		stableHandleDiagnosedChange(diagnosisKey, true, {
 			illness: diagnosisName,
 			medication: medication,
 			dosage: dose,
 			frequency: frequency,
 		});
-	}, [
-		diagnosisName,
-		medication,
-		dose,
-		frequency,
-		diagnosisKey,
-		handleDiagnosedChange,
-	]);
+	}, [diagnosisName, medication, dose, frequency, diagnosisKey]);
 
 	return (
 		<div>
@@ -345,8 +343,15 @@ function OperationSection({
 	handlePerformedChange,
 	birthdayResource,
 }) {
-	const checkPerformed = (resource) =>
-		Array.isArray(resource) ? resource.length > 0 : !!resource;
+	const checkPerformed = (resource) => {
+		if (Array.isArray(resource)) {
+			return resource.length > 0;
+		}
+		if (typeof resource === "object" && resource !== null) {
+			return Object.keys(resource).length > 0 && resource.year !== null;
+		}
+		return !!resource;
+	};
 
 	const [performed, setPerformed] = useState(() =>
 		checkPerformed(operationDetailsResource),
@@ -367,7 +372,7 @@ function OperationSection({
 			updateGlobalOperations(operationKey, clearedDetails);
 		} else {
 			if (isArray && (!operationDetails || operationDetails.length === 0)) {
-				const defaultDetail = { year: null, complications: false };
+				const defaultDetail = { year: "", complications: false };
 				const newDetails = [defaultDetail];
 				setOperationDetails(newDetails);
 				updateGlobalOperations(operationKey, newDetails);
@@ -375,7 +380,7 @@ function OperationSection({
 				!isArray &&
 				(!operationDetails || Object.keys(operationDetails).length === 0)
 			) {
-				const defaultDetail = { year: null, complications: false };
+				const defaultDetail = { year: "", complications: false };
 				setOperationDetails([defaultDetail]);
 				updateGlobalOperations(operationKey, [defaultDetail]);
 			}
@@ -441,7 +446,7 @@ function OperationSection({
 
 	const handleYearChange = (index, year) => {
 		const updatedDetails = [...operationDetails];
-		updatedDetails[index].year = year;
+		updatedDetails[index].year = year || "";
 		setOperationDetails(updatedDetails);
 		updateGlobalOperations(operationKey, updatedDetails);
 	};
@@ -795,7 +800,7 @@ function ObGynView({
 			},
 		];
 
-		const otherConditions = diagnosedIllnesses.data.otherCondition ?? [];
+		const otherConditions = diagnosedIllnesses.data?.otherCondition ?? [];
 		for (const condition of otherConditions) {
 			initialDiagnoses.push({
 				key: condition.medication.illness,
