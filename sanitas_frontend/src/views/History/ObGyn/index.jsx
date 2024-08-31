@@ -885,7 +885,7 @@ function ObGynView({
 			);
 		}
 
-		const condition = diagnosedIllnesses.data.otherCondition.find(
+		const condition = diagnosedIllnesses.data.otherCondition?.find(
 			(cond) => cond.medication.illness === key,
 		);
 
