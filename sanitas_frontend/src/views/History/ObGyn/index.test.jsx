@@ -208,6 +208,14 @@ describe("ObGynHistory Component Tests", () => {
 			),
 		);
 
+		const allIcons = await screen.findAllByRole("img", { name: "Icon" });
+		const editIcon = allIcons.find((icon) =>
+			icon.src.includes("outline/edit.svg"),
+		);
+		const editButton = editIcon.closest("button");
+		fireEvent.click(editButton);
+		//fireEvent.click(editButtons[0]);
+
 		const addButton = await screen.findByText("Agregar otro diagnóstico");
 		fireEvent.click(addButton);
 
@@ -269,8 +277,23 @@ describe("ObGynHistory Component Tests", () => {
 			{ timeout: 5000 },
 		);
 
-		await waitFor(() => screen.getByText("Guardar"));
-		fireEvent.click(screen.getByText("Guardar"));
+		const allIconsBeforeEdit = await screen.findAllByRole("img", {
+			name: "Icon",
+		});
+		const editIcon = allIconsBeforeEdit.find((icon) =>
+			icon.src.includes("outline/edit.svg"),
+		);
+		const editButton = editIcon.closest("button");
+		fireEvent.click(editButton);
+
+		const allIconsAfterEdit = await screen.findAllByRole("img", {
+			name: "Icon",
+		});
+		const checkIcon = allIconsAfterEdit.find((icon) =>
+			icon.src.includes("outline/check.svg"),
+		);
+		const checkButton = checkIcon.closest("button");
+		fireEvent.click(checkButton);
 
 		await waitFor(() =>
 			expect(toast.success).toHaveBeenCalledWith(

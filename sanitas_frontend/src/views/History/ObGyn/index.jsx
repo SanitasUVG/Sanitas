@@ -1180,10 +1180,6 @@ function ObGynView({
 		}
 	};
 
-	useEffect(() => {
-		console.log("isEditable changed to:", isEditable);
-	}, [isEditable]);
-
 	return (
 		<div
 			style={{
