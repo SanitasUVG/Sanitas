@@ -141,6 +141,7 @@ function DiagnosisSection({
 	diagnosisKey,
 	editable,
 	isNew,
+	isFirstTime,
 	onCancel,
 	diagnosisDetails,
 	handleDiagnosedChange,
@@ -324,7 +325,7 @@ function DiagnosisSection({
 						}}
 					/>
 
-					{isNew && (
+					{(isFirstTime || editable) && isNew && (
 						<div>
 							<div
 								style={{
@@ -358,6 +359,7 @@ function OperationSection({
 	title,
 	operationKey,
 	editable,
+	isFirstTime,
 	operationDetailsResource,
 	updateGlobalOperations,
 	handlePerformedChange,
@@ -450,7 +452,7 @@ function OperationSection({
 	const birthYearData = birthYearResult.result;
 	const currentYear = new Date().getFullYear();
 	const birthYear = birthYearData?.birthdate
-		? new Date(birthYearData.birthdate).getFullYear()
+		? new Date(birthYearData.birthdate).getUTCFullYear()
 		: null;
 
 	useEffect(() => {
@@ -595,7 +597,7 @@ function OperationSection({
 								disabled={editable}
 							/>
 						</div>
-						{index !== 0 && (
+						{index !== 0 && (isFirstTime || !editable) ? (
 							<div
 								style={{
 									display: "flex",
@@ -616,33 +618,36 @@ function OperationSection({
 									}}
 								/>
 							</div>
-						)}
+						) : null}
 					</div>
 				))}
 
 			{performed && canAddMore() && (
 				<div>
-					<div
-						style={{
-							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-						}}
-					/>
-
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							paddingTop: "2rem",
-						}}
-					>
-						<BaseButton
-							text="Agregar otra operación"
-							onClick={addOperationDetail}
-							style={{ width: "20%", height: "3rem" }}
-						/>
-					</div>
+					{(isFirstTime || !editable) && (
+						<div>
+							<div
+								style={{
+									padding: "1rem",
+									borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+								}}
+							/>
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									paddingTop: "2rem",
+								}}
+							>
+								<BaseButton
+									text="Agregar otra operación"
+									onClick={addOperationDetail}
+									style={{ width: "20%", height: "3rem" }}
+								/>
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</div>
@@ -1180,6 +1185,10 @@ function ObGynView({
 		}
 	};
 
+	useEffect(() => {
+		console.log("isEditable changed to:", isEditable);
+	}, [isEditable]);
+
 	return (
 		<div
 			style={{
@@ -1584,6 +1593,7 @@ function ObGynView({
 										onCancel={() => removeDiagnosis(diagnosis.key)}
 										diagnosisDetails={getDiagnosisDetails(diagnosis.key)}
 										handleDiagnosedChange={handleDiagnosedChange}
+										isFirstTime={isFirstTime}
 									/>
 									{index < diagnoses.length - 1 && (
 										<div
@@ -1659,6 +1669,7 @@ function ObGynView({
 											)}
 											updateGlobalOperations={updateGlobalOperations}
 											handlePerformedChange={handlePerformedChange}
+											isFirstTime={isFirstTime}
 										/>
 										{index < operations.length - 1 && (
 											<div // BORDER
