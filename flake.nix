@@ -90,7 +90,7 @@
                      	PGHOST=./.devenv/state/postgres/
                      	mkdir -p ./.devenv/state/postgres/
 
-                     	pg_ctl -D "$PGDATA" -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${postgresPort}"
+                     	pg_ctl -D "$PGDATA" -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
 
                      	echo ${dbInitFile} | psql --dbname postgres
                      	pg_ctl -D "$PGDATA" -m fast -w stop
@@ -107,15 +107,21 @@
             testBackend = genNixCommand "cd ./sanitas_backend/ && npm test -- --runInBand";
             processComposeConfig = {
               version = "0.5";
-              is_tui_disabled = true;
+              # is_tui_disabled = true;
               processes = {
                 DB = {
                   command = startPostgres;
                   ready_log_line = "Sanitas postgres is now running!";
+                  availability = {
+                    restart = "exit_on_failure";
+                  };
                 };
                 Backend = {
                   command = startBackend;
                   ready_log_line = "Running on http://127.0.0.1:";
+                  availability = {
+                    restart = "exit_on_failure";
+                  };
                 };
                 Test = {
                   command = testBackend;
@@ -133,7 +139,7 @@
                 };
               };
             };
-            processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML processComposeConfig);
+            processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
           in ''
             cat ${processComposeConfigFile}
             process-compose -f ${processComposeConfigFile}
