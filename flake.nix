@@ -141,7 +141,7 @@
             };
             processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
           in ''
-            cat ${processComposeConfigFile}
+            echo ${processComposeConfigFile}
             process-compose -f ${processComposeConfigFile}
           '';
         };
