@@ -27,6 +27,8 @@
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
     postgresPort = 6969;
     postgresHost = "0.0.0.0";
+    strFromDBFile = file: builtins.readFile ./database/${file};
+    dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
   in {
     packages = forEachSystem (
       system: let
@@ -52,15 +54,89 @@
 
         integrationTests = pkgs.writeShellApplication {
           name = "Sanitas integration tests";
-          runtimeInputs = with pkgs; [ansi docker];
-          text = ''
-            echo -e "$(ansi yellow)" Starting Services...
-            nix run .#restartServices &
+          runtimeInputs = with pkgs; [docker process-compose];
+          text = let
+            genNixCommand = command: "nix develop --command bash \"${command}\"";
+            startBackend = let
+              ipCommand =
+                if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
+                then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
+                else "ip route get 1.2.3.4 | awk '{print $7}'";
+            in
+              genNixCommand "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
+            startPostgres = let
+              setupPgHbaFileScript = ''cp ${./pg_hba.conf} "$PGDATA/pg_hba.conf"'';
+            in ''
+                     -euo pipefail
+                     export PATH=${pkgs.postgresql}/bin:${pkgs.coreutils}/bin
 
-            echo -e "$(ansi yellow)" Running tests...
-            cd sanitas_backend
-            sleep 180 # Sleep for 180s = 3m
-            npm test -- --runInBand
+                     POSTGRES_RUN_INITIAL_SCRIPT="false"
+                     if [[ ! -d "$PGDATA" ]]; then
+                     	initdb --locale=C --encoding=UTF8
+                     	POSTGRES_RUN_INITIAL_SCRIPT="true"
+                     	echo
+                     	echo "PostgreSQL initdb process complete."
+                     	echo
+                     fi
+
+                     # Setup pg_hba.conf
+                     ${setupPgHbaFileScript}
+
+                     if [[ "$POSTGRES_RUN_INITIAL_SCRIPT" = "true" ]]; then
+                     	echo
+                     	echo "PostgreSQL is setting up the initial database."
+                     	echo
+                     	OLDPGHOST="$PGHOST"
+                     	PGHOST=./.devenv/state/postgres/
+                     	mkdir -p ./.devenv/state/postgres/
+
+                     	pg_ctl -D "$PGDATA" -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${postgresPort}"
+
+                     	echo ${dbInitFile} | psql --dbname postgres
+                     	pg_ctl -D "$PGDATA" -m fast -w stop
+                     	PGHOST="$OLDPGHOST"
+                     	unset OLDPGHOST
+                     else
+                     	echo
+                     	echo "PostgreSQL database directory appears to contain a database; Skipping initialization"
+                     	echo
+                     fi
+                     unset POSTGRES_RUN_INITIAL_SCRIPT
+              echo "Sanitas postgres is now running!"
+            '';
+            testBackend = genNixCommand "cd ./sanitas_backend/ && npm test -- --runInBand";
+            processComposeConfig = {
+              version = "0.5";
+              is_tui_disabled = true;
+              processes = {
+                DB = {
+                  command = startPostgres;
+                  ready_log_line = "Sanitas postgres is now running!";
+                };
+                Backend = {
+                  command = startBackend;
+                  ready_log_line = "Running on http://127.0.0.1:";
+                };
+                Test = {
+                  command = testBackend;
+                  availability = {
+                    exit_on_end = true;
+                  };
+                  depends_on = {
+                    DB = {
+                      condition = "process_log_ready";
+                    };
+                    Backend = {
+                      condition = "process_log_ready";
+                    };
+                  };
+                };
+              };
+            };
+            processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML processComposeConfig);
+          in ''
+            cat ${processComposeConfigFile}
+            process-compose -f ${processComposeConfigFile}
           '';
         };
 
@@ -92,8 +168,6 @@
         pkgs.awscli2
         samcli
       ];
-      strFromDBFile = file: builtins.readFile ./database/${file};
-      dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
     in {
       cicdFrontend = pkgs.mkShell {
         packages = requiredPkgs ++ frontendRequiredPkgs;
