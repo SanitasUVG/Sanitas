@@ -1,5 +1,6 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { createResponse } from "utils/index.mjs";
 
 function checkValidInput(patientData) {
 	if (!patientData.cui) {
@@ -22,15 +23,17 @@ function checkValidInput(patientData) {
 }
 export const createPatientHandler = async (event, context) => {
 	withRequest(event, context);
+	const responseBuilder = createResponse().addCORSHeaders("POST");
 
 	if (event.httpMethod !== "POST") {
-		throw new Error(
-			`createPatientHandler only accepts POST method, attempted: ${event.httpMethod}`,
-		);
+		logger.error("Method Not Allowed");
+		return responseBuilder
+			.setStatusCode(405)
+			.setBody({ error: "Method Not Allowed" })
+			.build();
 	}
 
 	const patientData = JSON.parse(event.body);
-
 	logger.info(process.env, "Environment variables are:");
 
 	let client;
@@ -45,60 +48,63 @@ export const createPatientHandler = async (event, context) => {
 		if (!validation.isValid) {
 			logger.error({ patientData }, "The data is missing some fields!");
 
-			return {
-				statusCode: 400,
-				body: JSON.stringify({ error: validation.error }),
-			};
+			return responseBuilder
+				.setStatusCode(400)
+				.setBody({ error: validation.error })
+				.build();
 		}
 		logger.info({ patientData }, "Data is valid!");
 
-		// Check if the CUI already exists in the database
-		const existingPatientQuery = `
+		try {
+			await client.query("BEGIN");
+			// Check if the CUI already exists in the database
+			const existingPatientQuery = `
 			SELECT 1 FROM PACIENTE WHERE CUI = $1
 		`;
-		const existingPatientResult = await client.query(existingPatientQuery, [
-			patientData.cui,
-		]);
-		if (existingPatientResult.rows.length > 0) {
-			logger.error("CUI already exists.");
+			const existingPatientResult = await client.query(existingPatientQuery, [
+				patientData.cui,
+			]);
+			if (existingPatientResult.rows.length > 0) {
+				logger.error("CUI already exists.");
 
-			return {
-				statusCode: 409,
-				body: JSON.stringify({ error: "CUI already exists." }),
-			};
-		}
+				return responseBuilder
+					.setStatusCode(409)
+					.setBody({ error: "CUI already exists." })
+					.build();
+			}
 
-		logger.info(
-			patientData,
-			"Inserting new patient record into the database...",
-		);
+			logger.info(
+				patientData,
+				"Inserting new patient record into the database...",
+			);
 
-		const query = `
+			const query = `
 			INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
 			VALUES ($1, $2, $3, $4, $5)
 			returning *
 		`;
-		const values = [
-			patientData.cui,
-			patientData.names,
-			patientData.lastNames,
-			patientData.isWoman,
-			new Date(patientData.birthdate),
-		];
-		const dbresponse = await client.query(query, values);
-		logger.info("Patient record created successfully.");
-		const response = {
-			statusCode: 200,
-			headers: {
-				"Access-Control-Allow-Headers": "Content-Type",
-				"Access-Control-Allow-Origin": "*", // Allow from anywhere
-				"Access-Control-Allow-Methods": "POST", // Allow only POST request
-			},
-			body: JSON.stringify(dbresponse.rows[0].id),
-		};
+			const values = [
+				patientData.cui,
+				patientData.names,
+				patientData.lastNames,
+				patientData.isWoman,
+				new Date(patientData.birthdate),
+			];
+			const dbresponse = await client.query(query, values);
+			await client.query("COMMIT");
+			logger.info("Patient record created successfully.");
 
-		logger.info(response, "Responding with:");
-		return response;
+			const response = responseBuilder
+				.setStatusCode(200)
+				.setBody(dbresponse.rows[0].id)
+				.build();
+			logger.info(response, "Responding with:");
+			return response;
+		} catch (error) {
+			logger.error("Transaction failed! Rolling back...");
+			await client.query("ROLLBACK");
+			throw error;
+		}
 	} catch (error) {
 		logger.error(error, "An error occurred while creating the patient record.");
 
@@ -110,11 +116,10 @@ export const createPatientHandler = async (event, context) => {
 			errorMessage = "CUI already exists.";
 		}
 
-		const response = {
-			statusCode: statusCode,
-			body: JSON.stringify({ error: errorMessage }),
-		};
-		return response;
+		return responseBuilder
+			.setStatusCode(statusCode)
+			.setBody({ error: errorMessage })
+			.build();
 	} finally {
 		await client?.end();
 	}
