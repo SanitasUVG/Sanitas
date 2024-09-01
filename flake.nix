@@ -58,25 +58,32 @@
 
         integrationTests = pkgs.writeShellApplication {
           name = "Sanitas integration tests";
-          runtimeInputs = [pkgs.docker pkgs.process-compose] ++ backendRequiredPkgs;
+          runtimeInputs = [pkgs.docker pkgs.process-compose pkgs.unixtools.ifconfig] ++ backendRequiredPkgs;
           text = let
             PGDATA = "./.devenv/state/postgres/";
             startBackend = let
               ipCommand =
                 if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
-                then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
+                then "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
                 else "ip route get 1.2.3.4 | awk '{print $7}'";
             in ''
               set -euo pipefail
               cd sanitas_backend/
 
+              echo Starting backend
+              echo Getting ifconfig
+              ifconfig en0
+              echo Grepping for inet
+              ifconfig en0 | grep 'inet '
+              echo Using AWK
+              awk --version
+              echo -e "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
+              ifconfig en0 | grep 'inet ' | cut -d' ' -f2
+
               echo Building backend
               sam build
 
-              echo Starting backend
-              echo Getting IP with: "${pkgs.lib.escapeShellArg ipCommand}"
-              echo Running: sam local start-api --debug --add-host=hostpc:$(${pkgs.lib.escapeShellArg ipCommand})
-              sam local start-api --debug --add-host=hostpc:$(${pkgs.lib.escapeShellArg ipCommand})
+              sam local start-api --debug --add-host=hostpc:$(${ipCommand})
             '';
             startPostgres = ''
               set -euo pipefail
