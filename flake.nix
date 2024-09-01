@@ -32,8 +32,12 @@
   in {
     packages = forEachSystem (
       system: let
-        # dbPort = "5433";
         pkgs = import nixpkgs {inherit system;};
+        samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
+        backendRequiredPkgs = [
+          pkgs.awscli2
+          samcli
+        ];
       in {
         # For setting up devenv
         devenv-up = self.devShells.${system}.default.config.procfileScript;
@@ -54,74 +58,72 @@
 
         integrationTests = pkgs.writeShellApplication {
           name = "Sanitas integration tests";
-          runtimeInputs = with pkgs; [docker process-compose];
+          runtimeInputs = [pkgs.docker pkgs.process-compose] ++ backendRequiredPkgs;
           text = let
-            genNixCommand = command: "nix develop --command bash \"${command}\"";
+            PGDATA = "./.devenv/state/postgres/";
             startBackend = let
               ipCommand =
                 if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
                 then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
                 else "ip route get 1.2.3.4 | awk '{print $7}'";
-            in
-              genNixCommand "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
-            startPostgres = let
-              setupPgHbaFileScript = ''cp ${./pg_hba.conf} "$PGDATA/pg_hba.conf"'';
-            in ''
-                     -euo pipefail
-                     export PATH=${pkgs.postgresql}/bin:${pkgs.coreutils}/bin
+            in "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
+            startPostgres = ''
+              set -euo pipefail
+              rm -rf ./.devenv/state/postgres/
+              mkdir -p ./.devenv/state/postgres/
+              export PATH=${pkgs.postgresql}/bin:${pkgs.coreutils}/bin
 
-                     POSTGRES_RUN_INITIAL_SCRIPT="false"
-                     if [[ ! -d "$PGDATA" ]]; then
-                     	initdb --locale=C --encoding=UTF8
-                     	POSTGRES_RUN_INITIAL_SCRIPT="true"
-                     	echo
-                     	echo "PostgreSQL initdb process complete."
-                     	echo
-                     fi
+              echo "The PGDATA variable is" $PGDATA
+              initdb --locale=C --encoding=UTF8
+              POSTGRES_RUN_INITIAL_SCRIPT="true"
+              echo
+              echo "PostgreSQL initdb process complete."
+              echo
 
-                     # Setup pg_hba.conf
-                     ${setupPgHbaFileScript}
+              # Setup pg_hba.conf
+              echo "Setting up pg_hba"
+              cp ${./pg_hba.conf} ./.devenv/state/postgres/pg_hba.conf
+              echo "HBA setup complete!"
 
-                     if [[ "$POSTGRES_RUN_INITIAL_SCRIPT" = "true" ]]; then
-                     	echo
-                     	echo "PostgreSQL is setting up the initial database."
-                     	echo
-                     	OLDPGHOST="$PGHOST"
-                     	PGHOST=./.devenv/state/postgres/
-                     	mkdir -p ./.devenv/state/postgres/
+              echo
+              echo "PostgreSQL is setting up the initial database."
+              echo
+              OLDPGHOST="$PGHOST"
+              PGHOST=./.devenv/state/postgres/
 
-                     	pg_ctl -D "$PGDATA" -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
+              echo "Listing files"
+              ls ./.devenv/state/postgres/
+              echo "Working in: $PWD"
+              echo "Who am I? $(whoami)"
+              # touch ./.devenv/state/postgres/.s.PGSQL.6969.lock
+              echo Starting server with command: pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
+              pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c unix_socket_directories=/Users/flaviogalan/Documents/Development/Sanitas/.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
+              # pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c listen_addresses= -p ${builtins.toString postgresPort}"
 
-                     	echo ${dbInitFile} | psql --dbname postgres
-                     	pg_ctl -D "$PGDATA" -m fast -w stop
-                     	PGHOST="$OLDPGHOST"
-                     	unset OLDPGHOST
-                     else
-                     	echo
-                     	echo "PostgreSQL database directory appears to contain a database; Skipping initialization"
-                     	echo
-                     fi
-                     unset POSTGRES_RUN_INITIAL_SCRIPT
+              echo "Initializing DB"
+              echo "${dbInitFile}" | psql --dbname postgres
+              pg_ctl -D "./.devenv/state/postgres/" -m fast -w stop
+              PGHOST="$OLDPGHOST"
+              unset OLDPGHOST
               echo "Sanitas postgres is now running!"
             '';
-            testBackend = genNixCommand "cd ./sanitas_backend/ && npm test -- --runInBand";
+
+            testBackend = "cd ./sanitas_backend/ && npm test -- --runInBand";
+
             processComposeConfig = {
               version = "0.5";
-              # is_tui_disabled = true;
+              is_tui_disabled = true;
               processes = {
                 DB = {
                   command = startPostgres;
                   ready_log_line = "Sanitas postgres is now running!";
-                  availability = {
-                    restart = "exit_on_failure";
-                  };
+                  environment = ["PGDATA=${PGDATA}"]; # Only usefull for initdb
+                  availability.restart = "exit_on_failure";
                 };
                 Backend = {
                   command = startBackend;
                   ready_log_line = "Running on http://127.0.0.1:";
-                  availability = {
-                    restart = "exit_on_failure";
-                  };
+                  availability.restart = "exit_on_failure";
                 };
                 Test = {
                   command = testBackend;
@@ -139,6 +141,7 @@
                 };
               };
             };
+
             processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
           in ''
             echo ${processComposeConfigFile}
