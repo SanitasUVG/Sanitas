@@ -56,6 +56,7 @@ async function createPatientWithGynecologicalHistory() {
 					otherCondition: [
 						{
 							medication: {
+								illness: "illness A",
 								medication: "Med D",
 								dosage: "500mg",
 								frequency: "Once a day",

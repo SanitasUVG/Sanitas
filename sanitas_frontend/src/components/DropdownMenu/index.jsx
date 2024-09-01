@@ -75,7 +75,7 @@ export default function DropdownMenu({
 		indicator: {
 			position: "absolute",
 			top: "50%",
-			right: "5%",
+			right: "6%",
 			transform: `translateY(-50%) rotate(${isOpen ? "180deg" : "0deg"})`,
 			transition: "transform 0.3s",
 			pointerEvents: "none",

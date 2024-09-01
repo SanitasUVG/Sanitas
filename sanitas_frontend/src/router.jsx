@@ -21,6 +21,8 @@ import {
 	getStudentPatientInformation,
 	getSurgicalHistory,
 	getTraumatologicalHistory,
+	getAllergicHistory,
+	getGynecologicalHistory,
 	searchPatient,
 	submitPatientData,
 	updateCollaboratorInformation,
@@ -32,8 +34,8 @@ import {
 	updateSurgicalHistory,
 	updateStudentSurgicalHistory,
 	updateTraumatologicalHistory,
-	getAllergicHistory,
 	updateAllergicHistory,
+	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
 	getRole,
@@ -53,6 +55,7 @@ import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
+import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
@@ -80,6 +83,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
+	OBGYN_HISTORY: "obgyn",
 	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
@@ -130,6 +134,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	navigateToAllergies: (navigate) => {
 		navigate(
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToObstetrics: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY}`,
 		);
 	},
 	navigateToPsiquiatric: (navigate) => {
@@ -275,6 +284,21 @@ const psichiatricHistoryView = (
 	</RequireAuth>
 );
 
+const obgynHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<ObGynHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getObGynHistory={getGynecologicalHistory}
+			updateObGynHistory={updateGynecologicalHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 export const ROUTES = [
 	{
 		path: NAV_PATHS.SEARCH_PATIENT,
@@ -373,6 +397,10 @@ export const ROUTES = [
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY,
 				element: allergicHistoryView,
+			},
+			{
+				path: UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY,
+				element: obgynHistoryView,
 			},
 			{
 				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
