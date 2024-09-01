@@ -66,7 +66,18 @@
                 if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
                 then "ifconfig en0 | grep 'inet ' | awk '{print $2}'"
                 else "ip route get 1.2.3.4 | awk '{print $7}'";
-            in "cd sanitas_backend/ && sam build && sam local start-api --debug --add-host=hostpc:$(${ipCommand})";
+            in ''
+              set -euo pipefail
+              cd sanitas_backend/
+
+              echo Building backend
+              sam build
+
+              echo Starting backend
+              echo Getting IP with: "${pkgs.lib.escapeShellArg ipCommand}"
+              echo Running: sam local start-api --debug --add-host=hostpc:$(${pkgs.lib.escapeShellArg ipCommand})
+              sam local start-api --debug --add-host=hostpc:$(${pkgs.lib.escapeShellArg ipCommand})
+            '';
             startPostgres = ''
               set -euo pipefail
               rm -rf ./.devenv/state/postgres/
@@ -101,7 +112,7 @@
               # pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c listen_addresses= -p ${builtins.toString postgresPort}"
 
               echo "Initializing DB"
-              echo "${dbInitFile}" | psql --dbname postgres
+              echo "${dbInitFile}" | psql --dbname postgres -h /Users/flaviogalan/Documents/Development/Sanitas/.devenv/state/postgres/ -p ${builtins.toString postgresPort}
               pg_ctl -D "./.devenv/state/postgres/" -m fast -w stop
               PGHOST="$OLDPGHOST"
               unset OLDPGHOST
@@ -112,7 +123,7 @@
 
             processComposeConfig = {
               version = "0.5";
-              is_tui_disabled = true;
+              # is_tui_disabled = true;
               processes = {
                 DB = {
                   command = startPostgres;
