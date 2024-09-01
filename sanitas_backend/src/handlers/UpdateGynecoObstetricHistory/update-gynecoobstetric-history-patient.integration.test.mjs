@@ -59,6 +59,7 @@ function generateValidUpdate(patientId) {
 					otherCondition: [
 						{
 							medication: {
+								illness: "illness A",
 								medication: "Med D",
 								dosage: "500mg",
 								frequency: "Once a day",
@@ -150,6 +151,7 @@ describe("Update Gynecological Medical History integration tests", () => {
 						otherCondition: [
 							{
 								medication: {
+									illness: "illness A",
 									medication: "Med D",
 									dosage: "500mg",
 									frequency: "Once a day",
