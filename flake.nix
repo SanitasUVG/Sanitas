@@ -65,7 +65,7 @@
               ipCommand =
                 if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
                 then "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
-                else "ip route get 1.2.3.4 | awk '{print $7}'";
+                else "ip route get 1.2.3.4 | cut -d' ' -f7";
             in ''
               set -euo pipefail
               cd sanitas_backend/
