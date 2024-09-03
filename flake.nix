@@ -70,15 +70,15 @@
               set -euo pipefail
               cd sanitas_backend/
 
-              echo Starting backend
-              echo Getting ifconfig
-              ifconfig en0
-              echo Grepping for inet
-              ifconfig en0 | grep 'inet '
-              echo Using AWK
-              awk --version
-              echo -e "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
-              ifconfig en0 | grep 'inet ' | cut -d' ' -f2
+              # echo Starting backend
+              # echo Getting ifconfig
+              # ifconfig en0
+              # echo Grepping for inet
+              # ifconfig en0 | grep 'inet '
+              # echo Using AWK
+              # awk --version
+              # echo -e "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
+              # ifconfig en0 | grep 'inet ' | cut -d' ' -f2
 
               echo Building backend
               sam build
