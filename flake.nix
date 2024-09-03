@@ -60,7 +60,7 @@
           name = "Sanitas integration tests";
           runtimeInputs = [pkgs.docker pkgs.process-compose pkgs.unixtools.ifconfig] ++ backendRequiredPkgs;
           text = let
-            PGDATA = "./.devenv/state/postgres/";
+            PGDATA = ''"$PWD/.devenv/state/postgres"'';
             startBackend = let
               ipCommand =
                 if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
@@ -87,11 +87,17 @@
             '';
             startPostgres = ''
               set -euo pipefail
-              rm -rf ./.devenv/state/postgres/
-              mkdir -p ./.devenv/state/postgres/
+              echo PWD = "$PWD"
+              echo PGDATA = ${PGDATA}
+              rm -rf "${PGDATA}"
+              mkdir -p "${PGDATA}"
               export PATH=${pkgs.postgresql}/bin:${pkgs.coreutils}/bin
 
+              export PGDATA=${PGDATA}
+              export PGHOST=${PGDATA}
               echo "The PGDATA variable is" $PGDATA
+              echo "The PGHOST variable is" $PGHOST
+
               initdb --locale=C --encoding=UTF8
               POSTGRES_RUN_INITIAL_SCRIPT="true"
               echo
@@ -100,30 +106,31 @@
 
               # Setup pg_hba.conf
               echo "Setting up pg_hba"
-              cp ${./pg_hba.conf} ./.devenv/state/postgres/pg_hba.conf
+              cp ${./pg_hba.conf} "${PGDATA}/pg_hba.conf"
               echo "HBA setup complete!"
 
               echo
               echo "PostgreSQL is setting up the initial database."
               echo
-              OLDPGHOST="$PGHOST"
-              PGHOST=./.devenv/state/postgres/
 
               echo "Listing files"
-              ls ./.devenv/state/postgres/
-              echo "Working in: $PWD"
+              ls ${PGDATA}
               echo "Who am I? $(whoami)"
-              # touch ./.devenv/state/postgres/.s.PGSQL.6969.lock
-              echo Starting server with command: pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c unix_socket_directories=./.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
-              pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c unix_socket_directories=/Users/flaviogalan/Documents/Development/Sanitas/.devenv/state/postgres/ -c listen_addresses= -p ${builtins.toString postgresPort}"
-              # pg_ctl -D ./.devenv/state/postgres/ -w start -o "-c listen_addresses= -p ${builtins.toString postgresPort}"
+              echo Starting server with command: pg_ctl -w start -o "-c unix_socket_directories=${PGDATA} -c listen_addresses=* -p ${builtins.toString postgresPort}"
+              pg_ctl -w start -o "-c unix_socket_directories=${PGDATA} -c listen_addresses=* -p ${builtins.toString postgresPort}"
 
               echo "Initializing DB"
-              echo "${dbInitFile}" | psql --dbname postgres -h /Users/flaviogalan/Documents/Development/Sanitas/.devenv/state/postgres/ -p ${builtins.toString postgresPort}
-              pg_ctl -D "./.devenv/state/postgres/" -m fast -w stop
-              PGHOST="$OLDPGHOST"
-              unset OLDPGHOST
+              echo "${dbInitFile}" | psql --dbname postgres -p ${builtins.toString postgresPort}
               echo "Sanitas postgres is now running!"
+            '';
+            stopPostgres = ''
+              set -euo pipefail
+              export PGDATA=${PGDATA}
+              export PGHOST=${PGDATA}
+              echo "The PGDATA variable is" $PGDATA
+              echo "The PGHOST variable is" $PGHOST
+
+              pg_ctl -m fast -w stop
             '';
 
             testBackend = "cd ./sanitas_backend/ && npm test -- --runInBand";
@@ -131,12 +138,16 @@
             processComposeConfig = {
               version = "0.5";
               # is_tui_disabled = true;
+              log_location = "./integration_tests.log";
               processes = {
                 DB = {
                   command = startPostgres;
                   ready_log_line = "Sanitas postgres is now running!";
-                  environment = ["PGDATA=${PGDATA}"]; # Only usefull for initdb
                   availability.restart = "exit_on_failure";
+                  is_daemon = true;
+                  shutdown = {
+                    command = stopPostgres;
+                  };
                 };
                 Backend = {
                   command = startBackend;
