@@ -137,7 +137,7 @@
 
             processComposeConfig = {
               version = "0.5";
-              # is_tui_disabled = true;
+              is_tui_disabled = true;
               log_location = "./integration_tests.log";
               processes = {
                 DB = {
