@@ -18,82 +18,94 @@ export default {
 
 const dummyPatientId = 12345;
 
-const mockGetPsichiatricHistoryWithData = async () => ({
+const mockGetStudentPsichiatricHistoryWithData = async () => ({
 	result: {
 		medicalHistory: {
 			depression: {
-				data: {
-					medication: "Antidepressants",
-					dose: "20mg",
-					frequency: "Daily",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Antidepressants",
+						dose: "20mg",
+						frequency: "Daily",
+						ube: true,
+					},
+				],
 			},
 			anxiety: {
-				data: {
-					medication: "Anxiolytics",
-					dose: "10mg",
-					frequency: "As needed",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Anxiolytics",
+						dose: "10mg",
+						frequency: "As needed",
+						ube: false,
+					},
+				],
 			},
 			ocd: {
-				data: {
-					medication: "SSRIs",
-					dose: "50mg",
-					frequency: "Daily",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "SSRIs",
+						dose: "50mg",
+						frequency: "Daily",
+						ube: false,
+					},
+				],
 			},
 			adhd: {
-				data: {
-					medication: "Stimulants",
-					dose: "30mg",
-					frequency: "Morning",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Stimulants",
+						dose: "30mg",
+						frequency: "Morning",
+						ube: true,
+					},
+				],
 			},
 			bipolar: {
-				data: {
-					medication: "Mood Stabilizers",
-					dose: "150mg",
-					frequency: "Twice daily",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Mood Stabilizers",
+						dose: "150mg",
+						frequency: "Twice daily",
+						ube: false,
+					},
+				],
 			},
 			other: {
-				data: {
-					ill: "Schizophrenia",
-					medication: "Antipsychotics",
-					dose: "200mg",
-					frequency: "Night",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						illness: "Schizophrenia",
+						medication: "Antipsychotics",
+						dose: "200mg",
+						frequency: "Night",
+						ube: true,
+					},
+				],
 			},
 		},
 	},
 });
 
-const mockGetPsichiatricHistoryEmpty = async () => ({
+const mockGetStudentPsichiatricHistoryEmpty = async () => ({
 	result: {
 		medicalHistory: {
-			depression: { data: {}, version: 1 },
-			anxiety: { data: {}, version: 1 },
-			ocd: { data: {}, version: 1 },
-			adhd: { data: {}, version: 1 },
-			bipolar: { data: {}, version: 1 },
-			other: { data: {}, version: 1 },
+			depression: { data: [], version: 1 },
+			anxiety: { data: [], version: 1 },
+			ocd: { data: [], version: 1 },
+			adhd: { data: [], version: 1 },
+			bipolar: { data: [], version: 1 },
+			other: { data: [], version: 1 },
 		},
 	},
 });
 
-const mockGetPsichiatricHistoryError = async () => ({
+const mockGetStudentPsichiatricHistoryError = async () => ({
 	error: {
 		response: {
 			status: 400,
@@ -103,7 +115,7 @@ const mockGetPsichiatricHistoryError = async () => ({
 	},
 });
 
-const mockUpdatePsichiatricHistory = async (history) => ({
+const mockUpdateStudentPsichiatricHistory = async (history) => ({
 	result: { medicalHistory: history },
 });
 
@@ -113,8 +125,8 @@ const store = createEmptyStore({
 
 export const WithData = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryWithData,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryWithData,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",
@@ -127,8 +139,8 @@ export const WithData = {
 
 export const EmptyData = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryEmpty,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryEmpty,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",
@@ -141,8 +153,8 @@ export const EmptyData = {
 
 export const ErrorState = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryError,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryError,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",

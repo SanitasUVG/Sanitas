@@ -14,8 +14,8 @@ vi.mock("react-toastify", () => {
 	};
 });
 
-const mockGetPsichiatricHistory = vi.fn();
-const mockUpdatePsichiatricHistory = vi.fn();
+const mockGetStudentPsichiatricHistory = vi.fn();
+const mockUpdateStudentPsichiatricHistory = vi.fn();
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
 const sidebarConfig = {
@@ -36,7 +36,7 @@ const Wrapper = ({ children }) => (
 
 describe("StudentPsichiatricHistory Component Tests", () => {
 	test("initial render and data fetching", async () => {
-		mockGetPsichiatricHistory.mockResolvedValue({
+		mockGetStudentPsichiatricHistory.mockResolvedValue({
 			result: {
 				medicalHistory: {
 					depression: {
@@ -68,8 +68,8 @@ describe("StudentPsichiatricHistory Component Tests", () => {
 		render(
 			<Wrapper>
 				<StudentPsichiatricHistory
-					getPsichiatricHistory={mockGetPsichiatricHistory}
-					updatePsichiatricHistory={mockUpdatePsichiatricHistory}
+					getPsichiatricHistory={mockGetStudentPsichiatricHistory}
+					updatePsichiatricHistory={mockUpdateStudentPsichiatricHistory}
 					sidebarConfig={sidebarConfig}
 					useStore={mockUseStore}
 				/>
