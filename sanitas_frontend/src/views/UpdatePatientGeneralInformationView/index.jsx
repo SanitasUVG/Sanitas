@@ -80,7 +80,7 @@ export default function UpdatePatientInfoView({
 					background: colors.secondaryBackground,
 					borderRadius: "0.625rem",
 					width: "100%",
-					padding: "0 6rem",
+					padding: "1rem 6rem",
 				}}
 			>
 				<Suspense
