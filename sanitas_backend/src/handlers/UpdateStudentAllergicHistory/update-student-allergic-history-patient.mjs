@@ -76,45 +76,45 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 				.setBody({ error: "Invalid input: Missing patientId." })
 				.build();
 		}
+		try {
+			await client.query("begin");
 
-		await client.query("begin");
-
-		const getPatientQuery = `
+			const getPatientQuery = `
             SELECT * FROM antecedentes_alergicos WHERE id_paciente = $1;
         `;
-		const result = await client.query(getPatientQuery, [patientId]);
-		if (result.rowCount > 0) {
-			const existingData = result.rows[0].antecedente_alergico_data;
-			const newData = medicalHistory;
+			const result = await client.query(getPatientQuery, [patientId]);
+			if (result.rowCount > 0) {
+				const existingData = result.rows[0].antecedente_alergico_data;
+				const newData = medicalHistory;
 
-			logger.info({ existingData }, "Data of the patient in DB currently...");
-			logger.info({ medicalHistory }, "Data coming in...");
+				logger.info({ existingData }, "Data of the patient in DB currently...");
+				logger.info({ medicalHistory }, "Data coming in...");
 
-			const repeatingData = requestDataEditsDBData(newData, existingData);
+				const repeatingData = requestDataEditsDBData(newData, existingData);
 
-			if (repeatingData) {
-				logger.error("Student trying to update info already saved!");
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({
-						error: "Invalid input: Students cannot update saved info.",
-					})
-					.build();
+				if (repeatingData) {
+					logger.error("Student trying to update info already saved!");
+					return responseBuilder
+						.setStatusCode(400)
+						.setBody({
+							error: "Invalid input: Students cannot update saved info.",
+						})
+						.build();
+				}
 			}
-		}
 
-		const values = [
-			patientId,
-			JSON.stringify(medicalHistory.medication),
-			JSON.stringify(medicalHistory.food),
-			JSON.stringify(medicalHistory.dust),
-			JSON.stringify(medicalHistory.pollen),
-			JSON.stringify(medicalHistory.climateChange),
-			JSON.stringify(medicalHistory.animals),
-			JSON.stringify(medicalHistory.others),
-		];
+			const values = [
+				patientId,
+				JSON.stringify(medicalHistory.medication),
+				JSON.stringify(medicalHistory.food),
+				JSON.stringify(medicalHistory.dust),
+				JSON.stringify(medicalHistory.pollen),
+				JSON.stringify(medicalHistory.climateChange),
+				JSON.stringify(medicalHistory.animals),
+				JSON.stringify(medicalHistory.others),
+			];
 
-		const upsertQuery = `
+			const upsertQuery = `
         INSERT INTO antecedentes_alergicos (
           id_paciente,
           medicamento_data,
@@ -139,30 +139,36 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
         RETURNING *;
         `;
 
-		logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
-		const upsertResult = await client.query(upsertQuery, values);
-		logger.info("Done inserting/updating!");
+			logger.info(
+				{ upsertQuery, values },
+				"Inserting/Updating values in DB...",
+			);
+			const upsertResult = await client.query(upsertQuery, values);
+			logger.info("Done inserting/updating!");
 
-		await client.query("commit");
+			await client.query("commit");
 
-		if (upsertResult.rowCount === 0) {
-			logger.error("No value was inserted/updated in the DB!");
+			if (upsertResult.rowCount === 0) {
+				logger.error("No value was inserted/updated in the DB!");
+				return responseBuilder
+					.setStatusCode(404)
+					.setBody({ message: "Failed to insert or update allergic history." })
+					.build();
+			}
+
+			logger.info("Mapping DB response into API response...");
+			const updatedRecord = upsertResult.rows[0];
+			const formattedResponse = mapToAPIAllergicHistory(updatedRecord);
+			logger.info({ formattedResponse }, "Done! Responding with:");
 			return responseBuilder
-				.setStatusCode(404)
-				.setBody({ message: "Failed to insert or update allergic history." })
+				.setStatusCode(200)
+				.setBody(formattedResponse)
 				.build();
+		} catch (error) {
+			await client.query("rollback");
+			throw error;
 		}
-
-		logger.info("Mapping DB response into API response...");
-		const updatedRecord = upsertResult.rows[0];
-		const formattedResponse = mapToAPIAllergicHistory(updatedRecord);
-		logger.info({ formattedResponse }, "Done! Responding with:");
-		return responseBuilder
-			.setStatusCode(200)
-			.setBody(formattedResponse)
-			.build();
 	} catch (error) {
-		await client.query("rollback");
 		logger.error(
 			{ error },
 			"An error occurred while updating allergic history!",
