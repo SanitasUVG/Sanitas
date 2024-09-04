@@ -288,6 +288,22 @@ Resources:
             Method: POST
 
   # This is a Lambda function config associated with the source code:
+  # update-student-allergic-history.mjs
+  updateStudentAllergicHistoryHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentAllergicHistory/update-student-allergic-history-patient.updateStudentAllergicHistoryHandler
+      Description: Updates the allergic history for a specific patient
+        from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-allergic-history
+            Method: POST
+
+  # This is a Lambda function config associated with the source code:
   # get-family-history-patient.mjs
   getFamilyHistoryFunction:
     Type: AWS::Serverless::Function
