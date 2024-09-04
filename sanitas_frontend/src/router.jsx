@@ -21,6 +21,8 @@ import {
 	getStudentPatientInformation,
 	getSurgicalHistory,
 	getTraumatologicalHistory,
+	getAllergicHistory,
+	getGynecologicalHistory,
 	searchPatient,
 	submitPatientData,
 	updateCollaboratorInformation,
@@ -32,8 +34,9 @@ import {
 	updateSurgicalHistory,
 	updateStudentSurgicalHistory,
 	updateTraumatologicalHistory,
-	getAllergicHistory,
 	updateAllergicHistory,
+	updateStudentAllergicHistory,
+	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
 	getRole,
@@ -53,6 +56,8 @@ import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
+import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic";
+import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
@@ -80,12 +85,14 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	PERSONAL_HISTORY: "personal",
 	NONPATHOLOGICAL_HISTORY: "non-pathological",
 	ALLERGIC_HISTORY: "allergic",
+	OBGYN_HISTORY: "obgyn",
 	PSICHIATRIC_HISTORY: "psichiatric",
 	// TODO: Add other Navigation routes...
 };
 
 export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
+	STUDENT_ALLERGIC_HISTORY: "student-allergic",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -130,6 +137,11 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	navigateToAllergies: (navigate) => {
 		navigate(
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToObstetrics: (navigate) => {
+		navigate(
+			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY}`,
 		);
 	},
 	navigateToPsiquiatric: (navigate) => {
@@ -261,6 +273,20 @@ const allergicHistoryView = (
 	</RequireAuth>
 );
 
+const studentAllergicHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentAllergicHistory
+			getStudentAllergicHistory={getAllergicHistory}
+			updateStudentAllergicHistory={updateStudentAllergicHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const psichiatricHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -269,6 +295,21 @@ const psichiatricHistoryView = (
 		<PsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updatePsichiatricHistory={updatePsichiatricHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const obgynHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<ObGynHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getObGynHistory={getGynecologicalHistory}
+			updateObGynHistory={updateGynecologicalHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
@@ -375,6 +416,10 @@ export const ROUTES = [
 				element: allergicHistoryView,
 			},
 			{
+				path: UPDATE_PATIENT_NAV_PATHS.OBGYN_HISTORY,
+				element: obgynHistoryView,
+			},
+			{
 				path: UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY,
 				element: psichiatricHistoryView,
 			},
@@ -392,6 +437,10 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
 				element: studentSurgicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY,
+				element: studentAllergicHistoryView,
 			},
 		],
 	},

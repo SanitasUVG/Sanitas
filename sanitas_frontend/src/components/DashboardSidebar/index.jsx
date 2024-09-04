@@ -166,7 +166,7 @@ export default function DashboardSidebar({
 					fontWeight: "normal",
 					paddingBottom: "1rem",
 					paddingTop: "1rem",
-					borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+					borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 				}}
 			>
 				Antecedentes

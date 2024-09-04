@@ -1086,6 +1086,116 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 };
 
 /**
+ * Updates the allergic history of a patient by sending a POST request to a specific endpoint.
+ * This function constructs a payload from the allergic history provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} allergicHistory - An object containing details about the patient's allergic history.
+ * @param {number} currentVersion - The current version of the allergic history data.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentAllergicHistory = async (
+	patientId,
+	allergicHistory,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-allergic-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			medication: {
+				version: currentVersion,
+				data: allergicHistory.medication.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			food: {
+				version: currentVersion,
+				data: allergicHistory.food.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			dust: {
+				version: currentVersion,
+				data: allergicHistory.dust.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			pollen: {
+				version: currentVersion,
+				data: allergicHistory.pollen.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			climateChange: {
+				version: currentVersion,
+				data: allergicHistory.climateChange.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			animals: {
+				version: currentVersion,
+				data: allergicHistory.animals.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+			others: {
+				version: currentVersion,
+				data: allergicHistory.others.map((item) => ({
+					name: item.name,
+					reaction: item.reaction,
+					severity: item.severity,
+				})),
+			},
+		},
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
  * Fetches the Psichiatric history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
@@ -1174,6 +1284,75 @@ export const updatePsichiatricHistory = async (
 		}
 		if (error.request) {
 			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+export const getGynecologicalHistory = async (patientId) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/gyneco-history/${patientId}`;
+
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
+export const updateGynecologicalHistory = async (
+	patientId,
+	gynecologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/gyneco-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: gynecologicalHistoryDetails,
+	};
+
+	try {
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
 		}
 		return { error: error.message };
 	}
