@@ -62,7 +62,6 @@ import { PsichiatricHistory } from "./views/History/Psichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
-import { element } from 'prop-types';
 
 const useStore = createEmptyStore();
 
@@ -94,7 +93,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
 	STUDENT_ALLERGIC_HISTORY: "student-allergic",
-	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric"
+	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -461,7 +460,7 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY,
 				element: studentPsichiatricHistoryView,
-			}
+			},
 		],
 	},
 ];
