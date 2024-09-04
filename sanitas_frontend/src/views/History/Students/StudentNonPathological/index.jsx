@@ -1,11 +1,7 @@
-import { Suspense, useMemo, useState, useEffect } from "react";
+import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import IconButton from "src/components/Button/Icon";
 import DashboardSidebar from "src/components/DashboardSidebar";
 import { BaseInput } from "src/components/Input/index";
 import { RadioInput } from "src/components/Input/index";
@@ -264,34 +260,6 @@ function NonPathologicalView({
 	// Edit mode state to toggle between view and edit modes.
 	const [isEditable, setIsEditable] = useState(isFirstTime);
 
-	// Original info
-	const [originalSmokingStatus, setOriginalSmokingStatus] =
-		useState(smokingStatus);
-	const [originalCigarettesPerDay, setOriginalCigarettesPerDay] =
-		useState(cigarettesPerDay);
-	const [originalSmokingYears, setOriginalSmokingYears] =
-		useState(smokingYears);
-	const [originalAlcoholConsumption, setOriginalAlcoholConsumption] =
-		useState(alcoholConsumption);
-	const [originalDrinksPerMonth, setOriginalDrinksPerMonth] =
-		useState(drinksPerMonth);
-	const [originalDrugUse, setOriginalDrugUse] = useState(drugUse);
-	const [originalDrugType, setOriginalDrugType] = useState(drugType);
-	const [originalDrugFrequency, setOriginalDrugFrequency] =
-		useState(drugFrequency);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: UseEffect for the cancel method
-	useEffect(() => {
-		setOriginalSmokingStatus(smokingStatus);
-		setOriginalCigarettesPerDay(cigarettesPerDay);
-		setOriginalSmokingYears(smokingYears);
-		setOriginalAlcoholConsumption(alcoholConsumption);
-		setOriginalDrinksPerMonth(drinksPerMonth);
-		setOriginalDrugUse(drugUse);
-		setOriginalDrugType(drugType);
-		setOriginalDrugFrequency(drugFrequency);
-	}, [nonPathologicalHistoryResult]);
-
 	const validateSmokingDetails = () => {
 		if (
 			smokingStatus &&
@@ -419,20 +387,6 @@ function NonPathologicalView({
 		}
 	};
 
-	// Canceling update
-	const handleCancel = () => {
-		setIsEditable(false);
-		setSmokingStatus(originalSmokingStatus);
-		setCigarettesPerDay(originalCigarettesPerDay);
-		setSmokingYears(originalSmokingYears);
-		setAlcoholConsumption(originalAlcoholConsumption);
-		setDrinksPerMonth(originalDrinksPerMonth);
-		setDrugUse(originalDrugUse);
-		setDrugType(originalDrugType);
-		setDrugFrequency(originalDrugFrequency);
-		toast.info("Edición cancelada.");
-	};
-
 	return (
 		<div
 			style={{
@@ -522,21 +476,6 @@ function NonPathologicalView({
 									}}
 								/>
 							</div>
-							{!isFirstTime &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNonPathological}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
 						</div>
 						<div
 							style={{
