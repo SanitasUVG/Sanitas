@@ -62,6 +62,7 @@ import { PsichiatricHistory } from "./views/History/Psichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
+import { element } from 'prop-types';
 
 const useStore = createEmptyStore();
 
@@ -93,6 +94,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
 	STUDENT_ALLERGIC_HISTORY: "student-allergic",
+	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric"
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -301,6 +303,20 @@ const psichiatricHistoryView = (
 	</RequireAuth>
 );
 
+const studentPsichiatricHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<PsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updatePsichiatricHistory={updatePsichiatricHistory}
+			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const obgynHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -442,6 +458,10 @@ export const ROUTES = [
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY,
 				element: studentAllergicHistoryView,
 			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY,
+				element: studentPsichiatricHistoryView,
+			}
 		],
 	},
 ];
