@@ -34,13 +34,23 @@ export default function RegisterView({ registerUser }) {
 		const [registerResource, setRegisterResource] = useState(null);
 
 		const handleRegister = () => {
+			if (!(username && password)) {
+				setErrorMessage("Por favor, complete todos los campos.");
+				return;
+			}
 			setRegisterResource(WrapPromise(registerUser(username, password)));
 		};
 
 		if (registerResource !== null) {
 			const response = registerResource.read();
 			if (response.error) {
-				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+				if (response.errorCode === "UserAlreadyExistsException") {
+					setErrorMessage(
+						"El usuario ya está registrado. Intente con otro correo.",
+					);
+				} else {
+					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+				}
 			} else {
 				navigate(NAV_PATHS.LOGIN_USER, { replace: true });
 			}
