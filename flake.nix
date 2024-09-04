@@ -27,11 +27,17 @@
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
     postgresPort = 6969;
     postgresHost = "0.0.0.0";
+    strFromDBFile = file: builtins.readFile ./database/${file};
+    dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
   in {
     packages = forEachSystem (
       system: let
-        # dbPort = "5433";
         pkgs = import nixpkgs {inherit system;};
+        samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
+        backendRequiredPkgs = [
+          pkgs.awscli2
+          samcli
+        ];
       in {
         # For setting up devenv
         devenv-up = self.devShells.${system}.default.config.procfileScript;
@@ -52,15 +58,123 @@
 
         integrationTests = pkgs.writeShellApplication {
           name = "Sanitas integration tests";
-          runtimeInputs = with pkgs; [ansi docker];
-          text = ''
-            echo -e "$(ansi yellow)" Starting Services...
-            nix run .#restartServices &
+          runtimeInputs = [pkgs.docker pkgs.process-compose pkgs.unixtools.ifconfig] ++ backendRequiredPkgs;
+          text = let
+            PGDATA = ''"$PWD/.devenv/state/postgres"'';
+            startBackend = let
+              ipCommand =
+                if builtins.elem system ["x86_64-darwin" "aarch64-darwin"]
+                then "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
+                else "ip route get 1.2.3.4 | cut -d' ' -f7";
+            in ''
+              set -euo pipefail
+              cd sanitas_backend/
 
-            echo -e "$(ansi yellow)" Running tests...
-            cd sanitas_backend
-            sleep 180 # Sleep for 180s = 3m
-            npm test -- --runInBand
+              # echo Starting backend
+              # echo Getting ifconfig
+              # ifconfig en0
+              # echo Grepping for inet
+              # ifconfig en0 | grep 'inet '
+              # echo Using AWK
+              # awk --version
+              # echo -e "ifconfig en0 | grep 'inet ' | cut -d' ' -f2"
+              # ifconfig en0 | grep 'inet ' | cut -d' ' -f2
+
+              echo Building backend
+              sam build
+
+              sam local start-api --debug --add-host=hostpc:$(${ipCommand})
+            '';
+            startPostgres = ''
+              set -euo pipefail
+              echo PWD = "$PWD"
+              echo PGDATA = ${PGDATA}
+              rm -rf "${PGDATA}"
+              mkdir -p "${PGDATA}"
+              export PATH=${pkgs.postgresql}/bin:${pkgs.coreutils}/bin
+
+              export PGDATA=${PGDATA}
+              export PGHOST=${PGDATA}
+              echo "The PGDATA variable is" $PGDATA
+              echo "The PGHOST variable is" $PGHOST
+
+              initdb --locale=C --encoding=UTF8
+              POSTGRES_RUN_INITIAL_SCRIPT="true"
+              echo
+              echo "PostgreSQL initdb process complete."
+              echo
+
+              # Setup pg_hba.conf
+              echo "Setting up pg_hba"
+              cp ${./pg_hba.conf} "${PGDATA}/pg_hba.conf"
+              echo "HBA setup complete!"
+
+              echo
+              echo "PostgreSQL is setting up the initial database."
+              echo
+
+              echo "Listing files"
+              ls ${PGDATA}
+              echo "Who am I? $(whoami)"
+              echo Starting server with command: pg_ctl -w start -o "-c unix_socket_directories=${PGDATA} -c listen_addresses=* -p ${builtins.toString postgresPort}"
+              pg_ctl -w start -o "-c unix_socket_directories=${PGDATA} -c listen_addresses=* -p ${builtins.toString postgresPort}"
+
+              echo "Initializing DB"
+              echo "${dbInitFile}" | psql --dbname postgres -p ${builtins.toString postgresPort}
+              echo "Sanitas postgres is now running!"
+            '';
+            stopPostgres = ''
+              set -euo pipefail
+              export PGDATA=${PGDATA}
+              export PGHOST=${PGDATA}
+              echo "The PGDATA variable is" $PGDATA
+              echo "The PGHOST variable is" $PGHOST
+
+              pg_ctl -m fast -w stop
+            '';
+
+            testBackend = "cd ./sanitas_backend/ && npm test -- --runInBand";
+
+            processComposeConfig = {
+              version = "0.5";
+              is_tui_disabled = true;
+              log_location = "./integration_tests.log";
+              processes = {
+                DB = {
+                  command = startPostgres;
+                  ready_log_line = "Sanitas postgres is now running!";
+                  availability.restart = "exit_on_failure";
+                  is_daemon = true;
+                  shutdown = {
+                    command = stopPostgres;
+                  };
+                };
+                Backend = {
+                  command = startBackend;
+                  ready_log_line = "Running on http://127.0.0.1:";
+                  availability.restart = "exit_on_failure";
+                };
+                Test = {
+                  command = testBackend;
+                  availability = {
+                    exit_on_end = true;
+                  };
+                  depends_on = {
+                    DB = {
+                      condition = "process_log_ready";
+                    };
+                    Backend = {
+                      condition = "process_log_ready";
+                    };
+                  };
+                };
+              };
+            };
+
+            processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
+          in ''
+            echo ${processComposeConfigFile}
+            process-compose -f ${processComposeConfigFile}
           '';
         };
 
@@ -92,8 +206,6 @@
         pkgs.awscli2
         samcli
       ];
-      strFromDBFile = file: builtins.readFile ./database/${file};
-      dbInitFile = builtins.concatStringsSep "\n" [(strFromDBFile "init.sql") (strFromDBFile "tables.sql") (strFromDBFile "inserts.sql")];
     in {
       cicdFrontend = pkgs.mkShell {
         packages = requiredPkgs ++ frontendRequiredPkgs;
