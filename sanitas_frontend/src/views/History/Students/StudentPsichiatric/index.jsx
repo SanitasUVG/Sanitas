@@ -1,12 +1,8 @@
 import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 import BaseButton from "src/components/Button/Base/index";
 import DashboardSidebar from "src/components/DashboardSidebar";
-import IconButton from "src/components/Button/Icon";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
@@ -863,35 +859,6 @@ function PsichiatricView({
 		isFirstTime,
 	]);
 
-	const handleCancel = () => {
-		// Restaurar los valores originales desde los estados guardados
-		setDepressionMedications(
-			JSON.parse(JSON.stringify(originalDepressionMedications)),
-		);
-		setAnxietyMedications(
-			JSON.parse(JSON.stringify(originalAnxietyMedications)),
-		);
-		setTOCMedications(JSON.parse(JSON.stringify(originalTOCMedications)));
-		setTDAHMedications(JSON.parse(JSON.stringify(originalTDAHMedications)));
-		setBipolarMedications(
-			JSON.parse(JSON.stringify(originalBipolarMedications)),
-		);
-		setOtherMedications(JSON.parse(JSON.stringify(originalOtherMedications)));
-
-		setDepressionUBE(originalDepressionUBE);
-		setAnxietyUBE(originalAnxietyUBE);
-		setTOCUBE(originalTOCUBE);
-		setTDAHUBE(originalTDAHUBE);
-		setBipolarUBE(originalBipolarUBE);
-		setOtherUBE(originalOtherUBE);
-
-		setOtherIllness(originalOtherIllness);
-
-		// Salir del modo de edición
-		setIsEditable(false);
-		toast.info("Edición cancelada.");
-	};
-
 	const handleDepressionChange = (newStatus) => {
 		setDepressionStatus(newStatus);
 		if (!newStatus) {
@@ -992,30 +959,6 @@ function PsichiatricView({
 								primera visita aquí.
 							</div>
 						)}
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								justifyContent: "flex-end",
-								width: "100%",
-							}}
-						>
-							{!isFirstTime &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNewHistory}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
-						</div>
 						<div
 							style={{
 								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
