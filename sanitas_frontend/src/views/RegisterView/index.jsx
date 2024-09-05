@@ -38,28 +38,39 @@ export default function RegisterView({ registerUser }) {
 				setErrorMessage("Por favor, complete todos los campos.");
 				return;
 			}
-			setRegisterResource(WrapPromise(registerUser(username, password)));
+			setRegisterResource(
+				WrapPromise(
+					registerUser(username, password).catch((error) => {
+						const errorType =
+							error.response.headers["x-amzn-errortype"].split(":")[0];
+						switch (errorType) {
+							case "UsernameExistsException":
+								setErrorMessage(
+									"El usuario ya está registrado. Intente con otro correo.",
+								);
+								break;
+							case "InvalidParameterException ":
+								setErrorMessage("Revise el correo o la contraseña por favor.");
+								break;
+							case "InvalidPasswordException":
+								setErrorMessage(
+									"La contraseña es muy débil. Intente con una más segura.",
+								);
+								break;
+							default:
+								setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+						}
+						setRegisterResource(null);
+					}),
+				),
+			);
 		};
 
 		if (registerResource !== null) {
 			const response = registerResource.read();
-			if (response.error) {
-				if (response.errorCode === "UserAlreadyExistsException") {
-					setErrorMessage(
-						"El usuario ya está registrado. Intente con otro correo.",
-					);
-				} else if (response.errorCode === "InvalidPasswordException") {
-					setErrorMessage(
-						"La contraseña es muy débil. Intente con una más segura.",
-					);
-				} else {
-					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
-				}
-			} else {
+			if (!response.error) {
 				navigate(NAV_PATHS.LOGIN_USER, { replace: true });
 			}
-
-			setRegisterResource(null);
 		}
 
 		return (
