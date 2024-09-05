@@ -48,6 +48,10 @@ export default function RegisterView({ registerUser }) {
 					setErrorMessage(
 						"El usuario ya está registrado. Intente con otro correo.",
 					);
+				} else if (response.errorCode === "InvalidPasswordException") {
+					setErrorMessage(
+						"La contraseña es muy débil. Intente con una más segura.",
+					);
 				} else {
 					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 				}
