@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    samcliPkgs.url = "github:nixos/nixpkgs/42c5e250a8a9162c3e962c78a4c393c5ac369093";
+    # samcliPkgs.url = "github:nixos/nixpkgs/42c5e250a8a9162c3e962c78a4c393c5ac369093";
     systems.url = "github:nix-systems/default";
     devenv = {
       url = "github:cachix/devenv";
@@ -21,7 +21,7 @@
     nixpkgs,
     systems,
     devenv,
-    samcliPkgs,
+    # samcliPkgs,
     ...
   } @ inputs: let
     forEachSystem = nixpkgs.lib.genAttrs (import systems);
@@ -33,10 +33,11 @@
     packages = forEachSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
-        samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
+        # samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
         backendRequiredPkgs = [
           pkgs.awscli2
-          samcli
+          pkgs.aws-sam-cli
+          # samcli
         ];
       in {
         # For setting up devenv
@@ -194,7 +195,7 @@
 
     devShells = forEachSystem (system: let
       pkgs = import nixpkgs {inherit system;};
-      samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
+      # samcli = (import samcliPkgs {inherit system;}).aws-sam-cli;
       requiredPkgs = with pkgs; [
         jq
       ];
@@ -204,7 +205,8 @@
       ];
       backendRequiredPkgs = [
         pkgs.awscli2
-        samcli
+        pkgs.aws-sam-cli
+        # samcli
       ];
     in {
       cicdFrontend = pkgs.mkShell {
