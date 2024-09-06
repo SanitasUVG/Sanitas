@@ -16,7 +16,7 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @param {Object} props - Component props.
  * @param {Function} props.getNonPathologicalHistory - Function to fetch non-pathological history data.
  * @param {Function} props.getBloodTypePatientInfo - Function to fetch blood type information of the patient.
- * @param {Function} props.updateNonPathologicalHistory - Function to update the non-pathological history.
+ * @param {Function} props.updateStudentNonPathologicalHistory - Function to update the non-pathological history.
  * @param {Object} props.sidebarConfig - Configuration properties for the sidebar component.
  * @param {Function} props.useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
  * @returns {JSX.Element} The NonPathologicalHistory component visual structure.
@@ -24,7 +24,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 export function StudentNonPathologicalHistory({
 	getNonPathologicalHistory,
 	getBloodTypePatientInfo,
-	updateNonPathologicalHistory,
+	updateStudentNonPathologicalHistory,
 	sidebarConfig,
 	useStore,
 }) {
@@ -136,7 +136,7 @@ export function StudentNonPathologicalHistory({
 								id={id}
 								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
 								bloodTypeResource={bloodTypeResource}
-								updateNonPathologicalHistory={updateNonPathologicalHistory}
+								updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
@@ -155,7 +155,7 @@ export function StudentNonPathologicalHistory({
  * @property {string} id - Unique identifier for the patient.
  * @property {Object} nonPathologicalHistoryResource - Promise-based resource for non-pathological history data.
  * @property {Object} bloodTypeResource - Promise-based resource for blood type data.
- * @property {Function} updateNonPathologicalHistory - Function to update the non-pathological history records.
+ * @property {Function} updateStudentNonPathologicalHistory - Function to update the non-pathological history records.
  * @property {Function} triggerReload - Function to trigger reloading of data.
  *
  * @param {NonPathologicalViewProps} props - Props passed to NonPathologicalView component.
@@ -166,7 +166,7 @@ function NonPathologicalView({
 	id,
 	nonPathologicalHistoryResource,
 	bloodTypeResource,
-	updateNonPathologicalHistory,
+	updateStudentNonPathologicalHistory,
 	triggerReload,
 }) {
 	// Reading the results from the provided resources.
@@ -349,7 +349,7 @@ function NonPathologicalView({
 
 		toast.info("Guardando antecedente no patológico...");
 
-		const result = await updateNonPathologicalHistory(id, updateDetails);
+		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
 		if (!result.error) {
 			toast.success("Antecedentes no patológicos actualizados con éxito.");
 			setIsEditable(false);

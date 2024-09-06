@@ -29,6 +29,7 @@ import {
 	updateFamilyHistory,
 	updateGeneralPatientInformation,
 	updateNonPathologicalHistory,
+	updateStudentNonPathologicalHistory,
 	updatePersonalHistory,
 	updateStudentPatientInformation,
 	updateSurgicalHistory,
@@ -269,7 +270,7 @@ const studentNonPathologicalHistoryView = (
 		<StudentNonPathologicalHistory
 			getNonPathologicalHistory={getNonPathologicalHistory}
 			getBloodTypePatientInfo={getGeneralPatientInformation}
-			updateNonPathologicalHistory={updateNonPathologicalHistory}
+			updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
