@@ -1006,8 +1006,8 @@ export const updateNonPathologicalHistory = async (
  * it returns the error message or the error response from the server. This includes handling of session errors, invalid sessions, unexpected response statuses, and network issues.
  */
 export const updateStudentNonPathologicalHistory = async (
-    patientId,
-    nonPathologicalHistoryDetails,
+	patientId,
+	nonPathologicalHistoryDetails,
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1021,31 +1021,31 @@ export const updateStudentNonPathologicalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/patient/student-nonpatological-history`; 
+	const url = `${PROTECTED_URL}/patient/student-nonpatological-history`;
 
-    const payload = {
-        patientId: patientId,
-        nonPathologicalHistory: nonPathologicalHistoryDetails, 
-    };
+	const payload = {
+		patientId: patientId,
+		nonPathologicalHistory: nonPathologicalHistoryDetails,
+	};
 
-    try {
-        const response = await axios.post(url, payload, {
-            headers: { Authorization: token }, 
-        });
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
 
-        if (response.status !== 200) {
-            return { error: `Unexpected status code: ${response.status}` };
-        }
-        return { result: response.data };
-    } catch (error) {
-        if (error.response) {
-            return { error: error.response.data }; 
-        }
-        if (error.request) {
-            return { error: "No response received" }; 
-        }
-        return { error: error.message }; 
-    }
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
 };
 
 /**

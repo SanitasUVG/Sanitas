@@ -136,7 +136,9 @@ export function StudentNonPathologicalHistory({
 								id={id}
 								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
 								bloodTypeResource={bloodTypeResource}
-								updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
+								updateStudentNonPathologicalHistory={
+									updateStudentNonPathologicalHistory
+								}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
