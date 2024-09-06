@@ -39,6 +39,7 @@ import {
 	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
+	updateStudentPsychiatricHistory,
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
@@ -309,7 +310,7 @@ const studentPsichiatricHistoryView = (
 	>
 		<PsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
-			updatePsichiatricHistory={updatePsichiatricHistory}
+			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
