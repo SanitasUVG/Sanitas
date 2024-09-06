@@ -557,6 +557,22 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   # This is a Lambda function config associated with the source code:
+  # update-surgical-history.mjs
+  updateStudentPsychiatricHistoryHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentPsychiatricHistory/update-student-psychiatric-history-patient.updateStudentPsychiatricHistoryHandler
+      Description: Updates the psychiatric history for a specific patient
+        from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-psychiatric-history
+            Method: POST
+
+  # This is a Lambda function config associated with the source code:
   # get-gynecoobstetric-history-patient.mjs
   getGynecologicalHistoryFunction:
     Type: AWS::Serverless::Function
