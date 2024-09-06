@@ -1196,6 +1196,138 @@ export const updateStudentAllergicHistory = async (
 };
 
 /**
+ * Updates the personal history of a patient by sending a POST request to a specific endpoint.
+ * This function constructs a payload from the personal history provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} personalHistory - An object containing details about the patient's personal history.
+ * @param {number} currentVersion - The current version of the personal history data.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentPersonalHistory = async (
+	patientId,
+	personalHistory,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-personal-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			hypertension: {
+				version: currentVersion,
+				data: personalHistory.hypertension.map((item) => ({
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			diabetesMellitus: {
+				version: currentVersion,
+				data: personalHistory.diabetesMellitus.map((item) => ({
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			hypothyroidism: {
+				version: currentVersion,
+				data: personalHistory.hypothyroidism.map((item) => ({
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			asthma: {
+				version: currentVersion,
+				data: personalHistory.asthma.map((item) => ({
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			convulsions: {
+				version: currentVersion,
+				data: personalHistory.convulsions.map((item) => ({
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			myocardialInfarction: {
+				version: currentVersion,
+				data: personalHistory.myocardialInfarction,
+			},
+			cancer: {
+				version: currentVersion,
+				data: personalHistory.cancer.map((item) => ({
+					typeOfCancer: item.typeOfCancer,
+					treatment: item.treatment,
+				})),
+			},
+			cardiacDiseases: {
+				version: currentVersion,
+				data: personalHistory.cardiacDiseases.map((item) => ({
+					typeOfDisease: item.typeOfDisease,
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			renalDiseases: {
+				version: currentVersion,
+				data: personalHistory.renalDiseases.map((item) => ({
+					typeOfDisease: item.typeOfDisease,
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+			others: {
+				version: currentVersion,
+				data: personalHistory.others.map((item) => ({
+					typeOfDisease: item.typeOfDisease,
+					medicine: item.medicine,
+					dose: item.dose,
+					frequency: item.frequency,
+				})),
+			},
+		},
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
  * Fetches the Psichiatric history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
