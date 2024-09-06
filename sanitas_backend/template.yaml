@@ -480,6 +480,25 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # update-nonpatological-history-patient.mjs
+  updateStudentNonPatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentNonPatologicalHistory/update-student-nonpatological-history-patient.updateStudentNonPathologicalHistoryHandler
+      Description: Updates the non patological history for a specific
+        patient from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-nonpatological-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   # Esta es una configuración de Lambda function asociada con el código fuente:
   # update-allergic-history-patient.mjs
   updateAllergicHistoryFunction:
