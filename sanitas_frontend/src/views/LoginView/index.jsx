@@ -66,9 +66,21 @@ export default function LoginView({
 			const loginResponse = loginResource.read();
 			const roleResponse = roleResource.read();
 
-			if (loginResponse.error || roleResponse.error) {
-				setErrorMessage("Contraseña o correo incorrecto, vuelve a intentarlo.");
-				return;
+			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
+			// Sino, entonces si es clavo del usuario.
+
+			console.log(loginResponse);
+			const errorType = loginResponse.error?.code;
+			console.log(errorType);
+			switch (errorType) {
+				case "NotAuthorizedException":
+					setErrorMessage("Revise el correo o la contraseña por favor.");
+					break;
+				case "UserNotFoundException":
+					setErrorMessage("Revise el correo o la contraseña por favor.");
+					break;
+				default:
+					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 			}
 
 			if (roleResponse.result === "DOCTOR") {
@@ -76,14 +88,13 @@ export default function LoginView({
 				return;
 			}
 
-			const linkedPatientResponse = loginResource.read();
+			const linkedPatientResponse = getLinkedPatientResource.read();
 			if (linkedPatientResponse.error) {
-				setErrorMessage(
-					"No se encontro una cuenta registrada con las credenciales ingresadas, puedes registrarte",
-				);
+				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 				return;
 			}
 
+			console.log("Linked Patient Resource: ", linkedPatientResponse);
 			const { linkedPatientId } = linkedPatientResponse.result;
 			if (!linkedPatientId) {
 				navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
