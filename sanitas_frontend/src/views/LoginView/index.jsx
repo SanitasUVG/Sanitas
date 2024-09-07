@@ -8,7 +8,7 @@ import { BaseInput } from "src/components/Input";
 import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
+import { adjustHeight } from "src/utils/measureScaling";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
 
@@ -31,17 +31,12 @@ export default function LoginView({
 	useStore,
 }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
-	const { width, height } = useWindowSize();
+	const { height } = useWindowSize();
 
 	/** @type React.CSSStyleDeclaration */
 	const inputStyles = {
 		width: "100%",
-		paddingTop: adjustHeight(height, "0.8rem"),
-		paddingBottom: adjustHeight(height, "0.8rem"),
-		paddingRight: adjustWidth(width, "0.8rem"),
-		paddingLeft: adjustWidth(width, "0.8rem"),
-
-		fontSize: fontSize.textSize,
+		padding: ".8rem",
 	};
 
 	const Child = () => {
@@ -57,6 +52,11 @@ export default function LoginView({
 		const [getLinkedPatientResource, setLinkedPatientResource] = useState(null);
 
 		const handleLogin = () => {
+			if (!(username && password)) {
+				setErrorMessage("Por favor, complete todos los campos.");
+				return;
+			}
+
 			setLoginResource(WrapPromise(loginUser(username, password)));
 			setGetRoleResource(WrapPromise(getRole()));
 			setLinkedPatientResource(WrapPromise(getLinkedPatient()));
@@ -66,9 +66,21 @@ export default function LoginView({
 			const loginResponse = loginResource.read();
 			const roleResponse = roleResource.read();
 
-			if (loginResponse.error || roleResponse.error) {
-				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
-				return;
+			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
+			// Sino, entonces si es clavo del usuario.
+
+			console.log(loginResponse);
+			const errorType = loginResponse.error?.code;
+			console.log(errorType);
+			switch (errorType) {
+				case "NotAuthorizedException":
+					setErrorMessage("Revise el correo o la contraseña por favor.");
+					break;
+				case "UserNotFoundException":
+					setErrorMessage("Revise el correo o la contraseña por favor.");
+					break;
+				default:
+					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 			}
 
 			if (roleResponse.result === "DOCTOR") {
@@ -76,12 +88,13 @@ export default function LoginView({
 				return;
 			}
 
-			const linkedPatientResponse = loginResource.read();
+			const linkedPatientResponse = getLinkedPatientResource.read();
 			if (linkedPatientResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 				return;
 			}
 
+			console.log("Linked Patient Resource: ", linkedPatientResponse);
 			const { linkedPatientId } = linkedPatientResponse.result;
 			if (!linkedPatientId) {
 				navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
@@ -121,10 +134,10 @@ export default function LoginView({
 				<div
 					style={{
 						background: "white",
-						padding: `${adjustHeight(height, "4rem")}·8vw·0·8vw`,
+						padding: "4rem 8vw 0 8vw",
 						display: "flex",
 						flexDirection: "column",
-						gap: adjustHeight(height, "3rem"),
+						gap: "3rem",
 						width: "45%",
 						height: "90%",
 						position: "relative",
@@ -152,8 +165,6 @@ export default function LoginView({
 								textAlign: "center",
 								fontFamily: fonts.titleFont,
 								color: colors.titleText,
-								paddingBottom: adjustHeight(height, "1rem"),
-								paddingTop: adjustHeight(height, "1rem"),
 							}}
 						>
 							¡Bienvenid@!
@@ -162,8 +173,7 @@ export default function LoginView({
 							style={{
 								textAlign: "center",
 								fontFamily: fonts.textFont,
-								fontSize: "1.5rem",
-								paddingBottom: adjustHeight(height, "1rem"),
+								fontSize: fontSize.subtitleSize,
 							}}
 						>
 							Ingresa tus datos
@@ -175,7 +185,7 @@ export default function LoginView({
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							gap: adjustHeight(height, "1.5rem"),
+							gap: "1.5rem",
 						}}
 					>
 						<div>
@@ -183,8 +193,7 @@ export default function LoginView({
 								style={{
 									display: "block",
 									fontFamily: fonts.textFont,
-									fontSize: fontSize.subtitleSize,
-									paddingBottom: adjustHeight(height, "0.5rem"),
+									fontSize: fontSize.textSize,
 								}}
 							>
 								Correo electrónico:
@@ -201,9 +210,7 @@ export default function LoginView({
 								style={{
 									display: "block",
 									fontFamily: fonts.textFont,
-									fontSize: fontSize.subtitleSize,
-									paddingTop: adjustHeight(height, "0.5rem"),
-									paddingBottom: adjustHeight(height, "0.5rem"),
+									fontSize: fontSize.textSize,
 								}}
 							>
 								Contraseña:
@@ -235,6 +242,7 @@ export default function LoginView({
 						style={{
 							display: "flex",
 							flexDirection: "column",
+							gap: ".5rem",
 						}}
 					>
 						<BaseButton
@@ -242,8 +250,6 @@ export default function LoginView({
 							style={{
 								alignSelf: "center",
 								width: "75%",
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.textSize,
 							}}
 							onClick={handleLogin}
 						/>
@@ -252,7 +258,6 @@ export default function LoginView({
 								alignSelf: "center",
 								fontFamily: fonts.titleFont,
 								fontSize: fontSize.textSize,
-								paddingTop: adjustHeight(height, "1rem"),
 							}}
 						>
 							¿No tienes cuenta?
@@ -298,10 +303,10 @@ export default function LoginView({
 						src={logoSanitas}
 						alt="Sanitas logo"
 						style={{
-							width: adjustWidth(width, "6rem"),
+							width: "4rem",
 							position: "absolute",
-							bottom: adjustHeight(height, "1rem"),
-							right: adjustHeight(height, "1rem"),
+							bottom: "1rem",
+							right: "1rem",
 						}}
 					/>
 				</div>
