@@ -7,7 +7,7 @@ import {
 } from "utils/index.mjs";
 
 /**
- * Handles the HTTP POST request to update or create personal history for a specific patient.
+ * Handles the HTTP POST request to update or create allergic history for a specific patient.
  * @param {import('aws-lambda').APIGatewayProxyEvent} event
  * @param {import('aws-lambda').APIGatewayProxyResult} context
  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
