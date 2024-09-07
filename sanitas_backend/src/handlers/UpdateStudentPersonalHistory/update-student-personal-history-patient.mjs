@@ -82,7 +82,10 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 			// Si el registro existe, no permitir la actualización
 			return responseBuilder
 				.setStatusCode(403)
-				.setBody({ error: "Modification not allowed. You are not allowed to make changes" })
+				.setBody({
+					error:
+						"Modification not allowed. You are not allowed to make changes",
+				})
 				.build();
 		}
 
