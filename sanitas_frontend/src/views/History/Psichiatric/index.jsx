@@ -122,9 +122,7 @@ export function PsichiatricHistory({
 							<PsichiatricView
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
-								updatePsichiatricHistory={
-									updatePsichiatricHistory
-								}
+								updatePsichiatricHistory={updatePsichiatricHistory}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>

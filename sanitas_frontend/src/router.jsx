@@ -60,7 +60,7 @@ import { AllergicHistory } from "./views/History/Allergic";
 import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic";
 import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
-import { StudentPsichiatricHistory } from './views/History/Students/StudentPsichiatric';
+import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";

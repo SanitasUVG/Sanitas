@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
@@ -24,7 +23,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 export function StudentPsichiatricHistory({
 	getPsichiatricHistory,
 	updateStudentPsychiatricHistory,
-	useStore,
+	//useStore,
 }) {
 	//const id = useStore((s) => s.selectedPatientId);
 	const id = 1;
@@ -91,7 +90,8 @@ export function StudentPsichiatricHistory({
 								paddingBottom: "0.2rem",
 							}}
 						>
-							¿Actualmente se encuentra bajo tratamiento médico por alguna de las siguientes enfermedades?
+							¿Actualmente se encuentra bajo tratamiento médico por alguna de
+							las siguientes enfermedades?
 						</h3>
 						<h3
 							style={{
@@ -119,7 +119,9 @@ export function StudentPsichiatricHistory({
 							<PsichiatricView
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
-								updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
+								updateStudentPsychiatricHistory={
+									updateStudentPsychiatricHistory
+								}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
