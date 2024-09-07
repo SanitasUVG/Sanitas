@@ -8,10 +8,6 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import IconButton from "src/components/Button/Icon";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -487,7 +483,7 @@ function SurgicalView({
 								/>
 							</>
 						)}
-					</div>					
+					</div>
 				</div>
 			) : null}
 		</div>
