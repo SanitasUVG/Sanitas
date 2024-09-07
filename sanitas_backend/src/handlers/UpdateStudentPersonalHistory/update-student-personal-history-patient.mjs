@@ -72,24 +72,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 				.build();
 		}
 
-		// Verificar si el registro ya existe
-		const currentDataQuery = `
-            SELECT * FROM antecedentes_personales WHERE id_paciente = $1;
-        `;
-		const currentDataResult = await client.query(currentDataQuery, [patientId]);
-
-		if (currentDataResult.rowCount > 0) {
-			// Si el registro existe, no permitir la actualización
-			return responseBuilder
-				.setStatusCode(403)
-				.setBody({
-					error:
-						"Modification not allowed. You are not allowed to make changes",
-				})
-				.build();
-		}
-
-		// Preparar los valores para la inserción
+		// Preparar los valores para la inserción/actualización
 		const values = [
 			patientId,
 			JSON.stringify(medicalHistory.hypertension),
@@ -104,29 +87,40 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 			JSON.stringify(medicalHistory.others),
 		];
 
-		const insertQuery = `
+		const upsertQuery = `
             INSERT INTO antecedentes_personales (id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ON CONFLICT (id_paciente) DO UPDATE
+            SET hipertension_arterial_data = EXCLUDED.hipertension_arterial_data,
+                diabetes_mellitus_data = EXCLUDED.diabetes_mellitus_data,
+                hipotiroidismo_data = EXCLUDED.hipotiroidismo_data,
+                asma_data = EXCLUDED.asma_data,
+                convulsiones_data = EXCLUDED.convulsiones_data,
+                infarto_agudo_miocardio_data = EXCLUDED.infarto_agudo_miocardio_data,
+                cancer_data = EXCLUDED.cancer_data,
+                enfermedades_cardiacas_data = EXCLUDED.enfermedades_cardiacas_data,
+                enfermedades_renales_data = EXCLUDED.enfermedades_renales_data,
+                otros_data = EXCLUDED.otros_data
             RETURNING *;
         `;
 
-		logger.info({ insertQuery, values }, "Inserting values into DB...");
-		const insertResult = await client.query(insertQuery, values);
-		logger.info("Done inserting!");
+		logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
+		const upsertResult = await client.query(upsertQuery, values);
+		logger.info("Done inserting/updating!");
 
 		await client.query("commit");
 
-		if (insertResult.rowCount === 0) {
-			logger.error("No value was inserted into the DB!");
+		if (upsertResult.rowCount === 0) {
+			logger.error("No value was inserted/updated in the DB!");
 			return responseBuilder
 				.setStatusCode(404)
-				.setBody({ message: "Failed to insert personal history." })
+				.setBody({ message: "Failed to insert or update personal history." })
 				.build();
 		}
 
 		logger.info("Mapping DB response into API response...");
-		const insertedRecord = insertResult.rows[0];
-		const formattedResponse = mapToAPIPersonalHistory(insertedRecord);
+		const updatedRecord = upsertResult.rows[0];
+		const formattedResponse = mapToAPIPersonalHistory(updatedRecord);
 		logger.info({ formattedResponse }, "Done! Responding with:");
 		return responseBuilder
 			.setStatusCode(200)
@@ -136,7 +130,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 		await client.query("rollback");
 		logger.error(
 			{ error },
-			"An error occurred while inserting personal history!",
+			"An error occurred while updating personal history!",
 		);
 
 		if (error.code === "23503") {
@@ -149,7 +143,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({
-				error: "Failed to insert personal history due to an internal error.",
+				error: "Failed to update personal history due to an internal error.",
 				details: error.message,
 			})
 			.build();
