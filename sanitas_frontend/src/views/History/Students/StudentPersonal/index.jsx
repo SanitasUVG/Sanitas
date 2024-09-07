@@ -26,13 +26,14 @@ export function StudentPersonalHistory({
 	updateStudentPersonalHistory,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 
 	const LoadingView = () => {
 		return (
-			<Throbber loadingMessage="Cargando información de los antecedentes alérgicos..." />
+			<Throbber loadingMessage="Cargando información de los antecedentes personales..." />
 		);
 	};
 

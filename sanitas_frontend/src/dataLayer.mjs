@@ -1216,7 +1216,7 @@ export const getStudentPersonalHistory = async (_id) => {
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/student/student-personal-history`;
+	const url = `${PROTECTED_URL}/patient/student-personal-history`;
 
 	try {
 		const response = await axios.get(url, {
@@ -1253,7 +1253,7 @@ export const updateStudentPersonalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1263,7 +1263,7 @@ export const updateStudentPersonalHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/student/student-personal-history`;
+	const url = `${PROTECTED_URL}/patient/student-personal-history`;
 
 	const payload = {
 		patientId: patientId,
@@ -1271,7 +1271,7 @@ export const updateStudentPersonalHistory = async (
 	};
 
 	try {
-		const response = await axios.put(url, payload, {
+		const response = await axios.post(url, payload, {
 			headers: { Authorization: token },
 		});
 		if (response.status !== 200) {
