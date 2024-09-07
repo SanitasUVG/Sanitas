@@ -26,8 +26,7 @@ export function StudentPersonalHistory({
 	updateStudentPersonalHistory,
 	useStore,
 }) {
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 

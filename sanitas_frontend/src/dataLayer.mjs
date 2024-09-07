@@ -1253,7 +1253,7 @@ export const updateStudentPersonalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(false);
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
