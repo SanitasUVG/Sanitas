@@ -11,7 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 /**
  * @typedef {Object} PsichiatricHistoryProps
  * @property {Function} getPsichiatricHistory - Function to fetch the allergic history of a patient.
- * @property {Function} updatePsichiatricHistory - Function to update or add new allergic records for a patient.
+ * @property {Function} updateStudentPsychiatricHistory - Function to update or add new allergic records for a patient.
  * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
@@ -23,11 +23,11 @@ import WrapPromise from "src/utils/promiseWrapper";
 
 export function StudentPsichiatricHistory({
 	getPsichiatricHistory,
-	updatePsichiatricHistory,
-	sidebarConfig,
+	updateStudentPsychiatricHistory,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const psichiatricHistoryResource = WrapPromise(getPsichiatricHistory(id));
 	const [_reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
@@ -53,15 +53,6 @@ export function StudentPsichiatricHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -96,11 +87,21 @@ export function StudentPsichiatricHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
+							}}
+						>
+							¿Actualmente se encuentra bajo tratamiento médico por alguna de las siguientes enfermedades?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes psiquiátricos
+							Por favor ingrese un elemento por enfermedad.
 						</h3>
 					</div>
 
@@ -118,7 +119,7 @@ export function StudentPsichiatricHistory({
 							<PsichiatricView
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
-								updatePsichiatricHistory={updatePsichiatricHistory}
+								updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
@@ -133,7 +134,7 @@ export function StudentPsichiatricHistory({
  * @typedef {Object} PsichiatricViewProps
  * @property {number} id - The patient's ID.
  * @property {Object} psichiatricHistoryResource - Wrapped resource for fetching psichiatric history data.
- * @property {Function} updatePsichiatricHistory - Function to update the Allergic history.
+ * @property {Function} updateStudentPsychiatricHistory - Function to update the Allergic history.
  * @property {Function} triggerReload - Function to trigger reloading of data.
  * Internal view component for managing the display and modification of a patient's psichiatric history, with options to add or edit records.
  *
@@ -145,7 +146,7 @@ export function StudentPsichiatricHistory({
 function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
-	updatePsichiatricHistory,
+	updateStudentPsychiatricHistory,
 	triggerReload,
 }) {
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
@@ -554,7 +555,7 @@ function PsichiatricView({
 		// Construir el objeto newHistoryData usando los estados actuales
 		const newHistoryData = {
 			depression: {
-				version: medicalHistory.depression.version || 1,
+				// version: medicalHistory.depression.version || 1,
 				data: depressionMedications.map((medication) => ({
 					medication: medication.medication,
 					dose: medication.dose,
@@ -563,7 +564,7 @@ function PsichiatricView({
 				})),
 			},
 			anxiety: {
-				version: medicalHistory.anxiety.version || 1,
+				// version: medicalHistory.anxiety.version || 1,
 				data: anxietyMedications.map((medication) => ({
 					medication: medication.medication,
 					dose: medication.dose,
@@ -572,7 +573,7 @@ function PsichiatricView({
 				})),
 			},
 			ocd: {
-				version: medicalHistory.ocd.version || 1,
+				// version: medicalHistory.ocd.version || 1,
 				data: TOCMedications.map((medication) => ({
 					medication: medication.medication,
 					dose: medication.dose,
@@ -581,7 +582,7 @@ function PsichiatricView({
 				})),
 			},
 			adhd: {
-				version: medicalHistory.adhd.version || 1,
+				// version: medicalHistory.adhd.version || 1,
 				data: TDAHMedications.map((medication) => ({
 					medication: medication.medication,
 					dose: medication.dose,
@@ -590,7 +591,7 @@ function PsichiatricView({
 				})),
 			},
 			bipolar: {
-				version: medicalHistory.bipolar.version || 1,
+				// version: medicalHistory.bipolar.version || 1,
 				data: bipolarMedications.map((medication) => ({
 					medication: medication.medication,
 					dose: medication.dose,
@@ -599,7 +600,7 @@ function PsichiatricView({
 				})),
 			},
 			other: {
-				version: medicalHistory.other.version || 1,
+				// version: medicalHistory.other.version || 1,
 				data: otherMedications.map((medication) => ({
 					illness: otherIllness,
 					medication: medication.medication,
@@ -611,7 +612,7 @@ function PsichiatricView({
 		};
 
 		try {
-			const result = await updatePsichiatricHistory(id, newHistoryData);
+			const result = await updateStudentPsychiatricHistory(id, newHistoryData);
 			if (!result.error) {
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				setIsEditable(false);
@@ -917,7 +918,6 @@ function PsichiatricView({
 				flexDirection: "row",
 				width: "100%",
 				height: "100%",
-				gap: "1.5rem",
 			}}
 		>
 			<div

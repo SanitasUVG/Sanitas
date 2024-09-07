@@ -1318,10 +1318,13 @@ export const updateStudentPsychiatricHistory = async (
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
 
+	console.log("data", psychiatricHistoryData)
 	const payload = {
 		patientId: patientId,
-		psychiatricHistory: psychiatricHistoryData,
+		medicalHistory: psychiatricHistoryData,
 	};
+
+	console.log("payload:", payload)
 
 	try {
 		const response = await axios.post(url, payload, {

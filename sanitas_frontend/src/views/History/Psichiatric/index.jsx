@@ -15,7 +15,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 /**
  * @typedef {Object} PsichiatricHistoryProps
  * @property {Function} getPsichiatricHistory - Function to fetch the allergic history of a patient.
- * @property {Function} updateStudentPsychiatricHistory - Function to update or add new allergic records for a patient.
+ * @property {Function} updatePsichiatricHistory - Function to update or add new allergic records for a patient.
  * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
@@ -27,7 +27,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 
 export function PsichiatricHistory({
 	getPsichiatricHistory,
-	updateStudentPsychiatricHistory,
+	updatePsichiatricHistory,
 	sidebarConfig,
 	useStore,
 }) {
@@ -122,8 +122,8 @@ export function PsichiatricHistory({
 							<PsichiatricView
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
-								updateStudentPsychiatricHistory={
-									updateStudentPsychiatricHistory
+								updatePsichiatricHistory={
+									updatePsichiatricHistory
 								}
 								triggerReload={triggerReload}
 							/>
@@ -139,7 +139,7 @@ export function PsichiatricHistory({
  * @typedef {Object} PsichiatricViewProps
  * @property {number} id - The patient's ID.
  * @property {Object} psichiatricHistoryResource - Wrapped resource for fetching psichiatric history data.
- * @property {Function} updateStudentPsychiatricHistory - Function to update the Allergic history.
+ * @property {Function} updatePsichiatricHistory - Function to update the Allergic history.
  * @property {Function} triggerReload - Function to trigger reloading of data.
  * Internal view component for managing the display and modification of a patient's psichiatric history, with options to add or edit records.
  *
@@ -151,7 +151,7 @@ export function PsichiatricHistory({
 function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
-	updateStudentPsychiatricHistory,
+	updatePsichiatricHistory,
 	triggerReload,
 }) {
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
@@ -617,7 +617,7 @@ function PsichiatricView({
 		};
 
 		try {
-			const result = await updateStudentPsychiatricHistory(id, newHistoryData);
+			const result = await updatePsichiatricHistory(id, newHistoryData);
 			if (!result.error) {
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				setIsEditable(false);
