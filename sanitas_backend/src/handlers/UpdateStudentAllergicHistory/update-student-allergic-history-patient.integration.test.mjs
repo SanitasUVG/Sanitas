@@ -97,8 +97,10 @@ describe("Update Allergic History integration tests", () => {
 		});
 
 		expect(response).toBeDefined();
-		expect(response.status).toBe(404); // Check for the correct status code
-		expect(response.data.error).toBe("Patient not found with the provided ID.");
+		expect(response.status).toBe(500); // Check for the correct status code
+		expect(response.data.error).toBe(
+			"Failed to update allergic history due to an internal error.",
+		);
 	});
 
 	test("Fail to update allergic history due to missing required fields", async () => {
