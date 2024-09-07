@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
 import Throbber from "src/components/Throbber";
@@ -14,7 +13,6 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @typedef {Object} StudentPersonalHistoryProps
  * @property {Function} getStudentPersonalHistory - Function to fetch the Personal history of a patient.
  * @property {Function} updateStudentPersonalHistory - Function to update or add new Personal records for a patient.
- * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
  * Component to manage and display a student's Personal history, allowing users to add and view records.
@@ -26,7 +24,6 @@ export function StudentPersonalHistory({
 	getBirthdayPatientInfo,
 	getStudentPersonalHistory,
 	updateStudentPersonalHistory,
-	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
@@ -51,15 +48,6 @@ export function StudentPersonalHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -94,13 +82,24 @@ export function StudentPersonalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
+							}}
+						>
+							{" "}
+							¿Usted ha sido diagnosticado por un médico con una de las
+							siguientes enfermedades?{" "}
+						</h3>{" "}
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
 								paddingBottom: "3rem",
 							}}
 						>
-							¿Usted ha sido diagnosticado por un médico con una de las
-							siguientes enfermedades? Por favor ingrese un elemento por
-							diagnóstico.
+							{" "}
+							Por favor ingrese un elemento por diagnóstico.{" "}
 						</h3>
 					</div>
 
@@ -128,7 +127,6 @@ export function StudentPersonalHistory({
 		</div>
 	);
 }
-
 /**
  * @typedef {Object} PersonalViewProps
  * @property {string} id - The unique identifier for the patient.
@@ -772,14 +770,6 @@ function PersonalView({
 										/>
 									</React.Fragment>
 								)}
-
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-								}}
-							/>
 
 							<div
 								style={{
