@@ -1,11 +1,34 @@
 import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
+
 import {
 	createResponse,
 	decodeJWT,
 	mapToAPIPsychiatricHistory,
-	requestDataEditsDBData,
+	checkForUnauthorizedChanges,
 } from "utils/index.mjs";
+
+function extractOldData(dbData) {
+	return {
+		depression: dbData.depresion_data ? dbData.depresion_data.data : [],
+		anxiety: dbData.ansiedad_data ? dbData.ansiedad_data.data : [],
+		ocd: dbData.toc_data ? dbData.toc_data.data : [],
+		adhd: dbData.tdah_data ? dbData.tdah_data.data : [],
+		bipolar: dbData.bipolaridad_data ? dbData.bipolaridad_data.data : [],
+		other: dbData.otro_data ? dbData.otro_data.data : [],
+	};
+}
+
+function extractNewData(medicalHistory) {
+	return {
+		depression: medicalHistory.depression.data,
+		anxiety: medicalHistory.anxiety.data,
+		ocd: medicalHistory.ocd.data,
+		adhd: medicalHistory.adhd.data,
+		bipolar: medicalHistory.bipolar.data,
+		other: medicalHistory.other.data,
+	};
+}
 
 /**
  * Handles the HTTP POST request to update or create psychiatric history for a specific patient by students.
@@ -93,15 +116,29 @@ export const updateStudentPsychiatricHistoryHandler = async (
 		logger.info("Done searching!");
 
 		if (patientResult.rowCount > 0) {
-			const oldData = patientResult.rows[0];
-			const newData = medicalHistory;
+			const dbData = patientResult.rows[0];
+			const oldData = extractOldData(dbData);
+			const newData = extractNewData(JSON.parse(event.body).medicalHistory);
 
 			logger.info({ oldData }, "Data of the patient in DB currently...");
-			logger.info({ medicalHistory }, "Data coming in...");
+			logger.info({ newData }, "Data coming in...");
 
-			const repeatingData = requestDataEditsDBData(newData, oldData);
+			const categories = [
+				"depression",
+				"anxiety",
+				"ocd",
+				"adhd",
+				"bipolar",
+				"other",
+			];
+			const unauthorizedChanges = categories.some((category) =>
+				checkForUnauthorizedChanges(
+					newData[category] || [],
+					oldData[category] || [],
+				),
+			);
 
-			if (repeatingData) {
+			if (unauthorizedChanges) {
 				logger.error("Student trying to update info already saved!");
 				await client.query("rollback");
 				return responseBuilder
