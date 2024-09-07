@@ -995,16 +995,6 @@ export const updateNonPathologicalHistory = async (
 	}
 };
 
-/**
- * Updates the non-pathological history of a student patient by sending a POST request to a specific endpoint.
- * This function constructs a payload from the non-pathological history details provided and sends it to the server.
- * It handles session validation and token retrieval for authenticating the request.
- *
- * @param {string} patientId - The unique identifier for the patient.
- * @param {Object} nonPathologicalHistoryDetails - An object containing details about the patient's non-pathological history such as blood type, smoking habits, alcohol consumption, and drug usage.
- * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
- * it returns the error message or the error response from the server. This includes handling of session errors, invalid sessions, unexpected response statuses, and network issues.
- */
 export const updateStudentNonPathologicalHistory = async (
 	patientId,
 	nonPathologicalHistoryDetails,
@@ -1025,24 +1015,20 @@ export const updateStudentNonPathologicalHistory = async (
 
 	const payload = {
 		patientId: patientId,
-		nonPathologicalHistory: nonPathologicalHistoryDetails,
+		medicalHistory: nonPathologicalHistoryDetails,
 	};
 
 	try {
-		const response = await axios.post(url, payload, {
+		const response = await axios.put(url, payload, {
 			headers: { Authorization: token },
 		});
-
-		if (response.status !== 200) {
-			return { error: `Unexpected status code: ${response.status}` };
+		if (response.status === 200) {
+			return { result: response.data };
 		}
-		return { result: response.data };
+		return { error: `Unexpected status code: ${response.status}` };
 	} catch (error) {
 		if (error.response) {
 			return { error: error.response.data };
-		}
-		if (error.request) {
-			return { error: "No response received" };
 		}
 		return { error: error.message };
 	}

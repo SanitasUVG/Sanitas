@@ -271,7 +271,7 @@ const studentNonPathologicalHistoryView = (
 			getNonPathologicalHistory={getNonPathologicalHistory}
 			getBloodTypePatientInfo={getGeneralPatientInformation}
 			updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
-			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>

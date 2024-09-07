@@ -2,7 +2,6 @@ import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import { BaseInput } from "src/components/Input/index";
 import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
@@ -25,14 +24,14 @@ export function StudentNonPathologicalHistory({
 	getNonPathologicalHistory,
 	getBloodTypePatientInfo,
 	updateStudentNonPathologicalHistory,
-	sidebarConfig,
-	useStore,
+	//sidebarConfig,
+	//useStore,
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Fetching patient ID from global state
-	const id = useStore((s) => s.selectedPatientId);
-
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
@@ -70,15 +69,6 @@ export function StudentNonPathologicalHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -117,7 +107,7 @@ export function StudentNonPathologicalHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes no patológicos
+							Por favor, complete lo siguiente.
 						</h3>
 					</div>
 
@@ -353,12 +343,12 @@ function NonPathologicalView({
 
 		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
 		if (!result.error) {
-			toast.success("Antecedentes no patológicos actualizados con éxito.");
+			toast.success("Antecedentes no patológicos guardados con éxito.");
 			setIsEditable(false);
 			triggerReload();
 		} else {
 			toast.error(
-				`Error al actualizar los antecedentes no patológicos: ${result.error}`,
+				`Error al guardar los antecedentes no patológicos: ${result.error}`,
 			);
 		}
 	};
