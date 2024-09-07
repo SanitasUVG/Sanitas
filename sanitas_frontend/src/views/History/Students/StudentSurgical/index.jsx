@@ -487,28 +487,7 @@ function SurgicalView({
 								/>
 							</>
 						)}
-					</div>
-					<div
-						style={{ display: "flex", flexDirection: "column", width: "100%" }}
-					>
-						<div style={{ display: "flex", justifyContent: "flex-end" }}>
-							{!addingNew &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNewSurgery}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
-						</div>
-					</div>
+					</div>					
 				</div>
 			) : null}
 		</div>
