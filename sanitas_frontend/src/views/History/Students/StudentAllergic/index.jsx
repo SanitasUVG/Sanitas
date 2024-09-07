@@ -46,7 +46,6 @@ export function StudentAllergicHistory({
 		>
 			<div
 				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
