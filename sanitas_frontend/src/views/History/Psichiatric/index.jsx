@@ -1071,11 +1071,6 @@ function PsichiatricView({
 							{depressionStatus && (
 								<div
 									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
 										paddingLeft: "0.5rem",
 									}}
 								>
@@ -1294,6 +1289,19 @@ function PsichiatricView({
 										disabled={!isEditable}
 									/>
 								</div>
+
+								{/* {Estatos de ansiedad && (
+									/Aquí se coloca el renderizado dinámico
+
+									<div
+									style={{
+										paddingLeft: "0.5rem",
+									}}
+								>	
+
+								Aquí van las preguntas contenido
+								</div>
+								)} */}
 							</div>
 
 							{anxietyStatus && (
