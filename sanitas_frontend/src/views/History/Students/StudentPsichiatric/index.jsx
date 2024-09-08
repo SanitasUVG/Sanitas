@@ -980,7 +980,7 @@ function PsichiatricView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "0.5rem",
+										paddingTop: "2rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1008,7 +1008,11 @@ function PsichiatricView({
 										checked={!depressionStatus}
 										onChange={() => handleDepressionChange(false)}
 										label="No"
-										disabled={!isEditable}
+										disabled={
+											!isEditable ||
+											(depressionStatus &&
+												depressionMedications.some((med) => !!med.medication))
+										}
 									/>
 								</div>
 							</div>
@@ -1056,7 +1060,7 @@ function PsichiatricView({
 													fontFamily: fonts.textFont,
 													fontSize: "1rem",
 												}}
-												disabled={!isEditable}
+												readOnly={!!medication.medication}
 											/>
 											<p
 												style={{
@@ -1084,7 +1088,7 @@ function PsichiatricView({
 													fontFamily: fonts.textFont,
 													fontSize: "1rem",
 												}}
-												disabled={!isEditable}
+												readOnly={!!medication.medication}
 											/>
 											<p
 												style={{
@@ -1112,7 +1116,7 @@ function PsichiatricView({
 													fontFamily: fonts.textFont,
 													fontSize: "1rem",
 												}}
-												disabled={!isEditable}
+												readOnly={!!medication.medication}
 											/>
 										</div>
 									))}
@@ -1141,7 +1145,10 @@ function PsichiatricView({
 											checked={depressionUBE === true}
 											onChange={() => setDepressionUBE(true)}
 											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
+											disabled={
+												!isEditable ||
+												depressionMedications.some((med) => !!med.medication)
+											}
 										/>
 										<RadioInput
 											label="No"
@@ -1149,7 +1156,10 @@ function PsichiatricView({
 											checked={depressionUBE === false}
 											onChange={() => setDepressionUBE(false)}
 											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
+											disabled={
+												!isEditable ||
+												depressionMedications.some((med) => !!med.medication)
+											}
 										/>
 									</div>
 									<div
@@ -1171,19 +1181,21 @@ function PsichiatricView({
 											/>
 										)}
 										<div style={{ width: "1rem" }} />
-										{isEditable && depressionMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastDepressionMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: "#fff",
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
+										{depressionMedications.length > 1 &&
+											!depressionMedications[depressionMedications.length - 1]
+												.medication && (
+												<BaseButton
+													text="Cancelar Medicamento"
+													onClick={() => removeLastDepressionMedication()}
+													style={{
+														width: "30%",
+														height: "3rem",
+														backgroundColor: colors.secondaryBackground,
+														color: colors.primaryBackground,
+														border: `1.5px solid ${colors.primaryBackground}`,
+													}}
+												/>
+											)}
 									</div>
 								</div>
 							)}

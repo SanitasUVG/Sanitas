@@ -1305,7 +1305,7 @@ export const updateStudentPsychiatricHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
@@ -1319,6 +1319,7 @@ export const updateStudentPsychiatricHistory = async (
 	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
 
 	console.log("data", psychiatricHistoryData);
+
 	const payload = {
 		patientId: patientId,
 		medicalHistory: psychiatricHistoryData,
@@ -1340,6 +1341,7 @@ export const updateStudentPsychiatricHistory = async (
 			return { error: error.response.data };
 		}
 		if (error.request) {
+			console.log(error.request);
 			return { error: "No response received" };
 		}
 		return { error: error.message };
