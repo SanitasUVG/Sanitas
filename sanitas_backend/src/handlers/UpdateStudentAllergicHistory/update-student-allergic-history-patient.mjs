@@ -1,5 +1,6 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
+import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
 import {
 	createResponse,
 	decodeJWT,
@@ -13,7 +14,6 @@ import {
  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
  */
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 export const updateStudentAllergicHistoryHandler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("POST");
@@ -40,6 +40,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 	const { email } = tokenInfo;
 	logger.info({ tokenInfo }, "JWT Parsed!");
 
+	/** @type {import("pg").Client} */
 	let client;
 
 	try {
@@ -50,6 +51,14 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 		logger.info("Connected!");
 
 		const itsDoctor = await isDoctor(client, email);
+
+		if (itsDoctor.error) {
+			const msg =
+				"An error ocurred while trying to check if the user is a doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
 		if (itsDoctor) {
 			const msg = "Unauthorized, you're a doctor!";
 			const body = { error: msg };
@@ -71,37 +80,30 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 				.build();
 		}
 
-		// Fetch existing data
-		const currentDataQuery = `
-			SELECT * FROM antecedentes_alergicos WHERE id_paciente = $1;
-		`;
-		const currentDataResult = await client.query(currentDataQuery, [patientId]);
+		const transactionResult = await transaction(client, logger, async () => {
+			// Fetch existing data
+			const currentDataQuery =
+				"SELECT * FROM antecedentes_alergicos WHERE id_paciente = $1";
+			const currentDataResult = await client.query(currentDataQuery, [
+				patientId,
+			]);
 
-		let existingData = {
-			medicamento_data: [],
-			comida_data: [],
-			polvo_data: [],
-			polen_data: [],
-			cambio_de_clima_data: [],
-			animales_data: [],
-			otros_data: [],
-		};
+			if (currentDataResult.rowCount > 0) {
+				const existingData = mapToAPIAllergicHistory(currentDataResult.rows[0]);
 
-		if (currentDataResult.rowCount > 0) {
-			existingData = currentDataResult.rows[0];
-
-			if (!areAllFieldsPresent(existingData, medicalHistory)) {
-				return responseBuilder
-					.setStatusCode(403)
-					.setBody({
-						error: "Not all existing fields are present in the request.",
-					})
-					.build();
+				if (requestModifiesSavedData(medicalHistory, existingData)) {
+					const response = responseBuilder
+						.setStatusCode(403)
+						.setBody({
+							error: "Not all existing fields are present in the request.",
+						})
+						.build();
+					return { response };
+				}
 			}
-		}
 
-		// Use ON CONFLICT to update the data, merging existing and new information
-		const insertQuery = `
+			// Use ON CONFLICT to update the data, merging existing and new information
+			const insertQuery = `
 			INSERT INTO antecedentes_alergicos (
 				id_paciente,
 				medicamento_data,
@@ -124,26 +126,39 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 			RETURNING *;
 		`;
 
-		const values = [
-			patientId,
-			JSON.stringify(
-				medicalHistory.medication || existingData.medicamento_data,
-			),
-			JSON.stringify(medicalHistory.food || existingData.comida_data),
-			JSON.stringify(medicalHistory.dust || existingData.polvo_data),
-			JSON.stringify(medicalHistory.pollen || existingData.polen_data),
-			JSON.stringify(
-				medicalHistory.climateChange || existingData.cambio_de_clima_data,
-			),
-			JSON.stringify(medicalHistory.animals || existingData.animales_data),
-			JSON.stringify(medicalHistory.others || existingData.otros_data),
-		];
+			const defaultValues = genDefaultAllergicHistory();
+			const values = [
+				patientId,
+				JSON.stringify(medicalHistory.medication || defaultValues.medication),
+				JSON.stringify(medicalHistory.food || defaultValues.food),
+				JSON.stringify(medicalHistory.dust || defaultValues.dust),
+				JSON.stringify(medicalHistory.pollen || defaultValues.pollen),
+				JSON.stringify(
+					medicalHistory.climateChange || defaultValues.climateChange,
+				),
+				JSON.stringify(medicalHistory.animals || defaultValues.animals),
+				JSON.stringify(medicalHistory.others || defaultValues.others),
+			];
 
-		logger.info({ insertQuery, values }, "Inserting/Updating values in DB...");
-		const upsertResult = await client.query(insertQuery, values);
-		logger.info("Done inserting/updating!");
+			logger.info(
+				{ insertQuery, values },
+				"Inserting/Updating values in DB...",
+			);
 
-		await client.query("commit");
+			const queryResult = await client.query(insertQuery, values);
+			logger.info("Done inserting/updating!");
+			return queryResult;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+		if (transactionResult.response) {
+			const { response } = transactionResult;
+			logger.info({ response }, "Responding with: ");
+			return response;
+		}
+		const { result: upsertResult } = transactionResult;
 
 		if (upsertResult.rowCount === 0) {
 			logger.error("No value was inserted/updated in the DB!");
@@ -154,18 +169,18 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 		}
 
 		const updatedRecord = upsertResult.rows[0];
-		const formattedResponse = mapToAPIAllergicHistory(updatedRecord);
-		logger.info({ formattedResponse }, "Done! Responding with:");
-		return responseBuilder
+		const response = responseBuilder
 			.setStatusCode(200)
-			.setBody(formattedResponse)
+			.setBody(mapToAPIAllergicHistory(updatedRecord))
 			.build();
+		logger.info({ response }, "Done! Responding with:");
+		return response;
 	} catch (error) {
-		await client.query("rollback");
 		logger.error(
 			{ error },
 			"An error occurred while updating allergic history!",
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({
@@ -174,54 +189,41 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
 
-// Helper function to check if all fields are present
-function areAllFieldsPresent(existingData, requestData) {
-	const existingMedicationData = safeParse(existingData.medicamento_data);
-	const existingFoodData = safeParse(existingData.comida_data);
-	const existingDustData = safeParse(existingData.polvo_data);
-	const existingPollenData = safeParse(existingData.polen_data);
-	const existingClimateChangeData = safeParse(
-		existingData.cambio_de_clima_data,
-	);
-	const existingAnimalsData = safeParse(existingData.animales_data);
-	const existingOthersData = safeParse(existingData.otros_data);
-
-	return (
-		compareArrayFields(existingMedicationData, requestData.medication) &&
-		compareArrayFields(existingFoodData, requestData.food) &&
-		compareArrayFields(existingDustData, requestData.dust) &&
-		compareArrayFields(existingPollenData, requestData.pollen) &&
-		compareArrayFields(existingClimateChangeData, requestData.climateChange) &&
-		compareArrayFields(existingAnimalsData, requestData.animals) &&
-		compareArrayFields(existingOthersData, requestData.others)
-	);
-}
-
-function safeParse(data) {
-	try {
-		const parsed = JSON.parse(data || "[]");
-		return Array.isArray(parsed) ? parsed : [];
-	} catch (_e) {
-		return [];
+/**
+ * @param {import("utils/index.mjs").AllergicMedicalHistory} requestData
+ * @param {import("utils/index.mjs").AllergicMedicalHistory} savedData
+ */
+function requestModifiesSavedData(requestData, savedData) {
+	if (savedData === null || savedData === undefined) {
+		return false;
 	}
-}
 
-function compareArrayFields(existing, incoming) {
-	if (!(existing && incoming)) return true;
+	return !Object.keys(savedData).every((key) => {
+		if (!Object.hasOwn(requestData, key)) {
+			return false;
+		}
+		const savedArr = savedData[key];
+		const requestArr = [...requestData[key]];
 
-	// Ensure that all existing elements are present in incoming data
-	return existing.every((item) =>
-		incoming.some(
-			(incItem) =>
-				incItem.name === item.name &&
-				incItem.reaction === item.reaction &&
-				incItem.severity === item.severity,
-		),
-	);
+		return savedArr.every((savedValue) => {
+			const properties = Object.keys(savedValue);
+			for (let i = 0; i < requestArr.length; i++) {
+				const reqValue = requestArr[i];
+				if (
+					properties.every((prop) => {
+						return savedValue[prop] === reqValue[prop];
+					})
+				) {
+					requestArr.splice(i, 1);
+					return false;
+				}
+			}
+
+			return true;
+		});
+	});
 }

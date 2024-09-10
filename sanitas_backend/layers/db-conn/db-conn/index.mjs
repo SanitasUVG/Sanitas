@@ -28,3 +28,37 @@ export async function isDoctor(client, email) {
 		return { error };
 	}
 }
+
+/**
+ * @template T
+ * Wrapper for common logic to do when doing a transaction in Postgres.
+ *
+ * If you wish to respond with an APIGatewayProxyResult directly from the lambda, return an object with a response property!
+ * Returning an APIGatewayProxyResult will rollback the transaction!
+ * @param {pg.Client} client - The PG Client
+ * @param {import("pino").Logger} logger - The Logger reference
+ * @param {()=> Promise<T | {response: import("aws-lambda").APIGatewayProxyResult}>} func - The function to run inside a transaction
+ * @returns {Promise<{error: *} | {result: T} | {response: import("aws-lambda").APIGatewayProxyResult}>} A result containing the return value of the function.
+ */
+export async function transaction(client, logger, func) {
+	try {
+		logger.info("Beggining transaction...");
+		await client.query("BEGIN");
+
+		const result = await func();
+
+		logger.info("Comitting transaction...");
+		await client.query("COMMIT");
+
+		// This means is an HTTP response.
+		if (result.response) {
+			await client.query("ROLLBACK");
+			return { response: result };
+		}
+		return { result };
+	} catch (error) {
+		logger.error({ error }, "Rolling back transaction due to error...");
+		await client.query("ROLLBACK");
+		return { error };
+	}
+}
