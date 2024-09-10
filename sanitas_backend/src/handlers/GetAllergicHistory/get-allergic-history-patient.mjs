@@ -66,7 +66,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIAllergicHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
-		logger.error("An error occurred while fetching allergic history!", error);
+		logger.error(
+			{ error },
+			"An error occurred while fetching allergic history!",
+		);
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

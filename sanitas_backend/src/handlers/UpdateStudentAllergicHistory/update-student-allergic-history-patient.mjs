@@ -81,16 +81,21 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 		}
 
 		const transactionResult = await transaction(client, logger, async () => {
-			// Fetch existing data
+			logger.info("Fetching existing data...");
 			const currentDataQuery =
 				"SELECT * FROM antecedentes_alergicos WHERE id_paciente = $1";
 			const currentDataResult = await client.query(currentDataQuery, [
 				patientId,
 			]);
+			logger.info(`Found ${currentDataResult.rowCount} patients...`);
 
 			if (currentDataResult.rowCount > 0) {
 				const existingData = mapToAPIAllergicHistory(currentDataResult.rows[0]);
 
+				logger.info(
+					{ medicalHistory, existingData },
+					"Comparing medicalHistory with existingData...",
+				);
 				if (requestModifiesSavedData(medicalHistory, existingData)) {
 					const response = responseBuilder
 						.setStatusCode(403)

@@ -42,19 +42,19 @@ export async function isDoctor(client, email) {
  */
 export async function transaction(client, logger, func) {
 	try {
-		logger.info("Beggining transaction...");
+		logger.info("Beginning transaction...");
 		await client.query("BEGIN");
-
 		const result = await func();
-
-		logger.info("Comitting transaction...");
-		await client.query("COMMIT");
 
 		// This means is an HTTP response.
 		if (result.response) {
+			logger.info("Rolling back transaction due to HTTP response...");
 			await client.query("ROLLBACK");
 			return result;
 		}
+
+		logger.info("Comitting transaction...");
+		await client.query("COMMIT");
 		return { result };
 	} catch (error) {
 		logger.error({ error }, "Rolling back transaction due to error...");
