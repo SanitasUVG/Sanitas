@@ -1098,11 +1098,11 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 export const updateStudentAllergicHistory = async (
 	patientId,
 	allergicHistory,
-	currentVersion,
+	_currentVersion,
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1116,64 +1116,7 @@ export const updateStudentAllergicHistory = async (
 
 	const payload = {
 		patientId: patientId,
-		medicalHistory: {
-			medication: {
-				version: currentVersion,
-				data: allergicHistory.medication.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			food: {
-				version: currentVersion,
-				data: allergicHistory.food.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			dust: {
-				version: currentVersion,
-				data: allergicHistory.dust.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			pollen: {
-				version: currentVersion,
-				data: allergicHistory.pollen.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			climateChange: {
-				version: currentVersion,
-				data: allergicHistory.climateChange.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			animals: {
-				version: currentVersion,
-				data: allergicHistory.animals.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-			others: {
-				version: currentVersion,
-				data: allergicHistory.others.map((item) => ({
-					name: item.name,
-					reaction: item.reaction,
-					severity: item.severity,
-				})),
-			},
-		},
+		medicalHistory: allergicHistory,
 	};
 
 	try {
