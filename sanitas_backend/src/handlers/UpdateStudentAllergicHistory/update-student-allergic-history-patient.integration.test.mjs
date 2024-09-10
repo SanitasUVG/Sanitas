@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -61,7 +61,7 @@ describe("Update Allergic History integration tests", () => {
 	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		patientId = await createTestPatient(); // Create a patient and get the ID
 	});
 
