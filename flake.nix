@@ -233,7 +233,7 @@
 
             process = {
               process-compose = pkgs.lib.mkOptionDefault {
-                tui = false;
+                # tui = false;
               };
             };
 

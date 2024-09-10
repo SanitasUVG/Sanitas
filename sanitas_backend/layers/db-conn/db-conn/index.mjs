@@ -53,7 +53,7 @@ export async function transaction(client, logger, func) {
 		// This means is an HTTP response.
 		if (result.response) {
 			await client.query("ROLLBACK");
-			return { response: result };
+			return result;
 		}
 		return { result };
 	} catch (error) {

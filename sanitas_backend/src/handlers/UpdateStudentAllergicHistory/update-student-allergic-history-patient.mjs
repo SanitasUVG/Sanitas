@@ -95,7 +95,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 					const response = responseBuilder
 						.setStatusCode(403)
 						.setBody({
-							error: "Not all existing fields are present in the request.",
+							error: "Not authorized to update data!",
 						})
 						.build();
 					return { response };
