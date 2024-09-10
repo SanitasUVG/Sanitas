@@ -181,11 +181,19 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 			"An error occurred while updating allergic history!",
 		);
 
+		let statusCode = 500;
+		let errorMessage =
+			"Failed to update allergic history due to an internal error.";
+
+		if (error.code === "23503") {
+			statusCode = 404;
+			errorMessage = "No patient with the given ID found!";
+		}
+
 		return responseBuilder
-			.setStatusCode(500)
+			.setStatusCode(statusCode)
 			.setBody({
-				error: "Failed to update allergic history due to an internal error.",
-				details: error.message,
+				error: errorMessage,
 			})
 			.build();
 	} finally {
