@@ -5,6 +5,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIAllergicHistory,
+	requestIsSubset,
 } from "utils/index.mjs";
 
 /**
@@ -90,19 +91,24 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 			logger.info(`Found ${currentDataResult.rowCount} patients...`);
 
 			if (currentDataResult.rowCount > 0) {
-				const existingData = mapToAPIAllergicHistory(currentDataResult.rows[0]);
+				const { medicalHistory: existingData } = mapToAPIAllergicHistory(
+					currentDataResult.rows[0],
+				);
 
 				logger.info(
 					{ medicalHistory, existingData },
 					"Comparing medicalHistory with existingData...",
 				);
 				if (requestModifiesSavedData(medicalHistory, existingData)) {
+					logger.error("Request data modifies saved data!");
 					const response = responseBuilder
 						.setStatusCode(403)
 						.setBody({
 							error: "Not authorized to update data!",
 						})
 						.build();
+
+					logger.info({ response }, "Responding with:");
 					return { response };
 				}
 			}
@@ -215,28 +221,23 @@ function requestModifiesSavedData(requestData, savedData) {
 		return false;
 	}
 
-	return !Object.keys(savedData).every((key) => {
+	const doesntModifyData = Object.keys(savedData).every((key) => {
+		logger.info({ key }, "Comparing key...");
 		if (!Object.hasOwn(requestData, key)) {
+			logger.error("Request data doesn't includes key!");
 			return false;
 		}
-		const savedArr = savedData[key];
-		const requestArr = [...requestData[key]];
 
-		return savedArr.every((savedValue) => {
-			const properties = Object.keys(savedValue);
-			for (let i = 0; i < requestArr.length; i++) {
-				const reqValue = requestArr[i];
-				if (
-					properties.every((prop) => {
-						return savedValue[prop] === reqValue[prop];
-					})
-				) {
-					requestArr.splice(i, 1);
-					return false;
-				}
-			}
+		const savedArray = savedData[key].data;
+		const requestArray = requestData[key].data;
 
-			return true;
-		});
+		logger.info({ savedArray, requestArray }, "Comparing arrays...");
+		return requestIsSubset(savedArray, requestArray, logger);
 	});
+
+	if (doesntModifyData) {
+		logger.info("Request doesn't modify data!");
+		return false;
+	}
+	return true;
 }

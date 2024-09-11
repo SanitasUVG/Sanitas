@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -72,7 +72,14 @@ function generateValidUpdate(patientId) {
 			},
 			myocardialInfarction: {
 				version: 1,
-				data: [2012, 2016],
+				data: [
+					{
+						surgeryYear: 2012,
+					},
+					{
+						surgeryYear: 2013,
+					},
+				],
 			},
 			cancer: {
 				version: 1,
@@ -136,30 +143,67 @@ describe("Update Personal History integration tests", () => {
 	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		patientId = await createTestPatient(); // Create a patient and get the ID
 	});
 
 	test("Update existing personal history", async () => {
-		try {
-			const personalHistoryData = generateValidUpdate(patientId);
-			const response = await axios.post(API_URL, personalHistoryData, {
-				headers: validHeaders,
-			});
+		const personalHistoryData = generateValidUpdate(patientId);
+		const response = await axios.post(API_URL, personalHistoryData, {
+			headers: validHeaders,
+		});
 
-			expect(response).toBeDefined();
-			expect(response.status).toBe(200);
+		expect(response).toBeDefined();
+		expect(response.status).toBe(200);
 
-			const { patientId: id, medicalHistory } = response.data;
-			expect(id).toBe(patientId);
-			expect(medicalHistory.hypertension.data.length).toBe(2);
-			expect(medicalHistory.hypertension.data[0].medicine).toBe(
-				personalHistoryData.medicalHistory.hypertension.data[0].medicine,
-			);
-		} catch (error) {
-			console.error("Test failed with error:", error.message);
-			throw error;
-		}
+		const { patientId: id, medicalHistory } = response.data;
+		expect(id).toBe(patientId);
+		expect(medicalHistory.hypertension.data.length).toBe(2);
+		expect(medicalHistory.hypertension.data[0].medicine).toBe(
+			personalHistoryData.medicalHistory.hypertension.data[0].medicine,
+		);
+	});
+
+	test("Add another medical record", async () => {
+		const personalHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, personalHistoryData, {
+			headers: validHeaders,
+		});
+
+		personalHistoryData.medicalHistory.cancer.data.push({
+			typeOfCancer: "Bone",
+			treatment: "None",
+		});
+		const response = await axios.post(API_URL, personalHistoryData, {
+			headers: validHeaders,
+		});
+
+		expect(response).toBeDefined();
+		expect(response.status).toBe(200);
+
+		const { patientId: id, medicalHistory } = response.data;
+		expect(id).toBe(patientId);
+		expect(medicalHistory.hypertension.data.length).toBe(2);
+		expect(medicalHistory.cancer.data.length).toBe(2);
+		expect(medicalHistory.hypertension.data[0].medicine).toBe(
+			personalHistoryData.medicalHistory.hypertension.data[0].medicine,
+		);
+	});
+
+	test("Fail on modifying existing data", async () => {
+		const personalHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, personalHistoryData, {
+			headers: validHeaders,
+		});
+
+		personalHistoryData.medicalHistory.cancer.data = [];
+		const response = await axios.post(API_URL, personalHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(403);
+		expect(response.data.error).toBe("Not authorized to update data!");
 	});
 
 	test("Fail to update personal history with invalid ID", async () => {

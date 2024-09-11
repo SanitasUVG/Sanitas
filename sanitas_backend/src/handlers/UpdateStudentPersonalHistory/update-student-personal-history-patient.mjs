@@ -1,9 +1,11 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
+import { genDefaultPersonalHistory } from "utils/defaultValues.mjs";
 import {
 	decodeJWT,
 	createResponse,
 	mapToAPIPersonalHistory,
+	requestIsSubset,
 } from "utils/index.mjs";
 
 /**
@@ -41,6 +43,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 	const { email } = tokenInfo;
 	logger.info({ tokenInfo }, "JWT Parsed!");
 
+	/** @type {import("pg").Client} */
 	let client;
 
 	try {
@@ -72,22 +75,64 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 				.build();
 		}
 
-		// Preparar los valores para la inserción/actualización
-		const values = [
-			patientId,
-			JSON.stringify(medicalHistory.hypertension),
-			JSON.stringify(medicalHistory.diabetesMellitus),
-			JSON.stringify(medicalHistory.hypothyroidism),
-			JSON.stringify(medicalHistory.asthma),
-			JSON.stringify(medicalHistory.convulsions),
-			JSON.stringify(medicalHistory.myocardialInfarction),
-			JSON.stringify(medicalHistory.cancer),
-			JSON.stringify(medicalHistory.cardiacDiseases),
-			JSON.stringify(medicalHistory.renalDiseases),
-			JSON.stringify(medicalHistory.others),
-		];
+		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Fetching existing data...");
+			const currentDataResult = await client.query(
+				"SELECT * FROM antecedentes_personales WHERE id_paciente = $1",
+				[patientId],
+			);
+			logger.info(`Found ${currentDataResult.rowCount} patients...`);
 
-		const upsertQuery = `
+			if (currentDataResult.rowCount > 0) {
+				const { medicalHistory: existingData } = mapToAPIPersonalHistory(
+					currentDataResult.rows[0],
+				);
+
+				logger.info(
+					{ medicalHistory, existingData },
+					"Comparing medicalHistory with existingData...",
+				);
+				if (requestModifiesSavedData(medicalHistory, existingData)) {
+					logger.error("Request modifies data!");
+					const response = responseBuilder
+						.setStatusCode(403)
+						.setBody({ error: "Not authorized to update data!" })
+						.build();
+
+					logger.info({ response }, "Responding with:");
+					return { response };
+				}
+			}
+
+			const defaultValues = genDefaultPersonalHistory();
+			const values = [
+				patientId,
+				JSON.stringify(
+					medicalHistory.hypertension || defaultValues.hypertension,
+				),
+				JSON.stringify(
+					medicalHistory.diabetesMellitus || defaultValues.diabetesMellitus,
+				),
+				JSON.stringify(
+					medicalHistory.hypothyroidism || defaultValues.hypothyroidism,
+				),
+				JSON.stringify(medicalHistory.asthma || defaultValues.asthma),
+				JSON.stringify(medicalHistory.convulsions || defaultValues.convulsions),
+				JSON.stringify(
+					medicalHistory.myocardialInfarction ||
+						defaultValues.myocardialInfarction,
+				),
+				JSON.stringify(medicalHistory.cancer || defaultValues.cancer),
+				JSON.stringify(
+					medicalHistory.cardiacDiseases || defaultValues.cardiacDiseases,
+				),
+				JSON.stringify(
+					medicalHistory.renalDiseases || defaultValues.renalDiseases,
+				),
+				JSON.stringify(medicalHistory.others || defaultValues.others),
+			];
+
+			const upsertQuery = `
             INSERT INTO antecedentes_personales (id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             ON CONFLICT (id_paciente) DO UPDATE
@@ -104,11 +149,22 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
             RETURNING *;
         `;
 
-		logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
-		const upsertResult = await client.query(upsertQuery, values);
-		logger.info("Done inserting/updating!");
+			logger.info({ upsertQuery, values }, "Inserting values in DB...");
 
-		await client.query("commit");
+			const upsertResult = await client.query(upsertQuery, values);
+			logger.info("Done inserting/updating!");
+			return upsertResult;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+		if (transactionResult.response) {
+			const { response } = transactionResult;
+			logger.info({ response }, "Responding with:");
+			return response;
+		}
+		const { result: upsertResult } = transactionResult;
 
 		if (upsertResult.rowCount === 0) {
 			logger.error("No value was inserted/updated in the DB!");
@@ -153,3 +209,33 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 		}
 	}
 };
+
+function requestModifiesSavedData(requestData, savedData) {
+	if (savedData === null || savedData === requestData) {
+		return false;
+	}
+
+	const properties = Object.keys(savedData);
+	logger.info({ properties }, "Checking properties...");
+
+	const doesntModifyData = properties.every((key) => {
+		logger.info({ key }, "Checking key...");
+		if (!Object.hasOwn(requestData, key)) {
+			logger.error({ key }, "Key isn't present on request data!");
+			return false;
+		}
+
+		logger.info(
+			{ savedData: savedData[key], requestData: requestData[key] },
+			"Comparing savedData with requestData",
+		);
+		return requestIsSubset(savedData[key].data, requestData[key].data, logger);
+	});
+
+	if (!doesntModifyData) {
+		return true;
+	}
+
+	logger.info({ properties }, "Properties aren't changed!");
+	return false;
+}
