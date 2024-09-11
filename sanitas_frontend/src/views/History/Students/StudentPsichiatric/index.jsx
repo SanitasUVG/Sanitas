@@ -556,13 +556,9 @@ function PsichiatricView({
 			}
 		}
 
-		// Si todas las validaciones pasan, retornar true
 		return true;
 	};
 
-	const [isEditable, setIsEditable] = useState(isFirstTime);
-
-	// Save the new Allergic record to the database
 	const handleSaveNewHistory = async () => {
 		// Validación de entradas antes de intentar guardar
 		if (!validateInputs()) return;
@@ -633,7 +629,6 @@ function PsichiatricView({
 			const result = await updateStudentPsychiatricHistory(id, newHistoryData);
 			if (!result.error) {
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
-				setIsEditable(false);
 				triggerReload();
 			} else {
 				toast.error(`Error al guardar los antecedentes: ${result.error}`);
@@ -700,9 +695,8 @@ function PsichiatricView({
 	const [originalOtherUBE, setOriginalOtherUBE] = useState(false);
 	const [originalOtherIllness, setOriginalOtherIllness] = useState("");
 
-	// Verificar y establecer el estado inicial cuando cargamos los datos desde el API
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	useEffect(() => {
-		// Verificamos si ya hay datos guardados y establecemos los estados iniciales
 		setDepressionMedications(
 			depression.data.length > 0 &&
 				depression.data.some((item) => item.medication)
@@ -718,13 +712,11 @@ function PsichiatricView({
 				depression.data.some((item) => item.medication),
 		);
 
-		// Actualizamos isEditing para reflejar si ya hay datos guardados en el API
 		setIsEditing((prevState) => ({
 			...prevState,
-			depression: !depression.data.some((item) => item.medication), // Si ya hay datos guardados, no se permite la edición
+			depression: !depression.data.some((item) => item.medication),
 		}));
 
-		// Lo mismo para ansiedad
 		setAnxietyMedications(
 			anxiety.data.length > 0 && anxiety.data.some((item) => item.medication)
 				? anxiety.data.map((item) => ({
@@ -742,7 +734,6 @@ function PsichiatricView({
 			anxiety: !anxiety.data.some((item) => item.medication),
 		}));
 
-		// Hacer lo mismo para TOC, TDAH, Bipolar, y otros
 		setTOCMedications(
 			ocd.data.length > 0 && ocd.data.some((item) => item.medication)
 				? ocd.data.map((item) => ({
@@ -1231,7 +1222,7 @@ function PsichiatricView({
 														section.handleStatusChange(true);
 														setIsEditing((prevState) => ({
 															...prevState,
-															[key]: true, // Permite que el usuario edite hasta que se guarde
+															[key]: true,
 														}));
 													}}
 													label="Sí"
@@ -1241,7 +1232,6 @@ function PsichiatricView({
 															fontSize: fontSize.textSize,
 														},
 													}}
-													// Deshabilitar si ya hay datos guardados y el estado es "Sí"
 													disabled={
 														section.status &&
 														section.medications.some((med) => !!med.medication)
@@ -1255,7 +1245,7 @@ function PsichiatricView({
 														section.handleStatusChange(false);
 														setIsEditing((prevState) => ({
 															...prevState,
-															[key]: true, // Permite que el usuario edite y vuelva a "No"
+															[key]: true,
 														}));
 													}}
 													label="No"
@@ -1265,7 +1255,6 @@ function PsichiatricView({
 															fontSize: fontSize.textSize,
 														},
 													}}
-													// Deshabilitar solo si ya hay datos guardados (estado "Sí") y no está editando
 													disabled={
 														section.medications.some(
 															(med) => !!med.medication,
@@ -1319,7 +1308,7 @@ function PsichiatricView({
 																);
 																setIsEditing((prevState) => ({
 																	...prevState,
-																	[`illness-${index}`]: true, // Solo activa la edición para la condición de este índice
+																	[`illness-${index}`]: true,
 																}));
 															}}
 															placeholder="Ingrese información adicional"
@@ -1329,7 +1318,6 @@ function PsichiatricView({
 																fontFamily: fonts.textFont,
 																fontSize: "1rem",
 															}}
-															// Solo se puede editar si está vacío, igual que los otros campos
 															readOnly={
 																!isEditing[`illness-${index}`] &&
 																!!medication.illness
@@ -1337,6 +1325,13 @@ function PsichiatricView({
 														/>
 													</div>
 												)}
+
+												<div
+													style={{
+														padding: "1rem",
+														borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+													}}
+												/>
 												<p
 													style={{
 														paddingBottom: "0.5rem",
@@ -1348,6 +1343,7 @@ function PsichiatricView({
 												>
 													Medicamento {index + 1}:
 												</p>
+
 												<BaseInput
 													value={medication.medication}
 													onChange={(e) => {
@@ -1359,7 +1355,7 @@ function PsichiatricView({
 														);
 														setIsEditing((prevState) => ({
 															...prevState,
-															[`medication-${index}`]: true, // Solo activa la edición para la medicación de este índice
+															[`medication-${index}`]: true,
 														}));
 													}}
 													placeholder="Ingrese el medicamento administrado"
@@ -1372,7 +1368,7 @@ function PsichiatricView({
 													readOnly={
 														!isEditing[`medication-${index}`] &&
 														!!medication.medication
-													} // Solo se puede editar si está vacío
+													}
 												/>
 
 												<p
@@ -1396,7 +1392,7 @@ function PsichiatricView({
 														);
 														setIsEditing((prevState) => ({
 															...prevState,
-															[`dose-${index}`]: true, // Solo activa la edición para la dosis de este índice
+															[`dose-${index}`]: true,
 														}));
 													}}
 													placeholder="Ingrese cuánto (opcional)"
@@ -1407,7 +1403,7 @@ function PsichiatricView({
 														fontSize: "1rem",
 													}}
 													readOnly={
-														!isEditing[`dose-${index}`] && !!medication.dose // Solo se puede editar si está vacío o en modo edición
+														!!medication.medication && !!medication.frequency
 													}
 												/>
 												<p
@@ -1431,7 +1427,7 @@ function PsichiatricView({
 														);
 														setIsEditing((prevState) => ({
 															...prevState,
-															[`frequency-${index}`]: true, // Solo activa la edición para la frecuencia de este índice
+															[`frequency-${index}`]: true,
 														}));
 													}}
 													placeholder="Ingrese cada cuánto administra el medicamento"
@@ -1444,7 +1440,7 @@ function PsichiatricView({
 													readOnly={
 														!isEditing[`frequency-${index}`] &&
 														!!medication.frequency
-													} // Solo se puede editar si está vacío
+													}
 												/>
 											</div>
 										))}
@@ -1475,7 +1471,7 @@ function PsichiatricView({
 													section.setUBE(true);
 													setIsEditing((prevState) => ({
 														...prevState,
-														[key]: true, // Permitir cambiar a "Sí" si no hay datos preexistentes
+														[key]: true,
 													}));
 												}}
 												style={{
@@ -1484,7 +1480,6 @@ function PsichiatricView({
 														fontSize: fontSize.textSize,
 													},
 												}}
-												// El botón se deshabilita si ya hay datos guardados (por ejemplo, si `medication` no está vacío)
 												disabled={
 													!isEditing[key] &&
 													!!section.medications.some((med) => !!med.medication)
@@ -1499,7 +1494,7 @@ function PsichiatricView({
 													section.setUBE(false);
 													setIsEditing((prevState) => ({
 														...prevState,
-														[key]: true, // Permitir cambiar a "No" si no hay datos preexistentes
+														[key]: true,
 													}));
 												}}
 												style={{
@@ -1508,7 +1503,6 @@ function PsichiatricView({
 														fontSize: fontSize.textSize,
 													},
 												}}
-												// El botón se deshabilita si ya hay datos guardados (por ejemplo, si `medication` no está vacío)
 												disabled={
 													!isEditing[key] &&
 													!!section.medications.some((med) => !!med.medication)
@@ -1528,7 +1522,7 @@ function PsichiatricView({
 												text="Agregar otro medicamento"
 												onClick={section.addMedication}
 												style={{
-													width: "30%",
+													width: "20%",
 													height: "3rem",
 													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
@@ -1538,9 +1532,36 @@ function PsichiatricView({
 											{section.medications.length > 1 && (
 												<BaseButton
 													text="Cancelar Medicamento"
-													onClick={section.removeLastMedication}
+													onClick={() => {
+														const lastMedication =
+															section.medications[
+																section.medications.length - 1
+															];
+
+														const isMedicationFromAPI =
+															!!lastMedication.medicationFromAPI ||
+															!!lastMedication.frequencyFromAPI ||
+															!!lastMedication.doseFromAPI;
+
+														const isNewMedicationWithUserInput =
+															!isMedicationFromAPI &&
+															(!!lastMedication.medication ||
+																!!lastMedication.frequency ||
+																!!lastMedication.dose);
+
+														if (isMedicationFromAPI) {
+															toast.error(
+																"No puedes eliminar medicamentos ya guardados",
+															);
+														} else if (
+															isNewMedicationWithUserInput ||
+															!lastMedication.medication
+														) {
+															section.removeLastMedication();
+														}
+													}}
 													style={{
-														width: "30%",
+														width: "20%",
 														height: "3rem",
 														backgroundColor: colors.secondaryBackground,
 														color: colors.primaryBackground,

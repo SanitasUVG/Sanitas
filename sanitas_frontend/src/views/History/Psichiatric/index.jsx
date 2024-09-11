@@ -1124,7 +1124,7 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.7rem",
-													paddingTop: "1rem",
+													paddingTop: "2rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
 												}}
@@ -1251,6 +1251,12 @@ function PsichiatricView({
 														/>
 													</div>
 												)}
+												<div
+													style={{
+														padding: "1rem",
+														borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+													}}
+												/>
 												<p
 													style={{
 														paddingBottom: "0.5rem",
@@ -1398,7 +1404,7 @@ function PsichiatricView({
 													text="Agregar otro medicamento"
 													onClick={section.addMedication}
 													style={{
-														width: "30%",
+														width: "20%",
 														height: "3rem",
 														border: `1.5px solid ${colors.primaryBackground}`,
 													}}
@@ -1410,7 +1416,7 @@ function PsichiatricView({
 														text="Cancelar Medicamento"
 														onClick={section.removeLastMedication}
 														style={{
-															width: "30%",
+															width: "20%",
 															height: "3rem",
 															backgroundColor: colors.secondaryBackground,
 															color: colors.primaryBackground,
