@@ -293,6 +293,7 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -309,19 +310,36 @@ function PersonalView({
 			hypothyroidism: ["medicine", "frequency"],
 			asthma: ["medicine", "frequency"],
 			convulsions: ["medicine", "frequency"],
-			cardiacDiseases: ["medicine", "frequency"],
-			renalDiseases: ["medicine", "frequency"],
+			cardiacDiseases: ["typeOfDisease", "medicine", "frequency"],
+			renalDiseases: ["typeOfDisease", "medicine", "frequency"],
 			default: ["typeOfDisease", "medicine", "frequency"],
+		};
+
+		const optionalFieldsMap = {
+			hypertension: ["dose"], // Dosis es opcional para hipertensión
+			diabetesMellitus: ["dose"], // Dosis es opcional para diabetes
+			asthma: ["dose"], // Dosis es opcional para asma
+			hypothyroidism: ["dose"],
+			convulsions: ["dose"],
+			cardiacDiseases: ["dose"],
+			renalDiseases: ["dose"],
 		};
 
 		// Get the required fields for the selected disease or use default fields
 		const requiredFields =
 			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+		const optionalFields = optionalFieldsMap[selectedPersonal.disease] || [];
 
 		// Prepare new entry for saving
 		const newEntry = {};
 		for (const field of requiredFields) {
 			newEntry[field] = selectedPersonal[field] || "";
+		}
+
+		for (const optionalField of optionalFields) {
+			if (selectedPersonal[optionalField]) {
+				newEntry[optionalField] = selectedPersonal[optionalField];
+			}
 		}
 
 		// Validate required fields
@@ -336,11 +354,28 @@ function PersonalView({
 
 		toast.info("Guardando antecedente personal...");
 
-		// Update the data for the current disease
-		const updatedData = [
-			...personalHistory[selectedPersonal.disease].data,
-			newEntry,
-		];
+		// Buscar si ya existe un registro con los mismos datos
+		const existingEntryIndex = personalHistory[
+			selectedPersonal.disease
+		].data.findIndex((entry) => entry.id === selectedPersonal.id);
+
+		let updatedData; // Eliminar la anotación de tipo
+
+		if (existingEntryIndex > -1) {
+			// Si existe, actualizamos el registro existente
+			updatedData = [...personalHistory[selectedPersonal.disease].data];
+			updatedData[existingEntryIndex] = {
+				...updatedData[existingEntryIndex],
+				...newEntry,
+			};
+		} else {
+			// Si no existe, lo añadimos como un nuevo registro
+			updatedData = [
+				...personalHistory[selectedPersonal.disease].data,
+				newEntry,
+			];
+		}
+
 		const updatedHistory = {
 			...personalHistory[selectedPersonal.disease],
 			data: updatedData,

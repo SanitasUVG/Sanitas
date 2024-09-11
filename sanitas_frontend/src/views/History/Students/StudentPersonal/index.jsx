@@ -288,6 +288,7 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -304,19 +305,36 @@ function PersonalView({
 			hypothyroidism: ["medicine", "frequency"],
 			asthma: ["medicine", "frequency"],
 			convulsions: ["medicine", "frequency"],
-			cardiacDiseases: ["medicine", "frequency"],
-			renalDiseases: ["medicine", "frequency"],
+			cardiacDiseases: ["typeOfDisease", "medicine", "frequency"],
+			renalDiseases: ["typeOfDisease", "medicine", "frequency"],
 			default: ["typeOfDisease", "medicine", "frequency"],
+		};
+
+		const optionalFieldsMap = {
+			hypertension: ["dose"],
+			diabetesMellitus: ["dose"],
+			asthma: ["dose"],
+			hypothyroidism: ["dose"],
+			convulsions: ["dose"],
+			cardiacDiseases: ["dose"],
+			renalDiseases: ["dose"],
 		};
 
 		// Get the required fields for the selected disease or use default fields
 		const requiredFields =
 			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+		const optionalFields = optionalFieldsMap[selectedPersonal.disease] || [];
 
 		// Prepare new entry for saving
 		const newEntry = {};
 		for (const field of requiredFields) {
 			newEntry[field] = selectedPersonal[field] || "";
+		}
+
+		for (const optionalField of optionalFields) {
+			if (selectedPersonal[optionalField]) {
+				newEntry[optionalField] = selectedPersonal[optionalField];
+			}
 		}
 
 		// Validate required fields
