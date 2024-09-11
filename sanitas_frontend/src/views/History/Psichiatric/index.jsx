@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import CheckIcon from "@tabler/icons/outline/check.svg";
@@ -32,8 +32,14 @@ export function PsichiatricHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const psichiatricHistoryResource = WrapPromise(getPsichiatricHistory(id));
-	const [_reload, setReload] = useState(false); // Controls reload toggling for refetching data
+	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
+
+	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
+	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
+	const psichiatricHistoryResource = useMemo(
+		() => WrapPromise(getPsichiatricHistory(id)),
+		[id, reload, getPsichiatricHistory],
+	);
 
 	const triggerReload = () => {
 		setReload((prev) => !prev);
@@ -155,6 +161,15 @@ function PsichiatricView({
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
 	const psichiatricHistoryData = psichiatricHistoryResult.result || {};
 
+	const medicalHistory = psichiatricHistoryData?.medicalHistory || {
+		depression: { data: [] },
+		anxiety: { data: [] },
+		ocd: { data: [] },
+		adhd: { data: [] },
+		bipolar: { data: [] },
+		other: { data: [] },
+	};
+
 	const [depressionMedications, setDepressionMedications] = useState([
 		{ medication: "", dose: "", frequency: "" },
 	]);
@@ -264,10 +279,15 @@ function PsichiatricView({
 		setBipolarMedications(newMedications);
 	};
 
-	const [otherMedications, setOtherMedications] = useState([
-		{ medication: "", dose: "", frequency: "" },
-	]);
-
+	const [otherMedications, setOtherMedications] = useState(
+		Array.isArray(medicalHistory.other.data)
+			? medicalHistory.other.data.map((med, index) => ({
+					...med,
+					id: index,
+					illness: med.illness || "",
+				}))
+			: [],
+	);
 	const addOtherMedication = () => {
 		setOtherMedications([
 			...otherMedications,
@@ -279,15 +299,6 @@ function PsichiatricView({
 		const newMedications = [...otherMedications];
 		newMedications[index][field] = value;
 		setOtherMedications(newMedications);
-	};
-
-	const medicalHistory = psichiatricHistoryData?.medicalHistory || {
-		depression: { data: [] },
-		anxiety: { data: [] },
-		ocd: { data: [] },
-		adhd: { data: [] },
-		bipolar: { data: [] },
-		other: { data: [] },
 	};
 
 	const {
@@ -523,7 +534,10 @@ function PsichiatricView({
 
 		// Validar Otros
 		if (OtherStatus) {
-			if (!otherIllness) {
+			const anyEmptyIllness = otherMedications.some(
+				(med) => !med.illness.trim(),
+			); // Verifica si alguna entrada está vacía
+			if (anyEmptyIllness) {
 				toast.error("Por favor, ingresa la condición en Otros.");
 				return false;
 			}
@@ -605,7 +619,7 @@ function PsichiatricView({
 			other: {
 				version: medicalHistory.other.version || 1,
 				data: otherMedications.map((medication) => ({
-					illness: otherIllness,
+					illness: medication.illness,
 					medication: medication.medication,
 					dose: medication.dose,
 					frequency: medication.frequency,
@@ -654,7 +668,7 @@ function PsichiatricView({
 			: false,
 	);
 
-	const [otherIllness, setOtherIllness] = useState(
+	const [_otherIllness, setOtherIllness] = useState(
 		other.data.length > 0 && other.data[0].illness != null
 			? other.data[0].illness
 			: "",
@@ -943,6 +957,87 @@ function PsichiatricView({
 		}
 	};
 
+	const sections = {
+		depression: {
+			label: "¿Tiene depresión?",
+			medications: depressionMedications,
+			setMedications: setDepressionMedications,
+			status: depressionStatus,
+			setStatus: setDepressionStatus,
+			UBE: depressionUBE,
+			setUBE: setDepressionUBE,
+			handleMedicationChange: handleDepressionMedicationChange,
+			addMedication: addDepressionMedication,
+			removeLastMedication: removeLastDepressionMedication,
+			handleStatusChange: handleDepressionChange,
+		},
+		anxiety: {
+			label: "¿Tiene ansiedad?",
+			medications: anxietyMedications,
+			setMedications: setAnxietyMedications,
+			status: anxietyStatus,
+			setStatus: setAnxietyStatus,
+			UBE: anxietyUBE,
+			setUBE: setAnxietyUBE,
+			handleMedicationChange: handleAnxietyMedicationChange,
+			addMedication: addAnxietyMedication,
+			removeLastMedication: removeLastAnxietyMedication,
+			handleStatusChange: handleAnxietyChange,
+		},
+		toc: {
+			label: "¿Tiene TOC (Trastorno Obsesivo Compulsivo)?",
+			medications: TOCMedications,
+			setMedications: setTOCMedications,
+			status: TOCStatus,
+			setStatus: setTOCStatus,
+			UBE: TOCUBE,
+			setUBE: setTOCUBE,
+			handleMedicationChange: handleTOCMedicationChange,
+			addMedication: addTOCMedication,
+			removeLastMedication: removeLastTOCMedication,
+			handleStatusChange: handleTOCChange,
+		},
+		tdah: {
+			label: "¿Tiene TDAH (Trastorno por Déficit de Atención e Hiperactivida)?",
+			medications: TDAHMedications,
+			setMedications: setTDAHMedications,
+			status: TDAHStatus,
+			setStatus: setTDAHStatus,
+			UBE: TDAHUBE,
+			setUBE: setTDAHUBE,
+			handleMedicationChange: handleTDAHMedicationChange,
+			addMedication: addTDAHMedication,
+			removeLastMedication: removeLastTDAHMedication,
+			handleStatusChange: handleTDAHChange,
+		},
+		bipolar: {
+			label: "¿Tiene Trastorno Bipolar?",
+			medications: bipolarMedications,
+			setMedications: setBipolarMedications,
+			status: BipolarStatus,
+			setStatus: setBipolarStatus,
+			UBE: bipolarUBE,
+			setUBE: setBipolarUBE,
+			handleMedicationChange: handleBipolarMedicationChange,
+			addMedication: addBipolarMedication,
+			removeLastMedication: removeLastBipolarMedication,
+			handleStatusChange: handleBipolarChange,
+		},
+		other: {
+			label: "¿Tiene otra condición?",
+			medications: otherMedications,
+			setMedications: setOtherMedications,
+			status: OtherStatus,
+			setStatus: setOtherStatus,
+			UBE: otherUBE,
+			setUBE: setOtherUBE,
+			handleMedicationChange: handleOtherMedicationChange,
+			addMedication: addOtherMedication,
+			removeLastMedication: removeLastOtherMedication,
+			handleStatusChange: handleOtherChange,
+		},
+	};
+
 	return (
 		<div
 			style={{
@@ -992,1429 +1087,343 @@ function PsichiatricView({
 								primera visita aquí.
 							</div>
 						)}
-						<div
-							style={{
-								display: "flex",
-								gap: "1rem",
-								justifyContent: "flex-end",
-								width: "100%",
-							}}
-						>
-							{!isFirstTime &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNewHistory}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
-						</div>
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "0 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
+
+						{Object.entries(sections).map(([key, section]) => (
 							<div
+								key={key}
 								style={{
+									borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+									padding: "0 0 2rem 1rem",
 									display: "flex",
-									alignItems: "start",
 									flexDirection: "column",
+									justifyContent: "space-between",
 								}}
 							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "0.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Tiene depresion?
-								</p>
 								<div
 									style={{
 										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
+										alignItems: "start",
+										flexDirection: "column",
 									}}
 								>
-									<RadioInput
-										name="depression"
-										checked={depressionStatus}
-										onChange={() => handleDepressionChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="depression"
-										checked={!depressionStatus}
-										onChange={() => handleDepressionChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-							</div>
-
-							{depressionStatus && (
-								<div
-									style={{
-										paddingLeft: "0.5rem",
-									}}
-								>
-									{depressionMedications.map((medication, index) => (
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "space-between",
+											width: "100%",
+										}}
+									>
 										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
+											style={{
+												display: "flex",
+												alignItems: "start",
+												flexDirection: "column",
+											}}
 										>
 											<p
 												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
+													paddingBottom: "0.7rem",
+													paddingTop: "1rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
-													fontWeight: "bold",
 												}}
 											>
-												Medicamento {index + 1}:
+												{section.label}
 											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleDepressionMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
+											<div
 												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
+													display: "flex",
+													gap: "1rem",
+													alignItems: "center",
+													paddingLeft: "0.5rem",
+													paddingBottom: "0.5rem",
+												}}
+											>
+												<RadioInput
+													name={key}
+													checked={section.status}
+													onChange={() => section.handleStatusChange(true)}
+													label="Sí"
+													style={{
+														label: {
+															fontFamily: fonts.textFont,
+															fontSize: fontSize.textSize,
+														},
+													}}
+													disabled={!isEditable}
+												/>
+												<RadioInput
+													name={key}
+													checked={!section.status}
+													onChange={() => section.handleStatusChange(false)}
+													label="No"
+													style={{
+														label: {
+															fontFamily: fonts.textFont,
+															fontSize: fontSize.textSize,
+														},
+													}}
+													disabled={!isEditable}
+												/>
+											</div>
+										</div>
+
+										{key === "depression" && (
+											<div
+												style={{
+													display: "flex",
+													justifyContent: "flex-end",
+												}}
+											>
+												{!isFirstTime &&
+													(isEditable ? (
+														<div style={{ display: "flex", gap: "1rem" }}>
+															<IconButton
+																icon={CheckIcon}
+																onClick={handleSaveNewHistory}
+															/>
+															<IconButton
+																icon={CancelIcon}
+																onClick={handleCancel}
+															/>
+														</div>
+													) : (
+														<IconButton
+															icon={EditIcon}
+															onClick={() => setIsEditable(true)}
+														/>
+													))}
+											</div>
+										)}
+									</div>
+								</div>
+
+								{section.status && (
+									<div
+										style={{
+											paddingLeft: "0.5rem",
+										}}
+									>
+										{section.medications.map((medication, index) => (
+											<div
+												key={`${medication.name}-${index}`}
+												style={{ marginBottom: "1rem" }}
+											>
+												{key === "other" && (
+													<div>
+														<div
+															style={{
+																padding: "1rem",
+																borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+															}}
+														/>
+														<p
+															style={{
+																paddingTop: "1.5rem",
+																paddingBottom: "0.5rem",
+																fontFamily: fonts.textFont,
+																fontSize: fontSize.textSize,
+															}}
+														>
+															¿Cuál es la condición?
+														</p>
+														<BaseInput
+															value={medication.illness}
+															onChange={(e) => {
+																const newIllness = e.target.value;
+																setOtherMedications((current) =>
+																	current.map((item, idx) =>
+																		idx === index
+																			? { ...item, illness: newIllness }
+																			: item,
+																	),
+																);
+															}}
+															placeholder="Ingrese información adicional"
+															style={{
+																width: "90%",
+																height: "3rem",
+																fontFamily: fonts.textFont,
+																fontSize: "1rem",
+															}}
+															disabled={!isEditable}
+														/>
+													</div>
+												)}
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "2rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+														fontWeight: "bold",
+													}}
+												>
+													Medicamento {index + 1}:
+												</p>
+												<BaseInput
+													value={medication.medication}
+													onChange={(e) =>
+														section.handleMedicationChange(
+															index,
+															"medication",
+															e.target.value,
+														)
+													}
+													placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
+													style={{
+														width: "90%",
+														height: "3rem",
+														fontFamily: fonts.textFont,
+														fontSize: "1rem",
+													}}
+													disabled={!isEditable}
+												/>
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "2rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													}}
+												>
+													Dosis {index + 1}:
+												</p>
+												<BaseInput
+													value={medication.dose}
+													onChange={(e) =>
+														section.handleMedicationChange(
+															index,
+															"dose",
+															e.target.value,
+														)
+													}
+													placeholder="Ingrese cuánto (opcional)"
+													style={{
+														width: "90%",
+														height: "3rem",
+														fontFamily: fonts.textFont,
+														fontSize: "1rem",
+													}}
+													disabled={!isEditable}
+												/>
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "2rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													}}
+												>
+													Frecuencia {index + 1}:
+												</p>
+												<BaseInput
+													value={medication.frequency}
+													onChange={(e) =>
+														section.handleMedicationChange(
+															index,
+															"frequency",
+															e.target.value,
+														)
+													}
+													placeholder="Ingrese cada cuánto administra el medicamento"
+													style={{
+														width: "90%",
+														height: "3rem",
+														fontFamily: fonts.textFont,
+														fontSize: "1rem",
+													}}
+													disabled={!isEditable}
+												/>
+											</div>
+										))}
+										<p
+											style={{
+												paddingBottom: "0.5rem",
+												paddingTop: "1rem",
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											¿Tiene seguimiento en UBE?
+										</p>
+										<div
+											style={{
+												display: "flex",
+												gap: "1rem",
+												alignItems: "center",
+												paddingLeft: "0.5rem",
+												paddingBottom: "2rem",
+											}}
+										>
+											<RadioInput
+												label="Si"
+												name="ube"
+												checked={section.UBE === true}
+												onChange={() => section.setUBE(true)}
+												style={{
+													label: {
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													},
 												}}
 												disabled={!isEditable}
 											/>
-											<p
+											<RadioInput
+												label="No"
+												name="ube"
+												checked={section.UBE === false}
+												onChange={() => section.setUBE(false)}
 												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleDepressionMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleDepressionMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
+													label: {
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													},
 												}}
 												disabled={!isEditable}
 											/>
 										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={depressionUBE === true}
-											onChange={() => setDepressionUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={depressionUBE === false}
-											onChange={() => setDepressionUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
+
 										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addDepressionMedication}
+											<div
 												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
+													borderTop: `0.1rem solid ${colors.darkerGrey}`,
+													paddingTop: "2rem",
+													display: "flex",
+													justifyContent: "center",
 												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && depressionMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastDepressionMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
+											>
+												<BaseButton
+													text="Agregar otro medicamento"
+													onClick={section.addMedication}
+													style={{
+														width: "30%",
+														height: "3rem",
+														border: `1.5px solid ${colors.primaryBackground}`,
+													}}
+												/>
+
+												<div style={{ width: "1rem" }} />
+												{section.medications.length > 1 && (
+													<BaseButton
+														text="Cancelar Medicamento"
+														onClick={section.removeLastMedication}
+														style={{
+															width: "30%",
+															height: "3rem",
+															backgroundColor: colors.secondaryBackground,
+															color: colors.primaryBackground,
+															border: `1.5px solid ${colors.primaryBackground}`,
+														}}
+													/>
+												)}
+											</div>
 										)}
 									</div>
-								</div>
-							)}
-						</div>
-
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "1rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Tiene ansiedad?
-								</p>
-								<div
-									style={{
-										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<RadioInput
-										name="anxiety"
-										checked={anxietyStatus}
-										onChange={() => handleAnxietyChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="anxiety"
-										checked={!anxietyStatus}
-										onChange={() => handleAnxietyChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-
-								{/* {Estatos de ansiedad && (
-									/Aquí se coloca el renderizado dinámico
-
-									<div
-									style={{
-										paddingLeft: "0.5rem",
-									}}
-								>	
-
-								Aquí van las preguntas contenido
-								</div>
-								)} */}
+								)}
 							</div>
-
-							{anxietyStatus && (
-								<div
-									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
-										paddingLeft: "0.5rem",
-									}}
-								>
-									{anxietyMedications.map((medication, index) => (
-										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
-										>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-													fontWeight: "bold",
-												}}
-											>
-												Medicamento {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleAnxietyMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleAnxietyMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-												disabled={!isEditable}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleAnxietyMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={anxietyUBE === true}
-											onChange={() => setAnxietyUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={anxietyUBE === false}
-											onChange={() => setAnxietyUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
-										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addAnxietyMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && anxietyMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastAnxietyMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-									</div>
-								</div>
-							)}
-						</div>
-
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "1rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Tiene trastorno obsesivo compulsivo?
-								</p>
-								<div
-									style={{
-										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<RadioInput
-										name="TOC"
-										checked={TOCStatus}
-										onChange={() => handleTOCChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="TOC"
-										checked={!TOCStatus}
-										onChange={() => handleTOCChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-							</div>
-
-							{TOCStatus && (
-								<div
-									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
-										paddingLeft: "0.5rem",
-									}}
-								>
-									{TOCMedications.map((medication, index) => (
-										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
-										>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-													fontWeight: "bold",
-												}}
-											>
-												Medicamento {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleTOCMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleTOCMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleTOCMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={TOCUBE === true}
-											onChange={() => setTOCUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={TOCUBE === false}
-											onChange={() => setTOCUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
-										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addTOCMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && TOCMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastTOCMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-									</div>
-								</div>
-							)}
-						</div>
-
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "1rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Tiene TDAH (Trastorno por Déficit de Atención e
-									Hiperactivida)?
-								</p>
-								<div
-									style={{
-										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<RadioInput
-										name="TDAH"
-										checked={TDAHStatus}
-										onChange={() => handleTDAHChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="TDAH"
-										checked={!TDAHStatus}
-										onChange={() => handleTDAHChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-							</div>
-
-							{TDAHStatus && (
-								<div
-									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
-										paddingLeft: "0.5rem",
-									}}
-								>
-									{TDAHMedications.map((medication, index) => (
-										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
-										>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Medicamento {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleTDAHMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleTDAHMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleTDAHMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={TDAHUBE === true}
-											onChange={() => setTDAHUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={TDAHUBE === false}
-											onChange={() => setTDAHUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
-										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addTDAHMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && TDAHMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastTDAHMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-									</div>
-								</div>
-							)}
-						</div>
-
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "1rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Tiene trastorno bipolar?
-								</p>
-								<div
-									style={{
-										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<RadioInput
-										name="TOC"
-										checked={BipolarStatus}
-										onChange={() => handleBipolarChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="TOC"
-										checked={!BipolarStatus}
-										onChange={() => handleBipolarChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-							</div>
-
-							{BipolarStatus && (
-								<div
-									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
-										paddingLeft: "0.5rem",
-									}}
-								>
-									{bipolarMedications.map((medication, index) => (
-										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
-										>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-													fontWeight: "bold",
-												}}
-											>
-												Medicamento {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleBipolarMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleBipolarMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleBipolarMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={bipolarUBE === true}
-											onChange={() => setBipolarUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={bipolarUBE === false}
-											onChange={() => setBipolarUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
-										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addBipolarMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && bipolarMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastBipolarMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-									</div>
-								</div>
-							)}
-						</div>
-
-						<div
-							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										paddingTop: "1rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									¿Otro?
-								</p>
-								<div
-									style={{
-										display: "flex",
-										gap: "1rem",
-										alignItems: "center",
-										paddingLeft: "0.5rem",
-										paddingBottom: "0.5rem",
-									}}
-								>
-									<RadioInput
-										name="TOC"
-										checked={OtherStatus}
-										onChange={() => handleOtherChange(true)}
-										label="Sí"
-										disabled={!isEditable}
-									/>
-									<RadioInput
-										name="TOC"
-										checked={!OtherStatus}
-										onChange={() => handleOtherChange(false)}
-										label="No"
-										disabled={!isEditable}
-									/>
-								</div>
-							</div>
-
-							{OtherStatus && (
-								<div
-									style={{
-										borderRadius: "10px",
-										height: "auto",
-										flex: 1.5,
-										overflowY: "auto",
-										width: "100%",
-										paddingLeft: "0.5rem",
-									}}
-								>
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Cuál es la condición?
-									</p>
-									<BaseInput
-										value={otherIllness}
-										onChange={(e) => setOtherIllness(e.target.value)}
-										placeholder="Ingrese la condición"
-										style={{
-											width: "90%",
-											height: "3rem",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
-										disabled={!isEditable}
-									/>
-									{otherMedications.map((medication, index) => (
-										<div
-											key={`${medication.name}-${index}`}
-											style={{ marginBottom: "1rem" }}
-										>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-													fontWeight: "bold",
-												}}
-											>
-												Medicamento {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.medication}
-												onChange={(e) =>
-													handleOtherMedicationChange(
-														index,
-														"medication",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Dosis {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.dose}
-												onChange={(e) =>
-													handleOtherMedicationChange(
-														index,
-														"dose",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cuánto (opcional)"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													paddingTop: "2rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												Frecuencia {index + 1}:
-											</p>
-											<BaseInput
-												value={medication.frequency}
-												onChange={(e) =>
-													handleOtherMedicationChange(
-														index,
-														"frequency",
-														e.target.value,
-													)
-												}
-												placeholder="Ingrese cada cuánto administra el medicamento"
-												style={{
-													width: "90%",
-													height: "3rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
-												disabled={!isEditable}
-											/>
-										</div>
-									))}
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿Tiene seguimiento en UBE?
-									</p>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											alignItems: "center",
-											paddingLeft: "0.5rem",
-											paddingBottom: "2rem",
-										}}
-									>
-										<RadioInput
-											label="Si"
-											name="ube"
-											checked={otherUBE === true}
-											onChange={() => setOtherUBE(true)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-										<RadioInput
-											label="No"
-											name="ube"
-											checked={otherUBE === false}
-											onChange={() => setOtherUBE(false)}
-											style={{ label: { fontFamily: fonts.textFont } }}
-											disabled={!isEditable}
-										/>
-									</div>
-
-									<div
-										style={{
-											paddingTop: "5rem",
-											display: "flex",
-											justifyContent: "center",
-										}}
-									>
-										{isEditable && (
-											<BaseButton
-												text="Agregar otro medicamento"
-												onClick={addOtherMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-										<div style={{ width: "1rem" }} />
-										{isEditable && otherMedications.length > 1 && (
-											<BaseButton
-												text="Cancelar Medicamento"
-												onClick={removeLastOtherMedication}
-												style={{
-													width: "30%",
-													height: "3rem",
-													backgroundColor: colors.error,
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
-										)}
-									</div>
-								</div>
-							)}
-						</div>
+						))}
 
 						{isFirstTime && (
 							<div
