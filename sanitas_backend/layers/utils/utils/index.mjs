@@ -858,7 +858,6 @@ export function mapToAPIPsychiatricHistory(dbData) {
  */
 export function requestDataEditsDBData(requestData, dbData) {
 	let deletesData = false;
-	console.log("PIJA DE MONO", dbData);
 
 	dbData.some((dbElem, i) => {
 		const requestElem = requestData[i];
