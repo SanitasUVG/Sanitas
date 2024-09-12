@@ -666,6 +666,21 @@ Resources:
             Method: POST
             RestApiId: !Ref SanitasAPI
 
+  updateStudentStudentInformation:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentStudentInformation/update-student-student-information.handler
+      Description: Update the patient student information but not modify
+        already saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
