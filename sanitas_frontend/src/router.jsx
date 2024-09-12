@@ -42,6 +42,7 @@ import {
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
+	patientUpdateGeneralInformation,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -94,7 +95,7 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
 	STUDENT_ALLERGIC_HISTORY: "student-allergic",
-	STUDENT_GENERAL_INFORMATION: "general",
+	STUDENT_GENERAL_INFORMATION: "student-general",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -293,7 +294,7 @@ const studentGeneralInformation = (
 	<RequireAuth>
 		<UpdatePatientGeneralInformationView
 			getGeneralPatientInformation={getGeneralPatientInformation}
-			updateGeneralPatientInformation={updateGeneralPatientInformation}
+			updateGeneralPatientInformation={patientUpdateGeneralInformation}
 			getStudentPatientInformation={getStudentPatientInformation}
 			updateStudentPatientInformation={updateStudentPatientInformation}
 			getCollaboratorInformation={getCollaboratorInformation}
