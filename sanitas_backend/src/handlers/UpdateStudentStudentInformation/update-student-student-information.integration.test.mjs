@@ -9,7 +9,6 @@ import {
 	generateRandomCarnet,
 	generateUniqueCUI,
 	LOCAL_API_URL,
-	updateStudentInfo,
 } from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}patient/student`;
@@ -23,7 +22,7 @@ function generateValidUpdate(idPatient, carnet = generateRandomCarnet()) {
 }
 
 describe("Update patient student data integration tests", () => {
-	let validHeaders = createAuthorizationHeader(createPatientJWT());
+	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	/** @type {number} */
 	let idPatient;
 
@@ -46,9 +45,12 @@ describe("Update patient student data integration tests", () => {
 			headers: validHeaders,
 		});
 
-		expect(received.idPatient).toBe(idPatient);
-		expect(received.carnet).toBe(payload.carnet);
-		expect(received.career).toBe(payload.career);
+		const { data } = received;
+		console.log("Received", data);
+
+		expect(data.idPatient).toBe(idPatient);
+		expect(data.carnet).toBe(payload.carnet);
+		expect(data.career).toBe(payload.career);
 	});
 
 	test("Can't repeat student carnet two times", async () => {
@@ -71,6 +73,7 @@ describe("Update patient student data integration tests", () => {
 		const payload = generateValidUpdate(99999999);
 		const response = await axios.post(API_URL, payload, {
 			validateStatus: () => true,
+			headers: validHeaders,
 		});
 
 		expect(response.status).toBe(404);
@@ -78,7 +81,7 @@ describe("Update patient student data integration tests", () => {
 	});
 
 	test("a doctor can't call the endpoint", async () => {
-		const payload = generateValidPayload(patientId);
+		const payload = generateValidUpdate(idPatient);
 		const doctorHeaders = createAuthorizationHeader(createDoctorJWT());
 
 		const response = await axios.post(API_URL, payload, {
@@ -93,7 +96,7 @@ describe("Update patient student data integration tests", () => {
 	});
 
 	test("can't be called by a malformed JWT", async () => {
-		const payload = generateValidPayload(1);
+		const payload = generateValidUpdate(1);
 		const invalidAuthorization = createAuthorizationHeader(createInvalidJWT());
 
 		const response = await axios.post(API_URL, payload, {

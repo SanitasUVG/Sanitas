@@ -7,6 +7,21 @@ import {
 } from "utils/index.mjs";
 
 /**
+ * @param {import("utils/index.mjs").APIStudentInfo} savedData - The DB data
+ * @param {import("utils/index.mjs").APIStudentInfo} newData - The request data
+ * @returns {boolean}
+ */
+function requestUpdatesValues(savedData, newData) {
+	return Object.keys(savedData).some((key) => {
+		if (!Object.hasOwn(newData, key)) {
+			return true;
+		}
+
+		return savedData[key] !== newData[key];
+	});
+}
+
+/**
  * @param {import('aws-lambda').APIGatewayProxyEvent} event
  * @param {import('aws-lambda').APIGatewayProxyResult} context
  */
@@ -22,6 +37,9 @@ export const handler = async (event, context) => {
 			)
 			.build();
 	}
+
+	logger.info({ headers: event.headers }, "Received headers...");
+	const jwt = event.headers.Authorization;
 
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
@@ -84,7 +102,7 @@ export const handler = async (event, context) => {
 
 		const transactionResult = await transaction(client, logger, async () => {
 			let sql = "SELECT * FROM estudiante WHERE id_paciente = $1";
-			let values = [idPatient];
+			const values = [idPatient];
 
 			logger.info({ sql, values }, "Querying DB for existing data...");
 			const selectResult = await client.query(sql, values);
@@ -134,13 +152,10 @@ export const handler = async (event, context) => {
 
 		const { rows } = transactionResult.result;
 
-		const studentData = rows[0];
-		logger.info(studentData, "Data updated!");
+		const studentData = mapToAPIStudentInfo(rows[0]);
+		logger.info({ studentData }, "Data updated!");
 
-		return responseBuilder
-			.setStatusCode(200)
-			.setBody(mapToAPIStudentInfo(studentData))
-			.build();
+		return responseBuilder.setStatusCode(200).setBody(studentData).build();
 	} catch (error) {
 		logger.error({ error }, "Error querying database:");
 
