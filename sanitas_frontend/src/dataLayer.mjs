@@ -1275,11 +1275,11 @@ export const getPsichiatricHistory = async (id) => {
 };
 
 /**
- * Updates the allergic history of a patient by sending a PUT request to a specific endpoint.
+ * Updates the psychiatric history of a patient by sending a PUT request to a specific endpoint.
  * This function constructs a payload from the family history details provided and sends it to the server.
  *
  * @param {string} patientId - The unique identifier for the patient.
- * @param {Object} psichiatricHistoryData - An object containing details about the patient's allergic history.
+ * @param {Object} psichiatricHistoryData - An object containing details about the patient's psychiatric history.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
@@ -1326,6 +1326,74 @@ export const updatePsichiatricHistory = async (
 	}
 };
 
+/**
+ * Updates the psychiatric history for a student patient by sending a POST request to a specific endpoint.
+ * Constructs a payload with the patient ID and psychiatric history data and handles session validation.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} psychiatricHistoryData - An object containing details about the patient's psychiatric history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
+export const updateStudentPsychiatricHistory = async (
+	patientId,
+	psychiatricHistoryData,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
+
+	console.log("data", psychiatricHistoryData);
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: psychiatricHistoryData,
+	};
+
+	console.log("payload:", payload);
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			console.log(error.request);
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Retrieves the gynecological history for a specific patient by making a GET request to the server.
+ * It handles session validation and constructs the authorization header to perform the request.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1355,6 +1423,16 @@ export const getGynecologicalHistory = async (patientId) => {
 		return { error: error.message };
 	}
 };
+
+/**
+ * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the gynecological history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
 
 export const updateGynecologicalHistory = async (
 	patientId,

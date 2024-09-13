@@ -40,6 +40,7 @@ import {
 	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
+	updateStudentPsychiatricHistory,
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
@@ -61,6 +62,7 @@ import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic
 import { StudentPersonalHistory } from "./views/History/Students/StudentPersonal";
 import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
+import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
@@ -96,6 +98,7 @@ export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
 	STUDENT_ALLERGIC_HISTORY: "student-allergic",
 	STUDENT_PERSONAL_HISTORY: "student-personal",
+	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -319,6 +322,20 @@ const psichiatricHistoryView = (
 	</RequireAuth>
 );
 
+const studentPsichiatricHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentPsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
+			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			//useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const obgynHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -463,6 +480,10 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY,
 				element: studentPersonalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY,
+				element: studentPsichiatricHistoryView,
 			},
 		],
 	},
