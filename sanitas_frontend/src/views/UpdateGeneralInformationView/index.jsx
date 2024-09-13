@@ -187,15 +187,15 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos de colaborador...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
 			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
@@ -361,12 +361,13 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
-
-	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
-	const [patientData, setPatientData] = useState({
+	const formatResponse = (response) => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
+
+	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
+	const [patientData, setPatientData] = useState(formatResponse(response));
 
 	if (response.error) {
 		return (
@@ -388,22 +389,21 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos generales...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData(formatResponse(response));
+			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(formatResponse(updateResponse));
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
 	const handleCancelEdit = () => {
-		setPatientData({
-			...response.result,
-			birthdate: formatDate(response.result.birthdate),
-		});
+		setPatientData(formatResponse(response));
 		setEditMode(false);
 	};
 
