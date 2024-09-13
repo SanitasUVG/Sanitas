@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -20,7 +20,6 @@ function generateValidUpdate(patientId) {
 				data: [
 					{
 						name: "Ibuprofen",
-						reaction: "Hives",
 						severity: "Moderate",
 					},
 				],
@@ -30,7 +29,6 @@ function generateValidUpdate(patientId) {
 				data: [
 					{
 						name: "Shrimp",
-						reaction: "Anaphylaxis",
 						severity: "Severe",
 					},
 				],
@@ -63,30 +61,66 @@ describe("Update Allergic History integration tests", () => {
 	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		patientId = await createTestPatient(); // Create a patient and get the ID
 	});
 
 	test("Update existing allergic history", async () => {
-		try {
-			const allergicHistoryData = generateValidUpdate(patientId);
-			const response = await axios.post(API_URL, allergicHistoryData, {
-				headers: validHeaders,
-			});
+		const allergicHistoryData = generateValidUpdate(patientId);
+		const response = await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+		});
 
-			expect(response).toBeDefined();
-			expect(response.status).toBe(200);
+		expect(response).toBeDefined();
+		expect(response.status).toBe(200);
 
-			const { patientId: id, medicalHistory } = response.data;
-			expect(id).toBe(patientId);
-			expect(medicalHistory.medication.data.length).toBe(1);
-			expect(medicalHistory.food.data[0].name).toBe(
-				allergicHistoryData.medicalHistory.food.data[0].name,
-			);
-		} catch (error) {
-			console.error("Test failed with error:", error.message);
-			throw error;
-		}
+		const { patientId: id, medicalHistory } = response.data;
+		expect(id).toBe(patientId);
+		expect(medicalHistory.medication.data.length).toBe(1);
+		expect(medicalHistory.food.data[0].name).toBe(
+			allergicHistoryData.medicalHistory.food.data[0].name,
+		);
+	});
+
+	test("Adds new allergic data", async () => {
+		const allergicHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+		});
+
+		allergicHistoryData.medicalHistory.medication.data.push({
+			name: "Ibuprofen",
+			severity: "Moderate",
+		});
+		const response = await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(200);
+
+		const { patientId: id, medicalHistory } = response.data;
+		expect(id).toBe(patientId);
+		expect(medicalHistory.medication.data.length).toBe(2);
+		expect(medicalHistory.food.data[0].name).toBe(
+			allergicHistoryData.medicalHistory.food.data[0].name,
+		);
+	});
+
+	test("Patient can't update alergic history", async () => {
+		const allergicHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+		});
+
+		allergicHistoryData.medicalHistory.medication.data = [];
+		const response = await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(403);
+		expect(response.data.error).toBe("Not authorized to update data!");
 	});
 
 	test("Fail to update allergic history with invalid ID", async () => {
@@ -98,7 +132,7 @@ describe("Update Allergic History integration tests", () => {
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(404); // Check for the correct status code
-		expect(response.data.error).toBe("Patient not found with the provided ID.");
+		expect(response.data.error).toBe("No patient with the given ID found!");
 	});
 
 	test("Fail to update allergic history due to missing required fields", async () => {

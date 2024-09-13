@@ -1,12 +1,7 @@
 import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
-import IconButton from "src/components/Button/Icon";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
@@ -15,7 +10,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 /**
  * @typedef {Object} PsichiatricHistoryProps
  * @property {Function} getPsichiatricHistory - Function to fetch the allergic history of a patient.
- * @property {Function} updatePsichiatricHistory - Function to update or add new allergic records for a patient.
+ * @property {Function} updateStudentPsychiatricHistory - Function to update or add new allergic records for a patient.
  * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
  * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
@@ -25,13 +20,14 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
 
-export function PsichiatricHistory({
+export function StudentPsichiatricHistory({
 	getPsichiatricHistory,
-	updatePsichiatricHistory,
-	sidebarConfig,
-	useStore,
+	updateStudentPsychiatricHistory,
+	//sidebarConfig,
+	//useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
@@ -63,15 +59,6 @@ export function PsichiatricHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -106,11 +93,12 @@ export function PsichiatricHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "2rem",
 							}}
 						>
-							Registro de antecedentes psiquiátricos
+							¿Actualmente se encuentra bajo tratamiento médico por alguna de
+							las siguientes enfermedades?
 						</h3>
 					</div>
 
@@ -128,7 +116,9 @@ export function PsichiatricHistory({
 							<PsichiatricView
 								id={id}
 								psichiatricHistoryResource={psichiatricHistoryResource}
-								updatePsichiatricHistory={updatePsichiatricHistory}
+								updateStudentPsychiatricHistory={
+									updateStudentPsychiatricHistory
+								}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
@@ -143,7 +133,7 @@ export function PsichiatricHistory({
  * @typedef {Object} PsichiatricViewProps
  * @property {number} id - The patient's ID.
  * @property {Object} psichiatricHistoryResource - Wrapped resource for fetching psichiatric history data.
- * @property {Function} updatePsichiatricHistory - Function to update the Allergic history.
+ * @property {Function} updateStudentPsychiatricHistory - Function to update the Allergic history.
  * @property {Function} triggerReload - Function to trigger reloading of data.
  * Internal view component for managing the display and modification of a patient's psichiatric history, with options to add or edit records.
  *
@@ -155,7 +145,7 @@ export function PsichiatricHistory({
 function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
-	updatePsichiatricHistory,
+	updateStudentPsychiatricHistory,
 	triggerReload,
 }) {
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
@@ -418,7 +408,16 @@ function PsichiatricView({
 		anxiety.data.length ||
 		ocd.data.length
 	);
-	const [isEditable, setIsEditable] = useState(isFirstTime);
+
+	const [isEditing, setIsEditing] = useState({
+		depression: true, // Esto indica que el usuario está en modo de edición
+		anxiety: true,
+		ocd: true,
+		adhd: true,
+		bipolar: true,
+		other: true,
+	});
+
 	let errorMessage = "";
 
 	if (psichiatricHistoryResult.error) {
@@ -557,11 +556,9 @@ function PsichiatricView({
 			}
 		}
 
-		// Si todas las validaciones pasan, retornar true
 		return true;
 	};
 
-	// Save the new Allergic record to the database
 	const handleSaveNewHistory = async () => {
 		// Validación de entradas antes de intentar guardar
 		if (!validateInputs()) return;
@@ -629,10 +626,9 @@ function PsichiatricView({
 		};
 
 		try {
-			const result = await updatePsichiatricHistory(id, newHistoryData);
+			const result = await updateStudentPsychiatricHistory(id, newHistoryData);
 			if (!result.error) {
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
-				setIsEditable(false);
 				triggerReload();
 			} else {
 				toast.error(`Error al guardar los antecedentes: ${result.error}`);
@@ -698,6 +694,115 @@ function PsichiatricView({
 	const [originalBipolarUBE, setOriginalBipolarUBE] = useState(false);
 	const [originalOtherUBE, setOriginalOtherUBE] = useState(false);
 	const [originalOtherIllness, setOriginalOtherIllness] = useState("");
+
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
+	useEffect(() => {
+		setDepressionMedications(
+			depression.data.length > 0 &&
+				depression.data.some((item) => item.medication)
+				? depression.data.map((item) => ({
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ medication: "", dose: "", frequency: "" }],
+		);
+		setDepressionStatus(
+			depression.data.length > 0 &&
+				depression.data.some((item) => item.medication),
+		);
+
+		setIsEditing((prevState) => ({
+			...prevState,
+			depression: !depression.data.some((item) => item.medication),
+		}));
+
+		setAnxietyMedications(
+			anxiety.data.length > 0 && anxiety.data.some((item) => item.medication)
+				? anxiety.data.map((item) => ({
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ medication: "", dose: "", frequency: "" }],
+		);
+		setAnxietyStatus(
+			anxiety.data.length > 0 && anxiety.data.some((item) => item.medication),
+		);
+		setIsEditing((prevState) => ({
+			...prevState,
+			anxiety: !anxiety.data.some((item) => item.medication),
+		}));
+
+		setTOCMedications(
+			ocd.data.length > 0 && ocd.data.some((item) => item.medication)
+				? ocd.data.map((item) => ({
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ medication: "", dose: "", frequency: "" }],
+		);
+		setTOCStatus(
+			ocd.data.length > 0 && ocd.data.some((item) => item.medication),
+		);
+		setIsEditing((prevState) => ({
+			...prevState,
+			ocd: !ocd.data.some((item) => item.medication),
+		}));
+
+		setTDAHMedications(
+			adhd.data.length > 0 && adhd.data.some((item) => item.medication)
+				? adhd.data.map((item) => ({
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ medication: "", dose: "", frequency: "" }],
+		);
+		setTDAHStatus(
+			adhd.data.length > 0 && adhd.data.some((item) => item.medication),
+		);
+		setIsEditing((prevState) => ({
+			...prevState,
+			adhd: !adhd.data.some((item) => item.medication),
+		}));
+
+		setBipolarMedications(
+			bipolar.data.length > 0 && bipolar.data.some((item) => item.medication)
+				? bipolar.data.map((item) => ({
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ medication: "", dose: "", frequency: "" }],
+		);
+		setBipolarStatus(
+			bipolar.data.length > 0 && bipolar.data.some((item) => item.medication),
+		);
+		setIsEditing((prevState) => ({
+			...prevState,
+			bipolar: !bipolar.data.some((item) => item.medication),
+		}));
+
+		setOtherMedications(
+			other.data.length > 0 && other.data.some((item) => item.medication)
+				? other.data.map((item) => ({
+						illness: item.illness || "",
+						medication: item.medication || "",
+						dose: item.dose || "",
+						frequency: item.frequency || "",
+					}))
+				: [{ illness: "", medication: "", dose: "", frequency: "" }],
+		);
+		setOtherStatus(
+			other.data.length > 0 && other.data.some((item) => item.medication),
+		);
+		setIsEditing((prevState) => ({
+			...prevState,
+			other: !other.data.some((item) => item.medication),
+		}));
+	}, [depression, anxiety, ocd, adhd, bipolar, other]);
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	useEffect(() => {
@@ -877,35 +982,6 @@ function PsichiatricView({
 		isFirstTime,
 	]);
 
-	const handleCancel = () => {
-		// Restaurar los valores originales desde los estados guardados
-		setDepressionMedications(
-			JSON.parse(JSON.stringify(originalDepressionMedications)),
-		);
-		setAnxietyMedications(
-			JSON.parse(JSON.stringify(originalAnxietyMedications)),
-		);
-		setTOCMedications(JSON.parse(JSON.stringify(originalTOCMedications)));
-		setTDAHMedications(JSON.parse(JSON.stringify(originalTDAHMedications)));
-		setBipolarMedications(
-			JSON.parse(JSON.stringify(originalBipolarMedications)),
-		);
-		setOtherMedications(JSON.parse(JSON.stringify(originalOtherMedications)));
-
-		setDepressionUBE(originalDepressionUBE);
-		setAnxietyUBE(originalAnxietyUBE);
-		setTOCUBE(originalTOCUBE);
-		setTDAHUBE(originalTDAHUBE);
-		setBipolarUBE(originalBipolarUBE);
-		setOtherUBE(originalOtherUBE);
-
-		setOtherIllness(originalOtherIllness);
-
-		// Salir del modo de edición
-		setIsEditable(false);
-		toast.info("Edición cancelada.");
-	};
-
 	const handleDepressionChange = (newStatus) => {
 		setDepressionStatus(newStatus);
 		if (!newStatus) {
@@ -1083,8 +1159,7 @@ function PsichiatricView({
 									fontSize: fontSize.textSize,
 								}}
 							>
-								Por favor, ingrese los datos del paciente. Parece que es su
-								primera visita aquí.
+								Por favor ingrese sus datos, parece que es su primera vez aquí.
 							</div>
 						)}
 
@@ -1124,7 +1199,7 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.7rem",
-													paddingTop: "2rem",
+													paddingTop: "1rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
 												}}
@@ -1143,7 +1218,13 @@ function PsichiatricView({
 												<RadioInput
 													name={key}
 													checked={section.status}
-													onChange={() => section.handleStatusChange(true)}
+													onChange={() => {
+														section.handleStatusChange(true);
+														setIsEditing((prevState) => ({
+															...prevState,
+															[key]: true,
+														}));
+													}}
 													label="Sí"
 													style={{
 														label: {
@@ -1151,12 +1232,22 @@ function PsichiatricView({
 															fontSize: fontSize.textSize,
 														},
 													}}
-													disabled={!isEditable}
+													disabled={
+														section.status &&
+														section.medications.some((med) => !!med.medication)
+													}
 												/>
+
 												<RadioInput
 													name={key}
 													checked={!section.status}
-													onChange={() => section.handleStatusChange(false)}
+													onChange={() => {
+														section.handleStatusChange(false);
+														setIsEditing((prevState) => ({
+															...prevState,
+															[key]: true,
+														}));
+													}}
 													label="No"
 													style={{
 														label: {
@@ -1164,38 +1255,14 @@ function PsichiatricView({
 															fontSize: fontSize.textSize,
 														},
 													}}
-													disabled={!isEditable}
+													disabled={
+														section.medications.some(
+															(med) => !!med.medication,
+														) && section.status
+													}
 												/>
 											</div>
 										</div>
-
-										{key === "depression" && (
-											<div
-												style={{
-													display: "flex",
-													justifyContent: "flex-end",
-												}}
-											>
-												{!isFirstTime &&
-													(isEditable ? (
-														<div style={{ display: "flex", gap: "1rem" }}>
-															<IconButton
-																icon={CheckIcon}
-																onClick={handleSaveNewHistory}
-															/>
-															<IconButton
-																icon={CancelIcon}
-																onClick={handleCancel}
-															/>
-														</div>
-													) : (
-														<IconButton
-															icon={EditIcon}
-															onClick={() => setIsEditable(true)}
-														/>
-													))}
-											</div>
-										)}
 									</div>
 								</div>
 
@@ -1239,6 +1306,10 @@ function PsichiatricView({
 																			: item,
 																	),
 																);
+																setIsEditing((prevState) => ({
+																	...prevState,
+																	[`illness-${index}`]: true,
+																}));
 															}}
 															placeholder="Ingrese información adicional"
 															style={{
@@ -1247,10 +1318,14 @@ function PsichiatricView({
 																fontFamily: fonts.textFont,
 																fontSize: "1rem",
 															}}
-															disabled={!isEditable}
+															readOnly={
+																!isEditing[`illness-${index}`] &&
+																!!medication.illness
+															}
 														/>
 													</div>
 												)}
+
 												<div
 													style={{
 														padding: "1rem",
@@ -1268,24 +1343,34 @@ function PsichiatricView({
 												>
 													Medicamento {index + 1}:
 												</p>
+
 												<BaseInput
 													value={medication.medication}
-													onChange={(e) =>
+													onChange={(e) => {
+														const newValue = e.target.value;
 														section.handleMedicationChange(
 															index,
 															"medication",
-															e.target.value,
-														)
-													}
-													placeholder="Ingrese el medicamento administrado (terapia entra en la categoría)"
+															newValue,
+														);
+														setIsEditing((prevState) => ({
+															...prevState,
+															[`medication-${index}`]: true,
+														}));
+													}}
+													placeholder="Ingrese el medicamento administrado"
 													style={{
 														width: "90%",
 														height: "3rem",
 														fontFamily: fonts.textFont,
 														fontSize: "1rem",
 													}}
-													disabled={!isEditable}
+													readOnly={
+														!isEditing[`medication-${index}`] &&
+														!!medication.medication
+													}
 												/>
+
 												<p
 													style={{
 														paddingBottom: "0.5rem",
@@ -1298,13 +1383,18 @@ function PsichiatricView({
 												</p>
 												<BaseInput
 													value={medication.dose}
-													onChange={(e) =>
+													onChange={(e) => {
+														const newValue = e.target.value;
 														section.handleMedicationChange(
 															index,
 															"dose",
-															e.target.value,
-														)
-													}
+															newValue,
+														);
+														setIsEditing((prevState) => ({
+															...prevState,
+															[`dose-${index}`]: true,
+														}));
+													}}
 													placeholder="Ingrese cuánto (opcional)"
 													style={{
 														width: "90%",
@@ -1312,7 +1402,9 @@ function PsichiatricView({
 														fontFamily: fonts.textFont,
 														fontSize: "1rem",
 													}}
-													disabled={!isEditable}
+													readOnly={
+														!!medication.medication && !!medication.frequency
+													}
 												/>
 												<p
 													style={{
@@ -1326,13 +1418,18 @@ function PsichiatricView({
 												</p>
 												<BaseInput
 													value={medication.frequency}
-													onChange={(e) =>
+													onChange={(e) => {
+														const newValue = e.target.value;
 														section.handleMedicationChange(
 															index,
 															"frequency",
-															e.target.value,
-														)
-													}
+															newValue,
+														);
+														setIsEditing((prevState) => ({
+															...prevState,
+															[`frequency-${index}`]: true,
+														}));
+													}}
 													placeholder="Ingrese cada cuánto administra el medicamento"
 													style={{
 														width: "90%",
@@ -1340,7 +1437,10 @@ function PsichiatricView({
 														fontFamily: fonts.textFont,
 														fontSize: "1rem",
 													}}
-													disabled={!isEditable}
+													readOnly={
+														!isEditing[`frequency-${index}`] &&
+														!!medication.frequency
+													}
 												/>
 											</div>
 										))}
@@ -1364,89 +1464,131 @@ function PsichiatricView({
 											}}
 										>
 											<RadioInput
-												label="Si"
+												label="Sí"
 												name="ube"
 												checked={section.UBE === true}
-												onChange={() => section.setUBE(true)}
+												onChange={() => {
+													section.setUBE(true);
+													setIsEditing((prevState) => ({
+														...prevState,
+														[key]: true,
+													}));
+												}}
 												style={{
 													label: {
 														fontFamily: fonts.textFont,
 														fontSize: fontSize.textSize,
 													},
 												}}
-												disabled={!isEditable}
+												disabled={
+													!isEditing[key] &&
+													!!section.medications.some((med) => !!med.medication)
+												}
 											/>
+
 											<RadioInput
 												label="No"
 												name="ube"
 												checked={section.UBE === false}
-												onChange={() => section.setUBE(false)}
+												onChange={() => {
+													section.setUBE(false);
+													setIsEditing((prevState) => ({
+														...prevState,
+														[key]: true,
+													}));
+												}}
 												style={{
 													label: {
 														fontFamily: fonts.textFont,
 														fontSize: fontSize.textSize,
 													},
 												}}
-												disabled={!isEditable}
+												disabled={
+													!isEditing[key] &&
+													!!section.medications.some((med) => !!med.medication)
+												}
 											/>
 										</div>
 
-										{isEditable && (
-											<div
+										<div
+											style={{
+												borderTop: `0.1rem solid ${colors.darkerGrey}`,
+												paddingTop: "2rem",
+												display: "flex",
+												justifyContent: "center",
+											}}
+										>
+											<BaseButton
+												text="Agregar otro medicamento"
+												onClick={section.addMedication}
 												style={{
-													borderTop: `0.1rem solid ${colors.darkerGrey}`,
-													paddingTop: "2rem",
-													display: "flex",
-													justifyContent: "center",
+													width: "20%",
+													height: "3rem",
+													border: `1.5px solid ${colors.primaryBackground}`,
 												}}
-											>
+											/>
+
+											<div style={{ width: "1rem" }} />
+											{section.medications.length > 1 && (
 												<BaseButton
-													text="Agregar otro medicamento"
-													onClick={section.addMedication}
+													text="Cancelar Medicamento"
+													onClick={() => {
+														const lastMedication =
+															section.medications[
+																section.medications.length - 1
+															];
+
+														const isMedicationFromAPI =
+															!!lastMedication.medicationFromAPI ||
+															!!lastMedication.frequencyFromAPI ||
+															!!lastMedication.doseFromAPI;
+
+														const isNewMedicationWithUserInput =
+															!isMedicationFromAPI &&
+															(!!lastMedication.medication ||
+																!!lastMedication.frequency ||
+																!!lastMedication.dose);
+
+														if (isMedicationFromAPI) {
+															toast.error(
+																"No puedes eliminar medicamentos ya guardados",
+															);
+														} else if (
+															isNewMedicationWithUserInput ||
+															!lastMedication.medication
+														) {
+															section.removeLastMedication();
+														}
+													}}
 													style={{
 														width: "20%",
 														height: "3rem",
+														backgroundColor: colors.secondaryBackground,
+														color: colors.primaryBackground,
 														border: `1.5px solid ${colors.primaryBackground}`,
 													}}
 												/>
-
-												<div style={{ width: "1rem" }} />
-												{section.medications.length > 1 && (
-													<BaseButton
-														text="Cancelar Medicamento"
-														onClick={section.removeLastMedication}
-														style={{
-															width: "20%",
-															height: "3rem",
-															backgroundColor: colors.secondaryBackground,
-															color: colors.primaryBackground,
-															border: `1.5px solid ${colors.primaryBackground}`,
-														}}
-													/>
-												)}
-											</div>
-										)}
+											)}
+										</div>
 									</div>
 								)}
 							</div>
 						))}
 
-						{isFirstTime && (
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									paddingTop: "2rem",
-								}}
-							>
-								<BaseButton
-									text="Guardar"
-									onClick={handleSaveNewHistory}
-									style={{ width: "30%", height: "3rem" }}
-								/>
-							</div>
-						)}
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								paddingTop: "2rem",
+							}}
+						>
+							<BaseButton
+								text="Guardar"
+								onClick={handleSaveNewHistory}
+								style={{ width: "30%", height: "3rem" }}
+							/>
+						</div>
 					</>
 				)}
 			</div>

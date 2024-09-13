@@ -1,9 +1,9 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
-import { PsichiatricHistory } from ".";
+import { StudentPsichiatricHistory } from ".";
 
 export default {
-	component: PsichiatricHistory,
+	component: StudentPsichiatricHistory,
 	decorators: [
 		(Story) => (
 			<MemoryRouter initialEntries={["/psychiatric-history"]}>
@@ -13,12 +13,12 @@ export default {
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/PsichiatricHistory",
+	title: "Views/Antecedents/Student/StudentPsichiatricHistory",
 };
 
 const dummyPatientId = 12345;
 
-const mockGetPsichiatricHistoryWithData = async () => ({
+const mockGetStudentPsichiatricHistoryWithData = async () => ({
 	result: {
 		medicalHistory: {
 			depression: {
@@ -92,7 +92,7 @@ const mockGetPsichiatricHistoryWithData = async () => ({
 	},
 });
 
-const mockGetPsichiatricHistoryEmpty = async () => ({
+const mockGetStudentPsichiatricHistoryEmpty = async () => ({
 	result: {
 		medicalHistory: {
 			depression: { data: [], version: 1 },
@@ -105,7 +105,7 @@ const mockGetPsichiatricHistoryEmpty = async () => ({
 	},
 });
 
-const mockGetPsichiatricHistoryError = async () => ({
+const mockGetStudentPsichiatricHistoryError = async () => ({
 	error: {
 		response: {
 			status: 400,
@@ -115,7 +115,7 @@ const mockGetPsichiatricHistoryError = async () => ({
 	},
 });
 
-const mockUpdatePsichiatricHistory = async (history) => ({
+const mockUpdateStudentPsichiatricHistory = async (history) => ({
 	result: { medicalHistory: history },
 });
 
@@ -125,8 +125,8 @@ const store = createEmptyStore({
 
 export const WithData = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryWithData,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryWithData,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",
@@ -139,8 +139,8 @@ export const WithData = {
 
 export const EmptyData = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryEmpty,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryEmpty,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",
@@ -153,8 +153,8 @@ export const EmptyData = {
 
 export const ErrorState = {
 	args: {
-		getPsichiatricHistory: mockGetPsichiatricHistoryError,
-		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
+		getPsichiatricHistory: mockGetStudentPsichiatricHistoryError,
+		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
 		sidebarConfig: {
 			userInformation: {
 				displayName: "Dr. Jane Doe",

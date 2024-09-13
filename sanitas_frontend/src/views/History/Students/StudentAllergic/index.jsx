@@ -26,6 +26,7 @@ export function StudentAllergicHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
+
 	const allergicHistoryResource = WrapPromise(getStudentAllergicHistory(id));
 
 	const LoadingView = () => {
@@ -46,7 +47,6 @@ export function StudentAllergicHistory({
 		>
 			<div
 				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -134,7 +134,7 @@ function AllergicView({
 	const [selectedAllergie, setSelectedAllergie] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
-
+	const isFirstTime = addingNew;
 	const allergicHistoryResult = allergicHistoryResource.read();
 
 	let errorMessage = "";
@@ -177,6 +177,7 @@ function AllergicView({
 	};
 
 	// Save the new Allergic record to the database
+
 	const handleSaveNewAllergie = async () => {
 		if (
 			!(
@@ -196,18 +197,22 @@ function AllergicView({
 			severity: selectedAllergie.reactionType,
 		};
 
+		let updatedMedicalHistory;
+
 		const currentCategoryData =
 			AllergicHistory[selectedAllergie.selectedMed]?.data || [];
-
 		const currentVersion =
 			AllergicHistory[selectedAllergie.selectedMed]?.version || 1;
 
+		// Determina si se añade a la lista existente o se reemplaza dependiendo del valor de isFirstTime
 		const updatedCategory = {
-			version: currentVersion,
-			data: [...currentCategoryData, updatedAllergy],
+			version: currentVersion + 1, // Incrementa la versión para cada cambio
+			data: isFirstTime
+				? [...currentCategoryData, updatedAllergy]
+				: [updatedAllergy],
 		};
 
-		const updatedMedicalHistory = {
+		updatedMedicalHistory = {
 			...AllergicHistory,
 			[selectedAllergie.selectedMed]: updatedCategory,
 		};
@@ -224,10 +229,12 @@ function AllergicView({
 				setIsEditable(false);
 				toast.success("Antecedente alérgico guardado con éxito.");
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				throw new Error(response.error); // Lanza un error si la respuesta incluye un error
 			}
 		} catch (error) {
-			toast.error(`Error en la operación: ${error.message}`);
+			toast.error(
+				`Error en la operación: ${error.message || "Error desconocido"}`,
+			);
 		}
 	};
 
