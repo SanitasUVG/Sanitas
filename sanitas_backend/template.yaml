@@ -669,6 +669,21 @@ Resources:
             Method: GET
             RestApiId: !Ref SanitasAPI
 
+  getMedicalHistoryMetadataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/GetMedicalHistoryMetadata/get-medical-history-metadata.handler
+      Description: Retrieves which properties from the medical history
+        contains data.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /medical-history/metadata/{id}
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
