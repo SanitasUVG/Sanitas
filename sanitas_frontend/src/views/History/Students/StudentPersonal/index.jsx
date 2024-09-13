@@ -2,41 +2,33 @@ import React, { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import InformationCard from "src/components/InformationCard";
-import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
-import IconButton from "src/components/Button/Icon";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
- * @typedef {Object} PersonalHistoryProps
- * @property {Function} getPersonalHistory - Function to fetch the personal history data.
- * @property {Function} updatePersonalHistory - Function to update the personal history records.
- * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
- * @property {Function} useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
+ * @typedef {Object} StudentPersonalHistoryProps
+ * @property {Function} getStudentPersonalHistory - Function to fetch the Personal history of a patient.
+ * @property {Function} updateStudentPersonalHistory - Function to update or add new Personal records for a patient.
+ * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
- * Component responsible for displaying and managing the personal history section in a medical dashboard.
- * It includes a sidebar and a main content area where the user can view and add family medical history records.
+ * Component to manage and display a student's Personal history, allowing users to add and view records.
  *
- * @param {PersonalHistoryProps} props - The props passed to the PersonalHistory component.
- * @returns {JSX.Element} - The rendered component with sections for sidebar and personal history management.
+ * @param {StudentPersonalHistoryProps} props - The props passed to the StudentPersonalHistory component.
+ * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
  */
-export function PersonalHistory({
+export function StudentPersonalHistory({
 	getBirthdayPatientInfo,
-	getPersonalHistory,
-	updatePersonalHistory,
-	sidebarConfig,
+	getStudentPersonalHistory,
+	updateStudentPersonalHistory,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const personalHistoryResource = WrapPromise(getPersonalHistory(id));
+	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 
 	const LoadingView = () => {
 		return (
@@ -56,15 +48,6 @@ export function PersonalHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -99,11 +82,24 @@ export function PersonalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
+							}}
+						>
+							{" "}
+							¿Usted ha sido diagnosticado por un médico con una de las
+							siguientes enfermedades?{" "}
+						</h3>{" "}
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes personales
+							{" "}
+							Por favor ingrese un elemento por diagnóstico.{" "}
 						</h3>
 					</div>
 
@@ -122,7 +118,7 @@ export function PersonalHistory({
 								id={id}
 								birthdayResource={birthdayResource}
 								personalHistoryResource={personalHistoryResource}
-								updatePersonalHistory={updatePersonalHistory}
+								updateStudentPersonalHistory={updateStudentPersonalHistory}
 							/>
 						</Suspense>
 					</div>
@@ -131,12 +127,11 @@ export function PersonalHistory({
 		</div>
 	);
 }
-
 /**
  * @typedef {Object} PersonalViewProps
  * @property {string} id - The unique identifier for the patient.
  * @property {Object} personalHistoryResource - Wrapped promise containing the personal history data.
- * @property {Function} updatePersonalHistory - Function to update personal history records.
+ * @property {Function} updateStudentPersonalHistory - Function to update personal history records.
  *
  * This component handles the display and interaction of the personal medical history. It allows the user
  * to view existing records, add new entries, and manage interaction states like error handling and data submissions.
@@ -150,7 +145,7 @@ function PersonalView({
 	id,
 	birthdayResource,
 	personalHistoryResource,
-	updatePersonalHistory,
+	updateStudentPersonalHistory,
 }) {
 	// State hooks to manage the selected personal disease and whether adding a new entry
 	const [selectedPersonal, setSelectedPersonal] = useState({});
@@ -183,78 +178,45 @@ function PersonalView({
 	const personalHistoryData = personalHistoryResult.result;
 	const [personalHistory, setPersonalHistory] = useState({
 		hypertension: {
-			data:
-				personalHistoryData?.medicalHistory.hypertension.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.hypertension.data || [],
 			version: personalHistoryData?.medicalHistory.hypertension.version || 1,
 		},
 		diabetesMellitus: {
-			data:
-				personalHistoryData?.medicalHistory.diabetesMellitus.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.diabetesMellitus.data || [],
 			version:
 				personalHistoryData?.medicalHistory.diabetesMellitus.version || 1,
 		},
 		hypothyroidism: {
-			data:
-				personalHistoryData?.medicalHistory.hypothyroidism.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.hypothyroidism.data || [],
 			version: personalHistoryData?.medicalHistory.hypothyroidism.version || 1,
 		},
 		asthma: {
-			data:
-				personalHistoryData?.medicalHistory.asthma.data.map((item, index) => ({
-					...item,
-					id: index + 1,
-				})) || [],
+			data: personalHistoryData?.medicalHistory.asthma.data || [],
 			version: personalHistoryData?.medicalHistory.asthma.version || 1,
 		},
 		convulsions: {
-			data:
-				personalHistoryData?.medicalHistory.convulsions.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.convulsions.data || [],
 			version: personalHistoryData?.medicalHistory.convulsions.version || 1,
 		},
 		myocardialInfarction: {
-			data:
-				personalHistoryData?.medicalHistory.myocardialInfarction.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.myocardialInfarction.data || [],
 			version:
 				personalHistoryData?.medicalHistory.myocardialInfarction.version || 1,
 		},
 		cancer: {
-			data:
-				personalHistoryData?.medicalHistory.cancer.data.map((item, index) => ({
-					...item,
-					id: index + 1,
-				})) || [],
+			data: personalHistoryData?.medicalHistory.cancer.data || [],
 			version: personalHistoryData?.medicalHistory.cancer.version || 1,
 		},
 		cardiacDiseases: {
-			data:
-				personalHistoryData?.medicalHistory.cardiacDiseases.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.cardiacDiseases.data || [],
 			version: personalHistoryData?.medicalHistory.cardiacDiseases.version || 1,
 		},
 		renalDiseases: {
-			data:
-				personalHistoryData?.medicalHistory.renalDiseases.data.map(
-					(item, index) => ({ ...item, id: index + 1 }),
-				) || [],
+			data: personalHistoryData?.medicalHistory.renalDiseases.data || [],
 			version: personalHistoryData?.medicalHistory.renalDiseases.version || 1,
 		},
 		others: {
-			data:
-				personalHistoryData?.medicalHistory.others.data.map((item, index) => ({
-					...item,
-					id: index + 1,
-				})) || [],
+			data: personalHistoryData?.medicalHistory.others.data || [],
 			version: personalHistoryData?.medicalHistory.others.version || 1,
 		},
 	});
@@ -358,10 +320,12 @@ function PersonalView({
 			renalDiseases: ["dose"],
 		};
 
+		// Get the required fields for the selected disease or use default fields
 		const requiredFields =
 			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
 		const optionalFields = optionalFieldsMap[selectedPersonal.disease] || [];
 
+		// Prepare new entry for saving
 		const newEntry = {};
 		for (const field of requiredFields) {
 			newEntry[field] = selectedPersonal[field] || "";
@@ -373,6 +337,7 @@ function PersonalView({
 			}
 		}
 
+		// Validate required fields
 		const missingFields = requiredFields.filter(
 			(field) => !newEntry[field] || newEntry[field].trim() === "",
 		);
@@ -384,25 +349,11 @@ function PersonalView({
 
 		toast.info("Guardando antecedente personal...");
 
-		const existingEntryIndex = personalHistory[
-			selectedPersonal.disease
-		].data.findIndex((entry) => entry.id === selectedPersonal.id);
-
-		let updatedData;
-		if (existingEntryIndex > -1) {
-			updatedData = [...personalHistory[selectedPersonal.disease].data];
-			updatedData[existingEntryIndex] = {
-				...updatedData[existingEntryIndex],
-				...newEntry,
-			};
-		} else {
-			updatedData = [
-				...personalHistory[selectedPersonal.disease].data,
-				newEntry,
-			];
-		}
-
-		// Crear el objeto actualizado para el historial
+		// Update the data for the current disease
+		const updatedData = [
+			...personalHistory[selectedPersonal.disease].data,
+			newEntry,
+		];
 		const updatedHistory = {
 			...personalHistory[selectedPersonal.disease],
 			data: updatedData,
@@ -414,7 +365,10 @@ function PersonalView({
 		};
 
 		try {
-			const response = await updatePersonalHistory(id, updatedPersonalHistory);
+			const response = await updateStudentPersonalHistory(
+				id,
+				updatedPersonalHistory,
+			);
 
 			if (response.error) {
 				toast.error(`Error al guardar la información: ${response.error}`);
@@ -835,31 +789,6 @@ function PersonalView({
 									</React.Fragment>
 								)}
 
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-								}}
-							>
-								<div style={{ display: "flex", justifyContent: "flex-end" }}>
-									{!addingNew &&
-										(isEditable ? (
-											<div style={{ display: "flex", gap: "1rem" }}>
-												<IconButton
-													icon={CheckIcon}
-													onClick={handleSaveNewPersonal}
-												/>
-												<IconButton icon={CancelIcon} onClick={handleCancel} />
-											</div>
-										) : (
-											<IconButton
-												icon={EditIcon}
-												onClick={() => setIsEditable(true)}
-											/>
-										))}
-								</div>
-							</div>
 							<div
 								style={{
 									paddingTop: "5rem",

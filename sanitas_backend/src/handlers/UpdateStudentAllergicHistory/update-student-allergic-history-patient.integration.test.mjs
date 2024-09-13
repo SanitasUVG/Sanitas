@@ -82,6 +82,31 @@ describe("Update Allergic History integration tests", () => {
 		);
 	});
 
+	test("Adds new allergic data", async () => {
+		const allergicHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+		});
+
+		allergicHistoryData.medicalHistory.medication.data.push({
+			name: "Ibuprofen",
+			severity: "Moderate",
+		});
+		const response = await axios.post(API_URL, allergicHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(200);
+
+		const { patientId: id, medicalHistory } = response.data;
+		expect(id).toBe(patientId);
+		expect(medicalHistory.medication.data.length).toBe(2);
+		expect(medicalHistory.food.data[0].name).toBe(
+			allergicHistoryData.medicalHistory.food.data[0].name,
+		);
+	});
+
 	test("Patient can't update alergic history", async () => {
 		const allergicHistoryData = generateValidUpdate(patientId);
 		await axios.post(API_URL, allergicHistoryData, {
