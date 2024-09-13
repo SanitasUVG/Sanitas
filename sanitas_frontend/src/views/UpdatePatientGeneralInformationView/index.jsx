@@ -206,15 +206,16 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos de colaborador...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData({ ...response?.result });
 			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
@@ -380,12 +381,13 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
-
-	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
-	const [patientData, setPatientData] = useState({
+	const getResponseFromGET = () => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
+
+	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
+	const [patientData, setPatientData] = useState(getResponseFromGET());
 
 	if (response.error) {
 		return (
@@ -407,22 +409,21 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos generales...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData(getResponseFromGET());
+			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
 	const handleCancelEdit = () => {
-		setPatientData({
-			...response.result,
-			birthdate: formatDate(response.result.birthdate),
-		});
+		setPatientData(getResponseFromGET());
 		setEditMode(false);
 	};
 
@@ -803,15 +804,16 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos de estudiante...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData({ ...response?.result });
 			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 

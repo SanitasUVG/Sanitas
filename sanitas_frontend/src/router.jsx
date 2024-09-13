@@ -43,6 +43,8 @@ import {
 	linkAccountToPatient,
 	getLinkedPatient,
 	patientUpdateGeneralInformation,
+	patientUpdateStudentInformation,
+	patientUpdateCollaboratorInformation,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -291,14 +293,17 @@ const studentAllergicHistoryView = (
 );
 
 const studentGeneralInformation = (
-	<RequireAuth>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
 		<UpdatePatientGeneralInformationView
 			getGeneralPatientInformation={getGeneralPatientInformation}
 			updateGeneralPatientInformation={patientUpdateGeneralInformation}
 			getStudentPatientInformation={getStudentPatientInformation}
-			updateStudentPatientInformation={updateStudentPatientInformation}
+			updateStudentPatientInformation={patientUpdateStudentInformation}
 			getCollaboratorInformation={getCollaboratorInformation}
-			updateCollaboratorInformation={updateCollaboratorInformation}
+			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
 			useStore={useStore}
 		/>
 	</RequireAuth>
