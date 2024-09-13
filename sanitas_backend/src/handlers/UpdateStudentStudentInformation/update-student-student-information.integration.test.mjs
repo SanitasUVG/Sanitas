@@ -46,8 +46,6 @@ describe("Update patient student data integration tests", () => {
 		});
 
 		const { data } = received;
-		console.log("Received", data);
-
 		expect(data.idPatient).toBe(idPatient);
 		expect(data.carnet).toBe(payload.carnet);
 		expect(data.career).toBe(payload.career);
