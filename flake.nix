@@ -55,7 +55,7 @@
 
         integrationTests = pkgs.writeShellApplication {
           name = "Sanitas integration tests";
-          runtimeInputs = [pkgs.docker pkgs.process-compose pkgs.unixtools.ifconfig] ++ backendRequiredPkgs;
+          runtimeInputs = [pkgs.docker pkgs.process-compose pkgs.unixtools.ifconfig pkgs.coreutils] ++ backendRequiredPkgs;
           text = let
             PGDATA = ''"$PWD/.devenv/state/postgres"'';
             startBackend = let
@@ -171,7 +171,7 @@
             processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
           in ''
             echo ${processComposeConfigFile}
-            process-compose -f ${processComposeConfigFile}
+            timeout --kill-after=5s 7m process-compose -f ${processComposeConfigFile}
           '';
         };
 
