@@ -4,6 +4,7 @@ import {
 	decodeJWT,
 	createResponse,
 	mapToAPINonPathologicalHistory,
+	checkForUnauthorizedChangesPathological,
 } from "utils/index.mjs";
 
 export const updateStudentNonPathologicalHistoryHandler = async (
@@ -59,6 +60,29 @@ export const updateStudentNonPathologicalHistoryHandler = async (
 				.setStatusCode(400)
 				.setBody({ error: "Invalid input: Missing or empty required fields." })
 				.build();
+		}
+
+		const getPatientQuery =
+			"SELECT * FROM antecedentes_no_patologicos WHERE id_paciente = $1;";
+
+		const patientResult = await client.query(getPatientQuery, [patientId]);
+		if (patientResult.rowCount > 0) {
+			const dbData = patientResult.rows[0];
+			const oldData = {
+				smoker: dbData.fuma_data,
+				drink: dbData.bebidas_alcoholicas_data,
+				drugs: dbData.drogas_data,
+			};
+
+			if (checkForUnauthorizedChangesPathological(medicalHistory, oldData)) {
+				await client.query("rollback");
+				return responseBuilder
+					.setStatusCode(400)
+					.setBody({
+						error: "Invalid input: Students cannot update saved info.",
+					})
+					.build();
+			}
 		}
 
 		const upsertQuery = `
