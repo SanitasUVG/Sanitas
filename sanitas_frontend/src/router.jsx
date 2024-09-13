@@ -69,7 +69,7 @@ import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsich
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
-import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView"
+import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
 
 const useStore = createEmptyStore();
 
@@ -352,8 +352,8 @@ const studentPsichiatricHistoryView = (
 		<StudentPsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-		//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		//useStore={useStore}
+			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			//useStore={useStore}
 		/>
 	</RequireAuth>
 );
@@ -509,8 +509,8 @@ export const ROUTES = [
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL,
-				element: studentGeneralInformation
-			}
+				element: studentGeneralInformation,
+			},
 		],
 	},
 ];
