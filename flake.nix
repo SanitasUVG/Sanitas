@@ -171,7 +171,7 @@
             processComposeConfigFile = pkgs.writeText "SanitasProcessComposeConfig.yaml" (pkgs.lib.generators.toYAML {} processComposeConfig);
           in ''
             echo ${processComposeConfigFile}
-            timeout --kill-after=5s 7m process-compose -f ${processComposeConfigFile}
+            timeout --kill-after=1m 7m process-compose -f ${processComposeConfigFile}
           '';
         };
 
