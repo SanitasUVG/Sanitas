@@ -44,6 +44,7 @@ import {
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
+	getMedicalHistoryMetadata,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -155,6 +156,8 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
 		);
 	},
+	getMedicalHistoryMetadata,
+	useStore,
 	// TODO: Add other Navigation routes...
 };
 

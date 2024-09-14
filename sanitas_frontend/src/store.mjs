@@ -16,6 +16,12 @@ import { create } from "zustand";
  *
  * @property {number} selectedPatientId
  * @property {(newId: number) => void} setSelectedPatientId
+ *
+ * @property {boolean} isWoman
+ * @property {(newIsWoman: boolean) => void} setIsWoman
+ *
+ * @property {string[]} prefixesWithData
+ * @property {(newPrefixesWithData: string[]) => void} setPrefixesWithData
  */
 
 /**
@@ -49,6 +55,16 @@ export const createEmptyStore = (defaultStoreValues) => {
 		selectedPatientId: 0,
 		setSelectedPatientId: (newId) => {
 			set({ selectedPatientId: newId });
+		},
+
+		isWoman: true,
+		setIsWoman: (isWoman) => {
+			set({ isWoman });
+		},
+
+		prefixesWithData: [],
+		setPrefixesWithData: (prefixesWithData) => {
+			set({ prefixesWithData });
 		},
 
 		...defaultStoreValues,

@@ -16,6 +16,7 @@ const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
 /**
  * @callback GetMedicalHistoryMetadataCallback
  * @param {number} patientId
+ * @returns {Promise<Result<string[], *>>}
  */
 
 /**
