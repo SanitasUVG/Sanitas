@@ -58,7 +58,6 @@ export function StudentSurgicalHistory({
 
 			<div
 				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -93,11 +92,21 @@ export function StudentSurgicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
+							}}
+						>
+							¿Lo han operado alguna vez?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes quirúrgicos
+							Por favor ingrese un elemento por diagnóstico.
 						</h3>
 					</div>
 
