@@ -498,8 +498,8 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_NON_PATHOLOGICAL_HISTORY,
 				element: studentNonPathologicalHistoryView,
-      },
-      {
+			},
+			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY,
 				element: studentPersonalHistoryView,
 			},

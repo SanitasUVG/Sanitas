@@ -1001,7 +1001,7 @@ export const updateStudentNonPathologicalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1019,7 +1019,7 @@ export const updateStudentNonPathologicalHistory = async (
 	};
 
 	try {
-		const response = await axios.put(url, payload, {
+		const response = await axios.post(url, payload, {
 			headers: { Authorization: token },
 		});
 		if (response.status === 200) {
@@ -1394,14 +1394,10 @@ export const updateStudentPsychiatricHistory = async (
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
 
-	console.log("data", psychiatricHistoryData);
-
 	const payload = {
 		patientId: patientId,
 		medicalHistory: psychiatricHistoryData,
 	};
-
-	console.log("payload:", payload);
 
 	try {
 		const response = await axios.post(url, payload, {
@@ -1417,7 +1413,6 @@ export const updateStudentPsychiatricHistory = async (
 			return { error: error.response.data };
 		}
 		if (error.request) {
-			console.log(error.request);
 			return { error: "No response received" };
 		}
 		return { error: error.message };
