@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 import { PsichiatricHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -18,9 +19,6 @@ const mockGetPsichiatricHistory = vi.fn();
 const mockUpdatePsichiatricHistory = vi.fn();
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
 
 const LoadingComponent = () => <div>Loading...</div>;
 
@@ -70,7 +68,7 @@ describe("PsichiatricHistory Component Tests", () => {
 				<PsichiatricHistory
 					getPsichiatricHistory={mockGetPsichiatricHistory}
 					updatePsichiatricHistory={mockUpdatePsichiatricHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

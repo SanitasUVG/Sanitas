@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
 import { PersonalHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -59,9 +60,6 @@ const mockUpdatePersonalHistory = vi.fn(() =>
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
 
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
@@ -73,7 +71,7 @@ describe("PersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getPersonalHistory={mockGetPersonalHistoryWithData}
 					updatePersonalHistory={mockUpdatePersonalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -114,7 +112,7 @@ describe("PersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getPersonalHistory={mockGetPersonalHistoryEmpty}
 					updatePersonalHistory={mockUpdatePersonalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -146,7 +144,7 @@ describe("PersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getPersonalHistory={mockGetPersonalHistoryError}
 					updatePersonalHistory={mockUpdatePersonalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -166,7 +164,7 @@ describe("PersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getPersonalHistory={mockGetPersonalHistoryWithData}
 					updatePersonalHistory={mockUpdatePersonalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

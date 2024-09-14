@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 import { NonPathologicalHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -22,9 +23,6 @@ const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 mockGetBloodTypePatientInfo.mockResolvedValue({ bloodType: "AB+" });
 mockUpdateNonPathologicalHistory.mockResolvedValue({});
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
 
 const LoadingComponent = () => <div>Loading...</div>;
 
@@ -66,7 +64,7 @@ describe("NonPathologicalHistory Component Tests", () => {
 					getNonPathologicalHistory={mockGetNonPathologicalHistory}
 					getBloodTypePatientInfo={mockGetBloodTypePatientInfo}
 					updateNonPathologicalHistory={mockUpdateNonPathologicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -98,7 +96,7 @@ describe("NonPathologicalHistory Component Tests", () => {
 					getNonPathologicalHistory={mockGetNonPathologicalHistoryError}
 					getBloodTypePatientInfo={mockGetBloodTypePatientInfo}
 					updateNonPathologicalHistory={mockUpdateNonPathologicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

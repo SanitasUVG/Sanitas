@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import UpdateInfoView from "./index";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 const examplePatientData = {
 	id: 6969,
@@ -62,9 +63,9 @@ describe("UpdateInfoView tests", () => {
 								getGeneralPatientInformation={getGeneralPatientInformation}
 								getStudentPatientInformation={getStudentPatientInformation}
 								getCollaboratorInformation={getCollaboratorInformation}
-								updateGeneralPatientInformation={() => {}}
+								updateGeneralPatientInformation={() => { }}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -115,9 +116,9 @@ describe("UpdateInfoView tests", () => {
 								getGeneralPatientInformation={getGeneralPatientInformation}
 								getStudentPatientInformation={getStudentPatientInformation}
 								getCollaboratorInformation={getCollaboratorInformation}
-								updateGeneralPatientInformation={() => {}}
+								updateGeneralPatientInformation={() => { }}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -140,13 +141,13 @@ describe("UpdateInfoView tests", () => {
 	test("Shows loading message when fetching patient information", () => {
 		const getGeneralPatientInformation = vi
 			.fn()
-			.mockResolvedValue(new Promise(() => {}));
+			.mockResolvedValue(new Promise(() => { }));
 		const getStudentPatientInformation = vi
 			.fn()
-			.mockResolvedValue(new Promise(() => {}));
+			.mockResolvedValue(new Promise(() => { }));
 		const getCollaboratorInformation = vi
 			.fn()
-			.mockResolvedValue(new Promise(() => {}));
+			.mockResolvedValue(new Promise(() => { }));
 		const useStore = createEmptyStore();
 
 		render(
@@ -159,9 +160,9 @@ describe("UpdateInfoView tests", () => {
 								getGeneralPatientInformation={getGeneralPatientInformation}
 								getStudentPatientInformation={getStudentPatientInformation}
 								getCollaboratorInformation={getCollaboratorInformation}
-								updateGeneralPatientInformation={() => {}}
+								updateGeneralPatientInformation={() => { }}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
