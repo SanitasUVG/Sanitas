@@ -37,7 +37,6 @@ const mockUpdateAllergicHistory = vi.fn(() =>
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 describe("AllergicHistory Component Tests", () => {

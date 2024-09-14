@@ -23,7 +23,6 @@ const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 mockGetBloodTypePatientInfo.mockResolvedValue({ bloodType: "AB+" });
 mockUpdateNonPathologicalHistory.mockResolvedValue({});
 
-
 const LoadingComponent = () => <div>Loading...</div>;
 
 const Wrapper = ({ children }) => (

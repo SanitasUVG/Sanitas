@@ -60,7 +60,6 @@ const mockUpdatePersonalHistory = vi.fn(() =>
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 describe("PersonalHistory Component Tests", () => {

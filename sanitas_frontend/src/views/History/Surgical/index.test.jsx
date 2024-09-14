@@ -42,7 +42,6 @@ describe("SurgicalHistory Component Tests", () => {
 	);
 	const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-
 	const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 	test("opens new form on button click", async () => {

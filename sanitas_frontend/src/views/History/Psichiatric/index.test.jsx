@@ -19,7 +19,6 @@ const mockGetPsichiatricHistory = vi.fn();
 const mockUpdatePsichiatricHistory = vi.fn();
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-
 const LoadingComponent = () => <div>Loading...</div>;
 
 const Wrapper = ({ children }) => (
