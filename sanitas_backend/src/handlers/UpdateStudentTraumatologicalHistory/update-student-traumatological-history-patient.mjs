@@ -5,7 +5,7 @@ import { mapToAPITraumatologicHistory } from "utils";
 import { decodeJWT, requestDataEditsDBData } from "utils/index.mjs";
 
 /**
- * Handles the HTTP PUT request to update or create the traumatologic history for a specific patient.
+ * Handles the HTTP POST request to update or create the traumatologic history for a specific patient.
  * @param {import('aws-lambda').APIGatewayProxyEvent} event
  * @param {import('aws-lambda').APIGatewayProxyResult} context
  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
@@ -15,7 +15,7 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 	context,
 ) => {
 	withRequest(event, context);
-	const responseBuilder = createResponse().addCORSHeaders("PUT");
+	const responseBuilder = createResponse().addCORSHeaders("POST");
 
 	if (event.httpMethod !== "POST") {
 		return responseBuilder
@@ -126,6 +126,8 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 		const result = await client.query(upsertQuery, values);
 		logger.info("Done inserting/updating!");
 
+		await client.query("commit");
+
 		if (result.rowCount === 0) {
 			logger.error("No value was inserted/updated in the DB!");
 			return responseBuilder
@@ -144,6 +146,7 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 			.setBody(formattedResponse)
 			.build();
 	} catch (error) {
+		await client.query("rollback");
 		logger.error(
 			{ error },
 			"An error occurred while updating traumatologic history!",
