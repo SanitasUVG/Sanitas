@@ -40,13 +40,9 @@ import {
 	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
-	updateStudentPsychiatricHistory,
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
-	patientUpdateGeneralInformation,
-	patientUpdateStudentInformation,
-	patientUpdateCollaboratorInformation,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -65,11 +61,9 @@ import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic
 import { StudentPersonalHistory } from "./views/History/Students/StudentPersonal";
 import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
-import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
-import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
 
 const useStore = createEmptyStore();
 
@@ -102,14 +96,12 @@ export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
 	STUDENT_ALLERGIC_HISTORY: "student-allergic",
 	STUDENT_PERSONAL_HISTORY: "student-personal",
-	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
-	STUDENT_GENERAL: "student-general",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	userInformation: {
-		displayName: "Pedrito Pérez",
+		displayName: "Pedrito PÃ©rez",
 		title: "Test username",
 	},
 	onGoBack: (navigate) => {
@@ -206,23 +198,6 @@ const studentSurgicalHistoryView = (
 			getStudentSurgicalHistory={getSurgicalHistory}
 			updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-			useStore={useStore}
-		/>
-	</RequireAuth>
-);
-
-const studentGeneralInformation = (
-	<RequireAuth
-		getSession={IS_PRODUCTION ? getSession : mockGetSession}
-		path={NAV_PATHS.LOGIN_USER}
-	>
-		<UpdatePatientGeneralInformationView
-			getGeneralPatientInformation={getGeneralPatientInformation}
-			updateGeneralPatientInformation={patientUpdateGeneralInformation}
-			getStudentPatientInformation={getStudentPatientInformation}
-			updateStudentPatientInformation={patientUpdateStudentInformation}
-			getCollaboratorInformation={getCollaboratorInformation}
-			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -344,20 +319,6 @@ const psichiatricHistoryView = (
 	</RequireAuth>
 );
 
-const studentPsichiatricHistoryView = (
-	<RequireAuth
-		getSession={IS_PRODUCTION ? getSession : mockGetSession}
-		path={NAV_PATHS.LOGIN_USER}
-	>
-		<StudentPsichiatricHistory
-			getPsichiatricHistory={getPsichiatricHistory}
-			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-			//useStore={useStore}
-		/>
-	</RequireAuth>
-);
-
 const obgynHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -385,6 +346,8 @@ export const ROUTES = [
 					searchPatientsApiCall={searchPatient}
 					useStore={useStore}
 					logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+					getRole={getRole}
+					getLinkedPatient={getLinkedPatient}
 				/>
 			</RequireAuth>
 		),
@@ -502,14 +465,6 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY,
 				element: studentPersonalHistoryView,
-			},
-			{
-				path: PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY,
-				element: studentPsichiatricHistoryView,
-			},
-			{
-				path: PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL,
-				element: studentGeneralInformation,
 			},
 		],
 	},
