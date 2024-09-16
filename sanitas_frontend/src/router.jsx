@@ -101,7 +101,7 @@ export const PATIENT_FORM_NAV_PATHS = {
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	userInformation: {
-		displayName: "Pedrito PÃ©rez",
+		displayName: "Pedrito Pérez",
 		title: "Test username",
 	},
 	onGoBack: (navigate) => {
