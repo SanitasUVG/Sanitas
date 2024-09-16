@@ -880,6 +880,57 @@ export function requestDataEditsDBData(requestData, dbData) {
 }
 
 /**
+ * Checks if the requestArray contains all elements from the savedArray. It may or may not contain extra elements.
+ *
+ * The properties inside each array element will be compared using the `comparator` function.
+ * This means if you have to arrays `d` and `e` the `comparator` function will be used like so:
+ * ```
+ * comparator(d[i][someProperty], e[i][someProperty])
+ * ```
+ *
+ * By default the comparator function is implemented like so:
+ * ```
+ * (a,b) => a===b
+ * ```
+ * @param {*[]} requestArray - The array coming from the request.
+ * @param {*[]} savedArray - The array saved in the DB.
+ * @param {import("pino").Logger} logger - The logger for the request.
+ * @param {(savedValue: *, requestValue: *) => boolean} [comparator=(a,b)=>a===b] - The array saved in the DB.
+ * @returns {boolean} True if the requestArray contains at minimum the same elements as the savedArray, false otherwise.
+ */
+export function requestIsSubset(
+	savedArray,
+	requestArray,
+	logger,
+	comparator = (a, b) => a === b,
+) {
+	// We shallow copy because we modify the search area every time we find a match
+	const reqArray = [...requestArray];
+	return savedArray.every((savedValue) => {
+		const properties = Object.keys(savedValue);
+
+		for (let i = 0; i < reqArray.length; i++) {
+			const requestValue = reqArray[i];
+			logger.info({ requestValue, savedValue }, "Comparing values...");
+			if (
+				properties.every((prop) =>
+					comparator(requestValue[prop], savedValue[prop]),
+				)
+			) {
+				reqArray.splice(i, 1);
+				return true;
+			}
+		}
+
+		logger.error(
+			{ savedValue, requestArray },
+			"savedValue not found in requestArray!",
+		);
+		return false;
+	});
+}
+
+/**
  * @typedef {Object} MedicalRecord
  * @property {string|null} medication - Name of the medication.
  * @property {string|null} dosage - Dose of the drug.
