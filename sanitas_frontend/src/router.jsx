@@ -346,6 +346,8 @@ export const ROUTES = [
 					searchPatientsApiCall={searchPatient}
 					useStore={useStore}
 					logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+					getRole={getRole}
+					getLinkedPatient={getLinkedPatient}
 				/>
 			</RequireAuth>
 		),
