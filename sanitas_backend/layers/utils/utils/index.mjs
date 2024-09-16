@@ -58,7 +58,7 @@ export function decodeJWT(jwt) {
  * @property {string|null} bloodType
  * @property {string|null} address
  * @property {string | undefined} insurance
- * @property {string} birthdate
+ * @property {Date} birthdate
  * @property {string|null} phone
  */
 

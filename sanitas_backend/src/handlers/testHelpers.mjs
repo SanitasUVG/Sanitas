@@ -86,7 +86,7 @@ export async function createTestPatient(
 	names = "Flabio André",
 	lastNames = "Galán Dona",
 	isWoman = false,
-	birthdate = "1987-07-07",
+	birthdate = new Date("1987-07-07"),
 ) {
 	const patientData = {
 		cui,
