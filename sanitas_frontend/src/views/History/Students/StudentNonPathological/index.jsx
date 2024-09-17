@@ -25,15 +25,15 @@ export function StudentNonPathologicalHistory({
 	getBloodTypePatientInfo,
 	updateStudentNonPathologicalHistory,
 	//sidebarConfig,
-	//useStore,
+	useStore,
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Fetching patient ID from global state
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
-	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
+	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 
+	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
 	const bloodTypeResource = useMemo(
 		() => WrapPromise(getBloodTypePatientInfo(id)),
