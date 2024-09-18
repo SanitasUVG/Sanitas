@@ -355,8 +355,8 @@ const studentPsichiatricHistoryView = (
 		<StudentPsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-		//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		//useStore={useStore}
+			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			//useStore={useStore}
 		/>
 	</RequireAuth>
 );
