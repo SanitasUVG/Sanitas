@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
@@ -74,67 +74,79 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 				.build();
 		}
 
-		await client.query("begin");
+		const transactionResult = await transaction(client, logger, async () => {
+			const studentSearchValues = [id];
 
-		const studentSearchValues = [id];
-
-		const getPatientQuery = `
+			const getPatientQuery = `
 			SELECT * FROM antecedentes_traumatologicos WHERE id_paciente = $1;
 		`;
 
-		logger.info(
-			{ getPatientQuery, studentSearchValues },
-			"Searching patient in DB...",
-		);
-		const patientResult = await client.query(
-			getPatientQuery,
-			studentSearchValues,
-		);
-		logger.info("Done searching!");
+			logger.info(
+				{ getPatientQuery, studentSearchValues },
+				"Searching patient in DB...",
+			);
+			const patientResult = await client.query(
+				getPatientQuery,
+				studentSearchValues,
+			);
+			logger.info("Done searching!");
 
-		if (patientResult.rowCount > 0) {
-			const oldData =
-				patientResult.rows[0].antecedente_traumatologico_data.traumas.data;
-			const newData = medicalHistory.traumas.data;
+			if (patientResult.rowCount > 0) {
+				const oldData =
+					patientResult.rows[0].antecedente_traumatologico_data.traumas.data;
+				const newData = medicalHistory.traumas.data;
 
-			logger.info({ oldData }, "Data of the patient in DB currently...");
-			logger.info({ medicalHistory }, "Data coming in...");
+				logger.info({ oldData }, "Data of the patient in DB currently...");
+				logger.info({ medicalHistory }, "Data coming in...");
 
-			const repeatingData = requestDataEditsDBData(newData, oldData);
+				const repeatingData = requestDataEditsDBData(newData, oldData);
 
-			if (repeatingData) {
-				logger.error("Student trying to update info already saved!");
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({
-						error: "Invalid input: Students cannot update saved info.",
-					})
-					.build();
+				if (repeatingData) {
+					logger.error("Student trying to update info already saved!");
+					return responseBuilder
+						.setStatusCode(400)
+						.setBody({
+							error: "Invalid input: Students cannot update saved info.",
+						})
+						.build();
+				}
 			}
+
+			const upsertQuery = `
+					INSERT INTO antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
+					VALUES ($1, $2, $3)
+					ON CONFLICT (id_paciente) DO UPDATE
+					SET antecedente_traumatologico = EXCLUDED.antecedente_traumatologico,
+							antecedente_traumatologico_data = COALESCE(EXCLUDED.antecedente_traumatologico_data, antecedentes_traumatologicos.antecedente_traumatologico_data)
+					RETURNING *;
+			`;
+			const values = [id, true, JSON.stringify(medicalHistory.traumas)];
+			logger.info(
+				{ upsertQuery, values },
+				"Inserting/Updating values in DB...",
+			);
+			const result = await client.query(upsertQuery, values);
+			logger.info("Done inserting/updating!");
+			return result;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
 		}
 
-		const upsertQuery = `
-        INSERT INTO antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
-        VALUES ($1, $2, $3)
-        ON CONFLICT (id_paciente) DO UPDATE
-        SET antecedente_traumatologico = EXCLUDED.antecedente_traumatologico,
-            antecedente_traumatologico_data = COALESCE(EXCLUDED.antecedente_traumatologico_data, antecedentes_traumatologicos.antecedente_traumatologico_data)
-        RETURNING *;
-    `;
-		const values = [id, true, JSON.stringify(medicalHistory.traumas)];
-		logger.info({ upsertQuery, values }, "Inserting/Updating values in DB...");
-		const result = await client.query(upsertQuery, values);
-		logger.info("Done inserting/updating!");
+		if (transactionResult.response) {
+			logger.info({ response: transactionResult.response }, "Responding with:");
+			return transactionResult.response;
+		}
 
-		await client.query("commit");
+		const { result } = transactionResult;
 
 		if (result.rowCount === 0) {
 			logger.error("No value was inserted/updated in the DB!");
+
 			return responseBuilder
 				.setStatusCode(404)
-				.setBody({
-					message: "Failed to insert or update traumatologic history.",
-				})
+				.setBody({ error: "Patient not found with the provided ID." })
 				.build();
 		}
 
@@ -146,7 +158,6 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 			.setBody(formattedResponse)
 			.build();
 	} catch (error) {
-		await client.query("rollback");
 		logger.error(
 			{ error },
 			"An error occurred while updating traumatologic history!",
