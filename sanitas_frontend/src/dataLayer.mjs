@@ -343,6 +343,45 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
 };
 
 /**
+ * Calls the API to update the general information of a given patient.
+ * This is the patient equivalent.
+ *
+ * @callback UpdateGeneralPatientInformationAPICall
+ * @param {APIPatient} APIPatient - The data of the patient.
+ * @returns {Promise<Result<boolean, Error>>}
+ */
+
+/**
+ * @type {UpdateGeneralPatientInformationAPICall}
+ */
+export const patientUpdateGeneralInformation = async (APIPatient) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/general`;
+	try {
+		const { data: result } = await axios.post(url, APIPatient, {
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token,
+			},
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
  * @typedef {Object} APIStudentInformation
  * @property {number} idPatient
  * @property {string} career
@@ -411,6 +450,42 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 	const url = `${PROTECTED_URL}/patient/student`;
 	try {
 		const { data: result } = await axios.put(url, APIStudentInfo, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ * 	The patient equivalent.
+ *
+ * @callback UpdateStudentPatientInformationAPICall
+ * @param {APIStudentInformation} APIStudentInfo
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {UpdateStudentPatientInformationAPICall}
+ */
+export const patientUpdateStudentInformation = async (APIStudentInfo) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student`;
+	try {
+		const { data: result } = await axios.post(url, APIStudentInfo, {
 			headers: { Authorization: token, "Content-Type": "application/json" },
 		});
 		return { result };
@@ -851,6 +926,44 @@ export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
 	const url = `${PROTECTED_URL}/patient/collaborator/`;
 	try {
 		const { data: result } = await axios.put(url, APICollaboratorInfo, {
+			headers: { Authorization: token },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ * 	This is the patient equivalent.
+ *
+ * @callback UpdateCollaboratorPatientInformationAPICall
+ * @param {APICollaboratorInfo} APICollaboratorInfo
+ * @returns {Promise<Result<APICollaboratorInfo, Error>>}
+ */
+
+/**
+ * @type {UpdateCollaboratorPatientInformationAPICall}
+ */
+export const patientUpdateCollaboratorInformation = async (
+	APICollaboratorInfo,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/collaborator/`;
+	try {
+		const { data: result } = await axios.post(url, APICollaboratorInfo, {
 			headers: { Authorization: token },
 		});
 		return { result };

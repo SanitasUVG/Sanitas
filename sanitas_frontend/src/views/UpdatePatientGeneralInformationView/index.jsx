@@ -5,7 +5,6 @@ import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
@@ -38,7 +37,6 @@ import Collapsable from "src/components/Collapsable";
  * @typedef {Object} UpdatePatientViewProps
  * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getGeneralPatientInformation
  * @property {import("src/dataLayer.mjs").updateGeneralPatientInformation} updateGeneralPatientInformation
- * @property {import("src/components/DashboardSidebar").DashboardSidebarProps} sidebarConfig - The config for the view sidebar
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateStudentPatientInformation
  * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getStudentPatientInformation
@@ -49,10 +47,9 @@ import Collapsable from "src/components/Collapsable";
 /**
  * @param {UpdatePatientViewProps} props
  */
-export default function UpdateInfoView({
+export default function UpdatePatientInfoView({
 	getGeneralPatientInformation,
 	updateGeneralPatientInformation,
-	sidebarConfig,
 	useStore,
 	getStudentPatientInformation,
 	updateStudentPatientInformation,
@@ -71,25 +68,47 @@ export default function UpdateInfoView({
 		<div
 			style={{
 				display: "grid",
-				gridTemplateColumns: "20% 80%",
+				gridTemplateColumns: "100%",
 				padding: "2rem",
 				background: colors.primaryBackground,
 				height: "100vh",
-				gap: "2rem",
 			}}
 		>
-			<DashboardSidebar {...sidebarConfig} />
 			<div
 				style={{
 					overflowY: "scroll",
 					background: colors.secondaryBackground,
 					borderRadius: "0.625rem",
-					width: "99%",
+					width: "100%",
+					padding: "1rem 6rem",
 				}}
 			>
 				<Suspense
 					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
 				>
+					<h1
+						style={{
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
+							textAlign: "center",
+							padding: "2rem 0",
+						}}
+					>
+						Datos Generales
+					</h1>
+					<p
+						style={{
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.subtitleSize,
+							textAlign: "center",
+							padding: "0 20%",
+							paddingBottom: "3rem",
+						}}
+					>
+						Por favor, ayúdanos completando la siguiente información para poder
+						conocerte mejor y brindarte la atención que mereces.
+					</p>
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
@@ -192,6 +211,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData({ ...response?.result });
 			return;
 		}
 
@@ -327,7 +347,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		},
 		h1: {
 			gridColumn: "1 / span 2",
-			fontSize: "24px",
+			fontSize: fontSize.subtitleSize,
 		},
 		h2: {
 			gridColumn: "1 / span 2",
@@ -361,13 +381,13 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
-	const formatResponse = (response) => ({
+	const getResponseFromGET = () => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
-	const [patientData, setPatientData] = useState(formatResponse(response));
+	const [patientData, setPatientData] = useState(getResponseFromGET());
 
 	if (response.error) {
 		return (
@@ -394,16 +414,16 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
-			setPatientData(formatResponse(response));
+			setPatientData(getResponseFromGET());
 			return;
 		}
 
-		setPatientData(formatResponse(updateResponse));
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
 	const handleCancelEdit = () => {
-		setPatientData(formatResponse(response));
+		setPatientData(getResponseFromGET());
 		setEditMode(false);
 	};
 
@@ -441,7 +461,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 					alignItems: "center",
 				}}
 			>
-				<h1 style={styles.h1}>Datos Generales:</h1>
+				<h2 style={styles.h1}>Información del paciente:</h2>
 				{editMode ? (
 					<div>
 						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
@@ -784,15 +804,16 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos de estudiante...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData({ ...response?.result });
 			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
