@@ -863,7 +863,7 @@ export function requestDataEditsDBData(requestData, dbData) {
 
 		Object.keys(dbElem).some((key) => {
 			if (Object.hasOwn(requestElem, key)) {
-				if (					
+				if (
 					dbElem[key] !== requestElem[key] &&
 					dbElem[key].localeCompare("") !== 0
 				) {
