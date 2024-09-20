@@ -615,7 +615,7 @@ export const updateStudentTraumatologicalHistory = async (
 ) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(true);
+		: await mockGetSession(false);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}

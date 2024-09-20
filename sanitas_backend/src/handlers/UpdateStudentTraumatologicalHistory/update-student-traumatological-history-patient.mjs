@@ -78,8 +78,8 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 			const studentSearchValues = [id];
 
 			const getPatientQuery = `
-			SELECT * FROM antecedentes_traumatologicos WHERE id_paciente = $1;
-		`;
+				SELECT * FROM antecedentes_traumatologicos WHERE id_paciente = $1;
+			`;
 
 			logger.info(
 				{ getPatientQuery, studentSearchValues },
@@ -93,12 +93,11 @@ export const updateStudentTraumatologicalHistoryHandler = async (
 
 			if (patientResult.rowCount > 0) {
 				const oldData =
-					patientResult.rows[0].antecedente_traumatologico_data.traumas.data;
+					patientResult.rows[0].antecedente_traumatologico_data.data;
 				const newData = medicalHistory.traumas.data;
 
 				logger.info({ oldData }, "Data of the patient in DB currently...");
-				logger.info({ medicalHistory }, "Data coming in...");
-
+				logger.info({ newData }, "Data coming in...");
 				const repeatingData = requestDataEditsDBData(newData, oldData);
 
 				if (repeatingData) {

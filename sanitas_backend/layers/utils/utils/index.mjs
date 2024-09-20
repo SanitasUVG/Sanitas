@@ -858,13 +858,12 @@ export function mapToAPIPsychiatricHistory(dbData) {
  */
 export function requestDataEditsDBData(requestData, dbData) {
 	let deletesData = false;
-
 	dbData.some((dbElem, i) => {
 		const requestElem = requestData[i];
 
 		Object.keys(dbElem).some((key) => {
-			if (requestElem.hasOwn(key)) {
-				if (
+			if (Object.hasOwn(requestElem, key)) {
+				if (					
 					dbElem[key] !== requestElem[key] &&
 					dbElem[key].localeCompare("") !== 0
 				) {
