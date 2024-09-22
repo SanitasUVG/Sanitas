@@ -8,6 +8,7 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -26,6 +27,7 @@ export function StudentSurgicalHistory({
 	getBirthdayPatientInfo,
 	getStudentSurgicalHistory,
 	updateStudentSurgicalHistory,
+	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
@@ -42,19 +44,24 @@ export function StudentSurgicalHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
 			}}
 		>
-			{/* <div
+			<div
 				style={{
-					width: "25%",
+					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
 				}}
 			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div> */}
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="quirurgicos"
+				/>
+			</div>
 
 			<div
 				style={{
@@ -65,9 +72,10 @@ export function StudentSurgicalHistory({
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
+						padding: "2rem",
+						borderRadius: "0.625rem",
+						overflow: "auto",
+						flex: "1",
 					}}
 				>
 					<div
@@ -103,7 +111,7 @@ export function StudentSurgicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingBottom: "3rem",
+								paddingBottom: "1rem",
 							}}
 						>
 							Por favor ingrese un elemento por diagnóstico.

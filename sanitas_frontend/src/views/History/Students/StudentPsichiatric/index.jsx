@@ -6,6 +6,7 @@ import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * @typedef {Object} PsichiatricHistoryProps
@@ -23,11 +24,10 @@ import WrapPromise from "src/utils/promiseWrapper";
 export function StudentPsichiatricHistory({
 	getPsichiatricHistory,
 	updateStudentPsychiatricHistory,
-	//sidebarConfig,
-	//useStore,
+	sidebarConfig,
+	useStore,
 }) {
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
@@ -51,9 +51,9 @@ export function StudentPsichiatricHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
 			}}
 		>
@@ -65,10 +65,23 @@ export function StudentPsichiatricHistory({
 			>
 				<div
 					style={{
+						width: "100%",
+						padding: "0 0 1rem 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="psiquiatricos"
+					/>
+				</div>
+				<div
+					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
+						padding: "2rem",
+						borderRadius: "0.625rem",
+						overflow: "auto",
+						flex: "1",
 					}}
 				>
 					<div
@@ -714,7 +727,7 @@ function PsichiatricView({
 
 		setIsEditing((prevState) => ({
 			...prevState,
-			depression: !depression.data.some((item) => item.medication),
+			depression: !depression.data.medication,
 		}));
 
 		setAnxietyMedications(
@@ -731,7 +744,7 @@ function PsichiatricView({
 		);
 		setIsEditing((prevState) => ({
 			...prevState,
-			anxiety: !anxiety.data.some((item) => item.medication),
+			anxiety: !anxiety.data.medication,
 		}));
 
 		setTOCMedications(
@@ -748,7 +761,7 @@ function PsichiatricView({
 		);
 		setIsEditing((prevState) => ({
 			...prevState,
-			ocd: !ocd.data.some((item) => item.medication),
+			ocd: !ocd.data.medication,
 		}));
 
 		setTDAHMedications(
@@ -765,7 +778,7 @@ function PsichiatricView({
 		);
 		setIsEditing((prevState) => ({
 			...prevState,
-			adhd: !adhd.data.some((item) => item.medication),
+			adhd: !adhd.data.medication,
 		}));
 
 		setBipolarMedications(
@@ -782,7 +795,7 @@ function PsichiatricView({
 		);
 		setIsEditing((prevState) => ({
 			...prevState,
-			bipolar: !bipolar.data.some((item) => item.medication),
+			bipolar: !bipolar.data.medication,
 		}));
 
 		setOtherMedications(
@@ -800,7 +813,7 @@ function PsichiatricView({
 		);
 		setIsEditing((prevState) => ({
 			...prevState,
-			other: !other.data.some((item) => item.medication),
+			other: !other.data.medication,
 		}));
 	}, [depression, anxiety, ocd, adhd, bipolar, other]);
 
@@ -1167,7 +1180,7 @@ function PsichiatricView({
 							<div
 								key={key}
 								style={{
-									borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+									borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 									padding: "0 0 2rem 1rem",
 									display: "flex",
 									flexDirection: "column",
@@ -1199,7 +1212,7 @@ function PsichiatricView({
 											<p
 												style={{
 													paddingBottom: "0.7rem",
-													paddingTop: "1rem",
+													paddingTop: "2rem",
 													fontFamily: fonts.textFont,
 													fontSize: fontSize.textSize,
 												}}
@@ -1580,7 +1593,7 @@ function PsichiatricView({
 								display: "flex",
 								justifyContent: "center",
 								alignItems: "center",
-								paddingTop: "2rem",
+								padding: "2rem 0 1rem 0",
 							}}
 						>
 							<BaseButton

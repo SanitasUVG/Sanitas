@@ -8,6 +8,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * @typedef {Object} StudentAllergicHistoryProps
@@ -23,6 +24,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 export function StudentAllergicHistory({
 	getStudentAllergicHistory,
 	updateStudentAllergicHistory,
+	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
@@ -41,7 +43,7 @@ export function StudentAllergicHistory({
 				display: "flex",
 				flexDirection: "row",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
 			}}
 		>
@@ -53,10 +55,23 @@ export function StudentAllergicHistory({
 			>
 				<div
 					style={{
+						width: "100%",
+						padding: "0 0 1rem 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="alergicos"
+					/>
+				</div>
+				<div
+					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
+						padding: "2rem",
+						borderRadius: "0.625rem",
+						overflow: "auto",
+						flex: "1",
 					}}
 				>
 					<div
