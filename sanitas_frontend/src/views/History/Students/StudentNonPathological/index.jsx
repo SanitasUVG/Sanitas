@@ -423,6 +423,26 @@ function NonPathologicalView({
 		}
 	};
 
+	const areAllFieldsPreFilled = () => {
+		const smokerData =
+			nonPathologicalHistoryResult.result?.medicalHistory.smoker.data;
+		const drinkData =
+			nonPathologicalHistoryResult.result?.medicalHistory.drink.data;
+		const drugsData =
+			nonPathologicalHistoryResult.result?.medicalHistory.drugs.data;
+
+		return (
+			smokerData.smokes &&
+			smokerData.cigarettesPerDay &&
+			smokerData.years &&
+			drinkData.drinks &&
+			drinkData.drinksPerMonth &&
+			drugsData.usesDrugs &&
+			drugsData.drugType.trim() !== "" &&
+			drugsData.frequency.trim() !== ""
+		);
+	};
+
 	return (
 		<div
 			style={{
@@ -794,25 +814,29 @@ function NonPathologicalView({
 							)}
 						</div>
 
-						<div
-							style={{
-								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-							}}
-						/>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								padding: "2rem 0 1rem 0",
-							}}
-						>
-							<BaseButton
-								text="Guardar"
-								onClick={handleSaveNonPathological}
-								style={{ width: "30%", height: "3rem" }}
-							/>
-						</div>
+						{!areAllFieldsPreFilled() && (
+							<>
+								<div
+									style={{
+										borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+									}}
+								/>
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										padding: "2rem 0 1rem 0",
+									}}
+								>
+									<BaseButton
+										text="Guardar"
+										onClick={handleSaveNonPathological}
+										style={{ width: "30%", height: "3rem" }}
+									/>
+								</div>
+							</>
+						)}
 					</>
 				)}
 			</div>
