@@ -8,10 +8,6 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import IconButton from "src/components/Button/Icon";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -62,7 +58,6 @@ export function StudentSurgicalHistory({
 
 			<div
 				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -97,11 +92,21 @@ export function StudentSurgicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
+							}}
+						>
+							¿Lo han operado alguna vez?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes quirúrgicos
+							Por favor ingrese un elemento por diagnóstico.
 						</h3>
 					</div>
 
@@ -487,27 +492,6 @@ function SurgicalView({
 								/>
 							</>
 						)}
-					</div>
-					<div
-						style={{ display: "flex", flexDirection: "column", width: "100%" }}
-					>
-						<div style={{ display: "flex", justifyContent: "flex-end" }}>
-							{!addingNew &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNewSurgery}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
-						</div>
 					</div>
 				</div>
 			) : null}
