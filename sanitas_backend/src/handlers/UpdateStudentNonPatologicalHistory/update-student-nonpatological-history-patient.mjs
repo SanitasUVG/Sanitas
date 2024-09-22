@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	decodeJWT,
@@ -45,6 +45,11 @@ export const updateStudentNonPathologicalHistoryHandler = async (
 		logger.info("Connected!");
 
 		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
 		if (itsDoctor) {
 			const msg = "Unauthorized, you're a doctor!";
 			const body = { error: msg };
@@ -62,48 +67,61 @@ export const updateStudentNonPathologicalHistoryHandler = async (
 				.build();
 		}
 
-		const getPatientQuery =
-			"SELECT * FROM antecedentes_no_patologicos WHERE id_paciente = $1;";
+		const transactionResult = await transaction(client, logger, async () => {
+			const getPatientQuery =
+				"SELECT * FROM antecedentes_no_patologicos WHERE id_paciente = $1;";
+			const patientResult = await client.query(getPatientQuery, [patientId]);
+			if (patientResult.rowCount > 0) {
+				const dbData = patientResult.rows[0];
+				const oldData = {
+					smoker: dbData.fuma_data,
+					drink: dbData.bebidas_alcoholicas_data,
+					drugs: dbData.drogas_data,
+				};
 
-		const patientResult = await client.query(getPatientQuery, [patientId]);
-		if (patientResult.rowCount > 0) {
-			const dbData = patientResult.rows[0];
-			const oldData = {
-				smoker: dbData.fuma_data,
-				drink: dbData.bebidas_alcoholicas_data,
-				drugs: dbData.drogas_data,
-			};
-
-			if (checkForUnauthorizedChangesPathological(medicalHistory, oldData)) {
-				await client.query("rollback");
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({
-						error: "Invalid input: Students cannot update saved info.",
-					})
-					.build();
+				if (checkForUnauthorizedChangesPathological(medicalHistory, oldData)) {
+					return responseBuilder
+						.setStatusCode(400)
+						.setBody({
+							error: "Invalid input: Students cannot update saved info.",
+						})
+						.build();
+				}
 			}
+
+			const upsertQuery = `
+			INSERT INTO antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
+			VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT (id_paciente) DO UPDATE
+			SET tipo_sangre = EXCLUDED.tipo_sangre,
+				fuma_data = EXCLUDED.fuma_data,
+				bebidas_alcoholicas_data = EXCLUDED.bebidas_alcoholicas_data,
+				drogas_data = EXCLUDED.drogas_data
+			RETURNING *;
+		`;
+
+			const values = [
+				patientId,
+				medicalHistory.bloodType,
+				JSON.stringify(medicalHistory.smoker),
+				JSON.stringify(medicalHistory.drink),
+				JSON.stringify(medicalHistory.drugs),
+			];
+			const result = await client.query(upsertQuery, values);
+			logger.info("Done updating history!");
+			return result;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
 		}
 
-		const upsertQuery = `
-            INSERT INTO antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
-            VALUES ($1, $2, $3, $4, $5)
-            ON CONFLICT (id_paciente) DO UPDATE
-            SET tipo_sangre = EXCLUDED.tipo_sangre,
-                fuma_data = EXCLUDED.fuma_data,
-                bebidas_alcoholicas_data = EXCLUDED.bebidas_alcoholicas_data,
-                drogas_data = EXCLUDED.drogas_data
-            RETURNING *;
-        `;
+		if (transactionResult.response) {
+			logger.info({ response: transactionResult.response }, "Responding with:");
+			return transactionResult.response;
+		}
 
-		const values = [
-			patientId,
-			medicalHistory.bloodType,
-			JSON.stringify(medicalHistory.smoker),
-			JSON.stringify(medicalHistory.drink),
-			JSON.stringify(medicalHistory.drugs),
-		];
-		const result = await client.query(upsertQuery, values);
+		const { result } = transactionResult;
 
 		if (result.rowCount === 0) {
 			logger.error("No changes were made in the DB!");
