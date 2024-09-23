@@ -80,12 +80,14 @@ export const updateStudentNonPathologicalHistoryHandler = async (
 				};
 
 				if (checkForUnauthorizedChangesPathological(medicalHistory, oldData)) {
-					return responseBuilder
-						.setStatusCode(400)
-						.setBody({
-							error: "Invalid input: Students cannot update saved info.",
-						})
+					logger.error("Request modifies data!");
+					const response = responseBuilder
+						.setStatusCode(403)
+						.setBody({ error: "Not authorized to update data!" })
 						.build();
+
+					logger.info({ response }, "Responding with:");
+					return { response };
 				}
 			}
 
