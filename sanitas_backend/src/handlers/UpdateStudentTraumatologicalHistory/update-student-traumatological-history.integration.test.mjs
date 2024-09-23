@@ -53,6 +53,38 @@ describe("Update Traumatologic History integration tests", () => {
 		expect(medicalHistory.traumas.data[0].whichBone).toBe("Femur");
 	});
 
+	test("Can't modify existing data", async () => {
+		const traumatologicHistoryData = generateValidUpdate(patientId);
+		await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+		});
+
+		// A student can't modify existing data...
+		traumatologicHistoryData.medicalHistory.traumas.data[0].whichBone =
+			"non existing bone!";
+		let response = await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe(
+			"Invalid input: Students cannot update saved info.",
+		);
+
+		// A student can't delete existing data...
+		traumatologicHistoryData.medicalHistory.traumas.data = [];
+		response = await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe(
+			"Invalid input: Students cannot update saved info.",
+		);
+	});
+
 	test("Fail to update traumatologic history with invalid ID", async () => {
 		const traumatologicHistoryData = {
 			patientId: "999999",
