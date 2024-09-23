@@ -30,7 +30,8 @@ export function StudentSurgicalHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 
@@ -111,7 +112,7 @@ export function StudentSurgicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1rem",
+								paddingBottom: "1.5rem",
 							}}
 						>
 							Por favor ingrese un elemento por diagnóstico.

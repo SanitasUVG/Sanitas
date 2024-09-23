@@ -111,7 +111,7 @@ export default function StudentDashboardTopbar({
 					key={section.key}
 					onClick={() => {
 						setActiveSection(section.key);
-						navigate(section.navigateTo());
+						section.navigateTo(navigate);
 					}}
 					style={{
 						backgroundColor:

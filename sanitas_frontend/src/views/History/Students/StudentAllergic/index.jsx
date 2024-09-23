@@ -27,8 +27,8 @@ export function StudentAllergicHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
-
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const allergicHistoryResource = WrapPromise(getStudentAllergicHistory(id));
 
 	const LoadingView = () => {
@@ -96,11 +96,21 @@ export function StudentAllergicHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
+								paddingTop: "0.7rem",
+								paddingBottom: "0.2rem",
 							}}
 						>
-							Registro de antecedentes alérgicos
+							¿Es alérgico a alguno de los siguientes?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingBottom: "1.5rem",
+							}}
+						>
+							Por favor ingrese un elemento por alergia.
 						</h3>
 					</div>
 

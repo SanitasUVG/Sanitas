@@ -27,7 +27,8 @@ export function StudentPsichiatricHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered

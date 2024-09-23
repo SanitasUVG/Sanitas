@@ -12,6 +12,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
 import Collapsable from "src/components/Collapsable";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * @typedef {Object} PatientInfo
@@ -51,13 +52,14 @@ export default function UpdatePatientInfoView({
 	getGeneralPatientInformation,
 	updateGeneralPatientInformation,
 	useStore,
+	sidebarConfig,
 	getStudentPatientInformation,
 	updateStudentPatientInformation,
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
-
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
 		getCollaboratorInformation(id),
@@ -71,9 +73,22 @@ export default function UpdatePatientInfoView({
 				gridTemplateColumns: "100%",
 				padding: "2rem",
 				background: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 			}}
 		>
+			<div
+				style={{
+					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="general"
+				/>
+			</div>
+
 			<div
 				style={{
 					overflowY: "scroll",
@@ -92,18 +107,17 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
 							textAlign: "center",
-							padding: "2rem 0",
+							padding: "2rem 0 0.8rem 0",
 						}}
 					>
 						Datos Generales
 					</h1>
 					<p
 						style={{
-							fontFamily: fonts.titleFont,
+							fontFamily: fonts.textFont,
 							fontSize: fontSize.subtitleSize,
 							textAlign: "center",
 							padding: "0 20%",
-							paddingBottom: "3rem",
 						}}
 					>
 						Por favor, ayúdanos completando la siguiente información para poder

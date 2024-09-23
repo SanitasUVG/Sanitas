@@ -267,6 +267,7 @@ const studentGeneralInformation = (
 			updateStudentPatientInformation={patientUpdateStudentInformation}
 			getCollaboratorInformation={getCollaboratorInformation}
 			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
