@@ -27,8 +27,8 @@ export function StudentAllergicHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 	const allergicHistoryResource = WrapPromise(getStudentAllergicHistory(id));
 
 	const LoadingView = () => {

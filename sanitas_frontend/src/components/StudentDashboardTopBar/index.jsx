@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
@@ -18,66 +19,70 @@ export default function StudentDashboardTopbar({
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
+	const { pathname } = useLocation();
 
 	useEffect(() => {
-		const currentPath = location.pathname;
 		const activeKey = sections.find((section) =>
-			currentPath.includes(section.key),
+			pathname.includes(section.key),
 		)?.key;
 		if (activeKey) {
 			setActiveSection(activeKey);
 		}
-	}, [location]);
+	}, [pathname]);
 
 	const navigateToIndex = (indexChange) => {
 		const newIndex = currentIndex + indexChange;
 		if (newIndex >= 0 && newIndex < sections.length) {
 			setActiveSection(sections[newIndex].key);
-			navigate(sections[newIndex].navigateTo());
+			sections[newIndex].navigateTo(navigate);
 		}
 	};
 
 	const sections = [
-		{ key: "general", text: "Generales", navigateTo: navigateToGeneralStudent },
+		{
+			key: "general",
+			text: "Generales",
+			navigateTo: navigateToGeneralStudent(),
+		},
 		{
 			key: "familiares",
 			text: "Familiares",
-			navigateTo: navigateToFamiliarStudent,
+			navigateTo: navigateToFamiliarStudent(),
 		},
 		{
 			key: "personales",
 			text: "Personales",
-			navigateTo: navigateToPersonalStudent,
+			navigateTo: navigateToPersonalStudent(),
 		},
 		{
 			key: "alergicos",
 			text: "Alérgicos",
-			navigateTo: navigateToAllergiesStudent,
+			navigateTo: navigateToAllergiesStudent(),
 		},
 		{
 			key: "quirurgicos",
 			text: "Quirúrgicos",
-			navigateTo: navigateToSurgicalStudent,
+			navigateTo: navigateToSurgicalStudent(),
 		},
 		{
 			key: "traumatologicos",
 			text: "Traumatológicos",
-			navigateTo: navigateToTraumatologicalStudent,
+			navigateTo: navigateToTraumatologicalStudent(),
 		},
 		{
 			key: "psiquiatricos",
 			text: "Psiquiátricos",
-			navigateTo: navigateToPsiquiatricStudent,
+			navigateTo: navigateToPsiquiatricStudent(),
 		},
 		{
 			key: "ginecoobstetricos",
 			text: "Ginecoobstétricos",
-			navigateTo: navigateToObstetricsStudent,
+			navigateTo: navigateToObstetricsStudent(),
 		},
 		{
 			key: "no_patologicos",
 			text: "No Patológicos",
-			navigateTo: navigateToNonPathologicalStudent,
+			navigateTo: navigateToNonPathologicalStudent(),
 		},
 	];
 
@@ -103,11 +108,17 @@ export default function StudentDashboardTopbar({
 				src={arrowLeft}
 				alt="Anterior"
 				onClick={() => navigateToIndex(-1)}
+				onKeyDown={(event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						navigateToIndex(-1);
+					}
+				}}
 				style={{ cursor: "pointer" }}
 			/>
 
 			{sections.map((section) => (
 				<button
+					type="button"
 					key={section.key}
 					onClick={() => {
 						setActiveSection(section.key);
@@ -131,6 +142,11 @@ export default function StudentDashboardTopbar({
 				src={arrowRight}
 				alt="Siguiente"
 				onClick={() => navigateToIndex(1)}
+				onKeyDown={(event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						navigateToIndex(1);
+					}
+				}}
 				style={{ cursor: "pointer" }}
 			/>
 		</div>

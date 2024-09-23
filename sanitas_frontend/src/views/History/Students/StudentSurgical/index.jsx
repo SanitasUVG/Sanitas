@@ -30,8 +30,8 @@ export function StudentSurgicalHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 

@@ -58,8 +58,8 @@ export default function UpdatePatientInfoView({
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
 }) {
-	//const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
 		getCollaboratorInformation(id),

@@ -29,6 +29,7 @@ export function StudentPersonalHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 
@@ -111,7 +112,7 @@ export function StudentPersonalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingBottom: "3rem",
+								paddingBottom: "1.5rem",
 							}}
 						>
 							{" "}

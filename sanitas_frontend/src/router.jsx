@@ -165,46 +165,47 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
-	navigateToGeneralStudent: (navigate) => {
-		console.log("Navigating to general student info");
+	navigateToGeneralStudent: () => (navigate) => {
 		navigate(
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL}`,
 		);
 	},
-	navigateToSurgicalStudent: (navigate) => {
-		console.log("Navigating to surgical student info");
+	navigateToSurgicalStudent: () => (navigate) => {
 		navigate(
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY}`,
 		);
 	},
-	navigateToTraumatologicalStudent: (navigate) => {
+	navigateToTraumatologicalStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
 		// TODO: Add Trauma...
 	},
-	navigateToFamiliarStudent: (navigate) => {
+	navigateToFamiliarStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
 		// TODO: Add Familiar...
 	},
-	navigateToPersonalStudent: (navigate) => {
-		console.log("Navigating to personal student info");
+	navigateToPersonalStudent: () => (navigate) => {
 		navigate(
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY}`,
 		);
 	},
-	navigateToNonPathologicalStudent: (navigate) => {
+	navigateToNonPathologicalStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
 		// TODO: Add Non Pathological...
 	},
-	navigateToAllergiesStudent: (navigate) => {
-		console.log("Navigating to allergic student info");
+	navigateToAllergiesStudent: () => (navigate) => {
 		navigate(
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY}`,
 		);
 	},
-	navigateToPsiquiatricStudent: (navigate) => {
-		console.log("Navigating to psycho student info");
+	navigateToPsiquiatricStudent: () => (navigate) => {
 		navigate(
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY}`,
 		);
 	},
-	// TODO: Add other Navigation routes...
+	navigateToObstetricsStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
+		// TODO: Add Gineco...
+	},
 };
 
 const updateInfoView = (
