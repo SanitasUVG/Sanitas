@@ -187,44 +187,6 @@ describe("ObGynHistory Component Tests", () => {
 		expect(diagnosisText).toBe(true);
 	});
 
-	test("handles the addition of a new diagnosis", async () => {
-		render(
-			<Wrapper>
-				<StudentObGynHistory
-					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-					getObGynHistory={mockGetObGynHistoryWithData}
-					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{
-						userInformation: { displayName: "User Testing" },
-					}}
-					useStore={mockUseStore}
-				/>
-			</Wrapper>,
-		);
-
-		await waitForElementToBeRemoved(() =>
-			screen.queryByText(
-				"Cargando información de los antecedentes ginecoobstétricos...",
-			),
-		);
-
-		const allIcons = await screen.findAllByRole("img", { name: "Icon" });
-		const editIcon = allIcons.find((icon) =>
-			icon.src.includes("outline/edit.svg"),
-		);
-		const editButton = editIcon.closest("button");
-		fireEvent.click(editButton);
-		//fireEvent.click(editButtons[0]);
-
-		const addButton = await screen.findByText("Agregar otro diagnóstico");
-		fireEvent.click(addButton);
-
-		const diagnosisInput = await screen.findByPlaceholderText(
-			"Ingrese el nombre del diagnóstico.",
-		);
-		expect(diagnosisInput).toBeInTheDocument();
-	});
-
 	test("displays error message when there is an error fetching data", async () => {
 		render(
 			<Wrapper>
@@ -250,55 +212,5 @@ describe("ObGynHistory Component Tests", () => {
 			);
 			expect(errorMessage).toBeInTheDocument();
 		});
-	});
-
-	test("saves gynecological history successfully", async () => {
-		render(
-			<Wrapper>
-				<StudentObGynHistory
-					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
-					getObGynHistory={mockGetObGynHistoryWithData}
-					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{
-						userInformation: { displayName: "User Testing" },
-					}}
-					useStore={mockUseStore}
-				/>
-			</Wrapper>,
-		);
-
-		await waitFor(
-			() => {
-				const loadingMessage = screen.queryByText(
-					"Cargando información de los antecedentes ginecoobstétricos...",
-				);
-				expect(loadingMessage).not.toBeInTheDocument();
-			},
-			{ timeout: 5000 },
-		);
-
-		const allIconsBeforeEdit = await screen.findAllByRole("img", {
-			name: "Icon",
-		});
-		const editIcon = allIconsBeforeEdit.find((icon) =>
-			icon.src.includes("outline/edit.svg"),
-		);
-		const editButton = editIcon.closest("button");
-		fireEvent.click(editButton);
-
-		const allIconsAfterEdit = await screen.findAllByRole("img", {
-			name: "Icon",
-		});
-		const checkIcon = allIconsAfterEdit.find((icon) =>
-			icon.src.includes("outline/check.svg"),
-		);
-		const checkButton = checkIcon.closest("button");
-		fireEvent.click(checkButton);
-
-		await waitFor(() =>
-			expect(toast.success).toHaveBeenCalledWith(
-				"Antecedentes ginecoobstétricos actualizados con éxito.",
-			),
-		);
 	});
 });

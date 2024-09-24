@@ -59,7 +59,6 @@ export function StudentObGynHistory({
 					height: "100%",
 					backgroundColor: colors.secondaryBackground,
 					padding: "3.125rem",
-					height: "100%",
 					borderRadius: "10px",
 				}}
 			>
@@ -876,17 +875,17 @@ function ObGynView({
 
 		return condition?.medication
 			? {
-					dosage: condition.medication.dosage || "",
-					frequency: condition.medication.frequency || "",
-					medication: condition.medication.medication || "",
-					illness: condition.medication.illness || "",
-				}
+				dosage: condition.medication.dosage || "",
+				frequency: condition.medication.frequency || "",
+				medication: condition.medication.medication || "",
+				illness: condition.medication.illness || "",
+			}
 			: {
-					dosage: "",
-					frequency: "",
-					medication: "",
-					illness: "",
-				};
+				dosage: "",
+				frequency: "",
+				medication: "",
+				illness: "",
+			};
 	};
 
 	const handleDiagnosedChange = (diagnosisKey, isActive, newDetails = {}) => {
@@ -984,7 +983,7 @@ function ObGynView({
 					const clearedDetails = isPerformed
 						? operation.details
 						: operation.key === "ovarianCysts" ||
-								operation.key === "breastMassResection"
+							operation.key === "breastMassResection"
 							? []
 							: {};
 
@@ -1067,9 +1066,9 @@ function ObGynView({
 
 		acc[operation.key] = Array.isArray(details)
 			? details.map(({ year = null, complications = false }) => ({
-					year,
-					complications,
-				}))
+				year,
+				complications,
+			}))
 			: { ...details };
 
 		return acc;
@@ -1080,12 +1079,6 @@ function ObGynView({
 		"uterineMyomatosis",
 		"endometriosis",
 	];
-
-	// Canceling update
-	const handleCancel = () => {
-		setIsEditable(false);
-		toast.info("Edición cancelada.");
-	};
 
 	const formattedDiagnosedIllnesses = {
 		version: diagnosedIllnesses?.version || 1,
