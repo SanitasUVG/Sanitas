@@ -54,6 +54,12 @@ export const updateStudentFamilyHistoryHandler = async (event, context) => {
 		logger.info("Connected!");
 
 		const itsDoctor = await isDoctor(client, email);
+		if (itsDoctor.error) {
+			const msg = "An error occurred while trying to check if user is doctor!";
+			logger.error({ error: itsDoctor.error }, msg);
+			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
+		}
+
 		if (itsDoctor) {
 			const msg = "Unauthorized, you're a doctor!";
 			const body = { error: msg };

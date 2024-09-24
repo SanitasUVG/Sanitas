@@ -143,8 +143,8 @@ describe("Update Family Medical History integration tests", () => {
 		expect(medicalHistory.hypertension.data.length).toBe(3);
 		expect(medicalHistory.hypertension.data).toEqual(
 			familyHistoryData.medicalHistory.hypertension.data,
-		);
-	});
+		); 
+	}, 10000);
 
 	test("Fail on modifying existing data", async () => {
 		const familyHistoryData = generateValidUpdate(patientId);
