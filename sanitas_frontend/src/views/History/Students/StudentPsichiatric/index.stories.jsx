@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { StudentPsichiatricHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: StudentPsichiatricHistory,
