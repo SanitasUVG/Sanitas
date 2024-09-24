@@ -22,6 +22,9 @@ import { create } from "zustand";
  *
  * @property {string[]} prefixesWithData
  * @property {(newPrefixesWithData: string[]) => void} setPrefixesWithData
+ *
+ * @property {string} displayName
+ * @property {(newDisplayName: string) => void} setDisplayName
  */
 
 /**
@@ -65,6 +68,11 @@ export const createEmptyStore = (defaultStoreValues) => {
 		prefixesWithData: [],
 		setPrefixesWithData: (prefixesWithData) => {
 			set({ prefixesWithData });
+		},
+
+		displayName: "Pedrito Pérez",
+		setDisplayName: (displayName) => {
+			set({ displayName });
 		},
 
 		...defaultStoreValues,

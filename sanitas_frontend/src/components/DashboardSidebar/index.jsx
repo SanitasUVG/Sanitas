@@ -63,7 +63,6 @@ export default function DashboardSidebar({
 	navigateToPsiquiatric,
 	navigateToSurgical,
 	navigateToTraumatological,
-	userInformation,
 	onGoBack,
 	getMedicalHistoryMetadata,
 	useStore,
@@ -80,6 +79,7 @@ export default function DashboardSidebar({
 	const patientId = useStore((s) => s.selectedPatientId);
 	const prefixesWithData = useStore((s) => s.prefixesWithData);
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
+	const displayName = useStore((s) => s.displayName);
 
 	useEffect(() => {
 		const loadPrefixes = async () => {
@@ -100,16 +100,16 @@ export default function DashboardSidebar({
 	const genStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
 			? {
-					color: colors.darkerGrey,
-				}
+				color: colors.darkerGrey,
+			}
 			: {};
 	};
 
 	const genIconStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
 			? {
-					filter: "contrast(0%)",
-				}
+				filter: "contrast(0%)",
+			}
 			: {};
 	};
 
@@ -175,7 +175,7 @@ export default function DashboardSidebar({
 							paddingTop: "0.4rem",
 						}}
 					>
-						{userInformation.displayName}
+						{displayName}
 					</h1>
 					<h2
 						style={{
@@ -184,7 +184,7 @@ export default function DashboardSidebar({
 							fontSize: "0.9rem",
 						}}
 					>
-						{userInformation.title}
+						Doctora
 					</h2>
 				</div>
 			</div>
