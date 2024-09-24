@@ -678,7 +678,7 @@ export function mapToAPIAllergicHistory(dbData) {
  * @property {GynecologicalIllnessEntry} medicacion_quistes_ovaricos_data - Data about ovarian cysts.
  * @property {GynecologicalIllnessEntry} medicacion_miomatosis_data - Data about uterine myomatosis.
  * @property {GynecologicalIllnessEntry} medicacion_endometriosis_data - Data about endometriosis.
- * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data- Data about other diagnosed conditions.
+ * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data - Data about other diagnosed conditions.
  * @property {GynecologicalSurgeryEntry[]} cirugia_quistes_ovaricos_data - Data about surgeries for ovarian cysts.
  * @property {GynecologicalSurgeryEntry} cirugia_histerectomia_data - Data about hysterectomy surgeries.
  * @property {GynecologicalSurgeryEntry} cirugia_esterilizacion_data - Data about sterilization surgeries.

@@ -769,6 +769,21 @@ Resources:
             Method: POST
             RestApiId: !Ref SanitasAPI
 
+  updateStudentGynecoObstetricHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentGynecoObstetricHistory/update-student-gyneco-obstetric-history.handler
+      Description: Update the patient gynecoobstetric information but
+        not modify already saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-gyneco-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
