@@ -17,8 +17,8 @@ export function StudentObGynHistory({
 	updateObGynHistory,
 	useStore,
 }) {
-	// const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	// const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	const LoadingView = () => {
@@ -875,17 +875,17 @@ function ObGynView({
 
 		return condition?.medication
 			? {
-				dosage: condition.medication.dosage || "",
-				frequency: condition.medication.frequency || "",
-				medication: condition.medication.medication || "",
-				illness: condition.medication.illness || "",
-			}
+					dosage: condition.medication.dosage || "",
+					frequency: condition.medication.frequency || "",
+					medication: condition.medication.medication || "",
+					illness: condition.medication.illness || "",
+				}
 			: {
-				dosage: "",
-				frequency: "",
-				medication: "",
-				illness: "",
-			};
+					dosage: "",
+					frequency: "",
+					medication: "",
+					illness: "",
+				};
 	};
 
 	const handleDiagnosedChange = (diagnosisKey, isActive, newDetails = {}) => {
@@ -983,7 +983,7 @@ function ObGynView({
 					const clearedDetails = isPerformed
 						? operation.details
 						: operation.key === "ovarianCysts" ||
-							operation.key === "breastMassResection"
+								operation.key === "breastMassResection"
 							? []
 							: {};
 
@@ -1066,9 +1066,9 @@ function ObGynView({
 
 		acc[operation.key] = Array.isArray(details)
 			? details.map(({ year = null, complications = false }) => ({
-				year,
-				complications,
-			}))
+					year,
+					complications,
+				}))
 			: { ...details };
 
 		return acc;

@@ -1,13 +1,11 @@
 import {
 	render,
 	screen,
-	fireEvent,
 	waitForElementToBeRemoved,
 	waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
-import { toast } from "react-toastify";
 import { StudentObGynHistory } from ".";
 
 vi.mock("react-toastify", () => ({
