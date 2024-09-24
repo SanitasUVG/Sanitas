@@ -191,9 +191,10 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY}`,
 		);
 	},
-	navigateToNonPathologicalStudent: () => (_navigate) => {
-		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
-		// TODO: Add Non Pathological...
+	navigateToNonPathologicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_NON_PATHOLOGICAL_HISTORY}`,
+		);
 	},
 	navigateToAllergiesStudent: () => (navigate) => {
 		navigate(
@@ -360,7 +361,7 @@ const studentNonPathologicalHistoryView = (
 			getNonPathologicalHistory={getNonPathologicalHistory}
 			getBloodTypePatientInfo={getGeneralPatientInformation}
 			updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
-			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>

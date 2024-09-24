@@ -22,8 +22,23 @@ const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 mockGetBloodTypePatientInfo.mockResolvedValue({ bloodType: "AB+" });
 mockUpdateStudentNonPathologicalHistory.mockResolvedValue({});
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
 };
 
 const LoadingComponent = () => <div>Loading...</div>;
@@ -66,7 +81,7 @@ describe("NonPathologicalHistory Component Tests", () => {
 					getNonPathologicalHistory={mockGetStudentNonPathologicalHistory}
 					getBloodTypePatientInfo={mockGetBloodTypePatientInfo}
 					updateNonPathologicalHistory={mockUpdateStudentNonPathologicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={sidebarConfigMock}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -98,7 +113,7 @@ describe("NonPathologicalHistory Component Tests", () => {
 					getNonPathologicalHistory={mockGetStudentNonPathologicalHistoryError}
 					getBloodTypePatientInfo={mockGetBloodTypePatientInfo}
 					updateNonPathologicalHistory={mockUpdateStudentNonPathologicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={sidebarConfigMock}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
