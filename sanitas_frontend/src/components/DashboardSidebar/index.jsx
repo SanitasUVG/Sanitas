@@ -1,9 +1,3 @@
-/**
- * @typedef {Object} UserInformation
- * @property {string} displayName - The user display name.
- * @property {string} title - The role of this user in the application
- */
-
 import returnicon from "@tabler/icons/outline/arrow-back-up.svg";
 import boneicon from "@tabler/icons/outline/bone.svg";
 import brainicon from "@tabler/icons/outline/brain.svg";
@@ -30,7 +24,6 @@ import { useEffect } from "react";
  * @param {import("react").MouseEvent} e - The `MouseEvent` that triggered this handler.
  */
 
-// NOTE: Remember to update the function signature when implementing the navigation to your view!
 /**
  * @typedef {Object} DashboardSidebarProps
  * @property {SidebarNavigationHandler} navigateToGeneral - Handles navigation to the update general patient information view.
@@ -44,7 +37,6 @@ import { useEffect } from "react";
  * @property {SidebarNavigationHandler} navigateToSurgical - Handles navigation to the update surgical view.
  * @property {SidebarNavigationHandler} navigateToTraumatological - Handles navigation to the update traumatological view.
  * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
- * @property {UserInformation} userInformation - Contains some information to display about a user.
  * @property {import("src/dataLayer.mjs").GetMedicalHistoryMetadataCallback} getMedicalHistoryMetadata - Function to get the current active medical history data.
  * @property {import("src/store.mjs").UseStoreHook} useStore
  */
