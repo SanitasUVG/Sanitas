@@ -70,7 +70,7 @@ export const createEmptyStore = (defaultStoreValues) => {
 			set({ prefixesWithData });
 		},
 
-		displayName: "Pedrito Pérez",
+		displayName: "correorandom@gmail.com",
 		setDisplayName: (displayName) => {
 			set({ displayName });
 		},

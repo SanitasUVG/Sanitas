@@ -1,4 +1,3 @@
-import returnicon from "@tabler/icons/outline/arrow-back-up.svg";
 import boneicon from "@tabler/icons/outline/bone.svg";
 import brainicon from "@tabler/icons/outline/brain.svg";
 import facemaskicon from "@tabler/icons/outline/face-mask.svg";
@@ -12,8 +11,6 @@ import womanicon from "@tabler/icons/outline/woman.svg";
 import { useNavigate } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-
-import IconButton from "src/components/Button/Icon/index";
 import TextIconButton from "../Button/TextIcon";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -120,38 +117,30 @@ export default function DashboardSidebar({
 			<div
 				style={{
 					display: "flex",
-					alignItems: "end",
-					justifyContent: "end",
-					paddingRight: "1rem",
-					width: "100%",
-				}}
-			>
-				<IconButton
-					icon={returnicon}
-					onClick={wrapWithNavigate(onGoBack)}
-					style={{
-						width: "2.1rem",
-						height: "3rem",
-					}}
-				/>
-			</div>
-			<div
-				style={{
-					display: "flex",
-					paddingTop: "2rem",
-					paddingBottom: "2rem",
+					justifyContent: "center",
+					alignContent: "center",
+					cursor: "pointer",
 					width: "100%",
 				}}
 			>
 				<img
 					style={{
-						width: "6rem",
-						height: "3rem",
+						width: "60%",
 						flexGrow: 0,
 					}}
 					src={SanitasLogo}
+					onClick={wrapWithNavigate(onGoBack)}
+					onKeyDown={wrapWithNavigate(onGoBack)}
 					alt="Logo Sanitas"
 				/>
+			</div>
+			<div
+				style={{
+					display: "flex",
+					padding: "1.5rem 0",
+					width: "100%",
+				}}
+			>
 				<div
 					style={{
 						paddingLeft: "0.8rem",
@@ -161,10 +150,8 @@ export default function DashboardSidebar({
 					<h1
 						style={{
 							fontFamily: fonts.titleFont,
-							fontWeight: "bold",
-							fontSize: "1.1rem",
-							paddingRight: "0.5rem",
-							paddingTop: "0.4rem",
+							fontSize: "0.9rem",
+							paddingBottom: ".4rem",
 						}}
 					>
 						{displayName}
