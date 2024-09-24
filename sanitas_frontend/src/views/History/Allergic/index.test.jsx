@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
 import { AllergicHistory } from "."; // Ajusta la ruta según sea necesario
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -36,10 +37,6 @@ const mockUpdateAllergicHistory = vi.fn(() =>
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
-
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 describe("AllergicHistory Component Tests", () => {
@@ -49,7 +46,7 @@ describe("AllergicHistory Component Tests", () => {
 				<AllergicHistory
 					getAllergicHistory={mockGetAllergicHistoryWithData}
 					updateAllergicHistory={mockUpdateAllergicHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -86,7 +83,7 @@ describe("AllergicHistory Component Tests", () => {
 				<AllergicHistory
 					getAllergicHistory={mockGetAllergicHistoryEmpty}
 					updateAllergicHistory={mockUpdateAllergicHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -117,7 +114,7 @@ describe("AllergicHistory Component Tests", () => {
 				<AllergicHistory
 					getAllergicHistory={mockGetAllergicHistoryError}
 					updateAllergicHistory={mockUpdateAllergicHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -136,7 +133,7 @@ describe("AllergicHistory Component Tests", () => {
 				<AllergicHistory
 					getAllergicHistory={mockGetAllergicHistoryWithData}
 					updateAllergicHistory={mockUpdateAllergicHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

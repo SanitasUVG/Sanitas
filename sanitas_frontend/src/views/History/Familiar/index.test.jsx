@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
 import { FamiliarHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -36,10 +37,6 @@ const mockUpdateFamiliarHistory = vi.fn(() =>
 );
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
-
 const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 describe("FamiliarHistory Component Tests", () => {
@@ -49,7 +46,7 @@ describe("FamiliarHistory Component Tests", () => {
 				<FamiliarHistory
 					getFamiliarHistory={mockGetFamiliarHistoryWithData}
 					updateFamiliarHistory={mockUpdateFamiliarHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -89,7 +86,7 @@ describe("FamiliarHistory Component Tests", () => {
 				<FamiliarHistory
 					getFamiliarHistory={mockGetFamiliarHistoryEmpty}
 					updateFamiliarHistory={mockUpdateFamiliarHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -120,7 +117,7 @@ describe("FamiliarHistory Component Tests", () => {
 				<FamiliarHistory
 					getFamiliarHistory={mockGetFamiliarHistoryError}
 					updateFamiliarHistory={mockUpdateFamiliarHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -139,7 +136,7 @@ describe("FamiliarHistory Component Tests", () => {
 				<FamiliarHistory
 					getFamiliarHistory={mockGetFamiliarHistoryWithData}
 					updateFamiliarHistory={mockUpdateFamiliarHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

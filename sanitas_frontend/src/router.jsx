@@ -45,6 +45,7 @@ import {
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
+	getMedicalHistoryMetadata,
 	patientUpdateGeneralInformation,
 	patientUpdateStudentInformation,
 	patientUpdateCollaboratorInformation,
@@ -163,6 +164,8 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
 		);
 	},
+	getMedicalHistoryMetadata,
+	useStore,
 	// TODO: Add other Navigation routes...
 };
 
