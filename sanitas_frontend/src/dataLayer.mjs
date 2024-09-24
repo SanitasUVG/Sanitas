@@ -14,6 +14,45 @@ const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
  */
 
 /**
+ * @callback GetMedicalHistoryMetadataCallback
+ * @param {number} patientId
+ * @returns {Promise<Result<string[], *>>}
+ */
+
+/**
+ * @type {GetMedicalHistoryMetadataCallback}
+ */
+export async function getMedicalHistoryMetadata(patientId) {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	try {
+		const response = await axios.get(
+			`${PROTECTED_URL}/medical-history/metadata/${patientId}`,
+			{
+				headers: {
+					Authorization: token,
+					"Content-Type": "application/json",
+				},
+			},
+		);
+
+		const { data: result } = response;
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+}
+
+/**
  * @callback SearchPatientApiFunction
  * @param {string} query - The query value to search.
  * @param {string} type - The type of query, one of "Nombres", "Carnet", "CodigoColaborador"

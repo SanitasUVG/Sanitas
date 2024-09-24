@@ -21,6 +21,8 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 
 import IconButton from "src/components/Button/Icon/index";
 import TextIconButton from "../Button/TextIcon";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 /**
  * @callback SidebarNavigationHandler
@@ -43,6 +45,8 @@ import TextIconButton from "../Button/TextIcon";
  * @property {SidebarNavigationHandler} navigateToTraumatological - Handles navigation to the update traumatological view.
  * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
  * @property {UserInformation} userInformation - Contains some information to display about a user.
+ * @property {import("src/dataLayer.mjs").GetMedicalHistoryMetadataCallback} getMedicalHistoryMetadata - Function to get the current active medical history data.
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
@@ -61,6 +65,8 @@ export default function DashboardSidebar({
 	navigateToTraumatological,
 	userInformation,
 	onGoBack,
+	getMedicalHistoryMetadata,
+	useStore,
 }) {
 	const navigate = useNavigate();
 	const wrapWithNavigate = (func) => {
@@ -70,6 +76,41 @@ export default function DashboardSidebar({
 		return (e) => {
 			func(navigate, e);
 		};
+	};
+	const patientId = useStore((s) => s.selectedPatientId);
+	const prefixesWithData = useStore((s) => s.prefixesWithData);
+	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
+
+	useEffect(() => {
+		const loadPrefixes = async () => {
+			const response = await getMedicalHistoryMetadata(patientId);
+			if (response.error) {
+				toast.error(
+					"Ha ocurrido un error obteniendo los antecedentes ya llenados!",
+				);
+				return;
+			}
+
+			setPrefixesWithData(response.result);
+		};
+
+		loadPrefixes();
+	}, [patientId, setPrefixesWithData, getMedicalHistoryMetadata]);
+
+	const genStyleWithPrefix = (prefix) => {
+		return !prefixesWithData.includes(prefix)
+			? {
+					color: colors.darkerGrey,
+				}
+			: {};
+	};
+
+	const genIconStyleWithPrefix = (prefix) => {
+		return !prefixesWithData.includes(prefix)
+			? {
+					filter: "contrast(0%)",
+				}
+			: {};
 	};
 
 	return (
@@ -180,41 +221,57 @@ export default function DashboardSidebar({
 					icon={familyicon}
 					text="Familiares"
 					onClick={wrapWithNavigate(navigateToFamiliar)}
+					style={genStyleWithPrefix("af")}
+					iconStyle={genIconStyleWithPrefix("af")}
 				/>
 				<TextIconButton
 					icon={userloveicon}
 					text="Personales"
 					onClick={wrapWithNavigate(navigateToPersonal)}
+					style={genStyleWithPrefix("ap")}
+					iconStyle={genIconStyleWithPrefix("ap")}
 				/>
 				<TextIconButton
 					icon={flowericon}
 					text="Alérgicos"
 					onClick={wrapWithNavigate(navigateToAllergies)}
+					style={genStyleWithPrefix("aa")}
+					iconStyle={genIconStyleWithPrefix("aa")}
 				/>
 				<TextIconButton
 					icon={facemaskicon}
 					text="Quirúrgicos"
 					onClick={wrapWithNavigate(navigateToSurgical)}
+					style={genStyleWithPrefix("aq")}
+					iconStyle={genIconStyleWithPrefix("aq")}
 				/>
 				<TextIconButton
 					icon={boneicon}
 					text="Traumatológicos"
 					onClick={wrapWithNavigate(navigateToTraumatological)}
+					style={genStyleWithPrefix("at2")}
+					iconStyle={genIconStyleWithPrefix("at2")}
 				/>
 				<TextIconButton
 					icon={brainicon}
 					text="Psiquiátricos"
 					onClick={wrapWithNavigate(navigateToPsiquiatric)}
+					style={genStyleWithPrefix("ap2")}
+					iconStyle={genIconStyleWithPrefix("ap2")}
 				/>
 				<TextIconButton
 					icon={womanicon}
 					text="Ginecoobstétricos"
 					onClick={wrapWithNavigate(navigateToObstetrics)}
+					style={genStyleWithPrefix("ag")}
+					iconStyle={genIconStyleWithPrefix("ag")}
 				/>
 				<TextIconButton
 					icon={glassicon}
 					text="No patológicos"
 					onClick={wrapWithNavigate(navigateToNonPathological)}
+					style={genStyleWithPrefix("anp")}
+					iconStyle={genIconStyleWithPrefix("anp")}
 				/>
 			</div>
 		</div>
