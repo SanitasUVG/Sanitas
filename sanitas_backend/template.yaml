@@ -765,7 +765,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /patient/gyneco-history
+            Path: /patient/student-gyneco-history
             Method: POST
             RestApiId: !Ref SanitasAPI
 

@@ -1644,7 +1644,7 @@ export const updateStudentGynecologialHistory = async (
 	}
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
-	const url = `${PROTECTED_URL}/patient/gyneco-history`;
+	const url = `${PROTECTED_URL}/patient/student-gyneco-history`;
 
 	const payload = {
 		patientId: patientId,
