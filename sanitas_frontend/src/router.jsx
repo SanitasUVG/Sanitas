@@ -372,14 +372,17 @@ const studentPsichiatricHistoryView = (
 		<StudentPsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-		//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-		//useStore={useStore}
+			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			//useStore={useStore}
 		/>
 	</RequireAuth>
 );
 
 const studentObGynHistoryView = (
-	<RequireAuth getSession={IS_PRODUCTION ? getSession : mockGetSession} path={NAV_PATHS.LOGIN_USER}>
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
 		<StudentObGynHistory
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getObGynHistory={getGynecologicalHistory}
@@ -387,7 +390,7 @@ const studentObGynHistoryView = (
 			useStore={useStore}
 		/>
 	</RequireAuth>
-)
+);
 
 const obgynHistoryView = (
 	<RequireAuth
@@ -550,8 +553,8 @@ export const ROUTES = [
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY,
-				element: studentObGynHistoryView
-			}
+				element: studentObGynHistoryView,
+			},
 		],
 	},
 ];
