@@ -64,7 +64,7 @@ export default function RequireAuth({ children, getSession, path }) {
 
 	const Loading = () => {
 		return (
-			<div style={{ width: "100%", height: "100%" }}>
+			<div style={{ width: "100%", height: "100vh" }}>
 				<Throbber loadingMessage="Cargando..." />
 			</div>
 		);
