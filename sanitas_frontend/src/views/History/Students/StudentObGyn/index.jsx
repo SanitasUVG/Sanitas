@@ -88,7 +88,8 @@ export function StudentObGynHistory({
 							paddingBottom: "3rem",
 						}}
 					>
-						Registro de antecedentes ginecoobstétricos
+						Por favor, completa la información solicitada; será tratada con
+						estricta confidencialidad.
 					</h3>
 				</div>
 
