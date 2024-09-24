@@ -1,7 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { StudentPsichiatricHistory } from ".";
-import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: StudentPsichiatricHistory,
@@ -93,6 +92,25 @@ const mockGetStudentPsichiatricHistoryWithData = async () => ({
 	},
 });
 
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
+
 const mockGetStudentPsichiatricHistoryEmpty = async () => ({
 	result: {
 		medicalHistory: {
@@ -128,7 +146,7 @@ export const WithData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryWithData,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -137,7 +155,7 @@ export const EmptyData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryEmpty,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -146,7 +164,7 @@ export const ErrorState = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryError,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

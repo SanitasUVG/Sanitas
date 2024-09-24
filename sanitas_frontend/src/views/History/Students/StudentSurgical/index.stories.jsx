@@ -1,7 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { StudentSurgicalHistory } from ".";
-import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: StudentSurgicalHistory,
@@ -22,6 +21,25 @@ const dummyPatientId = 12345;
 const mockGetBirthdayPatientInfo = async (_id) => ({
 	result: { birthdate: "2000-02-11" },
 });
+
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
 
 const mockGetStudentSurgicalHistoryWithData = async (_id) => ({
 	result: {
@@ -76,7 +94,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryWithData,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -86,7 +104,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryEmpty,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -96,7 +114,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryError,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
