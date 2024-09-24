@@ -47,15 +47,17 @@ function requestModifiesDBData(dbData, requestData) {
 						dbData[field].data[key],
 						requestData[field]?.data[key],
 					);
-				} else if (typeof dbData[field].data[key] === "object") {
+				}
+
+				if (typeof dbData[field].data[key] === "object") {
 					return Object.keys(dbData[field].data[key]).some(
 						(subKey) =>
 							dbData[field].data[key][subKey] !==
 							requestData[field]?.data[key][subKey],
 					);
-				} else {
-					return dbData[field].data[key] !== requestData[field].data[key];
 				}
+
+				return dbData[field].data[key] !== requestData[field].data[key];
 			});
 		},
 	);
@@ -129,7 +131,7 @@ export const handler = async (event, context) => {
 			const args = [patientId];
 
 			logger.info({ getInfoQuery, args }, "Querying DB...");
-			const getResponse = await client.query(query, args);
+			const getResponse = await client.query(getInfoQuery, args);
 			logger.info("Query done!");
 
 			const oldData =
@@ -151,7 +153,7 @@ export const handler = async (event, context) => {
 				);
 				const response = responseBuilder
 					.setStatusCode(403)
-					.setBody("Not authorized to modify data!")
+					.setBody({ error: "Not authorized to modify data!" })
 					.build();
 				return { response };
 			}

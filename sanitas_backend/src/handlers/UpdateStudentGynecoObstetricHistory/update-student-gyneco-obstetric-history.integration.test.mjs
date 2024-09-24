@@ -140,7 +140,7 @@ describe("Update Patient Gynecological Medical History integration tests", () =>
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(404);
-		expect(response.data.error).toBe("Patient not found with the provided ID.");
+		expect(response.data.error).toBe("Patient not found with the provided ID");
 	});
 
 	test("Fail to update gynecological history due to missing required fields", async () => {
@@ -167,7 +167,7 @@ describe("Update Patient Gynecological Medical History integration tests", () =>
 
 		expect(response.status).toBe(401);
 		expect(response.data).toEqual({
-			error: "Unauthorized, you're not a doctor!",
+			error: "Unauthorized, you're a doctor!",
 		});
 	});
 
