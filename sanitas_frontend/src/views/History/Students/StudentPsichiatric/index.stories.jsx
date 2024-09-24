@@ -127,12 +127,7 @@ export const WithData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryWithData,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -141,12 +136,7 @@ export const EmptyData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryEmpty,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -155,12 +145,7 @@ export const ErrorState = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryError,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

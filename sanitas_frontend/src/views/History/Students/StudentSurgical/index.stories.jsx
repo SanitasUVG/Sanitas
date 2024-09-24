@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { StudentSurgicalHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from 'src/router';
 
 export default {
 	component: StudentSurgicalHistory,
@@ -75,12 +76,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryWithData,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -90,12 +86,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryEmpty,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -105,12 +96,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryError,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

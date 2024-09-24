@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { StudentPersonalHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from 'src/router';
 
 export default {
 	component: StudentPersonalHistory,
@@ -99,12 +100,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryWithData,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -114,12 +110,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryEmpty,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -129,12 +120,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryError,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from 'src/router';
 
 export default {
 	component: UpdateInfoView,
@@ -85,12 +86,7 @@ export const WithPatientData = {
 		updateStudentPatientInformation: async (a) => ({ result: a }),
 		updateCollaboratorInformation: async (a) => ({ result: a }),
 		useStore: correctStore,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Jennifer Bustamante",
-				title: "Doctora UVG",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 	},
 };
 
@@ -106,11 +102,6 @@ export const ErrorState = {
 		updateStudentPatientInformation: async () => ({ error: "MockError" }),
 		updateCollaboratorInformation: async () => ({ error: "MockError" }),
 		useStore: incorrectStore,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Jennifer Bustamante",
-				title: "Doctora UVG",
-			},
-		},
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 	},
 };
