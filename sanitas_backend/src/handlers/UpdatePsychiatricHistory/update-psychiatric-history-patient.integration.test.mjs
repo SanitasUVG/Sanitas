@@ -9,7 +9,7 @@ import {
 	LOCAL_API_URL,
 } from "../testHelpers.mjs";
 
-const API_URL = `${LOCAL_API_URL}/patient/psychiatric-history`;
+const API_URL = `${LOCAL_API_URL}patient/psychiatric-history`;
 
 function generateValidUpdate(patientId) {
 	return {
