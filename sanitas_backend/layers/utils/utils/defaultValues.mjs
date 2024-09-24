@@ -159,15 +159,15 @@ export const genDefaultNonPathologicalHistory = () => ({
 	bloodType: "-",
 	smoker: {
 		version: 1,
-		data: [],
+		data: { smokes: false, cigarettesPerDay: 0, howManyYears: 0 },
 	},
 	drink: {
 		version: 1,
-		data: [],
+		data: { drinks: false, drinksPerMonth: 0 },
 	},
 	drugs: {
 		version: 1,
-		data: [],
+		data: { whichOne: "", frequency: "" },
 	},
 });
 /**

@@ -1147,6 +1147,45 @@ export const updateNonPathologicalHistory = async (
 	}
 };
 
+export const updateStudentNonPathologicalHistory = async (
+	patientId,
+	nonPathologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-nonpatological-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: nonPathologicalHistoryDetails,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
 /**
  * Fetches the Allergic history for a specific patient by their ID.
  * Handles potential errors and formats the response.
@@ -1507,14 +1546,10 @@ export const updateStudentPsychiatricHistory = async (
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
 
-	console.log("data", psychiatricHistoryData);
-
 	const payload = {
 		patientId: patientId,
 		medicalHistory: psychiatricHistoryData,
 	};
-
-	console.log("payload:", payload);
 
 	try {
 		const response = await axios.post(url, payload, {
@@ -1530,7 +1565,6 @@ export const updateStudentPsychiatricHistory = async (
 			return { error: error.response.data };
 		}
 		if (error.request) {
-			console.log(error.request);
 			return { error: "No response received" };
 		}
 		return { error: error.message };

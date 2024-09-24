@@ -1,9 +1,13 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import * as cognitoModule from "src/cognito.mjs";
 import { createEmptyStore } from "src/store.mjs";
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import SearchPatientView from ".";
+
+const mockLogoutUser = vi.fn();
+const mockGetRole = vi.fn(() => Promise.resolve("DOCTOR"));
+const mockGetLinkedPatient = vi.fn(() => Promise.resolve(null));
 
 describe("Search Patient view UI tests", () => {
 	beforeAll(() => {
@@ -18,7 +22,7 @@ describe("Search Patient view UI tests", () => {
 		vi.restoreAllMocks();
 	});
 
-	test("Can't search if query is empty", () => {
+	test("Can't search if query is empty", async () => {
 		const apiCall = vi.fn();
 		const useStore = createEmptyStore();
 
@@ -27,10 +31,15 @@ describe("Search Patient view UI tests", () => {
 				<SearchPatientView
 					searchPatientsApiCall={apiCall}
 					useStore={useStore}
+					logoutUser={mockLogoutUser}
+					getRole={mockGetRole}
+					getLinkedPatient={mockGetLinkedPatient}
 				/>
 			</MemoryRouter>,
 		);
-		const searchBtn = dom.getByText("Buscar Paciente");
+
+		// Await to ensure button is rendered before interaction
+		const searchBtn = await waitFor(() => dom.getByText("Buscar Paciente"));
 
 		fireEvent.click(searchBtn);
 
@@ -50,12 +59,18 @@ describe("Search Patient view UI tests", () => {
 				<SearchPatientView
 					searchPatientsApiCall={apiCall}
 					useStore={useStore}
+					logoutUser={mockLogoutUser}
+					getRole={mockGetRole}
+					getLinkedPatient={mockGetLinkedPatient}
 				/>
 			</MemoryRouter>,
 		);
 
-		const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
-		const searchBtn = dom.getByText("Buscar Paciente");
+		// Await to ensure the search input and button are rendered before interaction
+		const searchElem = await waitFor(() =>
+			dom.getByPlaceholderText("Ingrese su búsqueda..."),
+		);
+		const searchBtn = await waitFor(() => dom.getByText("Buscar Paciente"));
 
 		fireEvent.change(searchElem, { target: { value: "3284834428" } });
 		fireEvent.click(searchBtn);
@@ -86,11 +101,18 @@ describe("Search Patient view UI tests", () => {
 				<SearchPatientView
 					searchPatientsApiCall={apiCall}
 					useStore={useStore}
+					logoutUser={mockLogoutUser}
+					getRole={mockGetRole}
+					getLinkedPatient={mockGetLinkedPatient}
 				/>
 			</MemoryRouter>,
 		);
-		const searchElem = dom.getByPlaceholderText("Ingrese su búsqueda...");
-		const searchBtn = dom.getByText("Buscar Paciente");
+
+		// Await to ensure the search input and button are rendered before interaction
+		const searchElem = await waitFor(() =>
+			dom.getByPlaceholderText("Ingrese su búsqueda..."),
+		);
+		const searchBtn = await waitFor(() => dom.getByText("Buscar Paciente"));
 
 		fireEvent.change(searchElem, { target: { value: "2348234890" } });
 		fireEvent.click(searchBtn);
@@ -99,13 +121,8 @@ describe("Search Patient view UI tests", () => {
 			expect(apiCall).toHaveBeenCalledOnce();
 		});
 
-		await waitFor(
-			() => {
-				expect(dom.getByText("Ver")).toBeVisible();
-			},
-			{
-				timeout: 500,
-			},
-		);
+		await waitFor(() => {
+			expect(dom.getByText("Ver")).toBeVisible();
+		});
 	});
 });

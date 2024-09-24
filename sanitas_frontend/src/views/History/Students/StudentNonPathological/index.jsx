@@ -1,12 +1,7 @@
 import { Suspense, useMemo, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import IconButton from "src/components/Button/Icon";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import { BaseInput } from "src/components/Input/index";
 import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
@@ -20,25 +15,25 @@ import WrapPromise from "src/utils/promiseWrapper";
  * @param {Object} props - Component props.
  * @param {Function} props.getNonPathologicalHistory - Function to fetch non-pathological history data.
  * @param {Function} props.getBloodTypePatientInfo - Function to fetch blood type information of the patient.
- * @param {Function} props.updateNonPathologicalHistory - Function to update the non-pathological history.
+ * @param {Function} props.updateStudentNonPathologicalHistory - Function to update the non-pathological history.
  * @param {Object} props.sidebarConfig - Configuration properties for the sidebar component.
  * @param {Function} props.useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
  * @returns {JSX.Element} The NonPathologicalHistory component visual structure.
  */
-export function NonPathologicalHistory({
+export function StudentNonPathologicalHistory({
 	getNonPathologicalHistory,
 	getBloodTypePatientInfo,
-	updateNonPathologicalHistory,
-	sidebarConfig,
+	updateStudentNonPathologicalHistory,
+	//sidebarConfig,
 	useStore,
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
-
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
 	const bloodTypeResource = useMemo(
 		() => WrapPromise(getBloodTypePatientInfo(id)),
@@ -74,15 +69,6 @@ export function NonPathologicalHistory({
 		>
 			<div
 				style={{
-					width: "25%",
-				}}
-			>
-				<DashboardSidebar {...sidebarConfig} />
-			</div>
-
-			<div
-				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -121,7 +107,8 @@ export function NonPathologicalHistory({
 								paddingBottom: "3rem",
 							}}
 						>
-							Registro de antecedentes no patológicos
+							Por favor, completa la información solicitada; será tratada con
+							estricta confidencialidad.
 						</h3>
 					</div>
 
@@ -140,7 +127,9 @@ export function NonPathologicalHistory({
 								id={id}
 								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
 								bloodTypeResource={bloodTypeResource}
-								updateNonPathologicalHistory={updateNonPathologicalHistory}
+								updateStudentNonPathologicalHistory={
+									updateStudentNonPathologicalHistory
+								}
 								triggerReload={triggerReload}
 							/>
 						</Suspense>
@@ -159,7 +148,7 @@ export function NonPathologicalHistory({
  * @property {string} id - Unique identifier for the patient.
  * @property {Object} nonPathologicalHistoryResource - Promise-based resource for non-pathological history data.
  * @property {Object} bloodTypeResource - Promise-based resource for blood type data.
- * @property {Function} updateNonPathologicalHistory - Function to update the non-pathological history records.
+ * @property {Function} updateStudentNonPathologicalHistory - Function to update the non-pathological history records.
  * @property {Function} triggerReload - Function to trigger reloading of data.
  *
  * @param {NonPathologicalViewProps} props - Props passed to NonPathologicalView component.
@@ -170,7 +159,7 @@ function NonPathologicalView({
 	id,
 	nonPathologicalHistoryResource,
 	bloodTypeResource,
-	updateNonPathologicalHistory,
+	updateStudentNonPathologicalHistory,
 	triggerReload,
 }) {
 	// Reading the results from the provided resources.
@@ -220,6 +209,10 @@ function NonPathologicalView({
 			: "",
 	);
 
+	const [isSmokingEditable, setIsSmokingEditable] = useState(false);
+	const [isAlcoholEditable, setIsAlcoholEditable] = useState(false);
+	const [isDrugUseEditable, setIsDrugUseEditable] = useState(false);
+
 	// Error handling based on the response status.
 	let errorMessage = "";
 	if (nonPathologicalHistoryResult.error) {
@@ -257,50 +250,18 @@ function NonPathologicalView({
 
 	// Checking if it is the user's first time to display a different UI.
 	const isFirstTime = !(
-		(
-			(smoker.data.cigarettesPerDay !== null &&
-				smoker.data.cigarettesPerDay !== undefined &&
-				smoker.data.cigarettesPerDay !== 0) ||
-			(smoker.data.howManyYears !== null &&
-				smoker.data.howManyYears !== undefined &&
-				smoker.data.howManyYears !== 0) ||
-			(drink.data.drinksPerMonth !== null &&
-				drink.data.drinksPerMonth !== undefined &&
-				drink.data.drinksPerMonth !== 0) ||
-			drugs.data.whichOne?.trim() !== "" || // Usando encadenamiento opcional aquí
-			drugs.data.frequency?.trim() !== ""
-		) // Y aquí
+		(smoker.data.cigarettesPerDay !== null &&
+			smoker.data.cigarettesPerDay !== undefined &&
+			smoker.data.cigarettesPerDay !== 0) ||
+		(smoker.data.howManyYears !== null &&
+			smoker.data.howManyYears !== undefined &&
+			smoker.data.howManyYears !== 0) ||
+		(drink.data.drinksPerMonth !== null &&
+			drink.data.drinksPerMonth !== undefined &&
+			drink.data.drinksPerMonth !== 0) ||
+		drugs.data.whichOne?.trim() !== "" ||
+		drugs.data.frequency?.trim() !== ""
 	);
-	// Edit mode state to toggle between view and edit modes.
-	const [isEditable, setIsEditable] = useState(isFirstTime);
-
-	// Original info
-	const [originalSmokingStatus, setOriginalSmokingStatus] =
-		useState(smokingStatus);
-	const [originalCigarettesPerDay, setOriginalCigarettesPerDay] =
-		useState(cigarettesPerDay);
-	const [originalSmokingYears, setOriginalSmokingYears] =
-		useState(smokingYears);
-	const [originalAlcoholConsumption, setOriginalAlcoholConsumption] =
-		useState(alcoholConsumption);
-	const [originalDrinksPerMonth, setOriginalDrinksPerMonth] =
-		useState(drinksPerMonth);
-	const [originalDrugUse, setOriginalDrugUse] = useState(drugUse);
-	const [originalDrugType, setOriginalDrugType] = useState(drugType);
-	const [originalDrugFrequency, setOriginalDrugFrequency] =
-		useState(drugFrequency);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: UseEffect for the cancel method
-	useEffect(() => {
-		setOriginalSmokingStatus(smokingStatus);
-		setOriginalCigarettesPerDay(cigarettesPerDay);
-		setOriginalSmokingYears(smokingYears);
-		setOriginalAlcoholConsumption(alcoholConsumption);
-		setOriginalDrinksPerMonth(drinksPerMonth);
-		setOriginalDrugUse(drugUse);
-		setOriginalDrugType(drugType);
-		setOriginalDrugFrequency(drugFrequency);
-	}, [nonPathologicalHistoryResult]);
 
 	const validateSmokingDetails = () => {
 		if (
@@ -316,7 +277,7 @@ function NonPathologicalView({
 			smokingStatus &&
 			(smokingYears === "" || Number.parseInt(smokingYears) < 1)
 		) {
-			toast.error("Por favor, ingrese cuántos años ha fumado.");
+			toast.error("Por favor, ingrese desde hace cuántos años ha fumado.");
 			return false;
 		}
 		return true;
@@ -343,7 +304,7 @@ function NonPathologicalView({
 				Number.parseInt(drugFrequency) < 1)
 		) {
 			toast.error(
-				"Por favor, complete los detalles del consumo de drogas (mayor que cero).",
+				"Por favor, complete todos los detalles del consumo de drogas.",
 			);
 			return false;
 		}
@@ -390,56 +351,96 @@ function NonPathologicalView({
 
 		toast.info("Guardando antecedente no patológico...");
 
-		const result = await updateNonPathologicalHistory(id, updateDetails);
+		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
 		if (!result.error) {
-			toast.success("Antecedentes no patológicos actualizados con éxito.");
-			setIsEditable(false);
+			toast.success("Antecedentes no patológicos guardados con éxito.");
 			triggerReload();
 		} else {
 			toast.error(
-				`Error al actualizar los antecedentes no patológicos: ${result.error}`,
+				`Error al guardar los antecedentes no patológicos: ${result.error}`,
 			);
 		}
 	};
 
-	// Handler for smoking state
+	useEffect(() => {
+		const smokerData =
+			nonPathologicalHistoryResult.result?.medicalHistory.smoker;
+		const drinkData = nonPathologicalHistoryResult.result?.medicalHistory.drink;
+		const drugsData = nonPathologicalHistoryResult.result?.medicalHistory.drugs;
+
+		const initSmokingEditable =
+			(smokerData?.data?.cigarettesPerDay ?? 0) === 0 &&
+			(smokerData?.data?.years ?? 0) === 0;
+		const initAlcoholEditable = (drinkData?.data?.drinksPerMonth ?? 0) === 0;
+		const initDrugUseEditable =
+			(drugsData?.data?.drugType ?? "") === "" &&
+			(drugsData?.data?.frequency ?? "") === "";
+
+		setSmokingStatus(smokerData?.data?.smokes ?? false);
+		setCigarettesPerDay((smokerData?.data?.cigarettesPerDay ?? 0).toString());
+		setSmokingYears((smokerData?.data?.years ?? 0).toString());
+		setIsSmokingEditable(initSmokingEditable);
+
+		setAlcoholConsumption(drinkData?.data?.drinks ?? false);
+		setDrinksPerMonth((drinkData?.data?.drinksPerMonth ?? 0).toString());
+		setIsAlcoholEditable(initAlcoholEditable);
+
+		setDrugUse(drugsData?.data?.usesDrugs ?? false);
+		setDrugType(drugsData?.data?.drugType ?? "");
+		setDrugFrequency((drugsData?.data?.frequency ?? "").toString());
+		setIsDrugUseEditable(initDrugUseEditable);
+	}, [nonPathologicalHistoryResult]);
+
+	// Ajustes en los manejadores para controlar la editabilidad correctamente
 	const handleSmokingChange = (newStatus) => {
 		setSmokingStatus(newStatus);
-		if (!newStatus) {
-			setCigarettesPerDay("0");
-			setSmokingYears("0");
+		if (
+			!newStatus ||
+			(Number.parseInt(cigarettesPerDay) === 0 &&
+				Number.parseInt(smokingYears) === 0)
+		) {
+			setIsSmokingEditable(true);
+		} else {
+			setIsSmokingEditable(false);
 		}
 	};
 
-	// Handler for alcohol consumption
 	const handleAlcoholChange = (newStatus) => {
 		setAlcoholConsumption(newStatus);
-		if (!newStatus) {
-			setDrinksPerMonth("0");
+		if (!newStatus || Number.parseInt(drinksPerMonth) === 0) {
+			setIsAlcoholEditable(true);
+		} else {
+			setIsAlcoholEditable(false);
 		}
 	};
 
-	// Handler for drug use
 	const handleDrugUseChange = (newStatus) => {
 		setDrugUse(newStatus);
-		if (!newStatus) {
-			setDrugType("");
-			setDrugFrequency("");
+		if (!newStatus || (drugType === "" && drugFrequency === "")) {
+			setIsDrugUseEditable(true);
+		} else {
+			setIsDrugUseEditable(false);
 		}
 	};
 
-	// Canceling update
-	const handleCancel = () => {
-		setIsEditable(false);
-		setSmokingStatus(originalSmokingStatus);
-		setCigarettesPerDay(originalCigarettesPerDay);
-		setSmokingYears(originalSmokingYears);
-		setAlcoholConsumption(originalAlcoholConsumption);
-		setDrinksPerMonth(originalDrinksPerMonth);
-		setDrugUse(originalDrugUse);
-		setDrugType(originalDrugType);
-		setDrugFrequency(originalDrugFrequency);
-		toast.info("Edición cancelada.");
+	const areAllFieldsPreFilled = () => {
+		const smokerData =
+			nonPathologicalHistoryResult.result?.medicalHistory.smoker.data;
+		const drinkData =
+			nonPathologicalHistoryResult.result?.medicalHistory.drink.data;
+		const drugsData =
+			nonPathologicalHistoryResult.result?.medicalHistory.drugs.data;
+
+		return (
+			smokerData.smokes &&
+			smokerData.cigarettesPerDay &&
+			smokerData.years &&
+			drinkData.drinks &&
+			drinkData.drinksPerMonth &&
+			drugsData.usesDrugs &&
+			drugsData.drugType.trim() !== "" &&
+			drugsData.frequency.trim() !== ""
+		);
 	};
 
 	return (
@@ -487,8 +488,7 @@ function NonPathologicalView({
 									fontSize: fontSize.textSize,
 								}}
 							>
-								Por favor, ingrese los datos del paciente. Parece que es su
-								primera visita aquí.
+								Por favor ingrese sus datos, parece que es su primera vez aquí.
 							</div>
 						)}
 						<div
@@ -531,21 +531,6 @@ function NonPathologicalView({
 									}}
 								/>
 							</div>
-							{!isFirstTime &&
-								(isEditable ? (
-									<div style={{ display: "flex", gap: "1rem" }}>
-										<IconButton
-											icon={CheckIcon}
-											onClick={handleSaveNonPathological}
-										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
-									</div>
-								) : (
-									<IconButton
-										icon={EditIcon}
-										onClick={() => setIsEditable(true)}
-									/>
-								))}
 						</div>
 						<div
 							style={{
@@ -576,14 +561,14 @@ function NonPathologicalView({
 									checked={smokingStatus}
 									onChange={() => handleSmokingChange(true)}
 									label="Sí"
-									disabled={!isEditable}
+									disabled={!isSmokingEditable}
 								/>
 								<RadioInput
 									name="smoking"
 									checked={!smokingStatus}
 									onChange={() => handleSmokingChange(false)}
 									label="No"
-									disabled={!isEditable}
+									disabled={!isSmokingEditable}
 								/>
 							</div>
 							{smokingStatus && (
@@ -611,7 +596,7 @@ function NonPathologicalView({
 												onChange={(e) => setCigarettesPerDay(e.target.value)}
 												placeholder="Ingrese cuántos cigarrillos al día"
 												min="1"
-												readOnly={!isEditable}
+												readOnly={!isSmokingEditable}
 												style={{
 													width: "20rem",
 													height: "2.5rem",
@@ -636,7 +621,7 @@ function NonPathologicalView({
 												onChange={(e) => setSmokingYears(e.target.value)}
 												placeholder="Ingrese desde hace cuántos años"
 												min="1"
-												readOnly={!isEditable}
+												readOnly={!isSmokingEditable}
 												style={{
 													width: "20rem",
 													height: "2.5rem",
@@ -679,14 +664,14 @@ function NonPathologicalView({
 									checked={alcoholConsumption}
 									onChange={() => handleAlcoholChange(true)}
 									label="Sí"
-									disabled={!isEditable}
+									disabled={!isAlcoholEditable}
 								/>
 								<RadioInput
 									name="alcoholConsumption"
 									checked={!alcoholConsumption}
 									onChange={() => handleAlcoholChange(false)}
 									label="No"
-									disabled={!isEditable}
+									disabled={!isAlcoholEditable}
 								/>
 							</div>
 							{alcoholConsumption && (
@@ -714,7 +699,7 @@ function NonPathologicalView({
 												onChange={(e) => setDrinksPerMonth(e.target.value)}
 												placeholder="Ingrese cuántas bebidas al mes"
 												min="1"
-												readOnly={!isEditable}
+												readOnly={!isAlcoholEditable}
 												style={{
 													width: "20rem",
 													height: "2.5rem",
@@ -756,14 +741,14 @@ function NonPathologicalView({
 									checked={drugUse}
 									onChange={() => handleDrugUseChange(true)}
 									label="Sí"
-									disabled={!isEditable}
+									disabled={!isDrugUseEditable}
 								/>
 								<RadioInput
 									name="drugUse"
 									checked={!drugUse}
 									onChange={() => handleDrugUseChange(false)}
 									label="No"
-									disabled={!isEditable}
+									disabled={!isDrugUseEditable}
 								/>
 							</div>
 							{drugUse && (
@@ -791,7 +776,7 @@ function NonPathologicalView({
 												onChange={(e) => setDrugType(e.target.value)}
 												placeholder="Ingrese el tipo de droga"
 												min="1"
-												readOnly={!isEditable}
+												readOnly={!isDrugUseEditable}
 												style={{
 													width: "20rem",
 													height: "2.5rem",
@@ -815,7 +800,7 @@ function NonPathologicalView({
 												value={drugFrequency}
 												onChange={(e) => setDrugFrequency(e.target.value)}
 												placeholder="Ingrese la frecuencia del consumo"
-												readOnly={!isEditable}
+												readOnly={!isDrugUseEditable}
 												style={{
 													width: "20rem",
 													height: "2.5rem",
@@ -828,14 +813,14 @@ function NonPathologicalView({
 								</div>
 							)}
 						</div>
-						{isFirstTime && (
+
+						{!areAllFieldsPreFilled() && (
 							<>
 								<div
 									style={{
 										borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
 									}}
 								/>
-
 								<div
 									style={{
 										display: "flex",
