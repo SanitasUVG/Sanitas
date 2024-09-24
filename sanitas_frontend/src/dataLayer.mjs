@@ -1580,7 +1580,6 @@ export const getGynecologicalHistory = async (patientId) => {
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-
 export const updateGynecologicalHistory = async (
 	patientId,
 	gynecologicalHistoryDetails,
@@ -1617,6 +1616,50 @@ export const updateGynecologicalHistory = async (
 			return { error: error.response.data };
 		}
 		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the gynecological history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentGynecologicalHiestoy = async (
+	patientId,
+	gynecologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/gyneco-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: gynecologicalHistoryDetails,
+	};
+
+	try {
+		const { data: result } = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+
+		return { result };
+	} catch (error) {
+		const errorMsg = error.response ? error.response.data : error.message;
+		return { error: errorMsg };
 	}
 };
 
@@ -1661,6 +1704,7 @@ export const linkAccountToPatient = async (cui) => {
  * @returns {Promise<Result<number, *>>} If the promise is succesfull the result will contain the patientId associated to this account.
  */
 
+/** @type {GetLinkedPatientCallback}*/
 export const getLinkedPatient = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
