@@ -1370,7 +1370,7 @@ function ObGynView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									G:
+									# Embarazos:
 								</p>
 								<BaseInput
 									value={G}
@@ -1411,7 +1411,7 @@ function ObGynView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									P:
+									# Partos vía vaginal
 								</p>
 								<BaseInput
 									value={P}
@@ -1453,7 +1453,7 @@ function ObGynView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									C:
+									# Cesáreas
 								</p>
 								<BaseInput
 									value={C}
@@ -1495,7 +1495,7 @@ function ObGynView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									A:
+									# Abortos:
 								</p>
 								<BaseInput
 									value={A}
