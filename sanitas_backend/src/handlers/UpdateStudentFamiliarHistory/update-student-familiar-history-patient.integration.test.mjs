@@ -110,11 +110,28 @@ describe("Update Family Medical History integration tests", () => {
 			headers: validHeaders,
 		});
 
+		// Can add cancer
 		familyHistoryData.medicalHistory.cancer.data.push({
 			who: "Aunt",
 			typeOfCancer: "Lung",
 		});
-		const response = await axios.post(API_URL, familyHistoryData, {
+		let response = await axios.post(API_URL, familyHistoryData, {
+			headers: validHeaders,
+		});
+
+		expect(response).toBeDefined();
+		expect(response.status).toBe(200);
+
+		const { medicalHistory: cancerMedicalHistory } = response.data;
+		expect(response.data.patientId).toBe(patientId);
+		expect(cancerMedicalHistory.cancer.data.length).toBe(2);
+		expect(cancerMedicalHistory.cancer.data).toEqual(
+			familyHistoryData.medicalHistory.cancer.data,
+		);
+
+		// Can add items in any order...
+		familyHistoryData.medicalHistory.hypertension.data.unshift("Grandfather");
+		response = await axios.post(API_URL, familyHistoryData, {
 			headers: validHeaders,
 		});
 
@@ -123,9 +140,9 @@ describe("Update Family Medical History integration tests", () => {
 
 		const { patientId: id, medicalHistory } = response.data;
 		expect(id).toBe(patientId);
-		expect(medicalHistory.cancer.data.length).toBe(2);
-		expect(medicalHistory.cancer.data).toEqual(
-			familyHistoryData.medicalHistory.cancer.data,
+		expect(medicalHistory.hypertension.data.length).toBe(3);
+		expect(medicalHistory.hypertension.data).toEqual(
+			familyHistoryData.medicalHistory.hypertension.data,
 		);
 	});
 
