@@ -7,6 +7,7 @@ import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * Component responsible for managing and displaying non-pathological history information of a patient.
@@ -24,7 +25,7 @@ export function StudentNonPathologicalHistory({
 	getNonPathologicalHistory,
 	getBloodTypePatientInfo,
 	updateStudentNonPathologicalHistory,
-	//sidebarConfig,
+	sidebarConfig,
 	useStore,
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
@@ -63,7 +64,7 @@ export function StudentNonPathologicalHistory({
 				display: "flex",
 				flexDirection: "row",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
 			}}
 		>
@@ -75,10 +76,24 @@ export function StudentNonPathologicalHistory({
 			>
 				<div
 					style={{
+						width: "100%",
+						padding: "0 0 1rem 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="no_patologicos"
+					/>
+				</div>
+
+				<div
+					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
+						padding: "2rem",
+						borderRadius: "0.625rem",
+						overflow: "auto",
+						flex: "1",
 					}}
 				>
 					<div

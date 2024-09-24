@@ -76,6 +76,25 @@ const mockGetStudentPersonalHistoryEmpty = async () => ({
 	},
 });
 
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
+
 const mockGetStudentPersonalHistoryError = async () => ({
 	error: {
 		response: {
@@ -99,12 +118,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryWithData,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -114,12 +128,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryEmpty,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -129,12 +138,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryError,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "General Practitioner",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

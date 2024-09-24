@@ -18,6 +18,25 @@ export default {
 
 const dummyPatientId = 12345;
 
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
+
 const mockGetBloodTypePatientInfo = async () => ({
 	result: {
 		bloodType: "O+",
@@ -75,12 +94,7 @@ export const WithData = {
 		getNonPathologicalHistory: mockGetStudentNonPathologicalHistoryWithData,
 		getBloodTypePatientInfo: mockGetBloodTypePatientInfo,
 		updateNonPathologicalHistory: mockUpdateStudentNonPathologicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -90,12 +104,7 @@ export const EmptyData = {
 		getNonPathologicalHistory: mockGetStudentNonPathologicalHistoryEmpty,
 		getBloodTypePatientInfo: mockGetBloodTypePatientInfo,
 		updateNonPathologicalHistory: mockUpdateStudentNonPathologicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -105,12 +114,7 @@ export const ErrorState = {
 		getNonPathologicalHistory: mockGetStudentNonPathologicalHistoryError,
 		getBloodTypePatientInfo: mockGetBloodTypePatientInfo,
 		updateNonPathologicalHistory: mockUpdateStudentNonPathologicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

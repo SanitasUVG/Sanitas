@@ -171,6 +171,52 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 	// TODO: Add other Navigation routes...
 };
 
+/**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
+export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
+	navigateToGeneralStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL}`,
+		);
+	},
+	navigateToSurgicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY}`,
+		);
+	},
+	navigateToTraumatologicalStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
+		// TODO: Add Trauma...
+	},
+	navigateToFamiliarStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
+		// TODO: Add Familiar...
+	},
+	navigateToPersonalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY}`,
+		);
+	},
+	navigateToNonPathologicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_NON_PATHOLOGICAL_HISTORY}`,
+		);
+	},
+	navigateToAllergiesStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToPsiquiatricStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY}`,
+		);
+	},
+	navigateToObstetricsStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
+		// TODO: Add Gineco...
+	},
+};
+
 const updateInfoView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -213,7 +259,7 @@ const studentSurgicalHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getStudentSurgicalHistory={getSurgicalHistory}
 			updateStudentSurgicalHistory={updateStudentSurgicalHistory}
-			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -231,6 +277,7 @@ const studentGeneralInformation = (
 			updateStudentPatientInformation={patientUpdateStudentInformation}
 			getCollaboratorInformation={getCollaboratorInformation}
 			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -280,6 +327,21 @@ const personalHistoryView = (
 	</RequireAuth>
 );
 
+const studentPersonalHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentPersonalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getStudentPersonalHistory={getPersonalHistory}
+			updateStudentPersonalHistory={updateStudentPersonalHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const nonPathologicalHistoryView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
@@ -304,7 +366,7 @@ const studentNonPathologicalHistoryView = (
 			getNonPathologicalHistory={getNonPathologicalHistory}
 			getBloodTypePatientInfo={getGeneralPatientInformation}
 			updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
-			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -332,22 +394,7 @@ const studentAllergicHistoryView = (
 		<StudentAllergicHistory
 			getStudentAllergicHistory={getAllergicHistory}
 			updateStudentAllergicHistory={updateStudentAllergicHistory}
-			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-			useStore={useStore}
-		/>
-	</RequireAuth>
-);
-
-const studentPersonalHistoryView = (
-	<RequireAuth
-		getSession={IS_PRODUCTION ? getSession : mockGetSession}
-		path={NAV_PATHS.LOGIN_USER}
-	>
-		<StudentPersonalHistory
-			getBirthdayPatientInfo={getGeneralPatientInformation}
-			getStudentPersonalHistory={getPersonalHistory}
-			updateStudentPersonalHistory={updateStudentPersonalHistory}
-			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -375,8 +422,8 @@ const studentPsichiatricHistoryView = (
 		<StudentPsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-			//useStore={useStore}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
 		/>
 	</RequireAuth>
 );

@@ -18,10 +18,6 @@ const mockGetStudentPsichiatricHistory = vi.fn();
 const mockUpdateStudentPsichiatricHistory = vi.fn();
 const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-const sidebarConfig = {
-	userInformation: { displayName: "User Testing" },
-};
-
 const LoadingComponent = () => <div>Loading...</div>;
 
 const Wrapper = ({ children }) => (
@@ -33,6 +29,25 @@ const Wrapper = ({ children }) => (
 		</Suspense>
 	</MemoryRouter>
 );
+
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
 
 describe("StudentPsichiatricHistory Component Tests", () => {
 	test("initial render and data fetching", async () => {
@@ -70,7 +85,7 @@ describe("StudentPsichiatricHistory Component Tests", () => {
 				<StudentPsichiatricHistory
 					getPsichiatricHistory={mockGetStudentPsichiatricHistory}
 					updatePsichiatricHistory={mockUpdateStudentPsichiatricHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={sidebarConfigMock}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
