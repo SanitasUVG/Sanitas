@@ -69,9 +69,10 @@ export default function UpdatePatientInfoView({
 	return (
 		<div
 			style={{
-				display: "grid",
-				gridTemplateColumns: "100%",
+				display: "flex",
+				flexDirection: "column",
 				padding: "2rem",
+				gap: "1rem",
 				background: colors.primaryBackground,
 				minHeight: "100vh",
 			}}
@@ -79,8 +80,7 @@ export default function UpdatePatientInfoView({
 			<div
 				style={{
 					width: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
+					height: "fit-content",
 				}}
 			>
 				<StudentDashboardTopbar
@@ -96,6 +96,7 @@ export default function UpdatePatientInfoView({
 					borderRadius: "0.625rem",
 					width: "100%",
 					padding: "1rem 6rem",
+					flexGrow: 1,
 				}}
 			>
 				<Suspense
