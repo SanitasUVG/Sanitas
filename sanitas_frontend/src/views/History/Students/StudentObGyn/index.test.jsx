@@ -176,7 +176,9 @@ describe("ObGynHistory Component Tests", () => {
 			screen.getByText("Antecedentes Ginecoobstétricos"),
 		).toBeInTheDocument();
 		expect(
-			screen.getByText("Registro de antecedentes ginecoobstétricos"),
+			screen.getByText(
+				"Por favor, completa la información solicitada; será tratada con estricta confidencialidad.",
+			),
 		).toBeInTheDocument();
 
 		const diagnosisText = document
