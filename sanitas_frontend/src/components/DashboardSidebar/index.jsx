@@ -100,16 +100,16 @@ export default function DashboardSidebar({
 	const genStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
 			? {
-				color: colors.darkerGrey,
-			}
+					color: colors.darkerGrey,
+				}
 			: {};
 	};
 
 	const genIconStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
 			? {
-				filter: "contrast(0%)",
-			}
+					filter: "contrast(0%)",
+				}
 			: {};
 	};
 
