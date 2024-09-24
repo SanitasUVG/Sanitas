@@ -1628,7 +1628,7 @@ export const updateGynecologicalHistory = async (
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
-export const updateStudentGynecologicalHiestoy = async (
+export const updateStudentGynecologialHistory = async (
 	patientId,
 	gynecologicalHistoryDetails,
 ) => {

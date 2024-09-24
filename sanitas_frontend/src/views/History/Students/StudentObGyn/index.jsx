@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
-import DashboardSidebar from "src/components/DashboardSidebar";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput } from "src/components/Input/index";
 import { RadioInput } from "src/components/Input/index";
@@ -10,12 +9,9 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import { useRef } from "react";
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
-import IconButton from "src/components/Button/Icon";
 
-export function ObGynHistory({
+// export function ObGynHistory({
+export function StudentObGynHistory({
 	getBirthdayPatientInfo,
 	getObGynHistory,
 	updateObGynHistory,

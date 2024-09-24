@@ -1,5 +1,5 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { ObGynHistory } from ".";
+import { StudentObGynHistory } from ".";
 import { createEmptyStore } from "src/store.mjs";
 
 // Mock functions and data
@@ -174,7 +174,7 @@ const store = createEmptyStore({
 
 export default {
 	title: "Views/Antecedents/Student/ObGynHistory",
-	component: ObGynHistory,
+	component: StudentObGynHistory,
 	decorators: [
 		(Story) => (
 			<MemoryRouter initialEntries={["/obgyn-history"]}>

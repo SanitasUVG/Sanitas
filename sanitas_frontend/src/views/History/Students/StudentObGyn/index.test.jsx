@@ -8,7 +8,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 import { toast } from "react-toastify";
-import { ObGynHistory } from ".";
+import { StudentObGynHistory } from ".";
 
 vi.mock("react-toastify", () => ({
 	toast: {
@@ -154,7 +154,7 @@ describe("ObGynHistory Component Tests", () => {
 	test("renders and displays general information", async () => {
 		render(
 			<Wrapper>
-				<ObGynHistory
+				<StudentObGynHistory
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}
@@ -190,7 +190,7 @@ describe("ObGynHistory Component Tests", () => {
 	test("handles the addition of a new diagnosis", async () => {
 		render(
 			<Wrapper>
-				<ObGynHistory
+				<StudentObGynHistory
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}
@@ -228,7 +228,7 @@ describe("ObGynHistory Component Tests", () => {
 	test("displays error message when there is an error fetching data", async () => {
 		render(
 			<Wrapper>
-				<ObGynHistory
+				<StudentObGynHistory
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryError}
 					updateObGynHistory={mockUpdateObGynHistory}
@@ -255,7 +255,7 @@ describe("ObGynHistory Component Tests", () => {
 	test("saves gynecological history successfully", async () => {
 		render(
 			<Wrapper>
-				<ObGynHistory
+				<StudentObGynHistory
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}

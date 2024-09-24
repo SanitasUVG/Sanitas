@@ -48,6 +48,7 @@ import {
 	patientUpdateGeneralInformation,
 	patientUpdateStudentInformation,
 	patientUpdateCollaboratorInformation,
+	updateStudentGynecologialHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -72,6 +73,7 @@ import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
 import { StudentNonPathologicalHistory } from "./views/History/Students/StudentNonPathological";
 import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
+import { StudentObGynHistory } from "./views/History/Students/StudentObGyn";
 
 const useStore = createEmptyStore();
 
@@ -97,7 +99,6 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	ALLERGIC_HISTORY: "allergic",
 	OBGYN_HISTORY: "obgyn",
 	PSICHIATRIC_HISTORY: "psichiatric",
-	// TODO: Add other Navigation routes...
 };
 
 export const PATIENT_FORM_NAV_PATHS = {
@@ -107,6 +108,7 @@ export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_PERSONAL_HISTORY: "student-personal",
 	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
 	STUDENT_GENERAL: "student-general",
+	STUDENT_OBGYN_HISTORY: "student-obgyn",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -370,11 +372,22 @@ const studentPsichiatricHistoryView = (
 		<StudentPsichiatricHistory
 			getPsichiatricHistory={getPsichiatricHistory}
 			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
-			//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
-			//useStore={useStore}
+		//sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+		//useStore={useStore}
 		/>
 	</RequireAuth>
 );
+
+const studentObGynHistoryView = (
+	<RequireAuth getSession={IS_PRODUCTION ? getSession : mockGetSession} path={NAV_PATHS.LOGIN_USER}>
+		<StudentObGynHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getObGynHistory={getGynecologicalHistory}
+			updateObGynHistory={updateStudentGynecologialHistory}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+)
 
 const obgynHistoryView = (
 	<RequireAuth
@@ -535,6 +548,10 @@ export const ROUTES = [
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL,
 				element: studentGeneralInformation,
 			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY,
+				element: studentObGynHistoryView
+			}
 		],
 	},
 ];
