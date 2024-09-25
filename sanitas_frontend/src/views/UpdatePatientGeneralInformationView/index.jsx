@@ -15,6 +15,16 @@ import Collapsable from "src/components/Collapsable";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
+ * Checks if the given property exists and is not a null value inside the object.
+ * @param {*} object - The object that should have the property
+ * @param {string} property - The property to check inside the object
+ * @returns {boolean} True if it exists and is not null, false otherwise.
+ */
+const hasPropertyAndIsValid = (object, property) =>
+	Object.hasOwn(object, property) &&
+	(object[property] !== "" || object[property] !== null);
+
+/**
  * @typedef {Object} PatientInfo
  * @property {number} id
  * @property {string} nombres
@@ -58,8 +68,8 @@ export default function UpdatePatientInfoView({
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	// const id = useStore((s) => s.selectedPatientId);
+	const id = 2;
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
 		getCollaboratorInformation(id),
@@ -211,6 +221,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 	};
 
 	const response = getData.read();
+	const responseFromGET = response?.result;
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
@@ -282,7 +293,9 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 						}
 						placeholder="Código"
 						style={inputStyles}
-						disabled={!editMode}
+						disabled={
+							!editMode || hasPropertyAndIsValid(responseFromGET, "code")
+						}
 					/>
 				</div>
 
@@ -303,7 +316,9 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 						}
 						placeholder="Área"
 						style={inputStyles}
-						disabled={!editMode}
+						disabled={
+							!editMode || hasPropertyAndIsValid(responseFromGET, "area")
+						}
 					/>
 				</div>
 			</div>
@@ -321,6 +336,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
+// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: In the future we should probably make it simpler...
 function UpdateGeneralInformationSection({ getData, updateData }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
@@ -400,6 +416,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
+	const responseFromGET = getResponseFromGET();
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
 	const [patientData, setPatientData] = useState(getResponseFromGET());
@@ -501,7 +518,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 							}
 							placeholder="Nombres"
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={true}
 						/>
 					</div>
 
@@ -515,7 +532,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 							}
 							placeholder="CUI"
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={true}
 						/>
 					</div>
 
@@ -537,7 +554,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								onChange={() =>
 									setPatientData({ ...patientData, isWoman: true })
 								}
-								disabled={!editMode}
+								disabled={true}
 							/>
 							<RadioInput
 								type="radio"
@@ -548,7 +565,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								onChange={() =>
 									setPatientData({ ...patientData, isWoman: false })
 								}
-								disabled={!editMode}
+								disabled={true}
 							/>
 						</div>
 					</div>
@@ -562,7 +579,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, birthdate: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={true}
 						/>
 					</div>
 					<div style={inputContainerStyles}>
@@ -570,7 +587,6 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 						<DropdownMenu
 							options={dropdownOptions}
 							value={patientData.bloodType}
-							readOnly={!editMode}
 							onChange={(e) =>
 								setPatientData({ ...patientData, bloodType: e.target.value })
 							}
@@ -578,7 +594,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								container: { width: "90%" },
 								select: { height: "3rem" },
 							}}
-							disabled={!editMode}
+							disabled={
+								!editMode || hasPropertyAndIsValid(responseFromGET, "bloodType")
+							}
 						/>
 					</div>
 				</div>
@@ -594,7 +612,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, lastNames: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={true}
 						/>
 					</div>
 
@@ -607,7 +625,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, email: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={
+								!editMode || hasPropertyAndIsValid(responseFromGET, "email")
+							}
 						/>
 					</div>
 
@@ -620,7 +640,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, phone: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={
+								!editMode || hasPropertyAndIsValid(responseFromGET, "phone")
+							}
 						/>
 					</div>
 
@@ -633,7 +655,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, address: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={
+								!editMode || hasPropertyAndIsValid(responseFromGET, "address")
+							}
 						/>
 					</div>
 
@@ -646,7 +670,9 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={inputStyles}
-							disabled={!editMode}
+							disabled={
+								!editMode || hasPropertyAndIsValid(responseFromGET, "insurance")
+							}
 						/>
 					</div>
 				</div>
@@ -679,7 +705,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactName1")
+								}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -693,7 +722,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactKinship1")
+								}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -727,7 +759,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactName2")
+								}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -741,7 +776,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactKinkship2")
+								}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -755,7 +793,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactPhone2")
+								}
 							/>
 						</div>
 					</Collapsable>
@@ -809,6 +850,7 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 
 	// Fetch the student information
 	const response = getData.read();
+	const responseFromGET = response?.result;
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
@@ -886,7 +928,9 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 						}
 						placeholder="Carnet"
 						style={inputStyles}
-						disabled={!editMode}
+						disabled={
+							!editMode || hasPropertyAndIsValid(responseFromGET, "carnet")
+						}
 					/>
 				</div>
 
@@ -907,7 +951,9 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 						}
 						placeholder="Carrera"
 						style={inputStyles}
-						disabled={!editMode}
+						disabled={
+							!editMode || hasPropertyAndIsValid(responseFromGET, "career")
+						}
 					/>
 				</div>
 			</div>
