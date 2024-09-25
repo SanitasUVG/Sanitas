@@ -53,7 +53,8 @@ function checkIfUpdatesValues(dbData, requestData) {
 	for (let i = 0; i < invalidPropertiesToModify.length; i++) {
 		const currentProperty = invalidPropertiesToModify[i];
 		if (
-			(Object.hasOwn(dbData, currentProperty) && dbData[currentProperty] !== null) &&
+			Object.hasOwn(dbData, currentProperty) &&
+			dbData[currentProperty] !== null &&
 			dbData[currentProperty] !== requestData[currentProperty]
 		) {
 			logger.error(
