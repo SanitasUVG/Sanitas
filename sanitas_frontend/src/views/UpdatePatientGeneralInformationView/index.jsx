@@ -21,8 +21,7 @@ import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
  * @returns {boolean} True if it exists and is not null, false otherwise.
  */
 const hasPropertyAndIsValid = (object, property) =>
-	Object.hasOwn(object, property) &&
-	(object[property] !== "" || object[property] !== null);
+	Object.hasOwn(object, property) && object[property] !== null;
 
 /**
  * @typedef {Object} PatientInfo
