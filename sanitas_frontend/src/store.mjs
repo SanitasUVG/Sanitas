@@ -41,7 +41,7 @@ export const createEmptyStore = (defaultStoreValues) => {
 		searchQuery: {
 			query: "",
 			// NOTE: This is the default search term
-			type: "Carnet",
+			type: "Nombres",
 		},
 
 		setSearchQuery: (query, type) =>
