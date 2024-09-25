@@ -6,6 +6,7 @@ import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { cuiIsValid } from "src/utils/cui";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**
@@ -65,10 +66,12 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		 */
 		const validateFormData = () => {
 			const fields = ["names", "surnames", "birthDate"];
-			if (patientData.cui.length !== 13) {
+			const isValidCUI = cuiIsValid(patientData.cui);
+			if (isValidCUI.error) {
 				setUpdateError("El CUI debe contener exactamente 13 caracteres.");
 				return false;
 			}
+
 			for (const field of fields) {
 				if (!patientData[field]) {
 					setUpdateError(
