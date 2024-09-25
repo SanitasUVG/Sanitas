@@ -22,6 +22,9 @@ import { create } from "zustand";
  *
  * @property {string[]} prefixesWithData
  * @property {(newPrefixesWithData: string[]) => void} setPrefixesWithData
+ *
+ * @property {string} displayName
+ * @property {(newDisplayName: string) => void} setDisplayName
  */
 
 /**
@@ -41,7 +44,7 @@ export const createEmptyStore = (defaultStoreValues) => {
 		searchQuery: {
 			query: "",
 			// NOTE: This is the default search term
-			type: "Carnet",
+			type: "Nombres",
 		},
 
 		setSearchQuery: (query, type) =>
@@ -65,6 +68,11 @@ export const createEmptyStore = (defaultStoreValues) => {
 		prefixesWithData: [],
 		setPrefixesWithData: (prefixesWithData) => {
 			set({ prefixesWithData });
+		},
+
+		displayName: "correorandom@gmail.com",
+		setDisplayName: (displayName) => {
+			set({ displayName });
 		},
 
 		...defaultStoreValues,

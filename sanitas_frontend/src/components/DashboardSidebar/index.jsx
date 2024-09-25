@@ -1,10 +1,3 @@
-/**
- * @typedef {Object} UserInformation
- * @property {string} displayName - The user display name.
- * @property {string} title - The role of this user in the application
- */
-
-import returnicon from "@tabler/icons/outline/arrow-back-up.svg";
 import boneicon from "@tabler/icons/outline/bone.svg";
 import brainicon from "@tabler/icons/outline/brain.svg";
 import facemaskicon from "@tabler/icons/outline/face-mask.svg";
@@ -18,8 +11,6 @@ import womanicon from "@tabler/icons/outline/woman.svg";
 import { useNavigate } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-
-import IconButton from "src/components/Button/Icon/index";
 import TextIconButton from "../Button/TextIcon";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -30,7 +21,6 @@ import { useEffect } from "react";
  * @param {import("react").MouseEvent} e - The `MouseEvent` that triggered this handler.
  */
 
-// NOTE: Remember to update the function signature when implementing the navigation to your view!
 /**
  * @typedef {Object} DashboardSidebarProps
  * @property {SidebarNavigationHandler} navigateToGeneral - Handles navigation to the update general patient information view.
@@ -44,7 +34,6 @@ import { useEffect } from "react";
  * @property {SidebarNavigationHandler} navigateToSurgical - Handles navigation to the update surgical view.
  * @property {SidebarNavigationHandler} navigateToTraumatological - Handles navigation to the update traumatological view.
  * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
- * @property {UserInformation} userInformation - Contains some information to display about a user.
  * @property {import("src/dataLayer.mjs").GetMedicalHistoryMetadataCallback} getMedicalHistoryMetadata - Function to get the current active medical history data.
  * @property {import("src/store.mjs").UseStoreHook} useStore
  */
@@ -63,7 +52,6 @@ export default function DashboardSidebar({
 	navigateToPsiquiatric,
 	navigateToSurgical,
 	navigateToTraumatological,
-	userInformation,
 	onGoBack,
 	getMedicalHistoryMetadata,
 	useStore,
@@ -80,6 +68,7 @@ export default function DashboardSidebar({
 	const patientId = useStore((s) => s.selectedPatientId);
 	const prefixesWithData = useStore((s) => s.prefixesWithData);
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
+	const displayName = useStore((s) => s.displayName);
 
 	useEffect(() => {
 		const loadPrefixes = async () => {
@@ -128,38 +117,30 @@ export default function DashboardSidebar({
 			<div
 				style={{
 					display: "flex",
-					alignItems: "end",
-					justifyContent: "end",
-					paddingRight: "1rem",
-					width: "100%",
-				}}
-			>
-				<IconButton
-					icon={returnicon}
-					onClick={wrapWithNavigate(onGoBack)}
-					style={{
-						width: "2.1rem",
-						height: "3rem",
-					}}
-				/>
-			</div>
-			<div
-				style={{
-					display: "flex",
-					paddingTop: "2rem",
-					paddingBottom: "2rem",
+					justifyContent: "center",
+					alignContent: "center",
+					cursor: "pointer",
 					width: "100%",
 				}}
 			>
 				<img
 					style={{
-						width: "6rem",
-						height: "3rem",
+						width: "60%",
 						flexGrow: 0,
 					}}
 					src={SanitasLogo}
+					onClick={wrapWithNavigate(onGoBack)}
+					onKeyDown={wrapWithNavigate(onGoBack)}
 					alt="Logo Sanitas"
 				/>
+			</div>
+			<div
+				style={{
+					display: "flex",
+					padding: "1.5rem 0",
+					width: "100%",
+				}}
+			>
 				<div
 					style={{
 						paddingLeft: "0.8rem",
@@ -169,13 +150,11 @@ export default function DashboardSidebar({
 					<h1
 						style={{
 							fontFamily: fonts.titleFont,
-							fontWeight: "bold",
-							fontSize: "1.1rem",
-							paddingRight: "0.5rem",
-							paddingTop: "0.4rem",
+							fontSize: "0.9rem",
+							paddingBottom: ".4rem",
 						}}
 					>
-						{userInformation.displayName}
+						{displayName}
 					</h1>
 					<h2
 						style={{
@@ -184,7 +163,7 @@ export default function DashboardSidebar({
 							fontSize: "0.9rem",
 						}}
 					>
-						{userInformation.title}
+						Doctora
 					</h2>
 				</div>
 			</div>
