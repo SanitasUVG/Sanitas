@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import LoginView from ".";
+import { createEmptyStore } from "src/store.mjs";
 
 export default {
 	component: LoginView,
@@ -17,5 +18,7 @@ export default {
 };
 
 export const Default = {
-	args: {},
+	args: {
+		useStore: createEmptyStore(),
+	},
 };

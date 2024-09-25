@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { TraumatologicHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: TraumatologicHistory,
@@ -69,12 +70,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryWithData,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -84,12 +80,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryEmpty,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -99,12 +90,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryError,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

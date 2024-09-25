@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { AllergicHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: AllergicHistory,
@@ -89,12 +90,7 @@ export const WithData = {
 	args: {
 		getAllergicHistory: mockGetAllergicHistoryWithData,
 		updateAllergicHistory: mockUpdateAllergicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Allergologist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -103,12 +99,7 @@ export const EmptyData = {
 	args: {
 		getAllergicHistory: mockGetAllergicHistoryEmpty,
 		updateAllergicHistory: mockUpdateAllergicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Allergologist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -117,12 +108,7 @@ export const ErrorState = {
 	args: {
 		getAllergicHistory: mockGetAllergicHistoryError,
 		updateAllergicHistory: mockUpdateAllergicHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Allergologist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

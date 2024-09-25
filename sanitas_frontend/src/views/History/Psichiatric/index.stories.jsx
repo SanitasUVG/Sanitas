@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { PsichiatricHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: PsichiatricHistory,
@@ -127,12 +128,7 @@ export const WithData = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryWithData,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -141,12 +137,7 @@ export const EmptyData = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryEmpty,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -155,12 +146,7 @@ export const ErrorState = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryError,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

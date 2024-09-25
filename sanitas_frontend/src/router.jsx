@@ -114,10 +114,6 @@ export const PATIENT_FORM_NAV_PATHS = {
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
-	userInformation: {
-		displayName: "Pedrito Pérez",
-		title: "Test username",
-	},
 	onGoBack: (navigate) => {
 		navigate(NAV_PATHS.SEARCH_PATIENT);
 	},
@@ -221,6 +217,7 @@ const updateInfoView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
+		useStore={useStore}
 	>
 		<UpdateInfoView
 			getGeneralPatientInformation={getGeneralPatientInformation}
@@ -237,6 +234,7 @@ const updateInfoView = (
 
 const surgicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -252,6 +250,7 @@ const surgicalHistoryView = (
 
 const studentSurgicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -267,6 +266,7 @@ const studentSurgicalHistoryView = (
 
 const studentGeneralInformation = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -285,6 +285,7 @@ const studentGeneralInformation = (
 
 const traumatologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -300,6 +301,7 @@ const traumatologicalHistoryView = (
 
 const familiarHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -314,6 +316,7 @@ const familiarHistoryView = (
 
 const personalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -329,6 +332,7 @@ const personalHistoryView = (
 
 const studentPersonalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -344,6 +348,7 @@ const studentPersonalHistoryView = (
 
 const nonPathologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -359,6 +364,7 @@ const nonPathologicalHistoryView = (
 
 const studentNonPathologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -374,6 +380,7 @@ const studentNonPathologicalHistoryView = (
 
 const allergicHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -388,6 +395,7 @@ const allergicHistoryView = (
 
 const studentAllergicHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -402,6 +410,7 @@ const studentAllergicHistoryView = (
 
 const psichiatricHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -416,6 +425,7 @@ const psichiatricHistoryView = (
 
 const studentPsichiatricHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -430,6 +440,7 @@ const studentPsichiatricHistoryView = (
 
 const studentObGynHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -444,6 +455,7 @@ const studentObGynHistoryView = (
 
 const obgynHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -462,6 +474,7 @@ export const ROUTES = [
 		path: NAV_PATHS.SEARCH_PATIENT,
 		element: (
 			<RequireAuth
+				useStore={useStore}
 				getSession={IS_PRODUCTION ? getSession : mockGetSession}
 				path={NAV_PATHS.LOGIN_USER}
 			>
