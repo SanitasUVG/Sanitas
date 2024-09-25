@@ -289,6 +289,22 @@ Resources:
             RestApiId: !Ref SanitasAPI
 
   # This is a Lambda function config associated with the source code:
+  # update-traumatological-history.mjs
+  updateStudentTraumatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentTraumatologicalHistory/update-student-traumatological-history-patient.updateStudentTraumatologicalHistoryHandler
+      Description: Updates the traumatological history for a specific
+        patient from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-traumatological-history
+            Method: POST
+
+  # This is a Lambda function config associated with the source code:
   # update-student-allergic-history.mjs
   updateStudentAllergicHistoryHandler:
     Type: AWS::Serverless::Function

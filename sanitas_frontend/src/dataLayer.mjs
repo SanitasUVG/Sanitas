@@ -599,6 +599,68 @@ export const updateTraumatologicalHistory = async (
 };
 
 /**
+ * Updates the studentTraumatological history for a specific patient by sending a PUT request to the server.
+ * This function constructs a payload from the studentTraumatological events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} studentTraumatologicalEvents - An array of objects where each object contains details about a studentTraumatological event.
+ * @param {number} currentVersion - The current version of the studentTraumatological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentTraumatologicalHistory = async (
+	patientId,
+	traumatologicalEvents,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-traumatological-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			traumas: {
+				version: currentVersion,
+				data: traumatologicalEvents.map((event) => ({
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
+				})),
+			},
+		},
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
  * Fetches the surgical history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
