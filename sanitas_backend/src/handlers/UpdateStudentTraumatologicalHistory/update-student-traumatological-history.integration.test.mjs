@@ -67,7 +67,7 @@ describe("Update Traumatologic History integration tests", () => {
 			validateStatus: () => true,
 		});
 
-		expect(response.status).toBe(400);
+		expect(response.status).toBe(403);
 		expect(response.data.error).toBe(
 			"Invalid input: Students cannot update saved info.",
 		);
@@ -79,7 +79,7 @@ describe("Update Traumatologic History integration tests", () => {
 			validateStatus: () => true,
 		});
 
-		expect(response.status).toBe(400);
+		expect(response.status).toBe(403);
 		expect(response.data.error).toBe(
 			"Invalid input: Students cannot update saved info.",
 		);

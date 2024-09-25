@@ -852,33 +852,6 @@ export function mapToAPIPsychiatricHistory(dbData) {
 }
 
 /**
- * Function to compare the DB data to the request data.
- * @param {*[]} dbData
- * @returns {boolean} True if the request data edits/deletes dbData.
- */
-export function requestDataEditsDBData(requestData, dbData) {
-	let deletesData = false;
-	dbData.some((dbElem, i) => {
-		const requestElem = requestData[i];
-
-		Object.keys(dbElem).some((key) => {
-			if (Object.hasOwn(requestElem, key)) {
-				if (
-					dbElem[key] !== requestElem[key] &&
-					dbElem[key].localeCompare("") !== 0
-				) {
-					deletesData = true;
-					return deletesData;
-				}
-			}
-		});
-
-		return deletesData;
-	});
-	return deletesData;
-}
-
-/**
  * Checks if the requestArray contains all elements from the savedArray. It may or may not contain extra elements.
  *
  * The properties inside each array element will be compared using the `comparator` function.
