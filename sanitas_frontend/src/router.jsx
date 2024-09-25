@@ -207,9 +207,10 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY}`,
 		);
 	},
-	navigateToObstetricsStudent: () => (_navigate) => {
-		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
-		// TODO: Add Gineco...
+	navigateToObstetricsStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
+		);
 	},
 };
 
@@ -448,6 +449,7 @@ const studentObGynHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getObGynHistory={getGynecologicalHistory}
 			updateObGynHistory={updateStudentGynecologialHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -588,7 +590,7 @@ export const ROUTES = [
 		children: [
 			{
 				index: true,
-				element: <h1>WIP: Here goes the patient form!</h1>,
+				element: studentGeneralInformation,
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,

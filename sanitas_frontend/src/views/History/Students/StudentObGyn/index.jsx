@@ -9,12 +9,26 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import { useRef } from "react";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
-// export function ObGynHistory({
+/**
+ * @typedef {Object} StudentObGynHistoryProps
+ * @property {import("src/dataLayer.mjs").GetGeneralPatientInformationAPICall} getBirthdayPatientInfo
+ * @property {import("src/dataLayer.mjs").GetGynecologicalHistoryCallback} getObGynHistory
+ * @property {import("src/dataLayer.mjs").UpdateStudentGynecologialHistoryCallback} updateObGynHistory
+ * @property {import("src/store.mjs").UseStoreHook} useStore
+ * FIXME: Type to the props from student dashboard
+ * @property {Object} sidebarConfig
+ */
+
+/**
+ * @type {StudentObGynHistoryProps}
+ */
 export function StudentObGynHistory({
 	getBirthdayPatientInfo,
 	getObGynHistory,
 	updateObGynHistory,
+	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
@@ -47,12 +61,28 @@ export function StudentObGynHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
+				gap: "1rem",
 			}}
 		>
+			<div>
+				<div
+					style={{
+						width: "100%",
+						padding: "0 0 1 rem 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="ginecoobstetricos"
+					/>
+				</div>
+			</div>
+
 			<div
 				style={{
 					width: "100%",
