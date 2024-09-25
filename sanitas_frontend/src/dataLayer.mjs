@@ -1574,12 +1574,16 @@ export const updateStudentPsychiatricHistory = async (
 /**
  * Retrieves the gynecological history for a specific patient by making a GET request to the server.
  * It handles session validation and constructs the authorization header to perform the request.
+ * @callback GetGynecologicalHistoryCallback
  *
  * @param {string} patientId - The unique identifier for the patient.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
 
+/**
+ * @type {GetGynecologicalHistoryCallback}
+ */
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1662,10 +1666,15 @@ export const updateGynecologicalHistory = async (
  * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
  * This function constructs a payload from the gynecological history details provided and sends it to the server.
  *
+ * @callback UpdateStudentGynecologialHistoryCallback
  * @param {string} patientId - The unique identifier for the patient.
  * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
+ */
+
+/**
+ * @type {UpdateStudentGynecologialHistoryCallback}
  */
 export const updateStudentGynecologialHistory = async (
 	patientId,
