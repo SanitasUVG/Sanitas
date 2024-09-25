@@ -2,37 +2,7 @@ import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
-import { decodeJWT } from "utils/index.mjs";
-
-/**
- * Function to compare the DB data to the request data.
- * @param {*[]} dbData
- * @returns {boolean} True if the request data edits/deletes dbData.
- */
-
-function requestDataEditsDBData(requestData, dbData) {
-	let deletesData = false;
-	if (dbData.length <= requestData.length) {
-		dbData.some((dbElem, i) => {
-			const requestElem = requestData[i];
-			Object.keys(dbElem).some((key) => {
-				if (Object.hasOwn(requestElem, key)) {
-					if (
-						dbElem[key] !== requestElem[key] &&
-						dbElem[key].localeCompare("") !== 0
-					) {
-						deletesData = true;
-						return deletesData;
-					}
-				}
-			});
-			return deletesData;
-		});
-		return deletesData;
-	}
-	deletesData = true;
-	return deletesData;
-}
+import { decodeJWT, requestDataEditsDBData } from "utils/index.mjs";
 
 /**
  * Handles the HTTP POST request to update or create the traumatologic history for a specific patient.
