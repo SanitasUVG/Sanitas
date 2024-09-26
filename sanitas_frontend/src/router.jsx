@@ -42,6 +42,7 @@ import {
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
 	updateStudentPsychiatricHistory,
+	updateStudentTraumatologicalHistory,
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
@@ -58,6 +59,7 @@ import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
 import { StudentSurgicalHistory } from "./views/History/Students/StudentSurgical";
+import { StudentTraumatologicalHistory } from "./views/History/Students/StudentTraumatological";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
@@ -110,6 +112,7 @@ export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
 	STUDENT_GENERAL: "student-general",
 	STUDENT_OBGYN_HISTORY: "student-obgyn",
+	STUDENT_TRAUMATOLOGICAL_HISTORY: "student-traumatological",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -207,9 +210,10 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY}`,
 		);
 	},
-	navigateToObstetricsStudent: () => (_navigate) => {
-		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
-		// TODO: Add Gineco...
+	navigateToObstetricsStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
+		);
 	},
 };
 
@@ -448,6 +452,21 @@ const studentObGynHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getObGynHistory={getGynecologicalHistory}
 			updateObGynHistory={updateStudentGynecologialHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentTraumatologicalHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentTraumatologicalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getTraumatologicHistory={getTraumatologicalHistory}
+			updateTraumatologicalHistory={updateStudentTraumatologicalHistory}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -588,7 +607,7 @@ export const ROUTES = [
 		children: [
 			{
 				index: true,
-				element: <h1>WIP: Here goes the patient form!</h1>,
+				element: studentGeneralInformation,
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
@@ -617,6 +636,10 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY,
 				element: studentObGynHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_TRAUMATOLOGICAL_HISTORY,
+				element: studentTraumatologicalHistoryView,
 			},
 		],
 	},
