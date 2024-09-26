@@ -68,7 +68,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 			const fields = ["names", "surnames", "birthDate"];
 			const isValidCUI = cuiIsValid(patientData.cui);
 			if (isValidCUI.error) {
-				setUpdateError("El CUI debe contener exactamente 13 caracteres.");
+				setUpdateError("CUI inválido...");
 				return false;
 			}
 
