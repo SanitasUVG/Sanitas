@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import { MemoryRouter } from "react-router-dom";
 import DashboardSidebar from ".";
+import { createEmptyStore } from "src/store.mjs";
 
 export default {
 	title: "Components/DashboardSidebar",
@@ -32,4 +33,5 @@ Default.args = {
 		title: "Doctora UVG",
 	},
 	onGoBack: action("Go Back Clicked!"),
+	useStore: createEmptyStore(),
 };

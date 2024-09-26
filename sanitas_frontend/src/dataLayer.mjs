@@ -170,7 +170,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(false);
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -581,6 +581,68 @@ export const updateTraumatologicalHistory = async (
 
 	try {
 		const response = await axios.put(url, payload, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the studentTraumatological history for a specific patient by sending a PUT request to the server.
+ * This function constructs a payload from the studentTraumatological events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} studentTraumatologicalEvents - An array of objects where each object contains details about a studentTraumatological event.
+ * @param {number} currentVersion - The current version of the studentTraumatological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentTraumatologicalHistory = async (
+	patientId,
+	traumatologicalEvents,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-traumatological-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			traumas: {
+				version: currentVersion,
+				data: traumatologicalEvents.map((event) => ({
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
+				})),
+			},
+		},
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
 			headers: { Authorization: token, "Content-Type": "application/json" },
 		});
 		if (response.status !== 200) {
@@ -1624,12 +1686,16 @@ export const updateStudentPsychiatricHistory = async (
 /**
  * Retrieves the gynecological history for a specific patient by making a GET request to the server.
  * It handles session validation and constructs the authorization header to perform the request.
+ * @callback GetGynecologicalHistoryCallback
  *
  * @param {string} patientId - The unique identifier for the patient.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
 
+/**
+ * @type {GetGynecologicalHistoryCallback}
+ */
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1712,10 +1778,15 @@ export const updateGynecologicalHistory = async (
  * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
  * This function constructs a payload from the gynecological history details provided and sends it to the server.
  *
+ * @callback UpdateStudentGynecologialHistoryCallback
  * @param {string} patientId - The unique identifier for the patient.
  * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
+ */
+
+/**
+ * @type {UpdateStudentGynecologialHistoryCallback}
  */
 export const updateStudentGynecologialHistory = async (
 	patientId,
