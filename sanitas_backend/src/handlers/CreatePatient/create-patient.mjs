@@ -1,6 +1,7 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, cuiIsValid } from "utils/index.mjs";
+import { cuiIsValid } from "utils/cui.mjs";
+import { createResponse } from "utils/index.mjs";
 
 function checkValidInput(patientData) {
 	const isValidCUI = cuiIsValid(patientData.cui);
