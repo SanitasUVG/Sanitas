@@ -68,7 +68,7 @@ export default function UpdatePatientInfoView({
 	updateCollaboratorInformation,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	// const id = 2;
+	// const id = 1;
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
 		getCollaboratorInformation(id),
@@ -411,6 +411,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
+	/** @returns {PatientInfo}*/
 	const getResponseFromGET = () => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
@@ -738,7 +739,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 									})
 								}
 								style={inputStyles}
-								disabled={!editMode}
+								disabled={
+									!editMode ||
+									hasPropertyAndIsValid(responseFromGET, "contactPhone1")
+								}
 							/>
 						</div>
 					</Collapsable>
@@ -777,7 +781,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 								style={inputStyles}
 								disabled={
 									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactKinkship2")
+									hasPropertyAndIsValid(responseFromGET, "contactKinship2")
 								}
 							/>
 
