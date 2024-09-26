@@ -1,20 +1,19 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
-import { TraumatologicHistory } from ".";
-import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
+import { StudentTraumatologicalHistory } from ".";
 
 export default {
-	component: TraumatologicHistory,
+	component: StudentTraumatologicalHistory,
 	decorators: [
 		(Story) => (
-			<MemoryRouter initialEntries={["/traumatological-history"]}>
+			<MemoryRouter initialEntries={["/student-traumatological-history"]}>
 				<Routes>
-					<Route path="/traumatological-history" element={<Story />} />
+					<Route path="/student-traumatological-history" element={<Story />} />
 				</Routes>
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/TraumatologicHistory",
+	title: "Views/Antecedents/StudentTraumatologicHistory",
 };
 
 const dummyPatientId = 12345;
@@ -70,7 +69,12 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryWithData,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: {
+			userInformation: {
+				displayName: "Dr. John Smith",
+				title: "Cirujano",
+			},
+		},
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -80,7 +84,12 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryEmpty,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: {
+			userInformation: {
+				displayName: "Dr. John Smith",
+				title: "Cirujano",
+			},
+		},
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -90,7 +99,12 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getTraumatologicHistory: mockGetTraumatologicHistoryError,
 		updateTraumatologicHistory: mockUpdateTraumatologicHistory,
-		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		sidebarConfig: {
+			userInformation: {
+				displayName: "Dr. John Smith",
+				title: "Cirujano",
+			},
+		},
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
