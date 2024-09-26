@@ -1,4 +1,3 @@
-
 /**
  * Checks if the CUI is valid or not.
  * @param {string} cui - The CUI to check

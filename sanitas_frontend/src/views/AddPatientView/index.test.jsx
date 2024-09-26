@@ -48,7 +48,7 @@ describe("AddPatientView tests", () => {
 		);
 
 		const input = screen.getByPlaceholderText("CUI");
-		fireEvent.change(input, { target: { value: "1234567890123" } });
+		fireEvent.change(input, { target: { value: "2987944380208" } });
 		const namesInput = screen.getByPlaceholderText("Nombres");
 		fireEvent.change(namesInput, { target: { value: "Test" } });
 		const surnamesInput = screen.getByPlaceholderText("Apellidos");
@@ -82,7 +82,7 @@ describe("AddPatientView tests", () => {
 		);
 
 		const input = screen.getByPlaceholderText("CUI");
-		fireEvent.change(input, { target: { value: "1234567890123" } });
+		fireEvent.change(input, { target: { value: "2987944380208" } });
 		const namesInput = screen.getByPlaceholderText("Nombres");
 		fireEvent.change(namesInput, { target: { value: "Test" } });
 		const surnamesInput = screen.getByPlaceholderText("Apellidos");
@@ -97,7 +97,7 @@ describe("AddPatientView tests", () => {
 		await waitFor(() =>
 			expect(submitPatientData).toHaveBeenCalledWith(
 				expect.objectContaining({
-					cui: "1234567890123",
+					cui: "2987944380208",
 					names: "Test",
 					surnames: "User",
 					sex: true,
