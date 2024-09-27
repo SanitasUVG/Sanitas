@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 import { StudentPsichiatricHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -29,25 +30,6 @@ const Wrapper = ({ children }) => (
 		</Suspense>
 	</MemoryRouter>
 );
-
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
 
 describe("StudentPsichiatricHistory Component Tests", () => {
 	test("initial render and data fetching", async () => {
@@ -85,7 +67,7 @@ describe("StudentPsichiatricHistory Component Tests", () => {
 				<StudentPsichiatricHistory
 					getPsichiatricHistory={mockGetStudentPsichiatricHistory}
 					updatePsichiatricHistory={mockUpdateStudentPsichiatricHistory}
-					sidebarConfig={sidebarConfigMock}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

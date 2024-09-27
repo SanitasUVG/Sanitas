@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
 import { StudentPersonalHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -51,25 +52,6 @@ const mockGetStudentPersonalHistoryWithData = async (_id) => ({
 	},
 });
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
-
 const mockGetBirthdayPatientInfo = vi.fn(() =>
 	Promise.resolve({ result: { birthdate: "1990-01-01" } }),
 );
@@ -89,7 +71,7 @@ describe("StudentPersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentPersonalHistory={mockGetStudentPersonalHistoryWithData}
 					updateStudentPersonalHistory={mockUpdateStudentPersonalHistory}
-					sidebarConfig={sidebarConfigMock}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -130,7 +112,7 @@ describe("StudentPersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentPersonalHistory={mockGetStudentPersonalHistoryEmpty}
 					updateStudentPersonalHistory={mockUpdateStudentPersonalHistory}
-					sidebarConfig={sidebarConfigMock}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -162,7 +144,7 @@ describe("StudentPersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentPersonalHistory={mockGetStudentPersonalHistoryError}
 					updateStudentPersonalHistory={mockUpdateStudentPersonalHistory}
-					sidebarConfig={sidebarConfigMock}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -182,7 +164,7 @@ describe("StudentPersonalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentPersonalHistory={mockGetStudentPersonalHistoryWithData}
 					updateStudentPersonalHistory={mockUpdateStudentPersonalHistory}
-					sidebarConfig={sidebarConfigMock}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
