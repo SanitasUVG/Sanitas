@@ -33,10 +33,23 @@ const exampleCollaboratorData = {
 	area: "Admin",
 };
 
-/** @type {import("src/components/DashboardSidebar").UserInformation} */
-const exampleUserInformation = {
-	displayName: "Jennifer Bustamante",
-	title: "Doctora UVG",
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
 };
 
 describe("UpdateInfoView tests", () => {
@@ -64,7 +77,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={sidebarConfigMock}
 							/>
 						}
 					/>
@@ -117,7 +130,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={sidebarConfigMock}
 							/>
 						}
 					/>
@@ -161,7 +174,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={sidebarConfigMock}
 							/>
 						}
 					/>

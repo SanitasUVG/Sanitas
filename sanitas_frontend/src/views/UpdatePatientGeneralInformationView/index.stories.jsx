@@ -15,6 +15,7 @@ export default {
 			);
 		},
 	],
+	title: "Views/Antecedents/Student/GeneralStudent",
 };
 
 const examplePatientData = {
@@ -35,6 +36,25 @@ const examplePatientData = {
 	insuranceId: 12345,
 	birthdate: "1980-01-01",
 	phone: "555-1234",
+};
+
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
 };
 
 const mockGetGeneralPatientInformation = async (id) => {
@@ -85,12 +105,7 @@ export const WithPatientData = {
 		updateStudentPatientInformation: async (a) => ({ result: a }),
 		updateCollaboratorInformation: async (a) => ({ result: a }),
 		useStore: correctStore,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Jennifer Bustamante",
-				title: "Doctora UVG",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 	},
 };
 
@@ -106,11 +121,6 @@ export const ErrorState = {
 		updateStudentPatientInformation: async () => ({ error: "MockError" }),
 		updateCollaboratorInformation: async () => ({ error: "MockError" }),
 		useStore: incorrectStore,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Jennifer Bustamante",
-				title: "Doctora UVG",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 	},
 };

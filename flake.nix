@@ -148,7 +148,7 @@
                 };
                 Backend = {
                   command = startBackend;
-                  ready_log_line = "Running on http://127.0.0.1:";
+                  ready_log_line = "Running on http";
                   availability.restart = "exit_on_failure";
                 };
                 Test = {

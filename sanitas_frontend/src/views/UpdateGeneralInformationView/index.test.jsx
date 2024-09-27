@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import UpdateInfoView from "./index";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 const examplePatientData = {
 	id: 6969,
@@ -33,12 +34,6 @@ const exampleCollaboratorData = {
 	area: "Admin",
 };
 
-/** @type {import("src/components/DashboardSidebar").UserInformation} */
-const exampleUserInformation = {
-	displayName: "Jennifer Bustamante",
-	title: "Doctora UVG",
-};
-
 describe("UpdateInfoView tests", () => {
 	test("Displays patient information correctly", async () => {
 		const getGeneralPatientInformation = vi
@@ -64,7 +59,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -117,7 +112,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -161,7 +156,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={{ userInformation: exampleUserInformation }}
+								sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>

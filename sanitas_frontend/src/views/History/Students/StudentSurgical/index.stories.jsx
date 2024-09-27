@@ -22,6 +22,25 @@ const mockGetBirthdayPatientInfo = async (_id) => ({
 	result: { birthdate: "2000-02-11" },
 });
 
+const simulateNavigation = (path) => () =>
+	console.log(`Mock navigate to ${path}`);
+
+const sidebarConfigMock = {
+	navigateToGeneralStudent: simulateNavigation("/student-general"),
+	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
+	navigateToTraumatologicalStudent: simulateNavigation(
+		"/student-traumatological",
+	),
+	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
+	navigateToPersonalStudent: simulateNavigation("/student-personal"),
+	navigateToNonPathologicalStudent: simulateNavigation(
+		"/student-non-pathological",
+	),
+	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
+	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
+	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
+};
+
 const mockGetStudentSurgicalHistoryWithData = async (_id) => ({
 	result: {
 		medicalHistory: {
@@ -75,12 +94,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryWithData,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -90,12 +104,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryEmpty,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -105,12 +114,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentSurgicalHistory: mockGetStudentSurgicalHistoryError,
 		updateStudentSurgicalHistory: mockUpdateStudentSurgicalHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
+		sidebarConfig: sidebarConfigMock,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

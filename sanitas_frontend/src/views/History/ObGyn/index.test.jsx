@@ -9,6 +9,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 import { toast } from "react-toastify";
 import { ObGynHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => ({
 	toast: {
@@ -158,9 +159,7 @@ describe("ObGynHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{
-						userInformation: { displayName: "User Testing" },
-					}}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -194,9 +193,7 @@ describe("ObGynHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{
-						userInformation: { displayName: "User Testing" },
-					}}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -232,7 +229,7 @@ describe("ObGynHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryError}
 					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{ userInformation: { displayName: "User Testing" } }}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -259,9 +256,7 @@ describe("ObGynHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getObGynHistory={mockGetObGynHistoryWithData}
 					updateObGynHistory={mockUpdateObGynHistory}
-					sidebarConfig={{
-						userInformation: { displayName: "User Testing" },
-					}}
+					sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

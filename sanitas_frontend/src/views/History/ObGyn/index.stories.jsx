@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { ObGynHistory } from "src/views/History/ObGyn";
 import { createEmptyStore } from "src/store.mjs";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 // Mock functions and data
 const mockGetBirthdayPatientInfo = async () => ({
@@ -191,12 +192,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getObGynHistory: mockGetObGynHistoryWithData,
 		updateObGynHistory: mockUpdateObGynHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Ginecóloga",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -206,12 +202,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getObGynHistory: mockGetObGynHistoryEmpty,
 		updateObGynHistory: mockUpdateObGynHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Ginecóloga",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -221,12 +212,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getObGynHistory: mockGetObGynHistoryError,
 		updateObGynHistory: mockUpdateObGynHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Ginecóloga",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

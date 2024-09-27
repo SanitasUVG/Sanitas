@@ -396,7 +396,7 @@ export function mapToAPIFamilyHistory(dbData) {
  * It handles the transformation of nested data where applicable.
  *
  * @param {DBData} dbData - The raw database data containing fields for various medical conditions of a patient.
- * @returns {PersonalMedicalHistoryAPI}  A structured object containing the patientId and a detailed medicalHistory,
+ * @returns {PersonalMedicalHistory}  A structured object containing the patientId and a detailed medicalHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
 export function mapToAPIPersonalHistory(dbData) {
@@ -626,7 +626,7 @@ export function mapToAPINonPathologicalHistory(dbData) {
  * It handles the transformation of nested data where applicable.
  *
  * @param {DBData} dbData - The raw database data containing fields for various allergic conditions of a patient.
- * @returns {AllergicMedicalHistoryAPI} A structured object containing the patientId and a detailed allergicHistory,
+ * @returns {AllergicMedicalHistory} A structured object containing the patientId and a detailed allergicHistory,
  *                   where each condition is formatted according to the MedicalConditionData specification.
  */
 export function mapToAPIAllergicHistory(dbData) {
@@ -678,7 +678,7 @@ export function mapToAPIAllergicHistory(dbData) {
  * @property {GynecologicalIllnessEntry} medicacion_quistes_ovaricos_data - Data about ovarian cysts.
  * @property {GynecologicalIllnessEntry} medicacion_miomatosis_data - Data about uterine myomatosis.
  * @property {GynecologicalIllnessEntry} medicacion_endometriosis_data - Data about endometriosis.
- * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data- Data about other diagnosed conditions.
+ * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data - Data about other diagnosed conditions.
  * @property {GynecologicalSurgeryEntry[]} cirugia_quistes_ovaricos_data - Data about surgeries for ovarian cysts.
  * @property {GynecologicalSurgeryEntry} cirugia_histerectomia_data - Data about hysterectomy surgeries.
  * @property {GynecologicalSurgeryEntry} cirugia_esterilizacion_data - Data about sterilization surgeries.
@@ -856,26 +856,28 @@ export function mapToAPIPsychiatricHistory(dbData) {
  * @param {*[]} dbData
  * @returns {boolean} True if the request data edits/deletes dbData.
  */
+
 export function requestDataEditsDBData(requestData, dbData) {
 	let deletesData = false;
-
-	dbData.some((dbElem, i) => {
-		const requestElem = requestData[i];
-
-		Object.keys(dbElem).some((key) => {
-			if (requestElem.hasOwn(key)) {
-				if (
-					dbElem[key] !== requestElem[key] &&
-					dbElem[key].localeCompare("") !== 0
-				) {
-					deletesData = true;
-					return deletesData;
+	if (dbData.length <= requestData.length) {
+		dbData.some((dbElem, i) => {
+			const requestElem = requestData[i];
+			Object.keys(dbElem).some((key) => {
+				if (Object.hasOwn(requestElem, key)) {
+					if (
+						dbElem[key] !== requestElem[key] &&
+						dbElem[key].localeCompare("") !== 0
+					) {
+						deletesData = true;
+						return deletesData;
+					}
 				}
-			}
+			});
+			return deletesData;
 		});
-
 		return deletesData;
-	});
+	}
+	deletesData = true;
 	return deletesData;
 }
 
@@ -929,12 +931,13 @@ export function requestIsSubset(
 		return false;
 	});
 }
+
 /**
  * @typedef {Object} MedicalRecord
  * @property {string|null} medication - Name of the medication.
  * @property {string|null} dosage - Dose of the drug.
  * @property {string|null} frequency - Dosage frequency of the drug.
- **/
+ */
 
 /**
  * Checks for unauthorized changes to medical records.
@@ -959,6 +962,26 @@ export function checkForUnauthorizedChanges(newData, oldData) {
 }
 
 /**
+ * Checks if the student is trying to update fields that are already filled.
+ * @param {Object} newData - New data from the request.
+ * @param {Object} oldData - Existing data from the database.
+ * @returns {boolean} True if the new data tries to overwrite non-empty fields.
+ */
+export function checkForUnauthorizedChangesPathological(newData, oldData) {
+	return Object.keys(newData).some((key) => {
+		const newInfo = newData[key].data;
+		const oldInfo = oldData[key]?.data;
+		if (!oldInfo) return false; // If there was no old data, no unauthorized update is possible.
+
+		return Object.keys(newInfo).some((field) => {
+			const newValue = newInfo[field];
+			const oldValue = oldInfo[field];
+			return oldValue && newValue !== oldValue;
+		});
+	});
+}
+
+/**
  * Determines if a medical record is empty.
  * @param {MedicalRecord} item - The medical record to evaluate.
  * @returns {boolean} True if the record is empty.
@@ -978,7 +1001,7 @@ function isEmpty(item) {
  * @returns {boolean}True if the value is empty.
  */
 function isEmptyValue(value) {
-	return [null, "", undefined].includes(value);
+	return [null, "", undefined, "-", 0, false].includes(value);
 }
 
 /**

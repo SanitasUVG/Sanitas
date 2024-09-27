@@ -72,7 +72,7 @@ describe("Search Patient view UI tests", () => {
 		);
 		const searchBtn = await waitFor(() => dom.getByText("Buscar Paciente"));
 
-		fireEvent.change(searchElem, { target: { value: "3284834428" } });
+		fireEvent.change(searchElem, { target: { value: "Flavio" } });
 		fireEvent.click(searchBtn);
 
 		await waitFor(() => {
@@ -114,7 +114,7 @@ describe("Search Patient view UI tests", () => {
 		);
 		const searchBtn = await waitFor(() => dom.getByText("Buscar Paciente"));
 
-		fireEvent.change(searchElem, { target: { value: "2348234890" } });
+		fireEvent.change(searchElem, { target: { value: "Flavio" } });
 		fireEvent.click(searchBtn);
 
 		await waitFor(() => {

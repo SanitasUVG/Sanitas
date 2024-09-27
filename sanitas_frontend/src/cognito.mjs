@@ -130,7 +130,13 @@ export async function mockGetSession(isDoctor = true) {
 	const patientJWT =
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dWRlbnRAZ21haWwuY29tIn0.FbVOS-5cuUnrdvoyyMmroGgorO5t9c1_SFR4RHqSkN8";
 	const jwtToken = isDoctor ? doctorJWT : patientJWT;
-	return { result: { isValid: () => true, idToken: { jwtToken } } };
+	return {
+		result: {
+			isValid: () => true,
+			idToken: { jwtToken },
+			getAccessToken: () => ({ payload: { email: "emailrandom@gmail.com" } }),
+		},
+	};
 }
 
 /**

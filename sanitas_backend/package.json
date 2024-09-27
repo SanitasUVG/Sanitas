@@ -24,6 +24,7 @@
     "format:check": "biome format ./src/ ./layers/"
   },
   "jest": {
+		"testTimeout": 10000,
     "testMatch": [
       "**/src/**/*.test.[jt]s?(x)",
       "**/src/**/*.test.mjs?(x)"

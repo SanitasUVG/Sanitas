@@ -16,6 +16,15 @@ import { create } from "zustand";
  *
  * @property {number} selectedPatientId
  * @property {(newId: number) => void} setSelectedPatientId
+ *
+ * @property {boolean} isWoman
+ * @property {(newIsWoman: boolean) => void} setIsWoman
+ *
+ * @property {string[]} prefixesWithData
+ * @property {(newPrefixesWithData: string[]) => void} setPrefixesWithData
+ *
+ * @property {string} displayName
+ * @property {(newDisplayName: string) => void} setDisplayName
  */
 
 /**
@@ -35,7 +44,7 @@ export const createEmptyStore = (defaultStoreValues) => {
 		searchQuery: {
 			query: "",
 			// NOTE: This is the default search term
-			type: "Carnet",
+			type: "Nombres",
 		},
 
 		setSearchQuery: (query, type) =>
@@ -49,6 +58,21 @@ export const createEmptyStore = (defaultStoreValues) => {
 		selectedPatientId: 0,
 		setSelectedPatientId: (newId) => {
 			set({ selectedPatientId: newId });
+		},
+
+		isWoman: true,
+		setIsWoman: (isWoman) => {
+			set({ isWoman });
+		},
+
+		prefixesWithData: [],
+		setPrefixesWithData: (prefixesWithData) => {
+			set({ prefixesWithData });
+		},
+
+		displayName: "correorandom@gmail.com",
+		setDisplayName: (displayName) => {
+			set({ displayName });
 		},
 
 		...defaultStoreValues,
