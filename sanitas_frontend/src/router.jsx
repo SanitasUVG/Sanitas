@@ -38,6 +38,7 @@ import {
 	updateAllergicHistory,
 	updateStudentAllergicHistory,
 	updateStudentPersonalHistory,
+	updateStudentFamilyHistory,
 	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
@@ -68,6 +69,7 @@ import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
 import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic";
 import { StudentPersonalHistory } from "./views/History/Students/StudentPersonal";
+import { StudentFamiliarHistory } from "./views/History/Students/StudentFamiliar";
 import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
 import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
@@ -113,6 +115,7 @@ export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_GENERAL: "student-general",
 	STUDENT_OBGYN_HISTORY: "student-obgyn",
 	STUDENT_TRAUMATOLOGICAL_HISTORY: "student-traumatological",
+	STUDENT_FAMILIAR_HISTORY: "student-familiar",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
@@ -186,9 +189,10 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
 		// TODO: Add Trauma...
 	},
-	navigateToFamiliarStudent: () => (_navigate) => {
-		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
-		// TODO: Add Familiar...
+	navigateToFamiliarStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_FAMILIAR_HISTORY}`,
+		);
 	},
 	navigateToPersonalStudent: () => (navigate) => {
 		navigate(
@@ -313,6 +317,21 @@ const familiarHistoryView = (
 			getFamiliarHistory={getFamilyHistory}
 			updateFamiliarHistory={updateFamilyHistory}
 			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentFamiliarHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentFamiliarHistory
+			getStudentFamilyHistory={getFamilyHistory}
+			updateStudentFamilyHistory={updateStudentFamilyHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -640,6 +659,10 @@ export const ROUTES = [
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_TRAUMATOLOGICAL_HISTORY,
 				element: studentTraumatologicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_FAMILIAR_HISTORY,
+				element: studentFamiliarHistoryView,
 			},
 		],
 	},
