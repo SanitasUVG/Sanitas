@@ -66,7 +66,7 @@ export function StudentFamiliarHistory({
 				>
 					<StudentDashboardTopbar
 						{...sidebarConfig}
-						activeSectionProp="personales"
+						activeSectionProp="familiares"
 					/>
 				</div>
 				<div
@@ -100,7 +100,7 @@ export function StudentFamiliarHistory({
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
 								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
+								paddingBottom: "0.5rem",
 							}}
 						>
 							{" "}
