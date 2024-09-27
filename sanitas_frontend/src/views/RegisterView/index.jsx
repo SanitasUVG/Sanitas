@@ -9,6 +9,8 @@ import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
+import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} RegisterViewProps
@@ -24,6 +26,8 @@ export default function RegisterView({ registerUser }) {
 		width: "100%",
 		padding: ".8rem",
 	};
+
+	const { width, height } = useWindowSize();
 
 	const [showPopup, setShowPopup] = useState(false);
 
@@ -288,7 +292,7 @@ export default function RegisterView({ registerUser }) {
 					justifyItems: "center",
 				}}
 			>
-				{showPopup && (
+				{!showPopup && (
 					<div
 						style={{
 							position: "fixed",
@@ -306,17 +310,20 @@ export default function RegisterView({ registerUser }) {
 						<div
 							style={{
 								backgroundColor: "white",
-								padding: "20px",
-								borderRadius: "10px",
+								padding: adjustWidth(width, "1.25rem"),
+								borderRadius: adjustHeight(height, "0.625rem"),
 								textAlign: "center",
 								width: "30%",
-								height: "30%",
+								height: adjustHeight(height, "25rem"),
 								fontFamily: fonts.textFont,
 								fontSize: fontSize.textSize,
 								display: "flex",
 								flexDirection: "column",
-								paddingLeft: "4rem",
-								paddingRight: "4rem",
+								paddingLeft: adjustWidth(width, "4rem"),
+								paddingRight: adjustWidth(width, "4rem"),
+								justifyContent: "center",
+								alignContent: "center",
+								alignItems: "center",
 							}}
 						>
 							<h1
@@ -324,8 +331,6 @@ export default function RegisterView({ registerUser }) {
 									textAlign: "center",
 									fontFamily: fonts.titleFont,
 									color: colors.titleText,
-									paddingBottom: "1rem",
-									paddingTop: "1.75rem",
 								}}
 							>
 								¡Verifica tu cuenta!
@@ -334,8 +339,8 @@ export default function RegisterView({ registerUser }) {
 								style={{
 									textAlign: "center",
 									fontSize: fontSize.textSize,
-									paddingTop: "1rem",
-									paddingBottom: "2rem",
+									paddingTop: adjustHeight(height, "1rem"),
+									paddingBottom: adjustHeight(height, "2rem"),
 								}}
 							>
 								Hemos enviado un correo para confirmar tu usuario, por favor
