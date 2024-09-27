@@ -324,6 +324,7 @@ const familiarHistoryView = (
 
 const studentFamiliarHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
