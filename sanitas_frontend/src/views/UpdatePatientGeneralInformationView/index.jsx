@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -13,16 +13,6 @@ import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
 import Collapsable from "src/components/Collapsable";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
-import { createRefreshSignal } from "src/utils/refreshHook";
-
-/**
- * Checks if the given property exists and is not a null value inside the object.
- * @param {*} object - The object that should have the property
- * @param {string} property - The property to check inside the object
- * @returns {boolean} True if it exists and is not null, false otherwise.
- */
-const hasPropertyAndIsValid = (object, property) =>
-	Object.hasOwn(object, property) && object[property] !== null;
 
 /**
  * @typedef {Object} PatientInfo
@@ -69,24 +59,13 @@ export default function UpdatePatientInfoView({
 	updateCollaboratorInformation,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	// const id = 1;
-	const [refreshSignal, triggerRefresh] = createRefreshSignal();
-	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
-	const [generalResource, collaboratorResource, studentResource] = useMemo(
-		() =>
-			[
-				getGeneralPatientInformation(id),
-				getCollaboratorInformation(id),
-				getStudentPatientInformation(id),
-			].map((s) => WrapPromise(s)),
-		[
-			getGeneralPatientInformation,
-			getCollaboratorInformation,
-			getStudentPatientInformation,
-			id,
-			refreshSignal,
-		],
-	);
+	const setIsWoman = useStore((s) => s.setIsWoman);
+	//const id = 1;
+	const [generalResource, collaboratorResource, studentResource] = [
+		getGeneralPatientInformation(id),
+		getCollaboratorInformation(id),
+		getStudentPatientInformation(id),
+	].map((s) => WrapPromise(s));
 
 	return (
 		<div
@@ -149,17 +128,15 @@ export default function UpdatePatientInfoView({
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
-						triggerRefresh={triggerRefresh}
+						setIsWoman={setIsWoman}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
 						updateData={updateCollaboratorInformation}
-						triggerRefresh={triggerRefresh}
 					/>
 					<UpdateStudentInformationSection
 						getData={studentResource}
 						updateData={updateStudentPatientInformation}
-						triggerRefresh={triggerRefresh}
 					/>
 				</Suspense>
 			</div>
@@ -171,17 +148,12 @@ export default function UpdatePatientInfoView({
  * @typedef {Object} UpdateColaboratorInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
- * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
  * @param {UpdateColaboratorInformationSectionProps} props
  */
-function UpdateColaboratorInformationSection({
-	getData,
-	updateData,
-	triggerRefresh,
-}) {
+function UpdateColaboratorInformationSection({ getData, updateData }) {
 	const styles = {
 		form: {
 			padding: "3rem 2rem",
@@ -241,7 +213,6 @@ function UpdateColaboratorInformationSection({
 	};
 
 	const response = getData.read();
-	const responseFromGET = response?.result;
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
@@ -261,7 +232,6 @@ function UpdateColaboratorInformationSection({
 			return;
 		}
 
-		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
@@ -314,9 +284,7 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Código"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "code")
-						}
+						disabled={!editMode}
 					/>
 				</div>
 
@@ -337,9 +305,7 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Área"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "area")
-						}
+						disabled={!editMode}
 					/>
 				</div>
 			</div>
@@ -351,19 +317,13 @@ function UpdateColaboratorInformationSection({
  * @typedef {Object} UpdateGeneralInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateGeneralPatientInformationAPICall} updateData
- * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
-// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: In the future we should probably make it simpler...
-function UpdateGeneralInformationSection({
-	getData,
-	updateData,
-	triggerRefresh,
-}) {
+function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -438,15 +398,17 @@ function UpdateGeneralInformationSection({
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
-	/** @returns {PatientInfo}*/
 	const getResponseFromGET = () => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
-	const responseFromGET = getResponseFromGET();
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
 	const [patientData, setPatientData] = useState(getResponseFromGET());
+
+	useEffect(() => {
+		setIsWoman(patientData.isWoman);
+	}, [patientData, setIsWoman]);
 
 	if (response.error) {
 		return (
@@ -477,7 +439,6 @@ function UpdateGeneralInformationSection({
 			return;
 		}
 
-		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
@@ -546,7 +507,7 @@ function UpdateGeneralInformationSection({
 							}
 							placeholder="Nombres"
 							style={inputStyles}
-							disabled={true}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -560,7 +521,7 @@ function UpdateGeneralInformationSection({
 							}
 							placeholder="CUI"
 							style={inputStyles}
-							disabled={true}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -582,7 +543,7 @@ function UpdateGeneralInformationSection({
 								onChange={() =>
 									setPatientData({ ...patientData, isWoman: true })
 								}
-								disabled={true}
+								disabled={!editMode}
 							/>
 							<RadioInput
 								type="radio"
@@ -593,7 +554,7 @@ function UpdateGeneralInformationSection({
 								onChange={() =>
 									setPatientData({ ...patientData, isWoman: false })
 								}
-								disabled={true}
+								disabled={!editMode}
 							/>
 						</div>
 					</div>
@@ -607,7 +568,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, birthdate: e.target.value })
 							}
 							style={inputStyles}
-							disabled={true}
+							disabled={!editMode}
 						/>
 					</div>
 					<div style={inputContainerStyles}>
@@ -615,6 +576,7 @@ function UpdateGeneralInformationSection({
 						<DropdownMenu
 							options={dropdownOptions}
 							value={patientData.bloodType}
+							readOnly={!editMode}
 							onChange={(e) =>
 								setPatientData({ ...patientData, bloodType: e.target.value })
 							}
@@ -622,9 +584,7 @@ function UpdateGeneralInformationSection({
 								container: { width: "90%" },
 								select: { height: "3rem" },
 							}}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "bloodType")
-							}
+							disabled={!editMode}
 						/>
 					</div>
 				</div>
@@ -640,7 +600,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, lastNames: e.target.value })
 							}
 							style={inputStyles}
-							disabled={true}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -653,9 +613,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, email: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "email")
-							}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -668,9 +626,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, phone: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "phone")
-							}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -683,9 +639,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, address: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "address")
-							}
+							disabled={!editMode}
 						/>
 					</div>
 
@@ -698,9 +652,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "insurance")
-							}
+							disabled={!editMode}
 						/>
 					</div>
 				</div>
@@ -733,10 +685,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactName1")
-								}
+								disabled={!editMode}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -750,10 +699,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactKinship1")
-								}
+								disabled={!editMode}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -767,10 +713,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactPhone1")
-								}
+								disabled={!editMode}
 							/>
 						</div>
 					</Collapsable>
@@ -790,10 +733,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactName2")
-								}
+								disabled={!editMode}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -807,10 +747,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactKinship2")
-								}
+								disabled={!editMode}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -824,10 +761,7 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactPhone2")
-								}
+								disabled={!editMode}
 							/>
 						</div>
 					</Collapsable>
@@ -841,17 +775,12 @@ function UpdateGeneralInformationSection({
  * @typedef {Object} UpdateStudentInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource <*>} getData
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
- * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
  * @param {UpdateStudentInformationSectionProps} props
  */
-function UpdateStudentInformationSection({
-	getData,
-	updateData,
-	triggerRefresh,
-}) {
+function UpdateStudentInformationSection({ getData, updateData }) {
 	const styles = {
 		form: {
 			padding: "3rem 2rem",
@@ -886,7 +815,6 @@ function UpdateStudentInformationSection({
 
 	// Fetch the student information
 	const response = getData.read();
-	const responseFromGET = response?.result;
 
 	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
@@ -906,7 +834,6 @@ function UpdateStudentInformationSection({
 			return;
 		}
 
-		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
@@ -965,9 +892,7 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carnet"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "carnet")
-						}
+						disabled={!editMode}
 					/>
 				</div>
 
@@ -988,9 +913,7 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carrera"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "career")
-						}
+						disabled={!editMode}
 					/>
 				</div>
 			</div>

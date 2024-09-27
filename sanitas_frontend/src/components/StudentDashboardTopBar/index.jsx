@@ -23,6 +23,7 @@ import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
  * @property {NavigationHandler} navigateToPsiquiatricStudent - Function to navigate to the psychiatric student information section.
  * @property {NavigationHandler} navigateToSurgicalStudent - Function to navigate to the surgical student information section.
  * @property {NavigationHandler} navigateToTraumatologicalStudent - Function to navigate to the traumatological student information section.
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
@@ -43,10 +44,12 @@ export default function StudentDashboardTopbar({
 	navigateToPsiquiatricStudent,
 	navigateToSurgicalStudent,
 	navigateToTraumatologicalStudent,
+	useStore,
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
 	const { pathname } = useLocation();
+	const isWoman = useStore((s) => s.isWoman);
 
 	useEffect(() => {
 		const activeKey = sections.find((section) =>
@@ -104,7 +107,11 @@ export default function StudentDashboardTopbar({
 		{
 			key: "ginecoobstetricos",
 			text: "Ginecoobstétricos",
-			navigateTo: navigateToObstetricsStudent(),
+			navigateTo: () => {
+				if (isWoman) {
+					navigateToObstetricsStudent(navigate);
+				}
+			},
 		},
 		{
 			key: "no_patologicos",

@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -60,6 +60,7 @@ export default function UpdateInfoView({
 	updateCollaboratorInformation,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
+	const setIsWoman = useStore((s) => s.setIsWoman);
 
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
@@ -93,6 +94,7 @@ export default function UpdateInfoView({
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
+						setIsWoman={setIsWoman}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
@@ -286,7 +288,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
-function UpdateGeneralInformationSection({ getData, updateData }) {
+function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -368,6 +370,10 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
 	const [patientData, setPatientData] = useState(formatResponse(response));
+
+	useEffect(() => {
+		setIsWoman(patientData.isWoman);
+	}, [patientData, setIsWoman]);
 
 	if (response.error) {
 		return (
