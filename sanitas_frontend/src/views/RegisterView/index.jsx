@@ -292,7 +292,7 @@ export default function RegisterView({ registerUser }) {
 					justifyItems: "center",
 				}}
 			>
-				{!showPopup && (
+				{showPopup && (
 					<div
 						style={{
 							position: "fixed",
