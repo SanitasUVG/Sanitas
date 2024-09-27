@@ -107,9 +107,10 @@ export default function StudentDashboardTopbar({
 		{
 			key: "ginecoobstetricos",
 			text: "Ginecoobstétricos",
-			navigateTo: () => {
+			navigateTo: (navigate) => {
 				if (isWoman) {
-					navigateToObstetricsStudent(navigate);
+					console.log("Intentando navegar...");
+					navigateToObstetricsStudent()(navigate);
 				}
 			},
 		},
