@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -13,6 +13,7 @@ import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
 import Collapsable from "src/components/Collapsable";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import { createRefreshSignal } from "src/utils/refreshHook";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -69,11 +70,23 @@ export default function UpdatePatientInfoView({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	// const id = 1;
-	const [generalResource, collaboratorResource, studentResource] = [
-		getGeneralPatientInformation(id),
-		getCollaboratorInformation(id),
-		getStudentPatientInformation(id),
-	].map((s) => WrapPromise(s));
+	const [refreshSignal, triggerRefresh] = createRefreshSignal();
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const [generalResource, collaboratorResource, studentResource] = useMemo(
+		() =>
+			[
+				getGeneralPatientInformation(id),
+				getCollaboratorInformation(id),
+				getStudentPatientInformation(id),
+			].map((s) => WrapPromise(s)),
+		[
+			getGeneralPatientInformation,
+			getCollaboratorInformation,
+			getStudentPatientInformation,
+			id,
+			refreshSignal,
+		],
+	);
 
 	return (
 		<div
@@ -136,14 +149,17 @@ export default function UpdatePatientInfoView({
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
+						triggerRefresh={triggerRefresh}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
 						updateData={updateCollaboratorInformation}
+						triggerRefresh={triggerRefresh}
 					/>
 					<UpdateStudentInformationSection
 						getData={studentResource}
 						updateData={updateStudentPatientInformation}
+						triggerRefresh={triggerRefresh}
 					/>
 				</Suspense>
 			</div>
@@ -155,12 +171,17 @@ export default function UpdatePatientInfoView({
  * @typedef {Object} UpdateColaboratorInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateData
+ * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
  * @param {UpdateColaboratorInformationSectionProps} props
  */
-function UpdateColaboratorInformationSection({ getData, updateData }) {
+function UpdateColaboratorInformationSection({
+	getData,
+	updateData,
+	triggerRefresh,
+}) {
 	const styles = {
 		form: {
 			padding: "3rem 2rem",
@@ -240,6 +261,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 			return;
 		}
 
+		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
@@ -329,6 +351,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @typedef {Object} UpdateGeneralInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource<*>} getData
  * @property {import("src/dataLayer.mjs").UpdateGeneralPatientInformationAPICall} updateData
+ * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
@@ -336,7 +359,11 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @returns {JSX.Element}
  */
 // biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: In the future we should probably make it simpler...
-function UpdateGeneralInformationSection({ getData, updateData }) {
+function UpdateGeneralInformationSection({
+	getData,
+	updateData,
+	triggerRefresh,
+}) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -450,6 +477,7 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 			return;
 		}
 
+		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
@@ -813,12 +841,17 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
  * @typedef {Object} UpdateStudentInformationSectionProps
  * @property {import("src/utils/promiseWrapper").SuspenseResource <*>} getData
  * @property {import("src/dataLayer.mjs").UpdateStudentPatientInformationAPICall} updateData
+ * @property {import("src/utils/refreshHook").TriggerRefreshSignalCallback} triggerRefresh
  */
 
 /**
  * @param {UpdateStudentInformationSectionProps} props
  */
-function UpdateStudentInformationSection({ getData, updateData }) {
+function UpdateStudentInformationSection({
+	getData,
+	updateData,
+	triggerRefresh,
+}) {
 	const styles = {
 		form: {
 			padding: "3rem 2rem",
@@ -873,6 +906,7 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 			return;
 		}
 
+		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
