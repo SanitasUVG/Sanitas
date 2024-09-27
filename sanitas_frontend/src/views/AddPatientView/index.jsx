@@ -19,12 +19,16 @@ import WrapPromise from "src/utils/promiseWrapper";
  */
 
 /**
+ * @typedef {Object} AddPatientViewProps
+ * @property {import("src/store.mjs").UseStoreHook} props.useStore
+ * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} props.submitPatientData - Function to submit patient data.
+ */
+
+/**
  * Component for adding new patients.
  * Uses navigation state to pre-fill the CUI if available.
  *
  * @param {AddPatientViewProps} props - Component properties.
- * @param {import("src/store.mjs").UseStoreHook} props.useStore
- * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
  */
 export function AddPatientView({ submitPatientData, useStore }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);

@@ -58,14 +58,26 @@ describe("Update Patient Integration tests (Patient POV)", () => {
 
 	test("Can't modify existing data", async () => {
 		const patientData = generateValidUpdate();
-		patientData.names = "Juan desactualizado";
 
-		const response = await axios.post(API_URL, patientData, {
+		// Can't modify names...
+		patientData.names = "Juan desactualizado";
+		let response = await axios.post(API_URL, patientData, {
 			headers: validHeaders,
 			validateStatus: () => true,
 		});
 
-		expect(response).toBeDefined();
+		expect(response.status).toBe(403);
+		expect(response.data.error).toBe(
+			"Invalid input: Students cannot update saved info.",
+		);
+
+		// Can't modify names...
+		patientData.isWoman = false;
+		response = await axios.post(API_URL, patientData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
 		expect(response.status).toBe(403);
 		expect(response.data.error).toBe(
 			"Invalid input: Students cannot update saved info.",
