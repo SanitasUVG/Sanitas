@@ -155,15 +155,22 @@ export default function StudentDashboardTopbar({
 					type="button"
 					key={section.key}
 					onClick={() => {
-						if (section.key !== "ginecoobstetricos" || isWoman) {
-							setActiveSection(section.key);
-							section.navigateTo(navigate);
+						if (section.key === "ginecoobstetricos" && !isWoman) {
+							return;
 						}
+
+						setActiveSection(section.key);
+						section.navigateTo(navigate);
 					}}
 					style={{
 						backgroundColor:
 							activeSection === section.key ? "#0F6838" : "#E6E7E7",
-						color: activeSection === section.key ? "white" : "black",
+						color:
+							activeSection === section.key
+								? "white"
+								: section.key === "ginecoobstetricos" && !isWoman
+									? colors.darkerGrey
+									: "black",
 						padding: "0.7rem",
 						border: "none",
 						cursor: "pointer",
