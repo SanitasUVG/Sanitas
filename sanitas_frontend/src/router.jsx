@@ -219,6 +219,7 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
 		);
 	},
+	useStore: useStore,
 };
 
 const updateInfoView = (

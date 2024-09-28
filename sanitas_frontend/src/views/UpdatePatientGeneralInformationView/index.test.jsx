@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import UpdateInfoView from "./index";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 const examplePatientData = {
 	id: 6969,
@@ -33,25 +34,6 @@ const exampleCollaboratorData = {
 	area: "Admin",
 };
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
-
 describe("UpdateInfoView tests", () => {
 	test("Displays patient information correctly", async () => {
 		const getGeneralPatientInformation = vi
@@ -77,7 +59,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={sidebarConfigMock}
+								sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -130,7 +112,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={sidebarConfigMock}
+								sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>
@@ -174,7 +156,7 @@ describe("UpdateInfoView tests", () => {
 								getCollaboratorInformation={getCollaboratorInformation}
 								updateGeneralPatientInformation={() => {}}
 								useStore={useStore}
-								sidebarConfig={sidebarConfigMock}
+								sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 							/>
 						}
 					/>

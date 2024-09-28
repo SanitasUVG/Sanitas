@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -69,6 +69,7 @@ export default function UpdatePatientInfoView({
 	updateCollaboratorInformation,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
+	const setIsWoman = useStore((s) => s.setIsWoman);
 	// const id = 1;
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
@@ -150,6 +151,7 @@ export default function UpdatePatientInfoView({
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
 						triggerRefresh={triggerRefresh}
+						setIsWoman={setIsWoman}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
@@ -363,6 +365,7 @@ function UpdateGeneralInformationSection({
 	getData,
 	updateData,
 	triggerRefresh,
+	setIsWoman,
 }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
@@ -447,6 +450,10 @@ function UpdateGeneralInformationSection({
 
 	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
 	const [patientData, setPatientData] = useState(getResponseFromGET());
+
+	useEffect(() => {
+		setIsWoman(patientData.isWoman);
+	}, [patientData, setIsWoman]);
 
 	if (response.error) {
 		return (

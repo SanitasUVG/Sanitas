@@ -69,6 +69,7 @@ export default function DashboardSidebar({
 	const prefixesWithData = useStore((s) => s.prefixesWithData);
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
 	const displayName = useStore((s) => s.displayName);
+	const isWoman = useStore((s) => s.isWoman);
 
 	useEffect(() => {
 		const loadPrefixes = async () => {
@@ -241,7 +242,7 @@ export default function DashboardSidebar({
 				<TextIconButton
 					icon={womanicon}
 					text="Ginecoobstétricos"
-					onClick={wrapWithNavigate(navigateToObstetrics)}
+					onClick={isWoman ? wrapWithNavigate(navigateToObstetrics) : () => {}}
 					style={genStyleWithPrefix("ag")}
 					iconStyle={genIconStyleWithPrefix("ag")}
 				/>
