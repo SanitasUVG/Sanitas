@@ -109,7 +109,6 @@ export default function StudentDashboardTopbar({
 			text: "Ginecoobstétricos",
 			navigateTo: (navigate) => {
 				if (isWoman) {
-					console.log("Intentando navegar...");
 					navigateToObstetricsStudent()(navigate);
 				}
 			},
@@ -156,8 +155,10 @@ export default function StudentDashboardTopbar({
 					type="button"
 					key={section.key}
 					onClick={() => {
-						setActiveSection(section.key);
-						section.navigateTo(navigate);
+						if (section.key !== "ginecoobstetricos" || isWoman) {
+							setActiveSection(section.key);
+							section.navigateTo(navigate);
+						}
 					}}
 					style={{
 						backgroundColor:
