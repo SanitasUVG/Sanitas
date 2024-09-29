@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
+import { cuiIsValid } from "src/utils/cui";
 
 /**
  * @typedef {Object} LinkPatientViewProps
@@ -21,7 +22,7 @@ export function LinkPatientView({ linkAccount }) {
 	const [cui, setCui] = useState("");
 
 	const isValidCUI = (cui) => {
-		if (cui.trim().length !== 13) {
+		if (cuiIsValid(cui).error) {
 			return false;
 		}
 
