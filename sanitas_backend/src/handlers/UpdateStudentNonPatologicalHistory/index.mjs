@@ -7,10 +7,7 @@ import {
 	checkForUnauthorizedChangesPathological,
 } from "utils/index.mjs";
 
-export const updateStudentNonPathologicalHistoryHandler = async (
-	event,
-	context,
-) => {
+export const handler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("POST");
 
