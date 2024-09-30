@@ -4,13 +4,26 @@ import { colors } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import Throbber from "../Throbber";
 
-export default function RequireAuth({ children, getSession, path }) {
+/**
+ * @typedef {Object} RequireAuthProps
+ * @property {import("src/cognito.mjs").CognitoGetSessionCallback} getSession
+ * @property {string} path - The path to navigate when the session is invalid.
+ * @property {*} children - The components to display when the session is valid.
+ * @property {import("src/store.mjs").UseStoreHook} useStore - The useStore hook.
+ */
+
+/**
+ * @param {RequireAuthProps} props
+ */
+export default function RequireAuth({ children, getSession, path, useStore }) {
 	const [isRedirecting, setIsRedirecting] = useState(false);
 	const navigate = useNavigate();
 	const sessionResource = WrapPromise(getSession());
+	const setDisplayName = useStore((s) => s.setDisplayName);
 
 	const Child = () => {
 		const response = sessionResource.read();
+		/**@type {import("amazon-cognito-identity-js").CognitoUserSession}*/
 		const session = response.result;
 
 		const sessionIsValid = response.error ? false : session.isValid();
@@ -25,6 +38,9 @@ export default function RequireAuth({ children, getSession, path }) {
 			}, 4000);
 		} else {
 			setIsRedirecting(false);
+			setDisplayName(
+				session.getAccessToken().payload.email ?? "no-username-found",
+			);
 		}
 
 		return !sessionIsValid ? (
@@ -64,7 +80,7 @@ export default function RequireAuth({ children, getSession, path }) {
 
 	const Loading = () => {
 		return (
-			<div style={{ width: "100%", height: "100%" }}>
+			<div style={{ width: "100%", height: "100vh" }}>
 				<Throbber loadingMessage="Cargando..." />
 			</div>
 		);

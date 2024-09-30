@@ -286,6 +286,57 @@ Resources:
           Properties:
             Path: /patient/student-surgical-history
             Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  # This is a Lambda function config associated with the source code:
+  # update-traumatological-history.mjs
+  updateStudentTraumatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentTraumatologicalHistory/update-student-traumatological-history-patient.updateStudentTraumatologicalHistoryHandler
+      Description: Updates the traumatological history for a specific
+        patient from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-traumatological-history
+            Method: POST
+
+  # This is a Lambda function config associated with the source code:
+  # update-student-allergic-history.mjs
+  updateStudentAllergicHistoryHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentAllergicHistory/update-student-allergic-history-patient.updateStudentAllergicHistoryHandler
+      Description: Updates the allergic history for a specific patient
+        from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-allergic-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  # This is a Lambda function config associated with the source code:
+  # update-student-personal-history-patient.mjs
+  updateStudentPersonalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentPersonalHistory/update-student-personal-history-patient.updateStudentPersonalHistoryHandler
+      Description: Function to update personal medical history data
+        for a patient from the student POV.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-personal-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
 
   # This is a Lambda function config associated with the source code:
   # get-family-history-patient.mjs
@@ -336,6 +387,23 @@ Resources:
           Properties:
             Path: /patient/family-history
             Method: PUT
+            RestApiId: !Ref SanitasAPI
+
+  # This is a Lambda function config associated with the source code:
+  # update-student-family-history.mjs
+  updateStudentFamilyHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentFamiliarHistory/update-student-familiar-history-patient.updateStudentFamilyHistoryHandler
+      Description: Function to update family medical history data for
+        a patient from the student POV.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-family-history
+            Method: POST
             RestApiId: !Ref SanitasAPI
 
   # This is a Lambda function config associated with the source code:
@@ -464,6 +532,26 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # update-nonpatological-history-patient.mjs
+  updateStudentNonPatologicalHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentNonPatologicalHistory/update-student-nonpatological-history-patient.updateStudentNonPathologicalHistoryHandler
+      Description: Updates the non patological history for a specific
+        patient from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-nonpatological-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
   # Esta es una configuración de Lambda function asociada con el código fuente:
   # update-allergic-history-patient.mjs
   updateAllergicHistoryFunction:
@@ -539,6 +627,23 @@ Resources:
             RestApiId: !Ref SanitasAPI
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # update-surgical-history.mjs
+  updateStudentPsychiatricHistoryHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: src/handlers/UpdateStudentPsychiatricHistory/update-student-psychiatric-history-patient.updateStudentPsychiatricHistoryHandler
+      Description: Updates the psychiatric history for a specific patient
+        from the student view by ID.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-psychiatric-history
+            Method: POST
+            RestApiId: !Ref SanitasAPI
 
   # This is a Lambda function config associated with the source code:
   # get-gynecoobstetric-history-patient.mjs
@@ -618,6 +723,81 @@ Resources:
           Properties:
             Path: /account/patient
             Method: GET
+            RestApiId: !Ref SanitasAPI
+
+  getMedicalHistoryMetadataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/GetMedicalHistoryMetadata/get-medical-history-metadata.handler
+      Description: Retrieves which properties from the medical history
+        contains data.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /medical-history/metadata/{id}
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+
+  updateStudentGeneralInformation:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentGeneralInformation/update-student-general-information.handler
+      Description: Update the patient information but not modify already
+        saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/general
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  updateStudentCollaboratorInformation:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentCollaboratorInformation/update-student-collaborator-information.handler
+      Description: Update the patient collaborator information but
+        not modify already saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/collaborator
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  updateStudentStudentInformation:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentStudentInformation/update-student-student-information.handler
+      Description: Update the patient student information but not modify
+        already saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+
+  updateStudentGynecoObstetricHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/UpdateStudentGynecoObstetricHistory/update-student-gyneco-obstetric-history.handler
+      Description: Update the patient gynecoobstetric information but
+        not modify already saved information.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/student-gyneco-history
+            Method: POST
             RestApiId: !Ref SanitasAPI
 
   SanitasAPI:

@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { toast } from "react-toastify";
 import { describe, expect, test, vi } from "vitest";
 import { StudentSurgicalHistory } from ".";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 vi.mock("react-toastify", () => {
 	return {
@@ -41,10 +42,6 @@ describe("StudentSurgicalHistory Component Tests", () => {
 	);
 	const mockUseStore = vi.fn().mockReturnValue({ selectedPatientId: "123" });
 
-	const sidebarConfig = {
-		userInformation: { displayName: "User Testing" },
-	};
-
 	const Wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>;
 
 	test("opens new form on button click", async () => {
@@ -54,7 +51,7 @@ describe("StudentSurgicalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentSurgicalHistory={mockGetStudentSurgicalHistory}
 					updateStudentSurgicalHistory={mockUpdateStudentSurgicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -79,7 +76,7 @@ describe("StudentSurgicalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentSurgicalHistory={mockGetStudentSurgicalHistory}
 					updateStudentSurgicalHistory={mockUpdateStudentSurgicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,
@@ -110,7 +107,7 @@ describe("StudentSurgicalHistory Component Tests", () => {
 					getBirthdayPatientInfo={mockGetBirthdayPatientInfo}
 					getStudentSurgicalHistory={mockGetStudentSurgicalHistory}
 					updateStudentSurgicalHistory={mockUpdateStudentSurgicalHistory}
-					sidebarConfig={sidebarConfig}
+					sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 					useStore={mockUseStore}
 				/>
 			</Wrapper>,

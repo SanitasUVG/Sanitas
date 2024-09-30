@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { FamiliarHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: FamiliarHistory,
@@ -65,7 +66,7 @@ const mockUpdateFamiliarHistory = async (_id, history, _version) => ({
 	result: { medicalHistory: history },
 });
 
-const store = createEmptyStore({
+const useStore = createEmptyStore({
 	selectedPatientId: dummyPatientId,
 });
 
@@ -73,13 +74,8 @@ export const WithData = {
 	args: {
 		getFamiliarHistory: mockGetFamiliarHistoryWithData,
 		updateFamiliarHistory: mockUpdateFamiliarHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
-		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		useStore,
 	},
 };
 
@@ -87,13 +83,8 @@ export const EmptyData = {
 	args: {
 		getFamiliarHistory: mockGetFamiliarHistoryEmpty,
 		updateFamiliarHistory: mockUpdateFamiliarHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
-		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		useStore,
 	},
 };
 
@@ -101,12 +92,7 @@ export const ErrorState = {
 	args: {
 		getFamiliarHistory: mockGetFamiliarHistoryError,
 		updateFamiliarHistory: mockUpdateFamiliarHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. John Smith",
-				title: "Cirujano",
-			},
-		},
-		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
+		useStore,
 	},
 };

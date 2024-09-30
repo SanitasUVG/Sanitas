@@ -29,18 +29,29 @@ import {
 	updateFamilyHistory,
 	updateGeneralPatientInformation,
 	updateNonPathologicalHistory,
+	updateStudentNonPathologicalHistory,
 	updatePersonalHistory,
 	updateStudentPatientInformation,
 	updateSurgicalHistory,
 	updateStudentSurgicalHistory,
 	updateTraumatologicalHistory,
 	updateAllergicHistory,
+	updateStudentAllergicHistory,
+	updateStudentPersonalHistory,
+	updateStudentFamilyHistory,
 	updateGynecologicalHistory,
 	getPsichiatricHistory,
 	updatePsichiatricHistory,
+	updateStudentPsychiatricHistory,
+	updateStudentTraumatologicalHistory,
 	getRole,
 	linkAccountToPatient,
 	getLinkedPatient,
+	getMedicalHistoryMetadata,
+	patientUpdateGeneralInformation,
+	patientUpdateStudentInformation,
+	patientUpdateCollaboratorInformation,
+	updateStudentGynecologialHistory,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -49,17 +60,25 @@ import { NonPathologicalHistory } from "./views/History/NonPathological";
 import { PersonalHistory } from "./views/History/Personal";
 import { SurgicalHistory } from "./views/History/Surgical";
 import { StudentSurgicalHistory } from "./views/History/Students/StudentSurgical";
+import { StudentTraumatologicalHistory } from "./views/History/Students/StudentTraumatological";
 import LoginView from "./views/LoginView";
 import RegisterView from "./views/RegisterView";
 import SearchPatientView from "./views/SearchPatientView";
 import UpdateInfoView from "./views/UpdateGeneralInformationView";
 import { TraumatologicHistory } from "./views/History/Traumatological";
 import { AllergicHistory } from "./views/History/Allergic";
+import { StudentAllergicHistory } from "./views/History/Students/StudentAllergic";
+import { StudentPersonalHistory } from "./views/History/Students/StudentPersonal";
+import { StudentFamiliarHistory } from "./views/History/Students/StudentFamiliar";
 import { ObGynHistory } from "./views/History/ObGyn";
 import { PsichiatricHistory } from "./views/History/Psichiatric";
+import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
 import { CreatePatientView } from "./views/CreatePatientView";
+import { StudentNonPathologicalHistory } from "./views/History/Students/StudentNonPathological";
+import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
+import { StudentObGynHistory } from "./views/History/Students/StudentObGyn";
 
 const useStore = createEmptyStore();
 
@@ -85,19 +104,22 @@ export const UPDATE_PATIENT_NAV_PATHS = {
 	ALLERGIC_HISTORY: "allergic",
 	OBGYN_HISTORY: "obgyn",
 	PSICHIATRIC_HISTORY: "psichiatric",
-	// TODO: Add other Navigation routes...
 };
 
 export const PATIENT_FORM_NAV_PATHS = {
 	STUDENT_SURGICAL_HISTORY: "student-surgical",
+	STUDENT_ALLERGIC_HISTORY: "student-allergic",
+	STUDENT_NON_PATHOLOGICAL_HISTORY: "student-non-pathological",
+	STUDENT_PERSONAL_HISTORY: "student-personal",
+	STUDENT_PSICHIATRIC_HISTORY: "student-psichiatric",
+	STUDENT_GENERAL: "student-general",
+	STUDENT_OBGYN_HISTORY: "student-obgyn",
+	STUDENT_TRAUMATOLOGICAL_HISTORY: "student-traumatological",
+	STUDENT_FAMILIAR_HISTORY: "student-familiar",
 };
 
 /**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
 export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
-	userInformation: {
-		displayName: "Pedrito Pérez",
-		title: "Test username",
-	},
 	onGoBack: (navigate) => {
 		navigate(NAV_PATHS.SEARCH_PATIENT);
 	},
@@ -146,13 +168,65 @@ export const DEFAULT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.UPDATE_PATIENT}/${UPDATE_PATIENT_NAV_PATHS.PSICHIATRIC_HISTORY}`,
 		);
 	},
+	getMedicalHistoryMetadata,
+	useStore,
 	// TODO: Add other Navigation routes...
+};
+
+/**@type {import("./components/DashboardSidebar").DashboardSidebarProps} */
+export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
+	navigateToGeneralStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL}`,
+		);
+	},
+	navigateToSurgicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY}`,
+		);
+	},
+	navigateToTraumatologicalStudent: () => (_navigate) => {
+		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
+		// TODO: Add Trauma...
+	},
+	navigateToFamiliarStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_FAMILIAR_HISTORY}`,
+		);
+	},
+	navigateToPersonalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY}`,
+		);
+	},
+	navigateToNonPathologicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_NON_PATHOLOGICAL_HISTORY}`,
+		);
+	},
+	navigateToAllergiesStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY}`,
+		);
+	},
+	navigateToPsiquiatricStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY}`,
+		);
+	},
+	navigateToObstetricsStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
+		);
+	},
+	useStore: useStore,
 };
 
 const updateInfoView = (
 	<RequireAuth
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
+		useStore={useStore}
 	>
 		<UpdateInfoView
 			getGeneralPatientInformation={getGeneralPatientInformation}
@@ -169,6 +243,7 @@ const updateInfoView = (
 
 const surgicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -184,6 +259,7 @@ const surgicalHistoryView = (
 
 const studentSurgicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -191,7 +267,26 @@ const studentSurgicalHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getStudentSurgicalHistory={getSurgicalHistory}
 			updateStudentSurgicalHistory={updateStudentSurgicalHistory}
-			sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentGeneralInformation = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<UpdatePatientGeneralInformationView
+			getGeneralPatientInformation={getGeneralPatientInformation}
+			updateGeneralPatientInformation={patientUpdateGeneralInformation}
+			getStudentPatientInformation={getStudentPatientInformation}
+			updateStudentPatientInformation={patientUpdateStudentInformation}
+			getCollaboratorInformation={getCollaboratorInformation}
+			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
@@ -199,6 +294,7 @@ const studentSurgicalHistoryView = (
 
 const traumatologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -214,6 +310,7 @@ const traumatologicalHistoryView = (
 
 const familiarHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -226,8 +323,24 @@ const familiarHistoryView = (
 	</RequireAuth>
 );
 
+const studentFamiliarHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentFamiliarHistory
+			getStudentFamilyHistory={getFamilyHistory}
+			updateStudentFamilyHistory={updateStudentFamilyHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const personalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -241,8 +354,25 @@ const personalHistoryView = (
 	</RequireAuth>
 );
 
+const studentPersonalHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentPersonalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getStudentPersonalHistory={getPersonalHistory}
+			updateStudentPersonalHistory={updateStudentPersonalHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const nonPathologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -256,8 +386,25 @@ const nonPathologicalHistoryView = (
 	</RequireAuth>
 );
 
+const studentNonPathologicalHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentNonPathologicalHistory
+			getNonPathologicalHistory={getNonPathologicalHistory}
+			getBloodTypePatientInfo={getGeneralPatientInformation}
+			updateStudentNonPathologicalHistory={updateStudentNonPathologicalHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const allergicHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -270,8 +417,24 @@ const allergicHistoryView = (
 	</RequireAuth>
 );
 
+const studentAllergicHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentAllergicHistory
+			getStudentAllergicHistory={getAllergicHistory}
+			updateStudentAllergicHistory={updateStudentAllergicHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const psichiatricHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -284,8 +447,54 @@ const psichiatricHistoryView = (
 	</RequireAuth>
 );
 
+const studentPsichiatricHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentPsichiatricHistory
+			getPsichiatricHistory={getPsichiatricHistory}
+			updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentObGynHistoryView = (
+	<RequireAuth
+		useStore={useStore}
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentObGynHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getObGynHistory={getGynecologicalHistory}
+			updateObGynHistory={updateStudentGynecologialHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
+const studentTraumatologicalHistoryView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+	>
+		<StudentTraumatologicalHistory
+			getBirthdayPatientInfo={getGeneralPatientInformation}
+			getTraumatologicHistory={getTraumatologicalHistory}
+			updateTraumatologicalHistory={updateStudentTraumatologicalHistory}
+			useStore={useStore}
+		/>
+	</RequireAuth>
+);
+
 const obgynHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -304,6 +513,7 @@ export const ROUTES = [
 		path: NAV_PATHS.SEARCH_PATIENT,
 		element: (
 			<RequireAuth
+				useStore={useStore}
 				getSession={IS_PRODUCTION ? getSession : mockGetSession}
 				path={NAV_PATHS.LOGIN_USER}
 			>
@@ -311,6 +521,8 @@ export const ROUTES = [
 					searchPatientsApiCall={searchPatient}
 					useStore={useStore}
 					logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+					getRole={getRole}
+					getLinkedPatient={getLinkedPatient}
 				/>
 			</RequireAuth>
 		),
@@ -415,11 +627,43 @@ export const ROUTES = [
 		children: [
 			{
 				index: true,
-				element: <h1>WIP: Here goes the patient form!</h1>,
+				element: studentGeneralInformation,
 			},
 			{
 				path: PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY,
 				element: studentSurgicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_ALLERGIC_HISTORY,
+				element: studentAllergicHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_NON_PATHOLOGICAL_HISTORY,
+				element: studentNonPathologicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_PERSONAL_HISTORY,
+				element: studentPersonalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_PSICHIATRIC_HISTORY,
+				element: studentPsichiatricHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_GENERAL,
+				element: studentGeneralInformation,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY,
+				element: studentObGynHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_TRAUMATOLOGICAL_HISTORY,
+				element: studentTraumatologicalHistoryView,
+			},
+			{
+				path: PATIENT_FORM_NAV_PATHS.STUDENT_FAMILIAR_HISTORY,
+				element: studentFamiliarHistoryView,
 			},
 		],
 	},

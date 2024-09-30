@@ -9,7 +9,49 @@ import {
 	LOCAL_API_URL,
 } from "../testHelpers.mjs";
 
-const API_URL = `${LOCAL_API_URL}/patient/psychiatric-history`;
+const API_URL = `${LOCAL_API_URL}patient/psychiatric-history`;
+
+function generateValidUpdate(patientId) {
+	return {
+		patientId,
+		medicalHistory: {
+			depression: {
+				version: 1,
+				data: {
+					medication: "MEDICINE 1",
+					dose: "1gm",
+					frecuency: "1 by day",
+					ube: false,
+				},
+			},
+			anxiety: {
+				version: 1,
+				data: {
+					medication: "MEDICINE 2",
+					dose: "2gmr",
+					frecuency: "2 by day",
+					ube: true,
+				},
+			},
+			ocd: {
+				version: 1,
+				data: {},
+			},
+			adhd: {
+				version: 1,
+				data: {},
+			},
+			bipolar: {
+				version: 1,
+				data: {},
+			},
+			other: {
+				version: 1,
+				data: {},
+			},
+		},
+	};
+}
 
 function generateValidUpdate(patientId) {
 	return {

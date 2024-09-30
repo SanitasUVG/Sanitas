@@ -6,6 +6,7 @@ import { useState } from "react";
  * @property {string} text - The text to display inside the button.
  * @property {Function} onClick - The callback function to be executed when the button is clicked.
  * @property {React.CSSProperties} [style] - Optional custom styles to be applied to the button.
+ * @property {React.CSSProperties} [iconStyle] - Optional custom styles to be applied to the button.
  */
 
 /**
@@ -14,7 +15,7 @@ import { useState } from "react";
  * @param {TextIconButtonProps} props - The properties passed to the button component.
  * @returns {JSX.Element} A button element containing both an icon and text with interactive hover effects.
  */
-const TextIconButton = ({ icon, text, onClick, style }) => {
+const TextIconButton = ({ icon, text, onClick, style, iconStyle }) => {
 	const [isHovered, setIsHovered] = useState(false);
 
 	const baseStyle = {
@@ -34,7 +35,11 @@ const TextIconButton = ({ icon, text, onClick, style }) => {
 	const renderIcon = () => {
 		if (typeof icon === "string") {
 			return (
-				<img src={icon} alt="Icon" style={{ height: "18px", width: "18px" }} />
+				<img
+					src={icon}
+					alt="Icon"
+					style={{ height: "18px", width: "18px", ...iconStyle }}
+				/>
 			);
 		}
 		return icon;

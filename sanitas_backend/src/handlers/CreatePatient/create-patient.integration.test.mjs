@@ -23,7 +23,7 @@ describe("Create Patient Record Integration Tests", () => {
 
 		// Verify the error is as expected
 		expect(response.status).toBe(400);
-		expect(response.data.error).toBe("CUI is required.");
+		expect(response.data.error).toBe("CUI is empty");
 	});
 
 	test("Create a new patient record with duplicate CUI (should fail)", async () => {

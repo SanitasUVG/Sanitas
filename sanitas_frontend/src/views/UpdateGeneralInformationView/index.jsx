@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -60,6 +60,7 @@ export default function UpdateInfoView({
 	updateCollaboratorInformation,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
+	const setIsWoman = useStore((s) => s.setIsWoman);
 
 	const [generalResource, collaboratorResource, studentResource] = [
 		getGeneralPatientInformation(id),
@@ -93,6 +94,7 @@ export default function UpdateInfoView({
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
+						setIsWoman={setIsWoman}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
@@ -187,15 +189,15 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos de colaborador...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
 			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
@@ -286,7 +288,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
  * @param {UpdateGeneralInformationSectionProps} props
  * @returns {JSX.Element}
  */
-function UpdateGeneralInformationSection({ getData, updateData }) {
+function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
 		{ value: "A+", label: "A+" },
@@ -361,12 +363,17 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 
 	const response = getData.read();
 	const [editMode, setEditMode] = useState(false);
-
-	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
-	const [patientData, setPatientData] = useState({
+	const formatResponse = (response) => ({
 		...response.result,
 		birthdate: formatDate(response.result?.birthdate),
 	});
+
+	/** @type {[PatientInfo, (data: PatientInfo) => void]} */
+	const [patientData, setPatientData] = useState(formatResponse(response));
+
+	useEffect(() => {
+		setIsWoman(patientData.isWoman);
+	}, [patientData, setIsWoman]);
 
 	if (response.error) {
 		return (
@@ -388,22 +395,21 @@ function UpdateGeneralInformationSection({ getData, updateData }) {
 		setEditMode(false);
 		toast.info("Actualizando datos generales...");
 
-		const response = await updateData(patientData);
-		if (response.error) {
+		const updateResponse = await updateData(patientData);
+		if (updateResponse.error) {
 			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${response.error.message}`,
+				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
+			setPatientData(formatResponse(response));
+			return;
 		}
 
-		setPatientData(response.result || {});
+		setPatientData(formatResponse(updateResponse));
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
 	const handleCancelEdit = () => {
-		setPatientData({
-			...response.result,
-			birthdate: formatDate(response.result.birthdate),
-		});
+		setPatientData(formatResponse(response));
 		setEditMode(false);
 	};
 

@@ -1,10 +1,3 @@
-/**
- * @typedef {Object} UserInformation
- * @property {string} displayName - The user display name.
- * @property {string} title - The role of this user in the application
- */
-
-import returnicon from "@tabler/icons/outline/arrow-back-up.svg";
 import boneicon from "@tabler/icons/outline/bone.svg";
 import brainicon from "@tabler/icons/outline/brain.svg";
 import facemaskicon from "@tabler/icons/outline/face-mask.svg";
@@ -18,9 +11,9 @@ import womanicon from "@tabler/icons/outline/woman.svg";
 import { useNavigate } from "react-router-dom";
 import SanitasLogo from "src/assets/images/logoSanitas.png";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-
-import IconButton from "src/components/Button/Icon/index";
 import TextIconButton from "../Button/TextIcon";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 /**
  * @callback SidebarNavigationHandler
@@ -28,7 +21,6 @@ import TextIconButton from "../Button/TextIcon";
  * @param {import("react").MouseEvent} e - The `MouseEvent` that triggered this handler.
  */
 
-// NOTE: Remember to update the function signature when implementing the navigation to your view!
 /**
  * @typedef {Object} DashboardSidebarProps
  * @property {SidebarNavigationHandler} navigateToGeneral - Handles navigation to the update general patient information view.
@@ -42,7 +34,8 @@ import TextIconButton from "../Button/TextIcon";
  * @property {SidebarNavigationHandler} navigateToSurgical - Handles navigation to the update surgical view.
  * @property {SidebarNavigationHandler} navigateToTraumatological - Handles navigation to the update traumatological view.
  * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
- * @property {UserInformation} userInformation - Contains some information to display about a user.
+ * @property {import("src/dataLayer.mjs").GetMedicalHistoryMetadataCallback} getMedicalHistoryMetadata - Function to get the current active medical history data.
+ * @property {import("src/store.mjs").UseStoreHook} useStore
  */
 
 /**
@@ -59,8 +52,9 @@ export default function DashboardSidebar({
 	navigateToPsiquiatric,
 	navigateToSurgical,
 	navigateToTraumatological,
-	userInformation,
 	onGoBack,
+	getMedicalHistoryMetadata,
+	useStore,
 }) {
 	const navigate = useNavigate();
 	const wrapWithNavigate = (func) => {
@@ -70,6 +64,43 @@ export default function DashboardSidebar({
 		return (e) => {
 			func(navigate, e);
 		};
+	};
+	const patientId = useStore((s) => s.selectedPatientId);
+	const prefixesWithData = useStore((s) => s.prefixesWithData);
+	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
+	const displayName = useStore((s) => s.displayName);
+	const isWoman = useStore((s) => s.isWoman);
+
+	useEffect(() => {
+		const loadPrefixes = async () => {
+			const response = await getMedicalHistoryMetadata(patientId);
+			if (response.error) {
+				toast.error(
+					"Ha ocurrido un error obteniendo los antecedentes ya llenados!",
+				);
+				return;
+			}
+
+			setPrefixesWithData(response.result);
+		};
+
+		loadPrefixes();
+	}, [patientId, setPrefixesWithData, getMedicalHistoryMetadata]);
+
+	const genStyleWithPrefix = (prefix) => {
+		return !prefixesWithData.includes(prefix)
+			? {
+					color: colors.darkerGrey,
+				}
+			: {};
+	};
+
+	const genIconStyleWithPrefix = (prefix) => {
+		return !prefixesWithData.includes(prefix)
+			? {
+					filter: "contrast(0%)",
+				}
+			: {};
 	};
 
 	return (
@@ -87,38 +118,30 @@ export default function DashboardSidebar({
 			<div
 				style={{
 					display: "flex",
-					alignItems: "end",
-					justifyContent: "end",
-					paddingRight: "1rem",
-					width: "100%",
-				}}
-			>
-				<IconButton
-					icon={returnicon}
-					onClick={wrapWithNavigate(onGoBack)}
-					style={{
-						width: "2.1rem",
-						height: "3rem",
-					}}
-				/>
-			</div>
-			<div
-				style={{
-					display: "flex",
-					paddingTop: "2rem",
-					paddingBottom: "2rem",
+					justifyContent: "center",
+					alignContent: "center",
+					cursor: "pointer",
 					width: "100%",
 				}}
 			>
 				<img
 					style={{
-						width: "6rem",
-						height: "3rem",
+						width: "60%",
 						flexGrow: 0,
 					}}
 					src={SanitasLogo}
+					onClick={wrapWithNavigate(onGoBack)}
+					onKeyDown={wrapWithNavigate(onGoBack)}
 					alt="Logo Sanitas"
 				/>
+			</div>
+			<div
+				style={{
+					display: "flex",
+					padding: "1.5rem 0",
+					width: "100%",
+				}}
+			>
 				<div
 					style={{
 						paddingLeft: "0.8rem",
@@ -128,13 +151,11 @@ export default function DashboardSidebar({
 					<h1
 						style={{
 							fontFamily: fonts.titleFont,
-							fontWeight: "bold",
-							fontSize: "1.1rem",
-							paddingRight: "0.5rem",
-							paddingTop: "0.4rem",
+							fontSize: "0.9rem",
+							paddingBottom: ".4rem",
 						}}
 					>
-						{userInformation.displayName}
+						{displayName}
 					</h1>
 					<h2
 						style={{
@@ -143,7 +164,7 @@ export default function DashboardSidebar({
 							fontSize: "0.9rem",
 						}}
 					>
-						{userInformation.title}
+						Doctora
 					</h2>
 				</div>
 			</div>
@@ -180,41 +201,57 @@ export default function DashboardSidebar({
 					icon={familyicon}
 					text="Familiares"
 					onClick={wrapWithNavigate(navigateToFamiliar)}
+					style={genStyleWithPrefix("af")}
+					iconStyle={genIconStyleWithPrefix("af")}
 				/>
 				<TextIconButton
 					icon={userloveicon}
 					text="Personales"
 					onClick={wrapWithNavigate(navigateToPersonal)}
+					style={genStyleWithPrefix("ap")}
+					iconStyle={genIconStyleWithPrefix("ap")}
 				/>
 				<TextIconButton
 					icon={flowericon}
 					text="Alérgicos"
 					onClick={wrapWithNavigate(navigateToAllergies)}
+					style={genStyleWithPrefix("aa")}
+					iconStyle={genIconStyleWithPrefix("aa")}
 				/>
 				<TextIconButton
 					icon={facemaskicon}
 					text="Quirúrgicos"
 					onClick={wrapWithNavigate(navigateToSurgical)}
+					style={genStyleWithPrefix("aq")}
+					iconStyle={genIconStyleWithPrefix("aq")}
 				/>
 				<TextIconButton
 					icon={boneicon}
 					text="Traumatológicos"
 					onClick={wrapWithNavigate(navigateToTraumatological)}
+					style={genStyleWithPrefix("at2")}
+					iconStyle={genIconStyleWithPrefix("at2")}
 				/>
 				<TextIconButton
 					icon={brainicon}
 					text="Psiquiátricos"
 					onClick={wrapWithNavigate(navigateToPsiquiatric)}
+					style={genStyleWithPrefix("ap2")}
+					iconStyle={genIconStyleWithPrefix("ap2")}
 				/>
 				<TextIconButton
 					icon={womanicon}
 					text="Ginecoobstétricos"
-					onClick={wrapWithNavigate(navigateToObstetrics)}
+					onClick={isWoman ? wrapWithNavigate(navigateToObstetrics) : () => {}}
+					style={genStyleWithPrefix("ag")}
+					iconStyle={genIconStyleWithPrefix("ag")}
 				/>
 				<TextIconButton
 					icon={glassicon}
 					text="No patológicos"
 					onClick={wrapWithNavigate(navigateToNonPathological)}
+					style={genStyleWithPrefix("anp")}
+					iconStyle={genIconStyleWithPrefix("anp")}
 				/>
 			</div>
 		</div>

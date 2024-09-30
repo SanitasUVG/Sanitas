@@ -179,43 +179,44 @@ function NonPathologicalView({
 
 	// Extracting data from the fetched results, defaulting to predefined values if not found.
 	const {
-		smoker = { data: [{ smokes: false, cigarettesPerDay: "", years: "" }] },
-		drink = { data: [{ drinks: false, drinksPerMonth: "" }] },
-		drugs = { data: [{ usesDrugs: false, drugType: "", frequency: "" }] },
+		smoker = { data: { smokes: false, cigarettesPerDay: "", years: "" } },
+		drink = { data: { drinks: false, drinksPerMonth: "" } },
+		drugs = { data: { usesDrugs: false, drugType: "", frequency: "" } },
 	} = nonPathologicalHistoryResult.result?.medicalHistory || {};
 
 	// State hooks for managing the input values.
 	const [smokingStatus, setSmokingStatus] = useState(
-		smoker.data.length > 0 ? smoker.data[0].smokes : false,
+		smoker.data ? smoker.data.smokes : false,
 	);
 	const [cigarettesPerDay, setCigarettesPerDay] = useState(
-		smoker.data.length > 0 && smoker.data[0].cigarettesPerDay != null
-			? smoker.data[0].cigarettesPerDay.toString()
+		smoker.data && smoker.data.cigarettesPerDay != null
+			? smoker.data.cigarettesPerDay.toString()
 			: "",
 	);
 	const [smokingYears, setSmokingYears] = useState(
-		smoker.data.length > 0 && smoker.data[0].years != null
-			? smoker.data[0].years.toString()
+		smoker.data && smoker.data.years != null
+			? smoker.data.years.toString()
 			: "",
 	);
 
 	const [alcoholConsumption, setAlcoholConsumption] = useState(
-		drink.data.length > 0 ? drink.data[0].drinks : false,
+		drink.data ? drink.data.drinks : false,
 	);
 	const [drinksPerMonth, setDrinksPerMonth] = useState(
-		drink.data.length > 0 && drink.data[0].drinksPerMonth != null
-			? drink.data[0].drinksPerMonth.toString()
+		drink.data && drink.data.drinksPerMonth != null
+			? drink.data.drinksPerMonth.toString()
 			: "",
 	);
+
 	const [drugUse, setDrugUse] = useState(
-		drugs.data.length > 0 ? drugs.data[0].usesDrugs : false,
+		drugs.data ? drugs.data.usesDrugs : false,
 	);
 	const [drugType, setDrugType] = useState(
-		drugs.data.length > 0 ? drugs.data[0].drugType : "",
+		drugs.data ? drugs.data.drugType : "",
 	);
 	const [drugFrequency, setDrugFrequency] = useState(
-		drugs.data.length > 0 && drugs.data[0].frequency != null
-			? drugs.data[0].frequency.toString()
+		drugs.data && drugs.data.frequency != null
+			? drugs.data.frequency.toString()
 			: "",
 	);
 
@@ -256,11 +257,20 @@ function NonPathologicalView({
 
 	// Checking if it is the user's first time to display a different UI.
 	const isFirstTime = !(
-		smoker.data.length ||
-		drink.data.length ||
-		drugs.data.length
+		(
+			(smoker.data.cigarettesPerDay !== null &&
+				smoker.data.cigarettesPerDay !== undefined &&
+				smoker.data.cigarettesPerDay !== 0) ||
+			(smoker.data.howManyYears !== null &&
+				smoker.data.howManyYears !== undefined &&
+				smoker.data.howManyYears !== 0) ||
+			(drink.data.drinksPerMonth !== null &&
+				drink.data.drinksPerMonth !== undefined &&
+				drink.data.drinksPerMonth !== 0) ||
+			drugs.data.whichOne?.trim() !== "" || // Usando encadenamiento opcional aquí
+			drugs.data.frequency?.trim() !== ""
+		) // Y aquí
 	);
-
 	// Edit mode state to toggle between view and edit modes.
 	const [isEditable, setIsEditable] = useState(isFirstTime);
 
@@ -341,6 +351,7 @@ function NonPathologicalView({
 	};
 
 	// Function to handle saving the changes to the server.
+	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: Save non pathological data
 	const handleSaveNonPathological = async () => {
 		if (!validateSmokingDetails()) return;
 		if (!validateAlcoholConsumption()) return;
@@ -350,32 +361,30 @@ function NonPathologicalView({
 			bloodType: bloodTypeResult?.result?.bloodType,
 			smoker: {
 				version: nonPathologicalHistoryData?.medicalHistory.smoker.version || 1,
-				data: [
-					{
-						smokes: smokingStatus,
-						cigarettesPerDay: Number.parseInt(cigarettesPerDay),
-						years: Number.parseInt(smokingYears),
-					},
-				],
+				data: {
+					smokes: smokingStatus,
+					cigarettesPerDay: !smokingStatus
+						? 0
+						: Number.parseInt(cigarettesPerDay) || 0,
+					years: !smokingStatus ? 0 : Number.parseInt(smokingYears) || 0,
+				},
 			},
 			drink: {
 				version: nonPathologicalHistoryData?.medicalHistory.drink.version || 1,
-				data: [
-					{
-						drinks: alcoholConsumption,
-						drinksPerMonth: Number.parseInt(drinksPerMonth),
-					},
-				],
+				data: {
+					drinks: alcoholConsumption,
+					drinksPerMonth: !alcoholConsumption
+						? 0
+						: Number.parseInt(drinksPerMonth) || 0,
+				},
 			},
 			drugs: {
 				version: nonPathologicalHistoryData?.medicalHistory.drugs.version || 1,
-				data: [
-					{
-						usesDrugs: drugUse,
-						drugType: drugType,
-						frequency: drugFrequency,
-					},
-				],
+				data: {
+					usesDrugs: drugUse,
+					drugType: drugUse ? drugType : "",
+					frequency: drugUse ? drugFrequency : "",
+				},
 			},
 		};
 
@@ -397,8 +406,8 @@ function NonPathologicalView({
 	const handleSmokingChange = (newStatus) => {
 		setSmokingStatus(newStatus);
 		if (!newStatus) {
-			setCigarettesPerDay("");
-			setSmokingYears("");
+			setCigarettesPerDay("0");
+			setSmokingYears("0");
 		}
 	};
 
@@ -406,7 +415,7 @@ function NonPathologicalView({
 	const handleAlcoholChange = (newStatus) => {
 		setAlcoholConsumption(newStatus);
 		if (!newStatus) {
-			setDrinksPerMonth("");
+			setDrinksPerMonth("0");
 		}
 	};
 
@@ -484,7 +493,7 @@ function NonPathologicalView({
 						)}
 						<div
 							style={{
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 								padding: "2rem 0 2rem 1rem",
 								display: "flex",
 								flexDirection: "row",
@@ -541,7 +550,7 @@ function NonPathologicalView({
 						<div
 							style={{
 								paddingLeft: "1rem",
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
 						>
 							<p
@@ -644,7 +653,7 @@ function NonPathologicalView({
 						<div
 							style={{
 								paddingLeft: "1rem",
-								borderBottom: `0.1rem solid ${colors.darkerGrey}`,
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 							}}
 						>
 							<p
@@ -820,19 +829,28 @@ function NonPathologicalView({
 							)}
 						</div>
 						{isFirstTime && (
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<BaseButton
-									text="Guardar"
-									onClick={handleSaveNonPathological}
-									style={{ width: "30%", height: "3rem" }}
+							<>
+								<div
+									style={{
+										borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+									}}
 								/>
-							</div>
+
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										padding: "2rem 0 1rem 0",
+									}}
+								>
+									<BaseButton
+										text="Guardar"
+										onClick={handleSaveNonPathological}
+										style={{ width: "30%", height: "3rem" }}
+									/>
+								</div>
+							</>
 						)}
 					</>
 				)}

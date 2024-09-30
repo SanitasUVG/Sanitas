@@ -58,7 +58,7 @@ export function decodeJWT(jwt) {
  * @property {string|null} bloodType
  * @property {string|null} address
  * @property {string | undefined} insurance
- * @property {string} birthdate
+ * @property {Date} birthdate
  * @property {string|null} phone
  */
 
@@ -678,7 +678,7 @@ export function mapToAPIAllergicHistory(dbData) {
  * @property {GynecologicalIllnessEntry} medicacion_quistes_ovaricos_data - Data about ovarian cysts.
  * @property {GynecologicalIllnessEntry} medicacion_miomatosis_data - Data about uterine myomatosis.
  * @property {GynecologicalIllnessEntry} medicacion_endometriosis_data - Data about endometriosis.
- * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data- Data about other diagnosed conditions.
+ * @property {GynecologicalIllnessEntry} medicacion_otra_condicion_data - Data about other diagnosed conditions.
  * @property {GynecologicalSurgeryEntry[]} cirugia_quistes_ovaricos_data - Data about surgeries for ovarian cysts.
  * @property {GynecologicalSurgeryEntry} cirugia_histerectomia_data - Data about hysterectomy surgeries.
  * @property {GynecologicalSurgeryEntry} cirugia_esterilizacion_data - Data about sterilization surgeries.
@@ -856,25 +856,164 @@ export function mapToAPIPsychiatricHistory(dbData) {
  * @param {*[]} dbData
  * @returns {boolean} True if the request data edits/deletes dbData.
  */
+
 export function requestDataEditsDBData(requestData, dbData) {
 	let deletesData = false;
-
-	dbData.some((dbElem, i) => {
-		const requestElem = requestData[i];
-
-		Object.keys(dbElem).some((key) => {
-			if (requestElem.hasOwn(key)) {
-				if (
-					dbElem[key] !== requestElem[key] &&
-					dbElem[key].localeCompare("") !== 0
-				) {
-					deletesData = true;
-					return deletesData;
+	if (dbData.length <= requestData.length) {
+		dbData.some((dbElem, i) => {
+			const requestElem = requestData[i];
+			Object.keys(dbElem).some((key) => {
+				if (Object.hasOwn(requestElem, key)) {
+					if (
+						dbElem[key] !== requestElem[key] &&
+						dbElem[key].localeCompare("") !== 0
+					) {
+						deletesData = true;
+						return deletesData;
+					}
 				}
-			}
+			});
+			return deletesData;
 		});
-
 		return deletesData;
-	});
+	}
+	deletesData = true;
 	return deletesData;
+}
+
+/**
+ * Checks if the requestArray contains all elements from the savedArray. It may or may not contain extra elements.
+ *
+ * The properties inside each array element will be compared using the `comparator` function.
+ * This means if you have to arrays `d` and `e` the `comparator` function will be used like so:
+ * ```
+ * comparator(d[i][someProperty], e[i][someProperty])
+ * ```
+ *
+ * By default the comparator function is implemented like so:
+ * ```
+ * (a,b) => a===b
+ * ```
+ * @param {*[]} requestArray - The array coming from the request.
+ * @param {*[]} savedArray - The array saved in the DB.
+ * @param {import("pino").Logger} logger - The logger for the request.
+ * @param {(savedValue: *, requestValue: *) => boolean} [comparator=(a,b)=>a===b] - The array saved in the DB.
+ * @returns {boolean} True if the requestArray contains at minimum the same elements as the savedArray, false otherwise.
+ */
+export function requestIsSubset(
+	savedArray,
+	requestArray,
+	logger,
+	comparator = (a, b) => a === b,
+) {
+	// We shallow copy because we modify the search area every time we find a match
+	const reqArray = [...requestArray];
+	return savedArray.every((savedValue) => {
+		const properties = Object.keys(savedValue);
+
+		for (let i = 0; i < reqArray.length; i++) {
+			const requestValue = reqArray[i];
+			logger.info({ requestValue, savedValue }, "Comparing values...");
+			if (
+				properties.every((prop) =>
+					comparator(requestValue[prop], savedValue[prop]),
+				)
+			) {
+				reqArray.splice(i, 1);
+				return true;
+			}
+		}
+
+		logger.error(
+			{ savedValue, requestArray },
+			"savedValue not found in requestArray!",
+		);
+		return false;
+	});
+}
+
+/**
+ * @typedef {Object} MedicalRecord
+ * @property {string|null} medication - Name of the medication.
+ * @property {string|null} dosage - Dose of the drug.
+ * @property {string|null} frequency - Dosage frequency of the drug.
+ */
+
+/**
+ * Checks for unauthorized changes to medical records.
+ * @param {MedicalRecord[]} newData - New medical data provided.
+ * @param {MedicalRecord[]} oldData - Existing medical data in the database.
+ * @returns {boolean} True if unauthorized changes are detected.
+ */
+export function checkForUnauthorizedChanges(newData, oldData) {
+	if (oldData.length === 0 && newData.length > 0) {
+		return false;
+	}
+
+	return newData.some((newItem, index) => {
+		const oldItem = oldData[index] || {};
+
+		if (!(isEmpty(oldItem) || areFieldsEqual(newItem, oldItem))) {
+			return true;
+		}
+
+		return false;
+	});
+}
+
+/**
+ * Checks if the student is trying to update fields that are already filled.
+ * @param {Object} newData - New data from the request.
+ * @param {Object} oldData - Existing data from the database.
+ * @returns {boolean} True if the new data tries to overwrite non-empty fields.
+ */
+export function checkForUnauthorizedChangesPathological(newData, oldData) {
+	return Object.keys(newData).some((key) => {
+		const newInfo = newData[key].data;
+		const oldInfo = oldData[key]?.data;
+		if (!oldInfo) return false; // If there was no old data, no unauthorized update is possible.
+
+		return Object.keys(newInfo).some((field) => {
+			const newValue = newInfo[field];
+			const oldValue = oldInfo[field];
+			return oldValue && newValue !== oldValue;
+		});
+	});
+}
+
+/**
+ * Determines if a medical record is empty.
+ * @param {MedicalRecord} item - The medical record to evaluate.
+ * @returns {boolean} True if the record is empty.
+ */
+function isEmpty(item) {
+	return (
+		!item ||
+		(isEmptyValue(item.medication) &&
+			isEmptyValue(item.dose) &&
+			isEmptyValue(item.frequency))
+	);
+}
+
+/**
+ * Checks if a specific value is empty.
+ * @param {string|null|undefined} value - Value to evaluate.
+ * @returns {boolean}True if the value is empty.
+ */
+function isEmptyValue(value) {
+	return [null, "", undefined, "-", 0, false].includes(value);
+}
+
+/**
+ * Compares two medical records to check if they are the same.
+ * @param {MedicalRecord} newItem - New medical record.
+ * @param {MedicalRecord} oldItem - Existing medical record.
+ * @returns {boolean} True if both records are equal.
+ */
+function areFieldsEqual(newItem, oldItem) {
+	return (
+		newItem.medication === oldItem.medication &&
+		newItem.dose === oldItem.dose &&
+		newItem.frequency === oldItem.frequency
+	);
 }

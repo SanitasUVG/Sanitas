@@ -45,8 +45,8 @@ export const handler = async (event, context) => {
 			/** @type {import("utils/index.mjs").APIStudentInfo} */
 			const defaultStudentInfo = {
 				idPatient: id,
-				carnet: "",
-				career: "",
+				carnet: null,
+				career: null,
 			};
 			logger.error(
 				{ defaultStudentInfo },

@@ -52,7 +52,7 @@ export const getCollaboratorHandler = async (event, context) => {
 			return createResponse()
 				.setStatusCode(200)
 				.addCORSHeaders()
-				.setBody({ idPatient: id, code: "", area: "" })
+				.setBody({ idPatient: id, code: null, area: null })
 				.build();
 		}
 

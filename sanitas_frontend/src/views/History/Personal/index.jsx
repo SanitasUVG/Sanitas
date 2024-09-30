@@ -183,45 +183,78 @@ function PersonalView({
 	const personalHistoryData = personalHistoryResult.result;
 	const [personalHistory, setPersonalHistory] = useState({
 		hypertension: {
-			data: personalHistoryData?.medicalHistory.hypertension.data || [],
+			data:
+				personalHistoryData?.medicalHistory.hypertension.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version: personalHistoryData?.medicalHistory.hypertension.version || 1,
 		},
 		diabetesMellitus: {
-			data: personalHistoryData?.medicalHistory.diabetesMellitus.data || [],
+			data:
+				personalHistoryData?.medicalHistory.diabetesMellitus.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version:
 				personalHistoryData?.medicalHistory.diabetesMellitus.version || 1,
 		},
 		hypothyroidism: {
-			data: personalHistoryData?.medicalHistory.hypothyroidism.data || [],
+			data:
+				personalHistoryData?.medicalHistory.hypothyroidism.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version: personalHistoryData?.medicalHistory.hypothyroidism.version || 1,
 		},
 		asthma: {
-			data: personalHistoryData?.medicalHistory.asthma.data || [],
+			data:
+				personalHistoryData?.medicalHistory.asthma.data.map((item, index) => ({
+					...item,
+					id: index + 1,
+				})) || [],
 			version: personalHistoryData?.medicalHistory.asthma.version || 1,
 		},
 		convulsions: {
-			data: personalHistoryData?.medicalHistory.convulsions.data || [],
+			data:
+				personalHistoryData?.medicalHistory.convulsions.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version: personalHistoryData?.medicalHistory.convulsions.version || 1,
 		},
 		myocardialInfarction: {
-			data: personalHistoryData?.medicalHistory.myocardialInfarction.data || [],
+			data:
+				personalHistoryData?.medicalHistory.myocardialInfarction.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version:
 				personalHistoryData?.medicalHistory.myocardialInfarction.version || 1,
 		},
 		cancer: {
-			data: personalHistoryData?.medicalHistory.cancer.data || [],
+			data:
+				personalHistoryData?.medicalHistory.cancer.data.map((item, index) => ({
+					...item,
+					id: index + 1,
+				})) || [],
 			version: personalHistoryData?.medicalHistory.cancer.version || 1,
 		},
 		cardiacDiseases: {
-			data: personalHistoryData?.medicalHistory.cardiacDiseases.data || [],
+			data:
+				personalHistoryData?.medicalHistory.cardiacDiseases.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version: personalHistoryData?.medicalHistory.cardiacDiseases.version || 1,
 		},
 		renalDiseases: {
-			data: personalHistoryData?.medicalHistory.renalDiseases.data || [],
+			data:
+				personalHistoryData?.medicalHistory.renalDiseases.data.map(
+					(item, index) => ({ ...item, id: index + 1 }),
+				) || [],
 			version: personalHistoryData?.medicalHistory.renalDiseases.version || 1,
 		},
 		others: {
-			data: personalHistoryData?.medicalHistory.others.data || [],
+			data:
+				personalHistoryData?.medicalHistory.others.data.map((item, index) => ({
+					...item,
+					id: index + 1,
+				})) || [],
 			version: personalHistoryData?.medicalHistory.others.version || 1,
 		},
 	});
@@ -293,6 +326,7 @@ function PersonalView({
 	};
 
 	// Handles the saving of new or modified family medical history
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 	const handleSaveNewPersonal = async () => {
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
@@ -309,22 +343,36 @@ function PersonalView({
 			hypothyroidism: ["medicine", "frequency"],
 			asthma: ["medicine", "frequency"],
 			convulsions: ["medicine", "frequency"],
-			cardiacDiseases: ["medicine", "frequency"],
-			renalDiseases: ["medicine", "frequency"],
+			cardiacDiseases: ["typeOfDisease", "medicine", "frequency"],
+			renalDiseases: ["typeOfDisease", "medicine", "frequency"],
 			default: ["typeOfDisease", "medicine", "frequency"],
 		};
 
-		// Get the required fields for the selected disease or use default fields
+		const optionalFieldsMap = {
+			hypertension: ["dose"],
+			diabetesMellitus: ["dose"],
+			asthma: ["dose"],
+			hypothyroidism: ["dose"],
+			convulsions: ["dose"],
+			cardiacDiseases: ["dose"],
+			renalDiseases: ["dose"],
+		};
+
 		const requiredFields =
 			diseaseFieldsMap[selectedPersonal.disease] || diseaseFieldsMap.default;
+		const optionalFields = optionalFieldsMap[selectedPersonal.disease] || [];
 
-		// Prepare new entry for saving
 		const newEntry = {};
 		for (const field of requiredFields) {
 			newEntry[field] = selectedPersonal[field] || "";
 		}
 
-		// Validate required fields
+		for (const optionalField of optionalFields) {
+			if (selectedPersonal[optionalField]) {
+				newEntry[optionalField] = selectedPersonal[optionalField];
+			}
+		}
+
 		const missingFields = requiredFields.filter(
 			(field) => !newEntry[field] || newEntry[field].trim() === "",
 		);
@@ -336,11 +384,25 @@ function PersonalView({
 
 		toast.info("Guardando antecedente personal...");
 
-		// Update the data for the current disease
-		const updatedData = [
-			...personalHistory[selectedPersonal.disease].data,
-			newEntry,
-		];
+		const existingEntryIndex = personalHistory[
+			selectedPersonal.disease
+		].data.findIndex((entry) => entry.id === selectedPersonal.id);
+
+		let updatedData;
+		if (existingEntryIndex > -1) {
+			updatedData = [...personalHistory[selectedPersonal.disease].data];
+			updatedData[existingEntryIndex] = {
+				...updatedData[existingEntryIndex],
+				...newEntry,
+			};
+		} else {
+			updatedData = [
+				...personalHistory[selectedPersonal.disease].data,
+				newEntry,
+			];
+		}
+
+		// Crear el objeto actualizado para el historial
 		const updatedHistory = {
 			...personalHistory[selectedPersonal.disease],
 			data: updatedData,

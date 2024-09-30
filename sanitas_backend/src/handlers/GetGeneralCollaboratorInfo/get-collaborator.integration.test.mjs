@@ -37,7 +37,7 @@ describe("Collaborator Handler", () => {
 
 		const collaborator = response.data;
 		expect(collaborator).toBeDefined();
-		expect(collaborator.area).toBe("");
-		expect(collaborator.code).toBe("");
+		expect(collaborator.area).toBe(null);
+		expect(collaborator.code).toBe(null);
 	});
 });

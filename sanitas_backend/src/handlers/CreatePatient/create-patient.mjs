@@ -1,10 +1,12 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
+import { cuiIsValid } from "utils/cui.mjs";
 import { createResponse } from "utils/index.mjs";
 
 function checkValidInput(patientData) {
-	if (!patientData.cui) {
-		return { isValid: false, error: "CUI is required." };
+	const isValidCUI = cuiIsValid(patientData.cui);
+	if (isValidCUI.error) {
+		return { isValid: false, error: isValidCUI.error };
 	}
 	if (!patientData.names) {
 		return { isValid: false, error: "Names are required." };

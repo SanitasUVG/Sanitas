@@ -6,6 +6,7 @@ import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import { cuiIsValid } from "src/utils/cui";
 import WrapPromise from "src/utils/promiseWrapper";
 
 /**
@@ -19,12 +20,16 @@ import WrapPromise from "src/utils/promiseWrapper";
  */
 
 /**
+ * @typedef {Object} AddPatientViewProps
+ * @property {import("src/store.mjs").UseStoreHook} props.useStore
+ * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} props.submitPatientData - Function to submit patient data.
+ */
+
+/**
  * Component for adding new patients.
  * Uses navigation state to pre-fill the CUI if available.
  *
  * @param {AddPatientViewProps} props - Component properties.
- * @param {import("src/store.mjs").UseStoreHook} props.useStore
- * @param {function(PatientData): Promise<void>} props.submitPatientData - Function to submit patient data.
  */
 export function AddPatientView({ submitPatientData, useStore }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
@@ -65,10 +70,12 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		 */
 		const validateFormData = () => {
 			const fields = ["names", "surnames", "birthDate"];
-			if (patientData.cui.length !== 13) {
-				setUpdateError("El CUI debe contener exactamente 13 caracteres.");
+			const isValidCUI = cuiIsValid(patientData.cui);
+			if (isValidCUI.error) {
+				setUpdateError("CUI inválido...");
 				return false;
 			}
+
 			for (const field of fields) {
 				if (!patientData[field]) {
 					setUpdateError(

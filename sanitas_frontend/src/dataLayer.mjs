@@ -14,6 +14,45 @@ const PROTECTED_URL = process.env.PROTECTED_URL ?? DEV_URL;
  */
 
 /**
+ * @callback GetMedicalHistoryMetadataCallback
+ * @param {number} patientId
+ * @returns {Promise<Result<string[], *>>}
+ */
+
+/**
+ * @type {GetMedicalHistoryMetadataCallback}
+ */
+export async function getMedicalHistoryMetadata(patientId) {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	try {
+		const response = await axios.get(
+			`${PROTECTED_URL}/medical-history/metadata/${patientId}`,
+			{
+				headers: {
+					Authorization: token,
+					"Content-Type": "application/json",
+				},
+			},
+		);
+
+		const { data: result } = response;
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+}
+
+/**
  * @callback SearchPatientApiFunction
  * @param {string} query - The query value to search.
  * @param {string} type - The type of query, one of "Nombres", "Carnet", "CodigoColaborador"
@@ -304,6 +343,45 @@ export const updateGeneralPatientInformation = async (APIPatient) => {
 };
 
 /**
+ * Calls the API to update the general information of a given patient.
+ * This is the patient equivalent.
+ *
+ * @callback UpdateGeneralPatientInformationAPICall
+ * @param {APIPatient} APIPatient - The data of the patient.
+ * @returns {Promise<Result<boolean, Error>>}
+ */
+
+/**
+ * @type {UpdateGeneralPatientInformationAPICall}
+ */
+export const patientUpdateGeneralInformation = async (APIPatient) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/general`;
+	try {
+		const { data: result } = await axios.post(url, APIPatient, {
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token,
+			},
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
  * @typedef {Object} APIStudentInformation
  * @property {number} idPatient
  * @property {string} career
@@ -372,6 +450,42 @@ export const updateStudentPatientInformation = async (APIStudentInfo) => {
 	const url = `${PROTECTED_URL}/patient/student`;
 	try {
 		const { data: result } = await axios.put(url, APIStudentInfo, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
+ * 	Callback for updating the student information of a patient.
+ * 	The patient equivalent.
+ *
+ * @callback UpdateStudentPatientInformationAPICall
+ * @param {APIStudentInformation} APIStudentInfo
+ * @returns {Promise<Result<APIStudentInformation, Error>>}
+ */
+
+/**
+ * @type {UpdateStudentPatientInformationAPICall}
+ */
+export const patientUpdateStudentInformation = async (APIStudentInfo) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student`;
+	try {
+		const { data: result } = await axios.post(url, APIStudentInfo, {
 			headers: { Authorization: token, "Content-Type": "application/json" },
 		});
 		return { result };
@@ -467,6 +581,68 @@ export const updateTraumatologicalHistory = async (
 
 	try {
 		const response = await axios.put(url, payload, {
+			headers: { Authorization: token, "Content-Type": "application/json" },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the studentTraumatological history for a specific patient by sending a PUT request to the server.
+ * This function constructs a payload from the studentTraumatological events provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Array<Object>} studentTraumatologicalEvents - An array of objects where each object contains details about a studentTraumatological event.
+ * @param {number} currentVersion - The current version of the studentTraumatological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentTraumatologicalHistory = async (
+	patientId,
+	traumatologicalEvents,
+	currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-traumatological-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: {
+			traumas: {
+				version: currentVersion,
+				data: traumatologicalEvents.map((event) => ({
+					whichBone: event.whichBone,
+					year: event.year,
+					treatment: event.treatment,
+				})),
+			},
+		},
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
 			headers: { Authorization: token, "Content-Type": "application/json" },
 		});
 		if (response.status !== 200) {
@@ -821,6 +997,44 @@ export const updateCollaboratorInformation = async (APICollaboratorInfo) => {
 };
 
 /**
+ * 	Callback for updating the student information of a patient.
+ * 	This is the patient equivalent.
+ *
+ * @callback UpdateCollaboratorPatientInformationAPICall
+ * @param {APICollaboratorInfo} APICollaboratorInfo
+ * @returns {Promise<Result<APICollaboratorInfo, Error>>}
+ */
+
+/**
+ * @type {UpdateCollaboratorPatientInformationAPICall}
+ */
+export const patientUpdateCollaboratorInformation = async (
+	APICollaboratorInfo,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/collaborator/`;
+	try {
+		const { data: result } = await axios.post(url, APICollaboratorInfo, {
+			headers: { Authorization: token },
+		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
  * Fetches the family history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
@@ -995,6 +1209,45 @@ export const updateNonPathologicalHistory = async (
 	}
 };
 
+export const updateStudentNonPathologicalHistory = async (
+	patientId,
+	nonPathologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-nonpatological-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: nonPathologicalHistoryDetails,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
 /**
  * Fetches the Allergic history for a specific patient by their ID.
  * Handles potential errors and formats the response.
@@ -1086,6 +1339,203 @@ export const updateAllergicHistory = async (patientId, allergicHistoryData) => {
 };
 
 /**
+ * Updates the allergic history of a patient by sending a POST request to a specific endpoint.
+ * This function constructs a payload from the allergic history provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} allergicHistory - An object containing details about the patient's allergic history.
+ * @param {number} currentVersion - The current version of the allergic history data.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+export const updateStudentAllergicHistory = async (
+	patientId,
+	allergicHistory,
+	_currentVersion,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-allergic-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: allergicHistory,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Fetches the student's personal history by their ID.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} patientId - The student's ID.
+ * @param {Array<Object>} personalEvents - An array of objects where each object contains details about a personal event.
+ * @returns {Promise<Object>} An object containing either the personal history data or an error.
+ */
+export const getStudentPersonalHistory = async (_id) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-personal-history`;
+
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+		return { error: `Received unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return {
+				error: `Failed to fetch data: ${error.response.status} ${error.response.statusText}`,
+			};
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the student's personal history by sending a PUT request to a specific endpoint.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} patientId - The unique identifier for the student.
+ * @param {Object} personalHistoryDetails - An object containing the personal history details to update.
+ * @returns {Promise<Object>} The response data from the server or an error.
+ */
+export const updateStudentPersonalHistory = async (
+	patientId,
+	personalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-personal-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: personalHistoryDetails,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the student's family medical history by sending a PUT request to a specific endpoint.
+ * Handles potential errors and formats the response.
+ *
+ * @param {string} patientId - The unique identifier for the student.
+ * @param {Object} familyHistoryDetails - An object containing the family medical history details to update.
+ * @returns {Promise<Object>} The response data from the server or an error.
+ */
+export const updateStudentFamilyHistory = async (
+	patientId,
+	familyHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-family-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: familyHistoryDetails,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
  * Fetches the Psichiatric history for a specific patient by their ID.
  * Handles potential errors and formats the response.
  *
@@ -1128,11 +1578,11 @@ export const getPsichiatricHistory = async (id) => {
 };
 
 /**
- * Updates the allergic history of a patient by sending a PUT request to a specific endpoint.
+ * Updates the psychiatric history of a patient by sending a PUT request to a specific endpoint.
  * This function constructs a payload from the family history details provided and sends it to the server.
  *
  * @param {string} patientId - The unique identifier for the patient.
- * @param {Object} psichiatricHistoryData - An object containing details about the patient's allergic history.
+ * @param {Object} psichiatricHistoryData - An object containing details about the patient's psychiatric history.
  * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
  * it returns the error message or the error response from the server.
  */
@@ -1179,6 +1629,73 @@ export const updatePsichiatricHistory = async (
 	}
 };
 
+/**
+ * Updates the psychiatric history for a student patient by sending a POST request to a specific endpoint.
+ * Constructs a payload with the patient ID and psychiatric history data and handles session validation.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} psychiatricHistoryData - An object containing details about the patient's psychiatric history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
+export const updateStudentPsychiatricHistory = async (
+	patientId,
+	psychiatricHistoryData,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-psychiatric-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: psychiatricHistoryData,
+	};
+
+	try {
+		const response = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+
+		if (response.status !== 200) {
+			return { error: `Unexpected status code: ${response.status}` };
+		}
+		return { result: response.data };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		if (error.request) {
+			return { error: "No response received" };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Retrieves the gynecological history for a specific patient by making a GET request to the server.
+ * It handles session validation and constructs the authorization header to perform the request.
+ * @callback GetGynecologicalHistoryCallback
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
+/**
+ * @type {GetGynecologicalHistoryCallback}
+ */
 export const getGynecologicalHistory = async (patientId) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
@@ -1209,6 +1726,15 @@ export const getGynecologicalHistory = async (patientId) => {
 	}
 };
 
+/**
+ * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the gynecological history details provided and sends it to the server.
+ *
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
 export const updateGynecologicalHistory = async (
 	patientId,
 	gynecologicalHistoryDetails,
@@ -1245,6 +1771,55 @@ export const updateGynecologicalHistory = async (
 			return { error: error.response.data };
 		}
 		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the gynecological history of a patient by sending a PUT request to a specific endpoint.
+ * This function constructs a payload from the gynecological history details provided and sends it to the server.
+ *
+ * @callback UpdateStudentGynecologialHistoryCallback
+ * @param {string} patientId - The unique identifier for the patient.
+ * @param {Object} gynecologicalHistoryDetails - An object containing details about the patient's gynecological history.
+ * @returns {Promise<Object>} - The response data from the server as a promise. If an error occurs during the request,
+ * it returns the error message or the error response from the server.
+ */
+
+/**
+ * @type {UpdateStudentGynecologialHistoryCallback}
+ */
+export const updateStudentGynecologialHistory = async (
+	patientId,
+	gynecologicalHistoryDetails,
+) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/student-gyneco-history`;
+
+	const payload = {
+		patientId: patientId,
+		medicalHistory: gynecologicalHistoryDetails,
+	};
+
+	try {
+		const { data: result } = await axios.post(url, payload, {
+			headers: { Authorization: token },
+		});
+
+		return { result };
+	} catch (error) {
+		const errorMsg = error.response ? error.response.data : error.message;
+		return { error: errorMsg };
 	}
 };
 
@@ -1289,6 +1864,7 @@ export const linkAccountToPatient = async (cui) => {
  * @returns {Promise<Result<number, *>>} If the promise is succesfull the result will contain the patientId associated to this account.
  */
 
+/** @type {GetLinkedPatientCallback}*/
 export const getLinkedPatient = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()

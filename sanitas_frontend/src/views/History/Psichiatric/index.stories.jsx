@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { PsichiatricHistory } from ".";
+import { DEFAULT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: PsichiatricHistory,
@@ -22,59 +23,71 @@ const mockGetPsichiatricHistoryWithData = async () => ({
 	result: {
 		medicalHistory: {
 			depression: {
-				data: {
-					medication: "Antidepressants",
-					dose: "20mg",
-					frequency: "Daily",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Antidepressants",
+						dose: "20mg",
+						frequency: "Daily",
+						ube: true,
+					},
+				],
 			},
 			anxiety: {
-				data: {
-					medication: "Anxiolytics",
-					dose: "10mg",
-					frequency: "As needed",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Anxiolytics",
+						dose: "10mg",
+						frequency: "As needed",
+						ube: false,
+					},
+				],
 			},
 			ocd: {
-				data: {
-					medication: "SSRIs",
-					dose: "50mg",
-					frequency: "Daily",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "SSRIs",
+						dose: "50mg",
+						frequency: "Daily",
+						ube: false,
+					},
+				],
 			},
 			adhd: {
-				data: {
-					medication: "Stimulants",
-					dose: "30mg",
-					frequency: "Morning",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Stimulants",
+						dose: "30mg",
+						frequency: "Morning",
+						ube: true,
+					},
+				],
 			},
 			bipolar: {
-				data: {
-					medication: "Mood Stabilizers",
-					dose: "150mg",
-					frequency: "Twice daily",
-					ube: false,
-				},
 				version: 1,
+				data: [
+					{
+						medication: "Mood Stabilizers",
+						dose: "150mg",
+						frequency: "Twice daily",
+						ube: false,
+					},
+				],
 			},
 			other: {
-				data: {
-					ill: "Schizophrenia",
-					medication: "Antipsychotics",
-					dose: "200mg",
-					frequency: "Night",
-					ube: true,
-				},
 				version: 1,
+				data: [
+					{
+						illness: "Schizophrenia",
+						medication: "Antipsychotics",
+						dose: "200mg",
+						frequency: "Night",
+						ube: true,
+					},
+				],
 			},
 		},
 	},
@@ -83,12 +96,12 @@ const mockGetPsichiatricHistoryWithData = async () => ({
 const mockGetPsichiatricHistoryEmpty = async () => ({
 	result: {
 		medicalHistory: {
-			depression: { data: {}, version: 1 },
-			anxiety: { data: {}, version: 1 },
-			ocd: { data: {}, version: 1 },
-			adhd: { data: {}, version: 1 },
-			bipolar: { data: {}, version: 1 },
-			other: { data: {}, version: 1 },
+			depression: { data: [], version: 1 },
+			anxiety: { data: [], version: 1 },
+			ocd: { data: [], version: 1 },
+			adhd: { data: [], version: 1 },
+			bipolar: { data: [], version: 1 },
+			other: { data: [], version: 1 },
 		},
 	},
 });
@@ -115,12 +128,7 @@ export const WithData = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryWithData,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -129,12 +137,7 @@ export const EmptyData = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryEmpty,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -143,12 +146,7 @@ export const ErrorState = {
 	args: {
 		getPsichiatricHistory: mockGetPsichiatricHistoryError,
 		updatePsichiatricHistory: mockUpdatePsichiatricHistory,
-		sidebarConfig: {
-			userInformation: {
-				displayName: "Dr. Jane Doe",
-				title: "Psychiatrist",
-			},
-		},
+		sidebarConfig: DEFAULT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
