@@ -286,7 +286,11 @@ permitiendo una rápida actualización y mantenimiento de los datos.
     },
     "myocardialInfarction": {
       "version": 1,
-      "data": []
+      "data": [
+        {
+          "surgeryYear": "1993"
+        }
+        ]
     },
     "cancer": {
       "version": 1,
@@ -330,31 +334,31 @@ permitiendo una rápida actualización y mantenimiento de los datos.
 
 #### Versiones
 
-- Versión 1: La versión 1 contiene una propiedad `data` que son arrays de la
-  forma:
+-**Versión 1**: La versión 1 contiene una propiedad `data` que
+son arrays de la forma:
 
-  - hypertension, diabetesMellitus, hypothyroidism, asthma, convulsions,
-    myocardialInfarction: Array\[String\], cada elemento es un familiar afectado.
+- hypertension, diabetesMellitus, hypothyroidism, asthma, convulsions,
+  myocardialInfarction: Array\[String\], cada elemento es un familiar afectado.
+
+```json
+["String", "String"]
+```
+
+- cancer, cardiacDiseases, renalDiseases, others: Array de objetos. Cada
+  objeto puede contener:
+
+  - who: String, especifica quién en la familia tiene la condición.
+  - typeOfCancer, typeOfDisease, disease: String, especifica el tipo de
+    cáncer, enfermedad cardíaca, enfermedad renal o cualquier otra condición.
 
   ```json
-  ["String", "String"]
+  [
+    {
+      "who": "String",
+      "typeOfCancer": "String"
+    }
+  ]
   ```
-
-  - cancer, cardiacDiseases, renalDiseases, others: Array de objetos. Cada
-    objeto puede contener:
-
-    - who: String, especifica quién en la familia tiene la condición.
-    - typeOfCancer, typeOfDisease, disease: String, especifica el tipo de
-      cáncer, enfermedad cardíaca, enfermedad renal o cualquier otra condición.
-
-    ```json
-    [
-      {
-        "who": "String",
-        "typeOfCancer": "String"
-      }
-    ]
-    ```
 
 ### Antecedentes Personales
 
@@ -424,9 +428,10 @@ lista los datos requeridos según la condición.
     "myocardialInfarction": {
       "version": 1,
       "data": [
-        2012,
-        2016
-      ]
+        {
+          "surgeryYear": "1993"
+        }
+        ]
     },
     "cancer": {
       "version": 1,
@@ -492,7 +497,7 @@ lista los datos requeridos según la condición.
 
 <!-- markdownlint-enable MD024 -->
 
-- Versión 1: La versión 1 contiene una propiedad `data` que es un array con
+- **Versión 1**: La versión 1 contiene una propiedad `data` que es un array con
   elementos con forma dependiendo de la pregunta.
 
   - Las condiciones: Hipertensión arterial, Diabetes Mellitus,
@@ -518,7 +523,9 @@ lista los datos requeridos según la condición.
   - El infarto agudo de miocardio tiene la forma:
 
   ```json
-  2012, 2016
+        {
+          "surgeryYear": "1993"
+        }
   ```
 
   - Por último enfermedades cardíacas, enfermedades renales y otros tienen la
@@ -563,7 +570,7 @@ de los datos.
 
 <!-- markdownlint-enable MD024 -->
 
-- Versión 1: La versión 1 contiene una propiedad `data` que es un array de
+- **Versión 1**: La versión 1 contiene una propiedad `data` que es un array de
   objetos de la forma:
 
   - whichBone: String, indica qué hueso fue afectado.
@@ -666,7 +673,7 @@ los datos requeridos según la alergia.
 
 <!-- markdownlint-enable MD024 -->
 
-- Versión 1: La versión 1 contiene una propiedad `data` que es
+- **Versión 1**: La versión 1 contiene una propiedad `data` que es
   un array de objetos con la siguiente forma:
 
   - medication, food, animals, dust, pollen, climateChange y others:
@@ -754,12 +761,12 @@ que lista los datos requeridos según la condición.
 
 <!-- markdownlint-enable MD024 -->
 
-- Versión 1: La versión 1 contiene una propiedad `data`
+- **Versión 1**: La versión 1 contiene una propiedad `data`
   que es un objeto con la siguiente forma:
 
 - depression, anxiety, bipolar, ocd, adhd:
 
-````json
+```json
 {
   "medication": "String",
   "dose": "String",
@@ -769,7 +776,6 @@ que lista los datos requeridos según la condición.
 ```
 
 - other:
-
 
 ```json
 {
@@ -781,7 +787,207 @@ que lista los datos requeridos según la condición.
 }
 ```
 
-### Antecedentes Ginecoobstetricos
+### Antecedentes Ginecoobstétricos
+
+Los antecedentes ginecoobstétricos se organizan por
+tipo de condición. Cada tipo de condición se almacena en un
+objeto JSON que lista los datos requeridos.
+
+```json
+{
+  "medicalHistory": {
+    "firstMenstrualPeriod": {
+      "version": 1,
+      "data": { "age": 13 }
+    },
+    "regularCycles": {
+      "version": 1,
+      "data": { "isRegular": true }
+    },
+    "painfulMenstruation": {
+      "version": 1,
+      "data": { "isPainful": true, "medication": "Ibuprofen" }
+    },
+    "pregnancies": {
+      "version": 1,
+      "data": {
+        "totalPregnancies": 2,
+        "vaginalDeliveries": 1,
+        "cesareanSections": 1,
+        "abortions": 0
+      }
+    },
+    "diagnosedIllnesses": {
+      "version": 1,
+      "data": {
+        "ovarianCysts": {
+          "medication": {
+            "medication": "Med B",
+            "dosage": "250mg",
+            "frequency": "Twice a day"
+          }
+        },
+        "uterineMyomatosis": {
+          "medication": {
+            "medication": "Med C",
+            "dosage": "100mg",
+            "frequency": "Once a day"
+          }
+        },
+        "endometriosis": {
+          "medication": { "medication": "", 
+          "dosage": "", 
+          "frequency": "" }
+        },
+        "otherCondition": [
+          {
+            "medication": {
+              "illness": "illness A",
+              "medication": "Med D",
+              "dosage": "500mg",
+              "frequency": "Once a day"
+            }
+          }
+        ]
+      }
+    },
+    "hasSurgeries": {
+      "version": 1,
+      "data": {
+        "ovarianCystsSurgery": [{ "year": 2018, "complications": false }],
+        "hysterectomy": { "year": 2019, "complications": true },
+        "sterilizationSurgery": { "year": 2021, "complications": false },
+        "breastMassResection": [{ "year": 2020, "complications": true }]
+      }
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- **Versión 1**: La versión 1 contiene una propiedad `data`
+  que es un objeto con la siguiente forma:
+
+- firstMenstrualPeriod:
+
+````json
+{
+  "age": "Number",
+}
+
+- regularCycles:
+
+```json
+{
+  "isRegular": "Boolean",
+}
+````
+
+- painfulMenstruation:
+
+```json
+{
+    "isPainful": "Boolean",
+    "medication": "String",
+}
+```
+
+- pregnancies:
+
+```json
+{
+  "totalPregnancies": "Number",
+  "vaginalDeliveries": "Number",
+  "cesareanSections": "Number",
+  "abortions": "Number"
+}
+
+```
+
+- ovarianCystsSurgery, hysterectomy, sterilizationSurgery, breastMassResection:
+
+```json
+{
+  "medication": {
+    "medication": "String",
+    "dosage": "String",
+    "frequency": "String"
+  }
+}
+```
 
 ### Antecedentes no Patológicos
-````
+
+Los antecedentes no patológicos se organizan por
+tipo de condición. Cada tipo de condición se almacena en
+un objeto JSON que lista los datos requeridos.
+
+```json
+{
+  "medicalHistory": {
+    "bloodType": "O+",
+    "smoker": { "status": "Former", "years": 5 },
+    "drink": { "frequency": "Moderate" },
+    "drugs": { "usage": "None" }
+  }
+}
+
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- **Versión 1**: La versión 1 contiene una propiedad `data`
+  que es un objeto con la siguiente forma:
+
+```json
+{
+  "bloodType": "String",
+  "smoker": {
+    "status": "String",
+    "years": "Number"
+  },
+  "drink": {
+    "frequency": "String"
+  },
+  "drugs": {
+    "usage": "String"
+  }
+}
+
+```
+
+### Antecedentes Quirúrgicos
+
+Los antecedentes quirúrgicos se organizan por
+tipo de condición. Cada tipo de condición se almacena en
+un objeto JSON que lista los datos requeridos.
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- **Versión 1**: La versión 1 contiene una propiedad `data`
+  que es un arreglo de objetos con la siguiente estructura:
+
+- **surgeries**:
+
+  ```json
+  [
+    {
+      "surgeryType": "String",
+      "surgeryYear": "Number",
+      "complications": "String"
+    }
+  ]
+  ```
