@@ -41,7 +41,7 @@ export const handler = async (event, context) => {
 		logger.info("Connected!");
 
 		const query = `
-			SELECT id FROM paciente p
+			SELECT p.id FROM paciente p
 				INNER JOIN cuenta_paciente cp ON cp.cui_paciente = p.cui
 			WHERE email=$1 
 			LIMIT 1
