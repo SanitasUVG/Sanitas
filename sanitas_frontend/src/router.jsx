@@ -221,6 +221,7 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 		);
 	},
 	useStore: useStore,
+	logoutUser,
 };
 
 const updateInfoView = (

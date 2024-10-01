@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
+import IconButton from "src/components/Button/Icon";
+import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 
 /**
  * @callback NavigationHandler
@@ -24,6 +26,7 @@ import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
  * @property {NavigationHandler} navigateToSurgicalStudent - Function to navigate to the surgical student information section.
  * @property {NavigationHandler} navigateToTraumatologicalStudent - Function to navigate to the traumatological student information section.
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
@@ -45,6 +48,7 @@ export default function StudentDashboardTopbar({
 	navigateToSurgicalStudent,
 	navigateToTraumatologicalStudent,
 	useStore,
+	logoutUser,
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
@@ -192,6 +196,7 @@ export default function StudentDashboardTopbar({
 				}}
 				style={{ cursor: "pointer" }}
 			/>
+			<IconButton icon={logoutIcon} onClick={logoutUser} />
 		</div>
 	);
 }
