@@ -294,7 +294,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: src/handlers/UpdateStudentTraumatologicalHistory/update-student-traumatological-history-patient.updateStudentTraumatologicalHistoryHandler
+      Handler: ./src/handlers/UpdateStudentTraumatologicalHistory/index.handler
       Description: Updates the traumatological history for a specific
         patient from the student view by ID.
       Events:
@@ -500,7 +500,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: src/handlers/GetNonPatologicalHistory/get-nonpatological-history-patient.getNonPatologicalHistoryHandler
+      Handler: ./src/handlers/GetNonPatologicalHistory/index.handler
       Description: Function to get non patological history data from.
         patient.
       Events:
@@ -519,7 +519,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # yamllint disable-line rule:line-length
-      Handler: src/handlers/UpdateNonPatologicalHistory/update-nonpatological-history-patient.updateNonPathologicalHistoryHandler
+      Handler: ./src/handlers/UpdateNonPatologicalHistory/index.handler
       Description: Function to put non patological history data from.
         patient.
       Events:
@@ -537,8 +537,7 @@ Resources:
   updateStudentNonPatologicalHistoryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # yamllint disable-line rule:line-length
-      Handler: src/handlers/UpdateStudentNonPatologicalHistory/update-student-nonpatological-history-patient.updateStudentNonPathologicalHistoryHandler
+      Handler: ./src/handlers/UpdateStudentNonPatologicalHistory/index.handler
       Description: Updates the non patological history for a specific
         patient from the student view by ID.
       Events:

@@ -6,7 +6,7 @@ import {
 	mapToAPINonPathologicalHistory,
 } from "utils/index.mjs";
 
-export const updateNonPathologicalHistoryHandler = async (event, context) => {
+export const handler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("PUT");
 

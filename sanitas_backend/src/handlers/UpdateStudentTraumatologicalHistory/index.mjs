@@ -10,10 +10,7 @@ import { decodeJWT, requestDataEditsDBData } from "utils/index.mjs";
  * @param {import('aws-lambda').APIGatewayProxyResult} context
  * @returns {Promise<import('aws-lambda').APIGatewayProxyResult>} The API response object with status code and body.
  */
-export const updateStudentTraumatologicalHistoryHandler = async (
-	event,
-	context,
-) => {
+export const handler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("POST");
 
