@@ -11,6 +11,7 @@ import logoutIcon from "@tabler/icons/outline/door-exit.svg";
  * @callback NavigationHandler
  * Defines a navigation handler which is a function that performs navigation without taking any parameters.
  * This is used for navigating to various sections of a student dashboard.
+ * @returns {(navigate: import("react-router-dom").NavigateFunction) => void}
  */
 
 /**
@@ -27,6 +28,7 @@ import logoutIcon from "@tabler/icons/outline/door-exit.svg";
  * @property {NavigationHandler} navigateToTraumatologicalStudent - Function to navigate to the traumatological student information section.
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
+ * @property {NavigationHandler} navigateToLogin
  */
 
 /**
@@ -47,6 +49,7 @@ export default function StudentDashboardTopbar({
 	navigateToPsiquiatricStudent,
 	navigateToSurgicalStudent,
 	navigateToTraumatologicalStudent,
+	navigateToLogin,
 	useStore,
 	logoutUser,
 }) {
@@ -196,7 +199,13 @@ export default function StudentDashboardTopbar({
 				}}
 				style={{ cursor: "pointer" }}
 			/>
-			<IconButton icon={logoutIcon} onClick={logoutUser} />
+			<IconButton
+				icon={logoutIcon}
+				onClick={() => {
+					logoutUser();
+					navigateToLogin()(navigate);
+				}}
+			/>
 		</div>
 	);
 }
