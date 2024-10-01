@@ -481,6 +481,7 @@ const studentObGynHistoryView = (
 
 const studentTraumatologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -488,6 +489,7 @@ const studentTraumatologicalHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getTraumatologicHistory={getTraumatologicalHistory}
 			updateTraumatologicalHistory={updateStudentTraumatologicalHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>
