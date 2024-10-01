@@ -185,9 +185,10 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_SURGICAL_HISTORY}`,
 		);
 	},
-	navigateToTraumatologicalStudent: () => (_navigate) => {
-		// Se lo quitan cuando lo pongan, el "_" es temporal para que no llore el lint
-		// TODO: Add Trauma...
+	navigateToTraumatologicalStudent: () => (navigate) => {
+		navigate(
+			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_TRAUMATOLOGICAL_HISTORY}`,
+		);
 	},
 	navigateToFamiliarStudent: () => (navigate) => {
 		navigate(
