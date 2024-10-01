@@ -59,7 +59,7 @@ export const handler = async (event, context) => {
 				.build();
 		}
 
-		const linkedPatientId = dbResponse.rows[0].id_paciente;
+		const linkedPatientId = dbResponse.rows[0].id;
 		return responseBuilder
 			.setStatusCode(200)
 			.setBody({ linkedPatientId })
