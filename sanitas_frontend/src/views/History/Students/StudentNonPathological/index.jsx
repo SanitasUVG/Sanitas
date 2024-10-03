@@ -30,6 +30,8 @@ export function StudentNonPathologicalHistory({
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
@@ -58,16 +60,54 @@ export function StudentNonPathologicalHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left", // Centrar el subtítulo en móviles
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row", // Cambia según el tamaño de la pantalla
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			}}
-		>
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "2rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				flex: 1,
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -87,15 +127,7 @@ export function StudentNonPathologicalHistory({
 					/>
 				</div>
 
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -104,24 +136,8 @@ export function StudentNonPathologicalHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes No Patológicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
-							}}
-						>
+						<h1 style={styles.title}>Antecedentes No Patológicos</h1>
+						<h3 style={styles.subtitle}>
 							Por favor, completa la información solicitada; será tratada con
 							estricta confidencialidad.
 						</h3>
@@ -458,26 +474,50 @@ function NonPathologicalView({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768; // Nuestro breakpoint es 768px
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row", // Cambia la dirección de flex
 				width: "100%",
 				height: "100%",
-				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
+				gap: "1.5rem", // Espacio entre elementos
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "0.5rem" : "1rem", // Ajusta el padding
+				height: "65vh",
+				flex: 1,
+				overflowY: "auto",
+			},
+			baseInput: {
+				width: isMobile ? "12rem" : "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+		};
+	};
+
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			<div style={styles.innerContainer}>
 				{errorMessage ? (
 					<div
 						style={{
@@ -531,19 +571,14 @@ function NonPathologicalView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									Tipo de sangre (para editarlo, vaya a la pestaña "General"):
+									Tipo de sangre:
 								</p>
 								<BaseInput
 									type="text"
 									value={bloodTypeResult?.result?.bloodType ?? ""}
 									readOnly
 									placeholder="Tipo de sangre:"
-									style={{
-										width: "20rem",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
+									style={styles.baseInput}
 								/>
 							</div>
 						</div>
