@@ -479,21 +479,6 @@ function NonPathologicalView({
 		const isMobile = width < 768;
 
 		return {
-			container: {
-				display: "flex",
-				flexDirection: isMobile ? "column" : "row",
-				width: "100%",
-				height: "100%",
-				gap: "1.5rem",
-			},
-			innerContainer: {
-				border: `1px solid ${colors.primaryBackground}`,
-				borderRadius: "10px",
-				padding: isMobile ? "0.5rem" : "1rem",
-				height: "65vh",
-				flex: 1,
-				overflowY: "auto",
-			},
 			baseInput: {
 				width: isMobile ? "12rem" : "20rem",
 				height: "2.5rem",
@@ -517,8 +502,25 @@ function NonPathologicalView({
 	const styles = getResponsiveStyles(windowWidth);
 
 	return (
-		<div style={styles.container}>
-			<div style={styles.innerContainer}>
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "row",
+				width: "100%",
+				height: "100%",
+				gap: "1.5rem",
+			}}
+		>
+			<div
+				style={{
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
+					padding: "1rem",
+					height: "65vh",
+					flex: 1,
+					overflowY: "auto",
+				}}
+			>
 				{errorMessage ? (
 					<div
 						style={{
