@@ -79,7 +79,7 @@ export function StudentNonPathologicalHistory({
 			},
 			container: {
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row", 
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				overflow: isMobile ? "auto" : "none",
@@ -476,20 +476,20 @@ function NonPathologicalView({
 	};
 
 	const getResponsiveStyles = (width) => {
-		const isMobile = width < 768; 
+		const isMobile = width < 768;
 
 		return {
 			container: {
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row", 
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
-				gap: "1.5rem", 
+				gap: "1.5rem",
 			},
 			innerContainer: {
 				border: `1px solid ${colors.primaryBackground}`,
 				borderRadius: "10px",
-				padding: isMobile ? "0.5rem" : "1rem", 
+				padding: isMobile ? "0.5rem" : "1rem",
 				height: "65vh",
 				flex: 1,
 				overflowY: "auto",
