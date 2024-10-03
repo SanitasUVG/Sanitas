@@ -6,6 +6,7 @@ import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
 import IconButton from "src/components/Button/Icon";
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @callback NavigationHandler
@@ -57,6 +58,8 @@ export default function StudentDashboardTopbar({
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
 	const { pathname } = useLocation();
 	const isWoman = useStore((s) => s.isWoman);
+	const { width } = useWindowSize();
+	const isMobileView = width < 768;
 
 	useEffect(() => {
 		const activeKey = sections.find((section) =>
@@ -159,19 +162,10 @@ export default function StudentDashboardTopbar({
 			<img
 				src={arrowLeft}
 				alt="Anterior"
-				onClick={() => {
-					navigateToIndex(-1);
-					const elem = document.querySelector(`#${activeSection}`);
-					console.log("Routing to: ", elem);
-					elem?.scrollIntoView();
-				}}
+				onClick={() => navigateToIndex(-1)}
 				onKeyDown={(event) => {
 					if (event.key === "Enter" || event.key === " ") {
 						navigateToIndex(-1);
-
-						const elem = document.querySelector(`#${activeSection}`);
-						console.log("Routing to: ", elem);
-						elem?.scrollIntoView();
 					}
 				}}
 				style={{ cursor: "pointer" }}
@@ -183,8 +177,10 @@ export default function StudentDashboardTopbar({
 					display: "flex",
 					flexDirection: "row",
 					overflowX: "scroll",
-					gap: "0.5rem",
 					scrollBehavior: "smooth",
+					...(isMobileView
+						? { gap: "0.5rem" }
+						: { justifyContent: "space-around" }),
 				}}
 			>
 				{sections.map((section) => (
