@@ -75,11 +75,11 @@ export function StudentNonPathologicalHistory({
 				fontSize: fontSize.subtitleSize,
 				paddingTop: "0.5rem",
 				paddingBottom: "3rem",
-				textAlign: isMobile ? "center" : "left", // Centrar el subtítulo en móviles
+				textAlign: isMobile ? "center" : "left",
 			},
 			container: {
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row", // Cambia según el tamaño de la pantalla
+				flexDirection: isMobile ? "column" : "row", 
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				overflow: isMobile ? "auto" : "none",
@@ -90,6 +90,7 @@ export function StudentNonPathologicalHistory({
 				padding: "2rem",
 				borderRadius: "0.625rem",
 				overflow: "auto",
+				minHeight: "84vh",
 				flex: 1,
 			},
 		};
@@ -475,20 +476,20 @@ function NonPathologicalView({
 	};
 
 	const getResponsiveStyles = (width) => {
-		const isMobile = width < 768; // Nuestro breakpoint es 768px
+		const isMobile = width < 768; 
 
 		return {
 			container: {
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row", // Cambia la dirección de flex
+				flexDirection: isMobile ? "column" : "row", 
 				width: "100%",
 				height: "100%",
-				gap: "1.5rem", // Espacio entre elementos
+				gap: "1.5rem", 
 			},
 			innerContainer: {
 				border: `1px solid ${colors.primaryBackground}`,
 				borderRadius: "10px",
-				padding: isMobile ? "0.5rem" : "1rem", // Ajusta el padding
+				padding: isMobile ? "0.5rem" : "1rem", 
 				height: "65vh",
 				flex: 1,
 				overflowY: "auto",
@@ -523,6 +524,7 @@ function NonPathologicalView({
 						style={{
 							color: "red",
 							paddingTop: "1rem",
+							paddingBottom: "1rem",
 							textAlign: "center",
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
