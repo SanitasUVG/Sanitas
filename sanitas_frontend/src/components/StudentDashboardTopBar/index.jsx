@@ -67,11 +67,22 @@ export default function StudentDashboardTopbar({
 		}
 	}, [pathname]);
 
+	const scrollToIdx = (nextIdx) => {
+		if (nextIdx >= sections.length || nextIdx < 0) {
+			return;
+		}
+
+		const section = sections[nextIdx].key;
+		const elem = document.querySelector(`#${section}`);
+		elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
+	};
+
 	const navigateToIndex = (indexChange) => {
 		const newIndex = currentIndex + indexChange;
 		if (newIndex >= 0 && newIndex < sections.length) {
 			setActiveSection(sections[newIndex].key);
 			sections[newIndex].navigateTo(navigate);
+			scrollToIdx(newIndex);
 		}
 	};
 
@@ -148,46 +159,72 @@ export default function StudentDashboardTopbar({
 			<img
 				src={arrowLeft}
 				alt="Anterior"
-				onClick={() => navigateToIndex(-1)}
+				onClick={() => {
+					navigateToIndex(-1);
+					const elem = document.querySelector(`#${activeSection}`);
+					console.log("Routing to: ", elem);
+					elem?.scrollIntoView();
+				}}
 				onKeyDown={(event) => {
 					if (event.key === "Enter" || event.key === " ") {
 						navigateToIndex(-1);
+
+						const elem = document.querySelector(`#${activeSection}`);
+						console.log("Routing to: ", elem);
+						elem?.scrollIntoView();
 					}
 				}}
 				style={{ cursor: "pointer" }}
 			/>
 
-			{sections.map((section) => (
-				<button
-					type="button"
-					key={section.key}
-					onClick={() => {
-						if (section.key === "ginecoobstetricos" && !isWoman) {
-							return;
-						}
+			<div
+				style={{
+					flexGrow: 1,
+					display: "flex",
+					flexDirection: "row",
+					overflowX: "scroll",
+					gap: "0.5rem",
+					scrollBehavior: "smooth",
+				}}
+			>
+				{sections.map((section) => (
+					<button
+						id={section.key}
+						type="button"
+						key={section.key}
+						onClick={(ev) => {
+							if (section.key === "ginecoobstetricos" && !isWoman) {
+								return;
+							}
 
-						setActiveSection(section.key);
-						section.navigateTo(navigate);
-					}}
-					style={{
-						backgroundColor:
-							activeSection === section.key ? "#0F6838" : "#E6E7E7",
-						color:
-							activeSection === section.key
-								? "white"
-								: section.key === "ginecoobstetricos" && !isWoman
-									? colors.darkerGrey
-									: "black",
-						padding: "0.7rem",
-						border: "none",
-						cursor: "pointer",
-						borderRadius: "0.7rem",
-						flex: "1",
-					}}
-				>
-					{section.text}
-				</button>
-			))}
+							ev.target.scrollIntoView({
+								behavior: "smooth",
+								inline: "center",
+							});
+							setActiveSection(section.key);
+							section.navigateTo(navigate);
+						}}
+						style={{
+							backgroundColor:
+								activeSection === section.key ? "#0F6838" : "#E6E7E7",
+							color:
+								activeSection === section.key
+									? "white"
+									: section.key === "ginecoobstetricos" && !isWoman
+										? colors.darkerGrey
+										: "black",
+							padding: "0.7rem",
+							border: "none",
+							cursor: "pointer",
+							borderRadius: "0.7rem",
+							flex: "1",
+						}}
+					>
+						{section.text}
+					</button>
+				))}
+			</div>
+
 			<img
 				src={arrowRight}
 				alt="Siguiente"
