@@ -31,7 +31,7 @@ export default function LoginView({
 	useStore,
 }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
-	const { height } = useWindowSize();
+	const { height, width } = useWindowSize();
 
 	/** @type React.CSSStyleDeclaration */
 	const inputStyles = {
@@ -39,6 +39,8 @@ export default function LoginView({
 		padding: ".8rem",
 	};
 
+	const isMobile = width < 768;
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const Child = () => {
 		const navigate = useNavigate();
 		const [username, setUsername] = useState("");
@@ -134,12 +136,12 @@ export default function LoginView({
 				<div
 					style={{
 						background: "white",
-						padding: "4rem 8vw 0 8vw",
+						padding: isMobile ? "2rem 4vw 0 4vw" : "4rem 8vw 0 8vw",
 						display: "flex",
 						flexDirection: "column",
-						gap: "3rem",
-						width: "45%",
-						height: "90%",
+						gap: isMobile ? "1.5rem" : "3rem",
+						width: isMobile ? "90%" : "45%",
+						height: isMobile ? "auto" : "90%",
 						position: "relative",
 						borderRadius: "1rem",
 					}}
@@ -154,7 +156,7 @@ export default function LoginView({
 						<img
 							style={{
 								alignSelf: "center",
-								height: "15vh",
+								height: isMobile ? "10vh" : "15vh",
 							}}
 							alt="UVG Logo"
 							src={uvgLogo}
@@ -165,6 +167,7 @@ export default function LoginView({
 								textAlign: "center",
 								fontFamily: fonts.titleFont,
 								color: colors.titleText,
+								fontSize: isMobile ? fontSize.subtitleSize : "2rem",
 							}}
 						>
 							¡Bienvenid@!
@@ -173,7 +176,7 @@ export default function LoginView({
 							style={{
 								textAlign: "center",
 								fontFamily: fonts.textFont,
-								fontSize: fontSize.subtitleSize,
+								fontSize: isMobile ? "0.85rem" : fontSize.subtitleSize,
 							}}
 						>
 							Ingresa tus datos
@@ -226,7 +229,7 @@ export default function LoginView({
 								style={{
 									textAlign: "right",
 									fontFamily: fonts.titleFont,
-									fontSize: "0.90rem",
+									fontSize: isMobile ? "0.85rem" : "0.90rem",
 									color: colors.titleText,
 									fontWeight: "bold",
 									paddingTop: adjustHeight(height, "0.5rem"),
@@ -257,7 +260,7 @@ export default function LoginView({
 							style={{
 								alignSelf: "center",
 								fontFamily: fonts.titleFont,
-								fontSize: fontSize.textSize,
+								fontSize: isMobile ? "0.85rem" : fontSize.textSize,
 							}}
 						>
 							¿No tienes cuenta?
@@ -272,9 +275,11 @@ export default function LoginView({
 								onClick={() =>
 									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
 								}
-								onKeyUp={() =>
-									navigate(NAV_PATHS.REGISTER_USER, { replace: true })
-								}
+								onKeyUp={(e) => {
+									if (e.key === "Enter") {
+										navigate(NAV_PATHS.REGISTER_USER, { replace: true });
+									}
+								}}
 								onMouseEnter={(e) => {
 									e.target.style.textDecoration = "underline";
 								}}
@@ -299,16 +304,18 @@ export default function LoginView({
 						</p>
 					</div>
 
-					<img
-						src={logoSanitas}
-						alt="Sanitas logo"
-						style={{
-							width: "4rem",
-							position: "absolute",
-							bottom: "1rem",
-							right: "1rem",
-						}}
-					/>
+					{!isMobile && (
+						<img
+							src={logoSanitas}
+							alt="Sanitas logo"
+							style={{
+								width: "4rem",
+								position: "absolute",
+								bottom: "1rem",
+								right: "1rem",
+							}}
+						/>
+					)}
 				</div>
 			</div>
 		);
