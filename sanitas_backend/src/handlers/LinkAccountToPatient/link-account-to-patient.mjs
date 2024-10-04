@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -57,19 +57,45 @@ export const handler = async (event, context) => {
 		client = getPgClient(url);
 		await client.connect();
 
-		const query = `
+		const transactionResult = await transaction(client, logger, async () => {
+			let query = `
 			INSERT INTO CUENTA_PACIENTE (email, cui_paciente)
 			VALUES ($1, $2)
 			RETURNING (SELECT id FROM paciente WHERE cui = cui_paciente)
 		`;
-		const values = [email, cui];
-		logger.info({ query, values }, "Querying DB...");
-		const dbresponse = await client.query(query, values);
-		logger.info("Patient linked successfully!");
+			let values = [email, cui];
+			logger.info({ query, values }, "Querying DB...");
+			let dbResponse = await client.query(query, values);
+			logger.info("Patient linked successfully!");
+
+			const linkedPatientId = dbResponse.rows[0].id;
+			query = `
+			UPDATE PACIENTE SET
+			correo = $1
+			WHERE id = $2`;
+			values = [email, linkedPatientId];
+
+			logger.info({ query, values }, "Querying DB...");
+			dbResponse = await client.query(query, values);
+			logger.info("Updated patient email successfully!");
+
+			return linkedPatientId;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+
+		if (transactionResult.response) {
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
+		}
+
+		const linkedPatientId = transactionResult.result;
 
 		const response = responseBuilder
 			.setStatusCode(200)
-			.setBody({ linkedPatientId: dbresponse.rows[0].id })
+			.setBody({ linkedPatientId })
 			.build();
 		logger.info({ response }, "Responding with:");
 		return response;

@@ -33,7 +33,8 @@ describe("Get linked patient integration tests", () => {
 		expect(response.status).toBe(200);
 
 		const { linkedPatientId } = response.data;
-		expect(linkedPatientId).toEqual(patientData.idPatient);
+		expect(linkedPatientId).toBeDefined();
+		expect(linkedPatientId).toEqual(patientData.patientId);
 	});
 
 	test("Get null for patient with no linked patient", async () => {

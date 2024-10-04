@@ -41,7 +41,7 @@ export const handler = async (event, context) => {
 		logger.info("Connected!");
 
 		const query = `
-			SELECT id FROM paciente p
+			SELECT p.id FROM paciente p
 				INNER JOIN cuenta_paciente cp ON cp.cui_paciente = p.cui
 			WHERE email=$1 
 			LIMIT 1
@@ -59,7 +59,7 @@ export const handler = async (event, context) => {
 				.build();
 		}
 
-		const linkedPatientId = dbResponse.rows[0].id_paciente;
+		const linkedPatientId = dbResponse.rows[0].id;
 		return responseBuilder
 			.setStatusCode(200)
 			.setBody({ linkedPatientId })

@@ -4,11 +4,14 @@ import { useLocation } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
+import IconButton from "src/components/Button/Icon";
+import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 
 /**
  * @callback NavigationHandler
  * Defines a navigation handler which is a function that performs navigation without taking any parameters.
  * This is used for navigating to various sections of a student dashboard.
+ * @returns {(navigate: import("react-router-dom").NavigateFunction) => void}
  */
 
 /**
@@ -24,6 +27,8 @@ import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
  * @property {NavigationHandler} navigateToSurgicalStudent - Function to navigate to the surgical student information section.
  * @property {NavigationHandler} navigateToTraumatologicalStudent - Function to navigate to the traumatological student information section.
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
+ * @property {NavigationHandler} navigateToLogin
  */
 
 /**
@@ -44,7 +49,9 @@ export default function StudentDashboardTopbar({
 	navigateToPsiquiatricStudent,
 	navigateToSurgicalStudent,
 	navigateToTraumatologicalStudent,
+	navigateToLogin,
 	useStore,
+	logoutUser,
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
@@ -191,6 +198,13 @@ export default function StudentDashboardTopbar({
 					}
 				}}
 				style={{ cursor: "pointer" }}
+			/>
+			<IconButton
+				icon={logoutIcon}
+				onClick={() => {
+					logoutUser();
+					navigateToLogin()(navigate);
+				}}
 			/>
 		</div>
 	);

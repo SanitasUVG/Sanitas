@@ -1,6 +1,8 @@
 import { MemoryRouter } from "react-router-dom";
 import { action } from "@storybook/addon-actions";
 import StudentDashboardTopbar from ".";
+import { createEmptyStore } from "src/store.mjs";
+import { mockLogoutUser } from "src/cognito.mjs";
 
 const mockNavigate = (route) => action(`Navigate to: ${route}`);
 
@@ -29,6 +31,8 @@ Default.args = {
 	navigateToPsiquiatricStudent: () => mockNavigate("Psiquiatric"),
 	navigateToSurgicalStudent: () => mockNavigate("Surgical"),
 	navigateToTraumatologicalStudent: () => mockNavigate("Traumatological"),
+	useStore: createEmptyStore(),
+	logoutUser: mockLogoutUser,
 };
 
 // Puedes agregar más variaciones si es necesario

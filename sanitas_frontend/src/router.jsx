@@ -220,7 +220,11 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
 		);
 	},
+	navigateToLogin: () => (navigate) => {
+		navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+	},
 	useStore: useStore,
+	logoutUser: IS_PRODUCTION ? logoutUser : mockLogoutUser,
 };
 
 const updateInfoView = (
@@ -481,6 +485,7 @@ const studentObGynHistoryView = (
 
 const studentTraumatologicalHistoryView = (
 	<RequireAuth
+		useStore={useStore}
 		getSession={IS_PRODUCTION ? getSession : mockGetSession}
 		path={NAV_PATHS.LOGIN_USER}
 	>
@@ -488,6 +493,7 @@ const studentTraumatologicalHistoryView = (
 			getBirthdayPatientInfo={getGeneralPatientInformation}
 			getTraumatologicHistory={getTraumatologicalHistory}
 			updateTraumatologicalHistory={updateStudentTraumatologicalHistory}
+			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
 		/>
 	</RequireAuth>

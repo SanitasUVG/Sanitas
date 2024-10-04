@@ -8,6 +8,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import InformationCard from "src/components/InformationCard";
 import WrapPromise from "src/utils/promiseWrapper";
+import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
 /**
  * @typedef {Object} StudentTraumatologicalHistoryProps
@@ -26,6 +27,7 @@ export function StudentTraumatologicalHistory({
 	getBirthdayPatientInfo,
 	getTraumatologicHistory,
 	updateTraumatologicalHistory,
+	sidebarConfig,
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
@@ -40,19 +42,27 @@ export function StudentTraumatologicalHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				padding: "2rem",
 			}}
 		>
-			{/* <div style={{ width: "25%" }}>
-				<DashboardSidebar {...sidebarConfig} />
-			</div> */}
+			<div
+				style={{
+					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="traumatological"
+				/>
+			</div>
 
 			<div
 				style={{
-					paddingLeft: "2rem",
 					height: "100%",
 					width: "100%",
 				}}
@@ -60,9 +70,10 @@ export function StudentTraumatologicalHistory({
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
+						padding: "2rem",
 						height: "100%",
-						borderRadius: "10px",
+						borderRadius: "0.625rem",
+						flex: "1",
 					}}
 				>
 					<div
