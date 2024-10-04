@@ -111,7 +111,7 @@ export const generateUniqueEmail = () => {
  */
 export const generateRandomCarnet = () => {
 	const timestamp = Date.now();
-	const randomNum = Math.floor(Math.random() * 100);
+	const randomNum = Math.floor(Math.random() * 10_000);
 	return `${randomNum}${timestamp}`.slice(0, 10);
 };
 
