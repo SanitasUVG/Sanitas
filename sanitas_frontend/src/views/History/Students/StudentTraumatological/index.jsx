@@ -57,7 +57,7 @@ export function StudentTraumatologicalHistory({
 			>
 				<StudentDashboardTopbar
 					{...sidebarConfig}
-					activeSectionProp="traumatological"
+					activeSectionProp="traumatologicos"
 				/>
 			</div>
 
