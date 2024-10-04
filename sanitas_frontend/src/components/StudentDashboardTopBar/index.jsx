@@ -122,7 +122,7 @@ export default function StudentDashboardTopbar({
 
 	useEffect(() => {
 		const elem = document.querySelector(`#${activeSection}`);
-		if (Object.hasOwn(elem, "scrollIntoView")) {
+		if ("scrollIntoView" in elem) {
 			elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
 		}
 	}, [activeSection]);
@@ -142,6 +142,7 @@ export default function StudentDashboardTopbar({
 				width: "100%",
 				height: "100%",
 				justifyContent: "center",
+				alignItems: "center",
 				gap: "1rem",
 			}}
 		>
