@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 import { StudentPersonalHistory } from ".";
 
 export default {
@@ -15,8 +16,6 @@ export default {
 	],
 	title: "Views/Antecedents/Student/StudentPersonalHistory",
 };
-
-const dummyPatientId = 12345;
 
 const mockGetBirthdayPatientInfo = async (_id) => ({
 	result: { birthdate: "2000-02-11" },
@@ -76,25 +75,6 @@ const mockGetStudentPersonalHistoryEmpty = async () => ({
 	},
 });
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
-
 const mockGetStudentPersonalHistoryError = async () => ({
 	error: {
 		response: {
@@ -110,7 +90,7 @@ const mockUpdateStudentPersonalHistory = async (history) => ({
 });
 
 const store = createEmptyStore({
-	selectedPatientId: dummyPatientId,
+	selectedPatientId: 1234,
 });
 
 export const WithData = {
@@ -118,7 +98,7 @@ export const WithData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryWithData,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -128,7 +108,7 @@ export const EmptyData = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryEmpty,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -138,7 +118,7 @@ export const ErrorState = {
 		getBirthdayPatientInfo: mockGetBirthdayPatientInfo,
 		getStudentPersonalHistory: mockGetStudentPersonalHistoryError,
 		updateStudentPersonalHistory: mockUpdateStudentPersonalHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };

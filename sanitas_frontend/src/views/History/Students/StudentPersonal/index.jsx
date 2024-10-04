@@ -45,13 +45,13 @@ export function StudentPersonalHistory({
 			title: {
 				color: colors.titleText,
 				fontFamily: fonts.titleFont,
-				fontSize: fontSize.titleSize,
+				fontSize: isMobile ? "1.06rem" : fontSize.titleSize,
 				textAlign: isMobile ? "center" : "left",
 			},
 			subtitle: {
 				fontFamily: fonts.textFont,
 				fontWeight: "normal",
-				fontSize: fontSize.subtitleSize,
+				fontSize: isMobile ? "0.9rem" : fontSize.subtitleSize,
 				paddingTop: "0.7rem",
 				paddingBottom: "0.2rem",
 				textAlign: isMobile ? "center" : "left",
@@ -453,7 +453,7 @@ function PersonalView({
 			},
 			baseInput: {
 				width: "100%",
-				maxWidth: isMobile ? "12rem" : "20rem",
+				maxWidth: isMobile ? "20rem" : "20rem",
 				height: "2.5rem",
 				fontFamily: fonts.textFont,
 				fontSize: "1rem",
@@ -494,74 +494,6 @@ function PersonalView({
 
 	return (
 		<div style={styles.container}>
-			<div style={styles.innerContainer}>
-				<div style={{ paddingBottom: "0.5rem" }}>
-					<BaseButton
-						text="Agregar antecedente personal"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
-
-				{errorMessage && (
-					<div
-						style={{
-							color: "red",
-							paddingTop: "1rem",
-							textAlign: "center",
-							fontFamily: fonts.titleFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						{errorMessage}
-					</div>
-				)}
-
-				{noPersonalData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
-						¡Parece que no hay antecedentes personales! Agrega uno en el botón
-						de arriba.
-					</p>
-				) : (
-					Object.entries(personalHistory).map(
-						([diseaseKey, { data = [], version: _version }]) => {
-							if (data.length === 0) {
-								return null;
-							}
-
-							const displayedDisease = translateDisease(diseaseKey);
-							if (diseaseKey === "myocardialInfarction") {
-								return data.map((entry, _index) => {
-									return (
-										<InformationCard
-											key={`${diseaseKey}-${entry.surgeryYear}`}
-											type="personalMiocadio"
-											disease={displayedDisease}
-											year={entry.surgeryYear}
-											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-										/>
-									);
-								});
-							}
-
-							return data.map((entry, _index) => {
-								return (
-									<InformationCard
-										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
-										type="personal"
-										disease={displayedDisease}
-										reasonInfo={
-											entry.medicine ? entry.medicine : entry.treatment
-										}
-										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-									/>
-								);
-							});
-						},
-					)
-				)}
-			</div>
-
 			{addingNew || selectedPersonal.disease ? (
 				<div
 					style={{
@@ -569,20 +501,13 @@ function PersonalView({
 						flex: 1.5,
 						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
+						marginBottom: "1rem", // Añadido para separar los contenedores
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							width: "100%",
-						}}
-					>
+					<div style={styles.dropdownContainer}>
 						<p
 							style={{
 								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: fontSize.textSize,
 								fontWeight: "bold",
@@ -593,10 +518,9 @@ function PersonalView({
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedPersonal.disease || ""}
-							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
-								container: styles.dropdownContainer,
+								container: { width: "100%" },
 								select: styles.dropdownSelect,
 								option: {},
 								indicator: {},
@@ -838,6 +762,74 @@ function PersonalView({
 					)}
 				</div>
 			) : null}
+
+			<div style={styles.innerContainer}>
+				<div style={{ paddingBottom: "0.5rem" }}>
+					<BaseButton
+						text="Agregar antecedente personal"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
+
+				{errorMessage && (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				)}
+
+				{noPersonalData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay antecedentes personales! Agrega uno en el botón
+						de arriba.
+					</p>
+				) : (
+					Object.entries(personalHistory).map(
+						([diseaseKey, { data = [], version: _version }]) => {
+							if (data.length === 0) {
+								return null;
+							}
+
+							const displayedDisease = translateDisease(diseaseKey);
+							if (diseaseKey === "myocardialInfarction") {
+								return data.map((entry, _index) => {
+									return (
+										<InformationCard
+											key={`${diseaseKey}-${entry.surgeryYear}`}
+											type="personalMiocadio"
+											disease={displayedDisease}
+											year={entry.surgeryYear}
+											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+										/>
+									);
+								});
+							}
+
+							return data.map((entry, _index) => {
+								return (
+									<InformationCard
+										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
+										type="personal"
+										disease={displayedDisease}
+										reasonInfo={
+											entry.medicine ? entry.medicine : entry.treatment
+										}
+										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+									/>
+								);
+							});
+						},
+					)
+				)}
+			</div>
 		</div>
 	);
 }
