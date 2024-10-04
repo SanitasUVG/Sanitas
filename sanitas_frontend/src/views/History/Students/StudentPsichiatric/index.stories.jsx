@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 import { StudentPsichiatricHistory } from ".";
 
 export default {
@@ -15,8 +16,6 @@ export default {
 	],
 	title: "Views/Antecedents/Student/StudentPsichiatricHistory",
 };
-
-const dummyPatientId = 12345;
 
 const mockGetStudentPsichiatricHistoryWithData = async () => ({
 	result: {
@@ -92,25 +91,6 @@ const mockGetStudentPsichiatricHistoryWithData = async () => ({
 	},
 });
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
-
 const mockGetStudentPsichiatricHistoryEmpty = async () => ({
 	result: {
 		medicalHistory: {
@@ -139,14 +119,14 @@ const mockUpdateStudentPsichiatricHistory = async (history) => ({
 });
 
 const store = createEmptyStore({
-	selectedPatientId: dummyPatientId,
+	selectedPatientId: 12345, // Mock patient ID
 });
 
 export const WithData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryWithData,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -155,7 +135,7 @@ export const EmptyData = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryEmpty,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -164,7 +144,7 @@ export const ErrorState = {
 	args: {
 		getPsichiatricHistory: mockGetStudentPsichiatricHistoryError,
 		updatePsichiatricHistory: mockUpdateStudentPsichiatricHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
