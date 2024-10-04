@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
 import IconButton from "src/components/Button/Icon";
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
-import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @callback NavigationHandler
@@ -56,36 +54,13 @@ export default function StudentDashboardTopbar({
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
-	const { pathname } = useLocation();
 	const isWoman = useStore((s) => s.isWoman);
-	const { width } = useWindowSize();
-	const isMobileView = width < 768;
-
-	useEffect(() => {
-		const activeKey = sections.find((section) =>
-			pathname.includes(section.key),
-		)?.key;
-		if (activeKey) {
-			setActiveSection(activeKey);
-		}
-	}, [pathname]);
-
-	const scrollToIdx = (nextIdx) => {
-		if (nextIdx >= sections.length || nextIdx < 0) {
-			return;
-		}
-
-		const section = sections[nextIdx].key;
-		const elem = document.querySelector(`#${section}`);
-		elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
-	};
 
 	const navigateToIndex = (indexChange) => {
 		const newIndex = currentIndex + indexChange;
 		if (newIndex >= 0 && newIndex < sections.length) {
 			setActiveSection(sections[newIndex].key);
 			sections[newIndex].navigateTo(navigate);
-			scrollToIdx(newIndex);
 		}
 	};
 
@@ -125,7 +100,10 @@ export default function StudentDashboardTopbar({
 			text: "Psiquiátricos",
 			navigateTo: navigateToPsiquiatricStudent(),
 		},
-		{
+	];
+
+	if (isWoman) {
+		sections.push({
 			key: "ginecoobstetricos",
 			text: "Ginecoobstétricos",
 			navigateTo: (navigate) => {
@@ -133,13 +111,19 @@ export default function StudentDashboardTopbar({
 					navigateToObstetricsStudent()(navigate);
 				}
 			},
-		},
-		{
-			key: "no_patologicos",
-			text: "No Patológicos",
-			navigateTo: navigateToNonPathologicalStudent(),
-		},
-	];
+		});
+	}
+
+	sections.push({
+		key: "no_patologicos",
+		text: "No Patológicos",
+		navigateTo: navigateToNonPathologicalStudent(),
+	});
+
+	useEffect(() => {
+		const elem = document.querySelector(`#${activeSection}`);
+		elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
+	}, [activeSection]);
 
 	const currentIndex = sections.findIndex(
 		(section) => section.key === activeSection,
@@ -178,9 +162,7 @@ export default function StudentDashboardTopbar({
 					flexDirection: "row",
 					overflowX: "scroll",
 					scrollBehavior: "smooth",
-					...(isMobileView
-						? { gap: "0.5rem" }
-						: { justifyContent: "space-around" }),
+					gap: "0.5rem",
 				}}
 			>
 				{sections.map((section) => (
@@ -188,27 +170,14 @@ export default function StudentDashboardTopbar({
 						id={section.key}
 						type="button"
 						key={section.key}
-						onClick={(ev) => {
-							if (section.key === "ginecoobstetricos" && !isWoman) {
-								return;
-							}
-
-							ev.target.scrollIntoView({
-								behavior: "smooth",
-								inline: "center",
-							});
+						onClick={() => {
 							setActiveSection(section.key);
 							section.navigateTo(navigate);
 						}}
 						style={{
 							backgroundColor:
 								activeSection === section.key ? "#0F6838" : "#E6E7E7",
-							color:
-								activeSection === section.key
-									? "white"
-									: section.key === "ginecoobstetricos" && !isWoman
-										? colors.darkerGrey
-										: "black",
+							color: activeSection === section.key ? "white" : "black",
 							padding: "0.7rem",
 							border: "none",
 							cursor: "pointer",
