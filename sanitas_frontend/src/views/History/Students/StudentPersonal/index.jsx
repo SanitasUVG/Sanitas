@@ -30,6 +30,7 @@ export function StudentPersonalHistory({
 }) {
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const id = useStore((s) => s.selectedPatientId);
+	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 
@@ -41,37 +42,37 @@ export function StudentPersonalHistory({
 
 	const getResponsiveStyles = (width) => {
 		const isMobile = width < 768;
+
 		return {
 			title: {
 				color: colors.titleText,
 				fontFamily: fonts.titleFont,
-				fontSize: isMobile ? "1.06rem" : fontSize.titleSize,
+				fontSize: fontSize.titleSize,
 				textAlign: isMobile ? "center" : "left",
 			},
 			subtitle: {
 				fontFamily: fonts.textFont,
 				fontWeight: "normal",
-				fontSize: isMobile ? "0.9rem" : fontSize.subtitleSize,
-				paddingTop: "0.7rem",
-				paddingBottom: "0.2rem",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
 				textAlign: isMobile ? "center" : "left",
 			},
 			container: {
 				display: "flex",
-				flexDirection: "column",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				overflow: "hidden",
-				padding: "0",
+				overflow: isMobile ? "auto" : "none",
+				padding: "2rem",
 			},
 			innerContent: {
 				backgroundColor: colors.secondaryBackground,
 				padding: "2rem",
 				borderRadius: "0.625rem",
 				overflow: "auto",
-				minHeight: "calc(100vh - 4rem)",
+				minHeight: "84vh",
 				flex: 1,
-				margin: isMobile ? "1rem" : "2rem",
 			},
 		};
 	};
@@ -94,7 +95,7 @@ export function StudentPersonalHistory({
 					style={{
 						width: "100%",
 						padding: "1rem 1rem 0 1rem",
-						flex: "0 0 auto",
+						flex: "0 0 20%",
 					}}
 				>
 					<StudentDashboardTopbar
@@ -117,25 +118,27 @@ export function StudentPersonalHistory({
 							¿Usted ha sido diagnosticado por un médico con una de las
 							siguientes enfermedades?
 						</h3>
-						<h3
-							style={{
-								...styles.subtitle,
-								paddingTop: "0.2rem",
-								paddingBottom: "1.5rem",
-							}}
-						>
-							Por favor ingrese un elemento por diagnóstico.
-						</h3>
 					</div>
 
-					<Suspense fallback={<LoadingView />}>
-						<PersonalView
-							id={id}
-							birthdayResource={birthdayResource}
-							personalHistoryResource={personalHistoryResource}
-							updateStudentPersonalHistory={updateStudentPersonalHistory}
-						/>
-					</Suspense>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-align",
+							alignItems: "space-between",
+							width: "100%",
+							gap: "2rem",
+						}}
+					>
+						<Suspense fallback={<LoadingView />}>
+							<PersonalView
+								id={id}
+								birthdayResource={birthdayResource}
+								personalHistoryResource={personalHistoryResource}
+								updateStudentPersonalHistory={updateStudentPersonalHistory}
+							/>
+						</Suspense>
+					</div>
 				</div>
 			</div>
 		</div>
