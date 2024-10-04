@@ -10,6 +10,19 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
+/**
+ * @typedef {Object} StudentStudentFamiliarHistoryProps
+ * @property {Function} getStudentFamilyHistory - Function to fetch the familiar history data.
+ * @property {Function} updateStudentFamilyHistory - Function to update the familiar history records.
+ * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
+ * @property {Function} useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
+ *
+ * Component responsible for displaying and managing the familiar history section in a medical dashboard.
+ * It includes a sidebar and a main content area where the user can view and add family medical history records.
+ *
+ * @param {StudentStudentFamiliarHistoryProps} props - The props passed to the StudentFamiliarHistory component.
+ * @returns {JSX.Element} - The rendered component with sections for sidebar and familiar history management.
+ */
 export function StudentFamiliarHistory({
 	getStudentFamilyHistory,
 	updateStudentFamilyHistory,
