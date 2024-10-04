@@ -10,35 +10,15 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 
-/**
- * @typedef {Object} StudentStudentFamiliarHistoryProps
- * @property {Function} getStudentFamilyHistory - Function to fetch the familiar history data.
- * @property {Function} updateStudentFamilyHistory - Function to update the familiar history records.
- * @property {Object} sidebarConfig - Configuration properties for the sidebar component.
- * @property {Function} useStore - Custom hook for accessing the global state to retrieve the selected patient ID.
- *
- * Component responsible for displaying and managing the familiar history section in a medical dashboard.
- * It includes a sidebar and a main content area where the user can view and add family medical history records.
- *
- * @param {StudentStudentFamiliarHistoryProps} props - The props passed to the StudentFamiliarHistory component.
- * @returns {JSX.Element} - The rendered component with sections for sidebar and familiar history management.
- */
 export function StudentFamiliarHistory({
 	getStudentFamilyHistory,
 	updateStudentFamilyHistory,
 	sidebarConfig,
 	useStore,
 }) {
-	const [setReload] = useState(false);
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const id = useStore((s) => s.selectedPatientId);
-	const StudentFamiliarHistoryResource = WrapPromise(
-		getStudentFamilyHistory(id),
-	);
-
-	const triggerReload = () => {
-		setReload((prev) => !prev);
-	};
+	const familiarHistoryResource = WrapPromise(getStudentFamilyHistory(id));
 
 	const LoadingView = () => {
 		return (
@@ -52,15 +32,15 @@ export function StudentFamiliarHistory({
 			title: {
 				color: colors.titleText,
 				fontFamily: fonts.titleFont,
-				fontSize: fontSize.titleSize,
+				fontSize: isMobile ? "1.06rem" : fontSize.titleSize,
 				textAlign: isMobile ? "center" : "left",
 			},
 			subtitle: {
 				fontFamily: fonts.textFont,
 				fontWeight: "normal",
-				fontSize: fontSize.subtitleSize,
-				paddingTop: "0.5rem",
-				paddingBottom: "3rem",
+				fontSize: isMobile ? "0.9rem" : fontSize.subtitleSize,
+				paddingTop: "0.7rem",
+				paddingBottom: "0.2rem",
 				textAlign: isMobile ? "center" : "left",
 			},
 			container: {
@@ -124,14 +104,22 @@ export function StudentFamiliarHistory({
 							¿Alguien en su familia (padres, abuelos, hermanos, tíos) padece
 							alguna de las siguientes enfermedades?
 						</h3>
+						<h3
+							style={{
+								...styles.subtitle,
+								paddingTop: "0.2rem",
+								paddingBottom: "1.5rem",
+							}}
+						>
+							Por favor ingrese un elemento por diagnóstico.
+						</h3>
 					</div>
 
 					<Suspense fallback={<LoadingView />}>
 						<FamiliarView
 							id={id}
-							StudentFamiliarHistoryResource={StudentFamiliarHistoryResource}
+							familiarHistoryResource={familiarHistoryResource}
 							updateStudentFamilyHistory={updateStudentFamilyHistory}
-							triggerReload={triggerReload}
 						/>
 					</Suspense>
 				</div>
@@ -139,23 +127,10 @@ export function StudentFamiliarHistory({
 		</div>
 	);
 }
-
-/**
- * @typedef {Object} FamiliarViewProps
- * @property {string} id - The unique identifier for the patient.
- * @property {Object} StudentFamiliarHistoryResource - Wrapped promise containing the familiar history data.
- * @property {Function} updateStudentFamilyHistory - Function to update familiar history records.
- *
- * This component handles the display and interaction of the familiar medical history. It allows the user
- * to view existing records, add new entries, and manage interaction states like error handling and data submissions.
- *
- * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
- * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
- */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity:  Is the main function of the view
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 function FamiliarView({
 	id,
-	StudentFamiliarHistoryResource,
+	familiarHistoryResource,
 	updateStudentFamilyHistory,
 }) {
 	// State hooks to manage the selected familiar disease and whether adding a new entry
@@ -164,10 +139,10 @@ function FamiliarView({
 	const [isEditable, setIsEditable] = useState(false);
 
 	// Read the data from the resource and handle any potential errors
-	const StudentFamiliarHistoryResult = StudentFamiliarHistoryResource.read();
+	const familiarHistoryResult = familiarHistoryResource.read();
 	let errorMessage = "";
-	if (StudentFamiliarHistoryResult.error) {
-		const error = StudentFamiliarHistoryResult.error;
+	if (familiarHistoryResult.error) {
+		const error = familiarHistoryResult.error;
 		if (error?.response) {
 			const { status } = error.response;
 			if (status < 500) {
@@ -183,69 +158,56 @@ function FamiliarView({
 	}
 
 	// Extract the familiar history data and establish initial state
-	const StudentFamiliarHistoryData = StudentFamiliarHistoryResult.result;
-	const [StudentFamiliarHistory, setStudentFamiliarHistory] = useState({
+	const familiarHistoryData = familiarHistoryResult.result;
+	const [familiarHistory, setFamiliarHistory] = useState({
 		hypertension: {
-			data: StudentFamiliarHistoryData?.medicalHistory.hypertension.data || [],
-			version:
-				StudentFamiliarHistoryData?.medicalHistory.hypertension.version || 1,
+			data: familiarHistoryData?.medicalHistory.hypertension.data || [],
+			version: familiarHistoryData?.medicalHistory.hypertension.version || 1,
 		},
 		diabetesMellitus: {
-			data:
-				StudentFamiliarHistoryData?.medicalHistory.diabetesMellitus.data || [],
+			data: familiarHistoryData?.medicalHistory.diabetesMellitus.data || [],
 			version:
-				StudentFamiliarHistoryData?.medicalHistory.diabetesMellitus.version ||
-				1,
+				familiarHistoryData?.medicalHistory.diabetesMellitus.version || 1,
 		},
 		hypothyroidism: {
-			data:
-				StudentFamiliarHistoryData?.medicalHistory.hypothyroidism.data || [],
-			version:
-				StudentFamiliarHistoryData?.medicalHistory.hypothyroidism.version || 1,
+			data: familiarHistoryData?.medicalHistory.hypothyroidism.data || [],
+			version: familiarHistoryData?.medicalHistory.hypothyroidism.version || 1,
 		},
 		asthma: {
-			data: StudentFamiliarHistoryData?.medicalHistory.asthma.data || [],
-			version: StudentFamiliarHistoryData?.medicalHistory.asthma.version || 1,
+			data: familiarHistoryData?.medicalHistory.asthma.data || [],
+			version: familiarHistoryData?.medicalHistory.asthma.version || 1,
 		},
 		convulsions: {
-			data: StudentFamiliarHistoryData?.medicalHistory.convulsions.data || [],
-			version:
-				StudentFamiliarHistoryData?.medicalHistory.convulsions.version || 1,
+			data: familiarHistoryData?.medicalHistory.convulsions.data || [],
+			version: familiarHistoryData?.medicalHistory.convulsions.version || 1,
 		},
 		myocardialInfarction: {
-			data:
-				StudentFamiliarHistoryData?.medicalHistory.myocardialInfarction.data ||
-				[],
+			data: familiarHistoryData?.medicalHistory.myocardialInfarction.data || [],
 			version:
-				StudentFamiliarHistoryData?.medicalHistory.myocardialInfarction
-					.version || 1,
+				familiarHistoryData?.medicalHistory.myocardialInfarction.version || 1,
 		},
 		cancer: {
-			data: StudentFamiliarHistoryData?.medicalHistory.cancer.data || [],
-			version: StudentFamiliarHistoryData?.medicalHistory.cancer.version || 1,
+			data: familiarHistoryData?.medicalHistory.cancer.data || [],
+			version: familiarHistoryData?.medicalHistory.cancer.version || 1,
 		},
 		cardiacDiseases: {
-			data:
-				StudentFamiliarHistoryData?.medicalHistory.cardiacDiseases.data || [],
-			version:
-				StudentFamiliarHistoryData?.medicalHistory.cardiacDiseases.version || 1,
+			data: familiarHistoryData?.medicalHistory.cardiacDiseases.data || [],
+			version: familiarHistoryData?.medicalHistory.cardiacDiseases.version || 1,
 		},
 		renalDiseases: {
-			data: StudentFamiliarHistoryData?.medicalHistory.renalDiseases.data || [],
-			version:
-				StudentFamiliarHistoryData?.medicalHistory.renalDiseases.version || 1,
+			data: familiarHistoryData?.medicalHistory.renalDiseases.data || [],
+			version: familiarHistoryData?.medicalHistory.renalDiseases.version || 1,
 		},
 		others: {
-			data: StudentFamiliarHistoryData?.medicalHistory.others.data || [],
-			version: StudentFamiliarHistoryData?.medicalHistory.others.version || 1,
+			data: familiarHistoryData?.medicalHistory.others.data || [],
+			version: familiarHistoryData?.medicalHistory.others.version || 1,
 		},
 	});
 
 	// No familiar data in API
-	const noFamiliarData = Object.keys(StudentFamiliarHistory).every(
+	const noFamiliarData = Object.keys(familiarHistory).every(
 		(key) =>
-			StudentFamiliarHistory[key]?.data &&
-			StudentFamiliarHistory[key].data.length === 0,
+			familiarHistory[key]?.data && familiarHistory[key].data.length === 0,
 	);
 
 	// Handlers for different actions within the component
@@ -259,7 +221,7 @@ function FamiliarView({
 
 	const validateDisease = (disease) => {
 		// Validation to ensure the selected disease exists in the state
-		if (!StudentFamiliarHistory[disease]) {
+		if (!familiarHistory[disease]) {
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return false;
 		}
@@ -280,7 +242,7 @@ function FamiliarView({
 		) {
 			setSelectedFamiliar({
 				disease: diseaseKey,
-				relative: [...StudentFamiliarHistory[diseaseKey].data],
+				relative: [...familiarHistory[diseaseKey].data],
 				index: index,
 			});
 		} else {
@@ -320,10 +282,7 @@ function FamiliarView({
 
 	const isValidDiseaseSelection = () => {
 		if (
-			!(
-				selectedFamiliar.disease &&
-				StudentFamiliarHistory[selectedFamiliar.disease]
-			)
+			!(selectedFamiliar.disease && familiarHistory[selectedFamiliar.disease])
 		) {
 			toast.error("Por favor, selecciona una enfermedad válida.");
 			return false;
@@ -386,9 +345,7 @@ function FamiliarView({
 				: "Guardando nuevo antecedente familiar...",
 		);
 
-		let updatedData = [
-			...StudentFamiliarHistory[selectedFamiliar.disease].data,
-		];
+		let updatedData = [...familiarHistory[selectedFamiliar.disease].data];
 
 		if (isUpdating) {
 			if (
@@ -418,19 +375,19 @@ function FamiliarView({
 		}
 
 		const updatedHistory = {
-			...StudentFamiliarHistory[selectedFamiliar.disease],
+			...familiarHistory[selectedFamiliar.disease],
 			data: updatedData,
 		};
 
-		const updatedStudentFamiliarHistory = {
-			...StudentFamiliarHistory,
+		const updatedFamiliarHistory = {
+			...familiarHistory,
 			[selectedFamiliar.disease]: updatedHistory,
 		};
 
 		try {
 			const response = await updateStudentFamilyHistory(
 				id,
-				updatedStudentFamiliarHistory,
+				updatedFamiliarHistory,
 			);
 			if (!response.error) {
 				toast.success(
@@ -438,7 +395,7 @@ function FamiliarView({
 						? "Antecedente familiar actualizado con éxito."
 						: "Antecedente familiar guardado con éxito.",
 				);
-				setStudentFamiliarHistory(updatedStudentFamiliarHistory);
+				setFamiliarHistory(updatedFamiliarHistory);
 				setSelectedFamiliar({});
 				setAddingNew(false);
 				setIsEditable(false);
@@ -489,6 +446,7 @@ function FamiliarView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides styles for making it responsive
 	const getResponsiveStyles = (width) => {
 		const isMobile = width < 768;
 
@@ -510,7 +468,7 @@ function FamiliarView({
 			},
 			baseInput: {
 				width: "100%",
-				maxWidth: isMobile ? "12rem" : "20rem",
+				maxWidth: "20rem",
 				height: "2.5rem",
 				fontFamily: fonts.textFont,
 				fontSize: "1rem",
@@ -518,9 +476,21 @@ function FamiliarView({
 			dropdownContainer: {
 				width: "100%",
 				maxWidth: isMobile ? "100%" : "80%",
+				marginBottom: "1rem",
 			},
 			dropdownSelect: {
 				width: "100%",
+			},
+			button: {
+				width: isMobile ? "45%" : "30%",
+				height: isMobile ? "2.5rem" : "3rem",
+				fontSize: isMobile ? "0.9rem" : "1rem",
+			},
+			buttonContainer: {
+				display: "flex",
+				justifyContent: "center",
+				gap: "1rem",
+				paddingTop: isMobile ? "3rem" : "5rem",
 			},
 		};
 	};
@@ -540,96 +510,6 @@ function FamiliarView({
 
 	return (
 		<div style={styles.container}>
-			<div style={styles.innerContainer}>
-				{errorMessage && (
-					<div
-						style={{
-							color: "red",
-							paddingTop: "1rem",
-							textAlign: "center",
-							fontFamily: fonts.titleFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						{errorMessage}
-					</div>
-				)}
-
-				<div style={{ paddingBottom: "0.5rem" }}>
-					<BaseButton
-						text="Agregar antecedente familiar"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
-
-				{noFamiliarData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
-						¡Parece que no hay antecedentes familiares! Agrega uno en el botón
-						de arriba.
-					</p>
-				) : (
-					Object.entries(StudentFamiliarHistory).map(
-						([diseaseKey, { data = [] }]) => {
-							if (data.length === 0) {
-								return null;
-							}
-
-							let displayedDisease = translateDisease(diseaseKey);
-
-							if (
-								diseaseKey === "cancer" ||
-								diseaseKey === "cardiacDiseases" ||
-								diseaseKey === "renalDiseases" ||
-								diseaseKey === "others"
-							) {
-								return data.map((entry, index) => {
-									const details = entry.who;
-									const uniqueKey = `${diseaseKey}-${entry.who}-${index}`;
-									if (diseaseKey === "others") {
-										displayedDisease = entry.disease;
-									}
-									return (
-										<InformationCard
-											key={uniqueKey}
-											type="family"
-											disease={displayedDisease}
-											relative={details}
-											onClick={() =>
-												handleSelectDiseaseCard(diseaseKey, entry, index)
-											}
-										/>
-									);
-								});
-							}
-
-							// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
-							else {
-								const displayedRelatives = data.join(", ");
-
-								return (
-									<InformationCard
-										key={diseaseKey}
-										type="family"
-										disease={displayedDisease}
-										relative={displayedRelatives}
-										onClick={() =>
-											data.forEach((relative, index) =>
-												handleSelectDiseaseCard(
-													diseaseKey,
-													{ who: relative },
-													index,
-												),
-											)
-										}
-									/>
-								);
-							}
-						},
-					)
-				)}
-			</div>
-
 			{addingNew || selectedFamiliar.disease ? (
 				<div
 					style={{
@@ -637,20 +517,13 @@ function FamiliarView({
 						flex: 1.5,
 						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
+						marginBottom: "1rem",
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							width: "100%",
-						}}
-					>
+					<div style={styles.dropdownContainer}>
 						<p
 							style={{
 								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: fontSize.textSize,
 								fontWeight: "bold",
@@ -661,10 +534,9 @@ function FamiliarView({
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedFamiliar.disease || ""}
-							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
-								container: styles.dropdownContainer,
+								container: { width: "100%" },
 								select: styles.dropdownSelect,
 								option: {},
 								indicator: {},
@@ -769,27 +641,19 @@ function FamiliarView({
 									/>
 								</>
 							)}
-							<div
-								style={{
-									paddingTop: "5rem",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
+							<div style={styles.buttonContainer}>
 								{addingNew && (
 									<>
 										<BaseButton
 											text="Guardar"
 											onClick={handleSaveNewFamiliar}
-											style={{ width: "30%", height: "3rem" }}
+											style={styles.button}
 										/>
-										<div style={{ width: "1rem" }} />
 										<BaseButton
 											text="Cancelar"
 											onClick={handleCancel}
 											style={{
-												width: "30%",
-												height: "3rem",
+												...styles.button,
 												backgroundColor: "#fff",
 												color: colors.primaryBackground,
 												border: `1.5px solid ${colors.primaryBackground}`,
@@ -802,6 +666,96 @@ function FamiliarView({
 					)}
 				</div>
 			) : null}
+
+			<div style={styles.innerContainer}>
+				<div style={{ paddingBottom: "0.5rem" }}>
+					<BaseButton
+						text="Agregar antecedente familiar"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
+
+				{errorMessage && (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				)}
+
+				{noFamiliarData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay antecedentes familiares! Agrega uno en el botón
+						de arriba.
+					</p>
+				) : (
+					Object.entries(familiarHistory).map(
+						([diseaseKey, { data = [], version: _version }]) => {
+							if (data.length === 0) {
+								return null;
+							}
+
+							let displayedDisease = translateDisease(diseaseKey);
+
+							if (
+								diseaseKey === "cancer" ||
+								diseaseKey === "cardiacDiseases" ||
+								diseaseKey === "renalDiseases" ||
+								diseaseKey === "others"
+							) {
+								return data.map((entry, index) => {
+									const details = entry.who;
+									const uniqueKey = `${diseaseKey}-${entry.who}-${index}`;
+									if (diseaseKey === "others") {
+										displayedDisease = entry.disease;
+									}
+									return (
+										<InformationCard
+											key={uniqueKey}
+											type="family"
+											disease={displayedDisease}
+											relative={details}
+											onClick={() =>
+												handleSelectDiseaseCard(diseaseKey, entry, index)
+											}
+										/>
+									);
+								});
+							}
+
+							// biome-ignore lint/style/noUselessElse: Displays the information card for the case where the disease is not cancer, renal or otherwise
+							else {
+								const displayedRelatives = data.join(", ");
+
+								return (
+									<InformationCard
+										key={diseaseKey}
+										type="family"
+										disease={displayedDisease}
+										relative={displayedRelatives}
+										onClick={() =>
+											data.forEach((relative, index) =>
+												handleSelectDiseaseCard(
+													diseaseKey,
+													{ who: relative },
+													index,
+												),
+											)
+										}
+									/>
+								);
+							}
+						},
+					)
+				)}
+			</div>
 		</div>
 	);
 }

@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 import { StudentFamiliarHistory } from ".";
 
 export default {
@@ -15,8 +16,6 @@ export default {
 	],
 	title: "Views/Antecedents/Student/StudentFamilyHistory",
 };
-
-const dummyPatientId = 12345;
 
 const mockGetStudentFamilyHistoryWithData = async () => ({
 	result: {
@@ -52,25 +51,6 @@ const mockGetStudentFamilyHistoryEmpty = async () => ({
 	},
 });
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
-};
-
 const mockGetStudentFamilyHistoryError = async () => ({
 	error: {
 		response: {
@@ -86,14 +66,14 @@ const mockUpdateStudentFamilyHistory = async (history) => ({
 });
 
 const store = createEmptyStore({
-	selectedPatientId: dummyPatientId,
+	selectedPatientId: 1234,
 });
 
 export const WithData = {
 	args: {
 		getStudentFamilyHistory: mockGetStudentFamilyHistoryWithData,
 		updateStudentFamilyHistory: mockUpdateStudentFamilyHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -102,7 +82,7 @@ export const EmptyData = {
 	args: {
 		getStudentFamilyHistory: mockGetStudentFamilyHistoryEmpty,
 		updateStudentFamilyHistory: mockUpdateStudentFamilyHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
@@ -111,7 +91,7 @@ export const ErrorState = {
 	args: {
 		getStudentFamilyHistory: mockGetStudentFamilyHistoryError,
 		updateStudentFamilyHistory: mockUpdateStudentFamilyHistory,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 		useStore: () => ({ selectedPatientId: store.selectedPatientId }),
 	},
 };
