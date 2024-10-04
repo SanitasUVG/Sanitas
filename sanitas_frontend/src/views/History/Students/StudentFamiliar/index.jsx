@@ -140,6 +140,19 @@ export function StudentFamiliarHistory({
 		</div>
 	);
 }
+
+/**
+ * @typedef {Object} FamiliarViewProps
+ * @property {string} id - The unique identifier for the patient.
+ * @property {Object} StudentFamiliarHistoryResource - Wrapped promise containing the familiar history data.
+ * @property {Function} updateStudentFamilyHistory - Function to update familiar history records.
+ *
+ * This component handles the display and interaction of the familiar medical history. It allows the user
+ * to view existing records, add new entries, and manage interaction states like error handling and data submissions.
+ *
+ * @param {FamiliarViewProps} props - The props used in the FamiliarView component.
+ * @returns {JSX.Element} - A section of the UI that lets users interact with the familiar history data.
+ */
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 function FamiliarView({
 	id,
