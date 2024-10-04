@@ -431,7 +431,7 @@ function PersonalView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides styles for the responsive
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides styles for making it responsive
 	const getResponsiveStyles = (width) => {
 		const isMobile = width < 768;
 
