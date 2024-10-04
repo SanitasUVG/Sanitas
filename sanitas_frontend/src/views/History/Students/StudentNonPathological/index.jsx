@@ -480,10 +480,21 @@ function NonPathologicalView({
 
 		return {
 			baseInput: {
-				width: isMobile ? "12rem" : "20rem",
+				width: isMobile ? "11rem" : "20rem",
 				height: "2.5rem",
 				fontFamily: fonts.textFont,
 				fontSize: "1rem",
+			},
+			dobleQInputs: {
+				display: isMobile ? "column" : "flex",
+				gap: "1rem",
+				paddingBottom: "2rem",
+			},
+			dobleQlabel: {
+				paddingBottom: "0.5rem",
+				paddingTop: isMobile ? "1rem" : "0rem",
+				fontFamily: fonts.textFont,
+				fontSize: fontSize.textSize,
 			},
 		};
 	};
@@ -627,13 +638,7 @@ function NonPathologicalView({
 							</div>
 							{smokingStatus && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											paddingBottom: "2rem",
-										}}
-									>
+									<div style={styles.dobleQInputs}>
 										<div>
 											<p
 												style={{
@@ -651,22 +656,11 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántos cigarrillos al día"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 										<div>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
+											<p style={styles.dobleQlabel}>
 												¿Desde hace cuántos años?
 											</p>
 											<BaseInput
@@ -676,12 +670,7 @@ function NonPathologicalView({
 												placeholder="Ingrese desde hace cuántos años"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
@@ -754,12 +743,7 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántas bebidas al mes"
 												min="1"
 												readOnly={!isAlcoholEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
@@ -807,13 +791,7 @@ function NonPathologicalView({
 							</div>
 							{drugUse && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											paddingBottom: "2rem",
-										}}
-									>
+									<div style={styles.dobleQInputs}>
 										<div>
 											<p
 												style={{
@@ -831,36 +809,18 @@ function NonPathologicalView({
 												placeholder="Ingrese el tipo de droga"
 												min="1"
 												readOnly={!isDrugUseEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 										<div>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												¿Con qué frecuencia?
-											</p>
+											<p style={styles.dobleQlabel}>¿Con qué frecuencia?</p>
 											<BaseInput
 												type="text"
 												value={drugFrequency}
 												onChange={(e) => setDrugFrequency(e.target.value)}
 												placeholder="Ingrese la frecuencia del consumo"
 												readOnly={!isDrugUseEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
