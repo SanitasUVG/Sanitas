@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -29,11 +29,16 @@ export function StudentFamiliarHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const [setReload] = useState(false);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
 	const StudentFamiliarHistoryResource = WrapPromise(
 		getStudentFamilyHistory(id),
 	);
+
+	const triggerReload = () => {
+		setReload((prev) => !prev);
+	};
 
 	const LoadingView = () => {
 		return (
@@ -41,27 +46,62 @@ export function StudentFamiliarHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left",
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: "hidden",
+				padding: "0",
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
 				padding: "2rem",
-			}}
-		>
-			<div
-				style={{
-					height: "100%",
-					width: "100%",
-				}}
-			>
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "calc(100vh - 4rem)",
+				flex: 1,
+				margin: isMobile ? "1rem" : "2rem",
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			<div style={{ width: "100%" }}>
 				<div
 					style={{
 						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						padding: "1rem 1rem 0 1rem",
+						flex: "0 0 auto",
 					}}
 				>
 					<StudentDashboardTopbar
@@ -69,14 +109,8 @@ export function StudentFamiliarHistory({
 						activeSectionProp="familiares"
 					/>
 				</div>
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
-					}}
-				>
+
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -85,59 +119,21 @@ export function StudentFamiliarHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Familiares
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "0.5rem",
-							}}
-						>
-							{" "}
+						<h1 style={styles.title}>Antecedentes Familiares</h1>
+						<h3 style={styles.subtitle}>
 							¿Alguien en su familia (padres, abuelos, hermanos, tíos) padece
-							alguna de las siguientes enfermedades?{" "}
-						</h3>{" "}
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							{" "}
-							Por favor ingrese un elemento por diagnóstico.{" "}
+							alguna de las siguientes enfermedades?
 						</h3>
 					</div>
 
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<FamiliarView
-								id={id}
-								StudentFamiliarHistoryResource={StudentFamiliarHistoryResource}
-								updateStudentFamilyHistory={updateStudentFamilyHistory}
-							/>
-						</Suspense>
-					</div>
+					<Suspense fallback={<LoadingView />}>
+						<FamiliarView
+							id={id}
+							StudentFamiliarHistoryResource={StudentFamiliarHistoryResource}
+							updateStudentFamilyHistory={updateStudentFamilyHistory}
+							triggerReload={triggerReload}
+						/>
+					</Suspense>
 				</div>
 			</div>
 		</div>
@@ -493,34 +489,58 @@ function FamiliarView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
-				<div style={{ paddingBottom: "0.5rem" }}>
-					<BaseButton
-						text="Agregar antecedente familiar"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "0.5rem" : "1rem",
+				height: isMobile ? "auto" : "calc(65vh - 2rem)",
+				flex: 1,
+				overflowY: "auto",
+			},
+			baseInput: {
+				width: "100%",
+				maxWidth: isMobile ? "12rem" : "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dropdownContainer: {
+				width: "100%",
+				maxWidth: isMobile ? "100%" : "80%",
+			},
+			dropdownSelect: {
+				width: "100%",
+			},
+		};
+	};
 
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			<div style={styles.innerContainer}>
 				{errorMessage && (
 					<div
 						style={{
@@ -534,6 +554,14 @@ function FamiliarView({
 						{errorMessage}
 					</div>
 				)}
+
+				<div style={{ paddingBottom: "0.5rem" }}>
+					<BaseButton
+						text="Agregar antecedente familiar"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
 
 				{noFamiliarData && !errorMessage ? (
 					<p style={{ textAlign: "center", paddingTop: "20px" }}>
@@ -605,15 +633,10 @@ function FamiliarView({
 			{addingNew || selectedFamiliar.disease ? (
 				<div
 					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
-						borderRadius: "0.625rem",
-						padding: "1rem",
-						height: "65vh",
+						...styles.innerContainer,
 						flex: 1.5,
-						width: "100%",
-						paddingLeft: "2rem",
+						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
-						overflowY: "auto",
 					}}
 				>
 					<div
@@ -641,8 +664,8 @@ function FamiliarView({
 							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
-								container: { width: "80%" },
-								select: {},
+								container: styles.dropdownContainer,
+								select: styles.dropdownSelect,
 								option: {},
 								indicator: {},
 							}}
@@ -674,7 +697,7 @@ function FamiliarView({
 										}
 										readOnly={!isEditable}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										style={{ width: "90%", height: "2.5rem" }}
+										style={styles.baseInput}
 									/>
 								</>
 							)}
@@ -715,7 +738,7 @@ function FamiliarView({
 													: "Especifique el tipo de enfermedad (no obligatorio)"
 										}
 										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
+										style={styles.baseInput}
 									/>
 								</>
 							)}
@@ -742,7 +765,7 @@ function FamiliarView({
 										}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
+										style={styles.baseInput}
 									/>
 								</>
 							)}
