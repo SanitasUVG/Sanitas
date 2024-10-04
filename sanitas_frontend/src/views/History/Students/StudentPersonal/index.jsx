@@ -28,8 +28,8 @@ export function StudentPersonalHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
 
@@ -39,27 +39,62 @@ export function StudentPersonalHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left",
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.7rem",
+				paddingBottom: "0.2rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: "hidden",
+				padding: "0",
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
 				padding: "2rem",
-			}}
-		>
-			<div
-				style={{
-					height: "100%",
-					width: "100%",
-				}}
-			>
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "calc(100vh - 4rem)",
+				flex: 1,
+				margin: isMobile ? "1rem" : "2rem",
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			<div style={{ width: "100%" }}>
 				<div
 					style={{
 						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						padding: "1rem 1rem 0 1rem",
+						flex: "0 0 auto",
 					}}
 				>
 					<StudentDashboardTopbar
@@ -68,15 +103,7 @@ export function StudentPersonalHistory({
 					/>
 				</div>
 
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -85,65 +112,36 @@ export function StudentPersonalHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Personales
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
-							}}
-						>
-							{" "}
+						<h1 style={styles.title}>Antecedentes Personales</h1>
+						<h3 style={styles.subtitle}>
 							¿Usted ha sido diagnosticado por un médico con una de las
-							siguientes enfermedades?{" "}
-						</h3>{" "}
+							siguientes enfermedades?
+						</h3>
 						<h3
 							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
+								...styles.subtitle,
+								paddingTop: "0.2rem",
 								paddingBottom: "1.5rem",
 							}}
 						>
-							{" "}
-							Por favor ingrese un elemento por diagnóstico.{" "}
+							Por favor ingrese un elemento por diagnóstico.
 						</h3>
 					</div>
 
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<PersonalView
-								id={id}
-								birthdayResource={birthdayResource}
-								personalHistoryResource={personalHistoryResource}
-								updateStudentPersonalHistory={updateStudentPersonalHistory}
-							/>
-						</Suspense>
-					</div>
+					<Suspense fallback={<LoadingView />}>
+						<PersonalView
+							id={id}
+							birthdayResource={birthdayResource}
+							personalHistoryResource={personalHistoryResource}
+							updateStudentPersonalHistory={updateStudentPersonalHistory}
+						/>
+					</Suspense>
 				</div>
 			</div>
 		</div>
 	);
 }
+
 /**
  * @typedef {Object} PersonalViewProps
  * @property {string} id - The unique identifier for the patient.
@@ -433,26 +431,70 @@ function PersonalView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	return (
-		<div
-			style={{
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides styles for the responsive
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "0.5rem" : "1rem",
+				height: isMobile ? "auto" : "calc(65vh - 2rem)",
+				flex: 1,
+				overflowY: "auto",
+			},
+			baseInput: {
+				width: "100%",
+				maxWidth: isMobile ? "12rem" : "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dropdownContainer: {
+				width: "100%",
+				maxWidth: isMobile ? "100%" : "80%",
+			},
+			dropdownSelect: {
+				width: "100%",
+			},
+			button: {
+				width: isMobile ? "45%" : "30%",
+				height: isMobile ? "2.5rem" : "3rem",
+				fontSize: isMobile ? "0.9rem" : "1rem",
+			},
+			buttonContainer: {
+				display: "flex",
+				justifyContent: "center",
+				gap: "1rem",
+				paddingTop: isMobile ? "3rem" : "5rem",
+			},
+		};
+	};
+
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			<div style={styles.innerContainer}>
 				<div style={{ paddingBottom: "0.5rem" }}>
 					<BaseButton
 						text="Agregar antecedente personal"
@@ -523,15 +565,10 @@ function PersonalView({
 			{addingNew || selectedPersonal.disease ? (
 				<div
 					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
-						borderRadius: "0.625rem",
-						padding: "1rem",
-						height: "65vh",
+						...styles.innerContainer,
 						flex: 1.5,
-						width: "100%",
-						paddingLeft: "2rem",
+						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
-						overflowY: "auto",
 					}}
 				>
 					<div
@@ -559,8 +596,8 @@ function PersonalView({
 							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
-								container: { width: "80%" },
-								select: {},
+								container: styles.dropdownContainer,
+								select: styles.dropdownSelect,
 								option: {},
 								indicator: {},
 							}}
@@ -595,12 +632,7 @@ function PersonalView({
 										}
 										disabled={!isEditable}
 										placeholder="Ingrese el tipo de cáncer"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
+										style={styles.baseInput}
 									/>
 
 									<p
@@ -627,12 +659,7 @@ function PersonalView({
 										}
 										disabled={!isEditable}
 										placeholder="Ingrese el tratamiento administrado"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
+										style={styles.baseInput}
 									/>
 								</React.Fragment>
 							)}
@@ -702,12 +729,7 @@ function PersonalView({
 														}
 														disabled={!isEditable}
 														placeholder="Ingrese el tipo de enfermedad"
-														style={{
-															width: "95%",
-															height: "10%",
-															fontFamily: fonts.textFont,
-															fontSize: "1rem",
-														}}
+														style={styles.baseInput}
 													/>
 												</React.Fragment>
 											)}
@@ -736,12 +758,7 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 
 										<p
@@ -764,12 +781,7 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado (opcional)"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 
 										<p
@@ -796,37 +808,24 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese la frecuencia con la que toma el medicamento"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 									</React.Fragment>
 								)}
 
-							<div
-								style={{
-									paddingTop: "5rem",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
+							<div style={styles.buttonContainer}>
 								{addingNew && (
 									<>
 										<BaseButton
 											text="Guardar"
 											onClick={handleSaveNewPersonal}
-											style={{ width: "30%", height: "3rem" }}
+											style={styles.button}
 										/>
-										<div style={{ width: "1rem" }} />
 										<BaseButton
 											text="Cancelar"
 											onClick={handleCancel}
 											style={{
-												width: "30%",
-												height: "3rem",
+												...styles.button,
 												backgroundColor: "#fff",
 												color: colors.primaryBackground,
 												border: `1.5px solid ${colors.primaryBackground}`,
