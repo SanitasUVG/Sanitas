@@ -70,8 +70,8 @@ export default function LoginView({
 
 			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
 			// Sino, entonces si es clavo del usuario.
-			const errorType = loginResponse.error?.code;
-			if (errorType) {
+			if (loginResponse.error) {
+				const errorType = loginResponse.error?.code;
 				switch (errorType) {
 					case "NotAuthorizedException":
 						setErrorMessage("Revise el correo o la contraseña por favor.");
@@ -82,7 +82,9 @@ export default function LoginView({
 					default:
 						setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 				}
+				return;
 			}
+
 			if (roleResponse.result === "DOCTOR") {
 				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
 				return;
