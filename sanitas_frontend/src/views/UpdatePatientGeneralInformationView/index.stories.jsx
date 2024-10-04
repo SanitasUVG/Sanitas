@@ -39,9 +39,6 @@ const examplePatientData = {
 	phone: "555-1234",
 };
 
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
 const mockGetGeneralPatientInformation = async (id) => {
 	// await delay(2500)
 	if (id === examplePatientData.id) {
