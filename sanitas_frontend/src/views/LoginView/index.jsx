@@ -8,7 +8,6 @@ import { BaseInput } from "src/components/Input";
 import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-import { adjustHeight } from "src/utils/measureScaling";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
 
@@ -31,7 +30,7 @@ export default function LoginView({
 	useStore,
 }) {
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
-	const { height, width } = useWindowSize();
+	const { width } = useWindowSize();
 
 	/** @type React.CSSStyleDeclaration */
 	const inputStyles = {
@@ -64,27 +63,26 @@ export default function LoginView({
 			setLinkedPatientResource(WrapPromise(getLinkedPatient()));
 		};
 
+		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 		const handleSuspenseLogin = () => {
 			const loginResponse = loginResource.read();
 			const roleResponse = roleResource.read();
 
 			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
 			// Sino, entonces si es clavo del usuario.
-
-			console.log(loginResponse);
 			const errorType = loginResponse.error?.code;
-			console.log(errorType);
-			switch (errorType) {
-				case "NotAuthorizedException":
-					setErrorMessage("Revise el correo o la contraseña por favor.");
-					break;
-				case "UserNotFoundException":
-					setErrorMessage("Revise el correo o la contraseña por favor.");
-					break;
-				default:
-					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+			if (errorType) {
+				switch (errorType) {
+					case "NotAuthorizedException":
+						setErrorMessage("Revise el correo o la contraseña por favor.");
+						break;
+					case "UserNotFoundException":
+						setErrorMessage("Revise el correo o la contraseña por favor.");
+						break;
+					default:
+						setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+				}
 			}
-
 			if (roleResponse.result === "DOCTOR") {
 				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
 				return;
@@ -136,7 +134,7 @@ export default function LoginView({
 				<div
 					style={{
 						background: "white",
-						padding: isMobile ? "2rem 4vw 0 4vw" : "4rem 8vw 0 8vw",
+						padding: isMobile ? "2rem 4vw 2rem 4vw" : "4rem 8vw 0 8vw",
 						display: "flex",
 						flexDirection: "column",
 						gap: isMobile ? "1.5rem" : "3rem",
@@ -225,18 +223,6 @@ export default function LoginView({
 								type="password"
 								onChange={(ev) => setPassword(ev.target.value)}
 							/>
-							<p
-								style={{
-									textAlign: "right",
-									fontFamily: fonts.titleFont,
-									fontSize: isMobile ? "0.85rem" : "0.90rem",
-									color: colors.titleText,
-									fontWeight: "bold",
-									paddingTop: adjustHeight(height, "0.5rem"),
-								}}
-							>
-								¿Olvidaste tu contraseña?
-							</p>
 						</div>
 					</div>
 

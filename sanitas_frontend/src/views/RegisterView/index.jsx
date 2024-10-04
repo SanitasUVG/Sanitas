@@ -101,7 +101,7 @@ export default function RegisterView({ registerUser }) {
 				<div
 					style={{
 						background: "white",
-						padding: isMobile ? "2rem 4vw 0 4vw" : "4rem 8vw 0 8vw", // Ajuste responsivo
+						padding: isMobile ? "2rem 4vw 2rem 4vw" : "4rem 8vw 0 8vw", // Ajuste responsivo
 						display: "flex",
 						flexDirection: "column",
 						gap: isMobile ? "1.5rem" : "3rem", // Ajuste responsivo
