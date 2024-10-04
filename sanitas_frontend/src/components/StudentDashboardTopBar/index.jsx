@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
@@ -55,17 +54,7 @@ export default function StudentDashboardTopbar({
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
-	const { pathname } = useLocation();
 	const isWoman = useStore((s) => s.isWoman);
-
-	useEffect(() => {
-		const activeKey = sections.find((section) =>
-			pathname.includes(section.key),
-		)?.key;
-		if (activeKey) {
-			setActiveSection(activeKey);
-		}
-	}, [pathname]);
 
 	const navigateToIndex = (indexChange) => {
 		const newIndex = currentIndex + indexChange;
@@ -111,7 +100,10 @@ export default function StudentDashboardTopbar({
 			text: "Psiquiátricos",
 			navigateTo: navigateToPsiquiatricStudent(),
 		},
-		{
+	];
+
+	if (isWoman) {
+		sections.push({
 			key: "ginecoobstetricos",
 			text: "Ginecoobstétricos",
 			navigateTo: (navigate) => {
@@ -119,13 +111,21 @@ export default function StudentDashboardTopbar({
 					navigateToObstetricsStudent()(navigate);
 				}
 			},
-		},
-		{
-			key: "no_patologicos",
-			text: "No Patológicos",
-			navigateTo: navigateToNonPathologicalStudent(),
-		},
-	];
+		});
+	}
+
+	sections.push({
+		key: "no_patologicos",
+		text: "No Patológicos",
+		navigateTo: navigateToNonPathologicalStudent(),
+	});
+
+	useEffect(() => {
+		const elem = document.querySelector(`#${activeSection}`);
+		if ("scrollIntoView" in elem) {
+			elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
+		}
+	}, [activeSection]);
 
 	const currentIndex = sections.findIndex(
 		(section) => section.key === activeSection,
@@ -142,6 +142,7 @@ export default function StudentDashboardTopbar({
 				width: "100%",
 				height: "100%",
 				justifyContent: "center",
+				alignItems: "center",
 				gap: "1rem",
 			}}
 		>
@@ -157,37 +158,41 @@ export default function StudentDashboardTopbar({
 				style={{ cursor: "pointer" }}
 			/>
 
-			{sections.map((section) => (
-				<button
-					type="button"
-					key={section.key}
-					onClick={() => {
-						if (section.key === "ginecoobstetricos" && !isWoman) {
-							return;
-						}
+			<div
+				style={{
+					flexGrow: 1,
+					display: "flex",
+					flexDirection: "row",
+					overflowX: "scroll",
+					scrollBehavior: "smooth",
+					gap: "0.5rem",
+				}}
+			>
+				{sections.map((section) => (
+					<button
+						id={section.key}
+						type="button"
+						key={section.key}
+						onClick={() => {
+							setActiveSection(section.key);
+							section.navigateTo(navigate);
+						}}
+						style={{
+							backgroundColor:
+								activeSection === section.key ? "#0F6838" : "#E6E7E7",
+							color: activeSection === section.key ? "white" : "black",
+							padding: "0.7rem",
+							border: "none",
+							cursor: "pointer",
+							borderRadius: "0.7rem",
+							flex: "1",
+						}}
+					>
+						{section.text}
+					</button>
+				))}
+			</div>
 
-						setActiveSection(section.key);
-						section.navigateTo(navigate);
-					}}
-					style={{
-						backgroundColor:
-							activeSection === section.key ? "#0F6838" : "#E6E7E7",
-						color:
-							activeSection === section.key
-								? "white"
-								: section.key === "ginecoobstetricos" && !isWoman
-									? colors.darkerGrey
-									: "black",
-						padding: "0.7rem",
-						border: "none",
-						cursor: "pointer",
-						borderRadius: "0.7rem",
-						flex: "1",
-					}}
-				>
-					{section.text}
-				</button>
-			))}
 			<img
 				src={arrowRight}
 				alt="Siguiente"
