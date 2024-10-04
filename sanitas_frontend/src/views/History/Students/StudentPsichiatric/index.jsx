@@ -30,6 +30,7 @@ export function StudentPsichiatricHistory({
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
@@ -48,16 +49,56 @@ export function StudentPsichiatricHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "column",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			}}
-		>
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "2rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "84vh",
+				flex: 1,
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -76,15 +117,7 @@ export function StudentPsichiatricHistory({
 						activeSectionProp="psiquiatricos"
 					/>
 				</div>
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -93,24 +126,8 @@ export function StudentPsichiatricHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Psiquiátricos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "2rem",
-							}}
-						>
+						<h1 style={styles.title}>Antecedentes Psiquiátricos</h1>
+						<h3 style={styles.subtitle}>
 							¿Actualmente se encuentra bajo tratamiento médico por alguna de
 							las siguientes enfermedades?
 						</h3>
