@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -29,8 +29,9 @@ export function StudentFamiliarHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	//const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
 	const StudentFamiliarHistoryResource = WrapPromise(
 		getStudentFamilyHistory(id),
 	);
@@ -41,16 +42,55 @@ export function StudentFamiliarHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left",
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			}}
-		>
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "2rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "84vh",
+				flex: 1,
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -69,14 +109,8 @@ export function StudentFamiliarHistory({
 						activeSectionProp="familiares"
 					/>
 				</div>
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
-						height: "100%",
-						borderRadius: "10px",
-					}}
-				>
+
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -85,38 +119,10 @@ export function StudentFamiliarHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Familiares
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "0.5rem",
-							}}
-						>
-							{" "}
+						<h1 style={styles.title}>Antecedentes Familiares</h1>
+						<h3 style={styles.subtitle}>
 							¿Alguien en su familia (padres, abuelos, hermanos, tíos) padece
-							alguna de las siguientes enfermedades?{" "}
-						</h3>{" "}
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							{" "}
-							Por favor ingrese un elemento por diagnóstico.{" "}
+							alguna de las siguientes enfermedades?
 						</h3>
 					</div>
 
@@ -493,26 +499,228 @@ function FamiliarView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	return (
-		<div
-			style={{
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides responsive styles
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "0.5rem" : "1rem",
+				height: isMobile ? "auto" : "calc(65vh - 2rem)",
+				flex: 1,
+				overflowY: "auto",
+			},
+			baseInput: {
+				width: "100%",
+				maxWidth: "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dropdownContainer: {
+				width: "100%",
+				maxWidth: isMobile ? "100%" : "80%",
+				marginBottom: "1rem",
+			},
+			dropdownSelect: {
+				width: "100%",
+			},
+			button: {
+				width: isMobile ? "45%" : "30%",
+				height: isMobile ? "2.5rem" : "3rem",
+				fontSize: isMobile ? "0.9rem" : "1rem",
+			},
+			buttonContainer: {
+				display: "flex",
+				justifyContent: "center",
+				gap: "1rem",
+				paddingTop: isMobile ? "3rem" : "5rem",
+			},
+		};
+	};
+
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
+			{addingNew || selectedFamiliar.disease ? (
+				<div
+					style={{
+						...styles.innerContainer,
+						flex: 1.5,
+						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
+						flexGrow: 1,
+						marginBottom: "1rem",
+					}}
+				>
+					<div style={styles.dropdownContainer}>
+						<p
+							style={{
+								paddingBottom: "0.5rem",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								fontWeight: "bold",
+							}}
+						>
+							Seleccione la enfermedad:
+						</p>
+						<DropdownMenu
+							options={diseaseOptions}
+							value={selectedFamiliar.disease || ""}
+							onChange={handleDiseaseChange}
+							style={{
+								container: { width: "100%" },
+								select: styles.dropdownSelect,
+								option: {},
+								indicator: {},
+							}}
+						/>
+					</div>
+
+					{selectedFamiliar.disease && (
+						<>
+							{selectedFamiliar.disease !== "others" && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										¿Quién padece de{" "}
+										{translateDisease(selectedFamiliar.disease)}?
+									</p>
+									<BaseInput
+										value={selectedFamiliar.relative || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												relative: e.target.value,
+											})
+										}
+										readOnly={!isEditable}
+										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+										style={styles.baseInput}
+									/>
+								</>
+							)}
+							{[
+								"cancer",
+								"others",
+								"cardiacDiseases",
+								"renalDiseases",
+							].includes(selectedFamiliar.disease) && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										{selectedFamiliar.disease === "cancer"
+											? "Tipo de Cáncer:"
+											: selectedFamiliar.disease === "others"
+												? "¿Qué enfermedad?"
+												: "Tipo de enfermedad:"}
+									</p>
+									<BaseInput
+										value={selectedFamiliar.typeOfDisease || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												typeOfDisease: e.target.value,
+											})
+										}
+										placeholder={
+											selectedFamiliar.disease === "cancer"
+												? "Especifique el tipo de cáncer"
+												: selectedFamiliar.disease === "others"
+													? "Escriba la enfermedad"
+													: "Especifique el tipo de enfermedad (no obligatorio)"
+										}
+										readOnly={!isEditable}
+										style={styles.baseInput}
+									/>
+								</>
+							)}
+
+							{selectedFamiliar.disease === "others" && (
+								<>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											paddingTop: "1.5rem",
+											paddingBottom: "0.5rem",
+										}}
+									>
+										¿Quién?
+									</p>
+									<BaseInput
+										value={selectedFamiliar.relative || ""}
+										onChange={(e) =>
+											setSelectedFamiliar({
+												...selectedFamiliar,
+												relative: e.target.value,
+											})
+										}
+										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
+										readOnly={!isEditable}
+										style={styles.baseInput}
+									/>
+								</>
+							)}
+							<div style={styles.buttonContainer}>
+								{addingNew && (
+									<>
+										<BaseButton
+											text="Guardar"
+											onClick={handleSaveNewFamiliar}
+											style={styles.button}
+										/>
+										<BaseButton
+											text="Cancelar"
+											onClick={handleCancel}
+											style={{
+												...styles.button,
+												backgroundColor: "#fff",
+												color: colors.primaryBackground,
+												border: `1.5px solid ${colors.primaryBackground}`,
+											}}
+										/>
+									</>
+								)}
+							</div>
+						</>
+					)}
+				</div>
+			) : null}
+
+			<div style={styles.innerContainer}>
 				<div style={{ paddingBottom: "0.5rem" }}>
 					<BaseButton
 						text="Agregar antecedente familiar"
@@ -601,184 +809,6 @@ function FamiliarView({
 					)
 				)}
 			</div>
-
-			{addingNew || selectedFamiliar.disease ? (
-				<div
-					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
-						borderRadius: "0.625rem",
-						padding: "1rem",
-						height: "65vh",
-						flex: 1.5,
-						width: "100%",
-						paddingLeft: "2rem",
-						flexGrow: 1,
-						overflowY: "auto",
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							width: "100%",
-						}}
-					>
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-								fontWeight: "bold",
-							}}
-						>
-							Seleccione la enfermedad:
-						</p>
-						<DropdownMenu
-							options={diseaseOptions}
-							value={selectedFamiliar.disease || ""}
-							disabled={!addingNew}
-							onChange={handleDiseaseChange}
-							style={{
-								container: { width: "80%" },
-								select: {},
-								option: {},
-								indicator: {},
-							}}
-						/>
-					</div>
-
-					{selectedFamiliar.disease && (
-						<>
-							{selectedFamiliar.disease !== "others" && (
-								<>
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											paddingTop: "1.5rem",
-											paddingBottom: "0.5rem",
-										}}
-									>
-										¿Quién padece de{" "}
-										{translateDisease(selectedFamiliar.disease)}?
-									</p>
-									<BaseInput
-										value={selectedFamiliar.relative || ""}
-										onChange={(e) =>
-											setSelectedFamiliar({
-												...selectedFamiliar,
-												relative: e.target.value,
-											})
-										}
-										readOnly={!isEditable}
-										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										style={{ width: "90%", height: "2.5rem" }}
-									/>
-								</>
-							)}
-							{[
-								"cancer",
-								"others",
-								"cardiacDiseases",
-								"renalDiseases",
-							].includes(selectedFamiliar.disease) && (
-								<>
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											paddingTop: "1.5rem",
-											paddingBottom: "0.5rem",
-										}}
-									>
-										{selectedFamiliar.disease === "cancer"
-											? "Tipo de Cáncer:"
-											: selectedFamiliar.disease === "others"
-												? "¿Qué enfermedad?"
-												: "Tipo de enfermedad:"}
-									</p>
-									<BaseInput
-										value={selectedFamiliar.typeOfDisease || ""}
-										onChange={(e) =>
-											setSelectedFamiliar({
-												...selectedFamiliar,
-												typeOfDisease: e.target.value,
-											})
-										}
-										placeholder={
-											selectedFamiliar.disease === "cancer"
-												? "Especifique el tipo de cáncer"
-												: selectedFamiliar.disease === "others"
-													? "Escriba la enfermedad"
-													: "Especifique el tipo de enfermedad (no obligatorio)"
-										}
-										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
-									/>
-								</>
-							)}
-
-							{selectedFamiliar.disease === "others" && (
-								<>
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											paddingTop: "1.5rem",
-											paddingBottom: "0.5rem",
-										}}
-									>
-										¿Quién?
-									</p>
-									<BaseInput
-										value={selectedFamiliar.relative || ""}
-										onChange={(e) =>
-											setSelectedFamiliar({
-												...selectedFamiliar,
-												relative: e.target.value,
-											})
-										}
-										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
-									/>
-								</>
-							)}
-							<div
-								style={{
-									paddingTop: "5rem",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								{addingNew && (
-									<>
-										<BaseButton
-											text="Guardar"
-											onClick={handleSaveNewFamiliar}
-											style={{ width: "30%", height: "3rem" }}
-										/>
-										<div style={{ width: "1rem" }} />
-										<BaseButton
-											text="Cancelar"
-											onClick={handleCancel}
-											style={{
-												width: "30%",
-												height: "3rem",
-												backgroundColor: "#fff",
-												color: colors.primaryBackground,
-												border: `1.5px solid ${colors.primaryBackground}`,
-											}}
-										/>
-									</>
-								)}
-							</div>
-						</>
-					)}
-				</div>
-			) : null}
 		</div>
 	);
 }
