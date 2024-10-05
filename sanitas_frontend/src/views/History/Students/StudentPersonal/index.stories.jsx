@@ -17,6 +17,7 @@ export default {
 	title: "Views/Antecedents/Student/StudentPersonalHistory",
 };
 
+//mocks
 const mockGetBirthdayPatientInfo = async (_id) => ({
 	result: { birthdate: "2000-02-11" },
 });
