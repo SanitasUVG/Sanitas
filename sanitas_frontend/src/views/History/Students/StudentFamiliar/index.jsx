@@ -49,7 +49,7 @@ export function StudentFamiliarHistory({
 				color: colors.titleText,
 				fontFamily: fonts.titleFont,
 				fontSize: fontSize.titleSize,
-				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
+				textAlign: isMobile ? "center" : "left",
 			},
 			subtitle: {
 				fontFamily: fonts.textFont,

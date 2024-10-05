@@ -16,7 +16,7 @@ export default {
 	],
 	title: "Views/Antecedents/Student/StudentFamilyHistory",
 };
-
+//mocks
 const mockGetStudentFamilyHistoryWithData = async () => ({
 	result: {
 		medicalHistory: {
