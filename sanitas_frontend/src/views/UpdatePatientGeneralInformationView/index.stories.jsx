@@ -1,6 +1,7 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
+import { STUDENT_DASHBOARD_SIDEBAR_PROPS } from "src/router";
 
 export default {
 	component: UpdateInfoView,
@@ -36,25 +37,6 @@ const examplePatientData = {
 	insuranceId: 12345,
 	birthdate: "1980-01-01",
 	phone: "555-1234",
-};
-
-const simulateNavigation = (path) => () =>
-	console.log(`Mock navigate to ${path}`);
-
-const sidebarConfigMock = {
-	navigateToGeneralStudent: simulateNavigation("/student-general"),
-	navigateToSurgicalStudent: simulateNavigation("/student-surgical"),
-	navigateToTraumatologicalStudent: simulateNavigation(
-		"/student-traumatological",
-	),
-	navigateToFamiliarStudent: simulateNavigation("/student-familiar"),
-	navigateToPersonalStudent: simulateNavigation("/student-personal"),
-	navigateToNonPathologicalStudent: simulateNavigation(
-		"/student-non-pathological",
-	),
-	navigateToAllergiesStudent: simulateNavigation("/student-allergies"),
-	navigateToPsiquiatricStudent: simulateNavigation("/student-psychiatric"),
-	navigateToObstetricsStudent: simulateNavigation("/student-obstetrics"),
 };
 
 const mockGetGeneralPatientInformation = async (id) => {
@@ -105,7 +87,7 @@ export const WithPatientData = {
 		updateStudentPatientInformation: async (a) => ({ result: a }),
 		updateCollaboratorInformation: async (a) => ({ result: a }),
 		useStore: correctStore,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 	},
 };
 
@@ -121,6 +103,6 @@ export const ErrorState = {
 		updateStudentPatientInformation: async () => ({ error: "MockError" }),
 		updateCollaboratorInformation: async () => ({ error: "MockError" }),
 		useStore: incorrectStore,
-		sidebarConfig: sidebarConfigMock,
+		sidebarConfig: STUDENT_DASHBOARD_SIDEBAR_PROPS,
 	},
 };
