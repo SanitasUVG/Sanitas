@@ -28,6 +28,7 @@ export function StudentPersonalHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
@@ -39,16 +40,55 @@ export function StudentPersonalHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left",
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			}}
-		>
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "2rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "84vh",
+				flex: 1,
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -68,15 +108,7 @@ export function StudentPersonalHistory({
 					/>
 				</div>
 
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -85,38 +117,10 @@ export function StudentPersonalHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Personales
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
-							}}
-						>
-							{" "}
+						<h1 style={styles.title}>Antecedentes Personales</h1>
+						<h3 style={styles.subtitle}>
 							¿Usted ha sido diagnosticado por un médico con una de las
-							siguientes enfermedades?{" "}
-						</h3>{" "}
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							{" "}
-							Por favor ingrese un elemento por diagnóstico.{" "}
+							siguientes enfermedades?
 						</h3>
 					</div>
 
@@ -144,6 +148,7 @@ export function StudentPersonalHistory({
 		</div>
 	);
 }
+
 /**
  * @typedef {Object} PersonalViewProps
  * @property {string} id - The unique identifier for the patient.
@@ -433,119 +438,84 @@ function PersonalView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	return (
-		<div
-			style={{
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides responsive styles
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
-				<div style={{ paddingBottom: "0.5rem" }}>
-					<BaseButton
-						text="Agregar antecedente personal"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "0.5rem" : "1rem",
+				height: isMobile ? "auto" : "calc(65vh - 2rem)",
+				flex: 1,
+				overflowY: "auto",
+			},
+			baseInput: {
+				width: "100%",
+				maxWidth: "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dropdownContainer: {
+				width: "100%",
+				maxWidth: isMobile ? "100%" : "80%",
+				marginBottom: "1rem",
+			},
+			dropdownSelect: {
+				width: "100%",
+			},
+			button: {
+				width: isMobile ? "45%" : "30%",
+				height: isMobile ? "2.5rem" : "3rem",
+				fontSize: isMobile ? "0.9rem" : "1rem",
+			},
+			buttonContainer: {
+				display: "flex",
+				justifyContent: "center",
+				gap: "1rem",
+				paddingTop: isMobile ? "3rem" : "5rem",
+			},
+		};
+	};
 
-				{errorMessage && (
-					<div
-						style={{
-							color: "red",
-							paddingTop: "1rem",
-							textAlign: "center",
-							fontFamily: fonts.titleFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						{errorMessage}
-					</div>
-				)}
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-				{noPersonalData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
-						¡Parece que no hay antecedentes personales! Agrega uno en el botón
-						de arriba.
-					</p>
-				) : (
-					Object.entries(personalHistory).map(
-						([diseaseKey, { data = [], version: _version }]) => {
-							if (data.length === 0) {
-								return null;
-							}
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
 
-							const displayedDisease = translateDisease(diseaseKey);
-							if (diseaseKey === "myocardialInfarction") {
-								return data.map((entry, _index) => {
-									return (
-										<InformationCard
-											key={`${diseaseKey}-${entry.surgeryYear}`}
-											type="personalMiocadio"
-											disease={displayedDisease}
-											year={entry.surgeryYear}
-											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-										/>
-									);
-								});
-							}
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
-							return data.map((entry, _index) => {
-								return (
-									<InformationCard
-										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
-										type="personal"
-										disease={displayedDisease}
-										reasonInfo={
-											entry.medicine ? entry.medicine : entry.treatment
-										}
-										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-									/>
-								);
-							});
-						},
-					)
-				)}
-			</div>
+	const styles = getResponsiveStyles(windowWidth);
 
+	return (
+		<div style={styles.container}>
 			{addingNew || selectedPersonal.disease ? (
 				<div
 					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
-						borderRadius: "0.625rem",
-						padding: "1rem",
-						height: "65vh",
+						...styles.innerContainer,
 						flex: 1.5,
-						width: "100%",
-						paddingLeft: "2rem",
+						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
-						overflowY: "auto",
+						marginBottom: "1rem", // Añadido para separar los contenedores
 					}}
 				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							width: "100%",
-						}}
-					>
+					<div style={styles.dropdownContainer}>
 						<p
 							style={{
 								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
 								fontFamily: fonts.textFont,
 								fontSize: fontSize.textSize,
 								fontWeight: "bold",
@@ -556,11 +526,10 @@ function PersonalView({
 						<DropdownMenu
 							options={diseaseOptions}
 							value={selectedPersonal.disease || ""}
-							disabled={!addingNew}
 							onChange={handleDiseaseChange}
 							style={{
-								container: { width: "80%" },
-								select: {},
+								container: { width: "100%" },
+								select: styles.dropdownSelect,
 								option: {},
 								indicator: {},
 							}}
@@ -595,12 +564,7 @@ function PersonalView({
 										}
 										disabled={!isEditable}
 										placeholder="Ingrese el tipo de cáncer"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
+										style={styles.baseInput}
 									/>
 
 									<p
@@ -627,12 +591,7 @@ function PersonalView({
 										}
 										disabled={!isEditable}
 										placeholder="Ingrese el tratamiento administrado"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
+										style={styles.baseInput}
 									/>
 								</React.Fragment>
 							)}
@@ -702,12 +661,7 @@ function PersonalView({
 														}
 														disabled={!isEditable}
 														placeholder="Ingrese el tipo de enfermedad"
-														style={{
-															width: "95%",
-															height: "10%",
-															fontFamily: fonts.textFont,
-															fontSize: "1rem",
-														}}
+														style={styles.baseInput}
 													/>
 												</React.Fragment>
 											)}
@@ -736,12 +690,7 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 
 										<p
@@ -764,12 +713,7 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese el tratamiento administrado (opcional)"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 
 										<p
@@ -796,37 +740,24 @@ function PersonalView({
 											}
 											disabled={!isEditable}
 											placeholder="Ingrese la frecuencia con la que toma el medicamento"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
+											style={styles.baseInput}
 										/>
 									</React.Fragment>
 								)}
 
-							<div
-								style={{
-									paddingTop: "5rem",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
+							<div style={styles.buttonContainer}>
 								{addingNew && (
 									<>
 										<BaseButton
 											text="Guardar"
 											onClick={handleSaveNewPersonal}
-											style={{ width: "30%", height: "3rem" }}
+											style={styles.button}
 										/>
-										<div style={{ width: "1rem" }} />
 										<BaseButton
 											text="Cancelar"
 											onClick={handleCancel}
 											style={{
-												width: "30%",
-												height: "3rem",
+												...styles.button,
 												backgroundColor: "#fff",
 												color: colors.primaryBackground,
 												border: `1.5px solid ${colors.primaryBackground}`,
@@ -839,6 +770,74 @@ function PersonalView({
 					)}
 				</div>
 			) : null}
+
+			<div style={styles.innerContainer}>
+				<div style={{ paddingBottom: "0.5rem" }}>
+					<BaseButton
+						text="Agregar antecedente personal"
+						onClick={handleOpenNewForm}
+						style={{ width: "100%", height: "3rem" }}
+					/>
+				</div>
+
+				{errorMessage && (
+					<div
+						style={{
+							color: "red",
+							paddingTop: "1rem",
+							textAlign: "center",
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.textSize,
+						}}
+					>
+						{errorMessage}
+					</div>
+				)}
+
+				{noPersonalData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay antecedentes personales! Agrega uno en el botón
+						de arriba.
+					</p>
+				) : (
+					Object.entries(personalHistory).map(
+						([diseaseKey, { data = [], version: _version }]) => {
+							if (data.length === 0) {
+								return null;
+							}
+
+							const displayedDisease = translateDisease(diseaseKey);
+							if (diseaseKey === "myocardialInfarction") {
+								return data.map((entry, _index) => {
+									return (
+										<InformationCard
+											key={`${diseaseKey}-${entry.surgeryYear}`}
+											type="personalMiocadio"
+											disease={displayedDisease}
+											year={entry.surgeryYear}
+											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+										/>
+									);
+								});
+							}
+
+							return data.map((entry, _index) => {
+								return (
+									<InformationCard
+										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
+										type="personal"
+										disease={displayedDisease}
+										reasonInfo={
+											entry.medicine ? entry.medicine : entry.treatment
+										}
+										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
+									/>
+								);
+							});
+						},
+					)
+				)}
+			</div>
 		</div>
 	);
 }
