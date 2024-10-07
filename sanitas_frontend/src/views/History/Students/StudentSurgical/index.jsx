@@ -9,6 +9,8 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import { adjustWidth, adjustHeight } from "src/utils/measureScaling";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -30,8 +32,9 @@ export function StudentSurgicalHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const { height, width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	// const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 
@@ -48,13 +51,22 @@ export function StudentSurgicalHistory({
 				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: "2rem",
+				height: "100%",
+				paddingTop: adjustHeight(height, "2rem"),
+				paddingBottom: adjustHeight(height, "2rem"),
+				paddingLeft: adjustWidth(width, "2rem"),
+				paddingRight: adjustWidth(width, "2rem"),
+				overflow: width < 768 ? "auto" : "hidden", //Menor a 768px el overflow se oculta
 			}}
 		>
 			<div
 				style={{
 					width: "100%",
-					padding: "0 0 1rem 0",
+					height: "100%",
+					paddingTop: adjustHeight(height, "0rem"),
+					paddingBottom: adjustHeight(height, "1rem"),
+					paddingLeft: adjustWidth(width, "0rem"),
+					paddingRight: adjustWidth(width, "0rem"),
 					flex: "0 0 20%",
 				}}
 			>
@@ -73,9 +85,13 @@ export function StudentSurgicalHistory({
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
+						paddingTop: adjustHeight(height, "2rem"),
+						paddingBottom: adjustHeight(height, "2rem"),
+						paddingLeft: adjustWidth(width, "2rem"),
+						paddingRight: adjustWidth(width, "2rem"),
 						borderRadius: "0.625rem",
 						overflow: "auto",
+						minHeight: "80vh",
 						flex: "1",
 					}}
 				>
@@ -85,6 +101,7 @@ export function StudentSurgicalHistory({
 							flexDirection: "column",
 							justifyContent: "center",
 							alignItems: "center",
+							textAlign: "center",
 						}}
 					>
 						<h1
@@ -101,8 +118,8 @@ export function StudentSurgicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
+								paddingTop: adjustHeight(height, "0.7rem"),
+								paddingBottom: adjustHeight(height, "0.2rem"),
 							}}
 						>
 							¿Lo han operado alguna vez?
@@ -126,6 +143,7 @@ export function StudentSurgicalHistory({
 							justifyContent: "space-align",
 							alignItems: "space-between",
 							width: "100%",
+							height: "30vh",
 							gap: "2rem",
 						}}
 					>
@@ -164,6 +182,8 @@ function SurgicalView({
 	surgicalHistoryResource,
 	updateStudentSurgicalHistory,
 }) {
+	const { height, width } = useWindowSize();
+
 	const [selectedSurgery, setSelectedSurgery] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
@@ -313,31 +333,31 @@ function SurgicalView({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: width < 768 ? "column-reverse" : "row", //Menor a 768px se muestra en columna
 				width: "100%",
-				height: "100%",
-				gap: "1.5rem",
+				height: "175%",
+				gap: adjustWidth(width, "1.5rem"),
 			}}
 		>
 			<div
 				style={{
 					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
+					borderRadius: adjustWidth(width, "0.625rem"),
+					padding: adjustWidth(width, "1rem"),
+					height: width < 768 ? "85vh" : "65vh",
 					flex: 1,
 					overflowY: "auto",
 				}}
 			>
 				<div
 					style={{
-						paddingBottom: "0.5rem",
+						paddingBottom: adjustHeight(height, "0.5rem"),
 					}}
 				>
 					<BaseButton
 						text="Agregar antecedente quirúrgico"
 						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
+						style={{ width: "100%", height: adjustHeight(height, "3rem") }}
 					/>
 				</div>
 
@@ -345,7 +365,7 @@ function SurgicalView({
 					<div
 						style={{
 							color: "red",
-							paddingTop: "1rem",
+							paddingTop: adjustHeight(height, "1rem"),
 							textAlign: "center",
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
@@ -356,7 +376,12 @@ function SurgicalView({
 				)}
 
 				{noSurgeryData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+					<p
+						style={{
+							textAlign: "center",
+							paddingTop: adjustHeight(height, "1.25rem"),
+						}}
+					>
 						¡Parece que no hay antecedentes quirúrgicos! Agrega uno en el botón
 						de arriba.
 					</p>
@@ -378,18 +403,18 @@ function SurgicalView({
 					style={{
 						border: `1px solid ${colors.primaryBackground}`,
 						borderRadius: "10px",
-						padding: "1rem",
+						padding: adjustWidth(width, "1rem"),
 						height: "65vh",
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
-						paddingLeft: "2rem",
+						paddingLeft: adjustWidth(width, "2rem"),
 					}}
 				>
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "1.5rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -408,16 +433,16 @@ function SurgicalView({
 						placeholder="Ingrese acá el motivo o tipo de cirugía."
 						style={{
 							width: "95%",
-							height: "3rem",
+							height: adjustHeight(height, "3rem"),
 							fontFamily: fonts.textFont,
-							fontSize: "1rem",
+							fontSize: adjustHeight(height, "1rem"),
 						}}
 					/>
 
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "2rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -435,7 +460,7 @@ function SurgicalView({
 							})
 						}
 						style={{
-							container: { width: "95%", height: "3rem" },
+							container: { width: "95%", height: adjustHeight(height, "3rem") },
 							select: {},
 							option: {},
 							indicator: {
@@ -447,8 +472,8 @@ function SurgicalView({
 
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "2rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "2rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -467,15 +492,16 @@ function SurgicalView({
 						placeholder="Ingrese complicaciones que pudo haber tenido durante o después de la cirugía."
 						style={{
 							width: "95%",
-							height: "3rem",
+							height: adjustHeight(height, "3rem"),
 							fontFamily: fonts.textFont,
-							fontSize: "1rem",
+							fontSize: adjustHeight(height, "1rem"),
 						}}
 					/>
 
 					<div
 						style={{
-							paddingTop: "5rem",
+							paddingTop: width < 768 ? "2.5rem" : "5rem", //Cambia el padding top si es menor a 768px
+							paddingBottom: width < 768 ? "2.5rem" : "0rem", //Cambia el padding bottom si es menor a 768px
 							display: "flex",
 							justifyContent: "center",
 						}}
@@ -485,15 +511,15 @@ function SurgicalView({
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewSurgery}
-									style={{ width: "30%", height: "3rem" }}
+									style={{ width: "30%", height: adjustHeight(height, "3rem") }}
 								/>
-								<div style={{ width: "1rem" }} />
+								<div style={{ width: adjustWidth(width, "1rem") }} />
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
 									style={{
 										width: "30%",
-										height: "3rem",
+										height: adjustHeight(height, "3rem"),
 										backgroundColor: "#fff",
 										color: colors.primaryBackground,
 										border: `1.5px solid ${colors.primaryBackground}`,
