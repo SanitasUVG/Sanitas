@@ -30,6 +30,8 @@ export function StudentNonPathologicalHistory({
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
@@ -58,16 +60,55 @@ export function StudentNonPathologicalHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "0.5rem",
+				paddingBottom: "3rem",
+				textAlign: isMobile ? "center" : "left",
+			},
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
+				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			}}
-		>
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "2rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "84vh",
+				flex: 1,
+			},
+		};
+	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -87,15 +128,7 @@ export function StudentNonPathologicalHistory({
 					/>
 				</div>
 
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -104,24 +137,8 @@ export function StudentNonPathologicalHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes No Patológicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
-							}}
-						>
+						<h1 style={styles.title}>Antecedentes No Patológicos</h1>
+						<h3 style={styles.subtitle}>
 							Por favor, completa la información solicitada; será tratada con
 							estricta confidencialidad.
 						</h3>
@@ -458,6 +475,43 @@ function NonPathologicalView({
 		);
 	};
 
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			baseInput: {
+				width: isMobile ? "11rem" : "20rem",
+				height: "2.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dobleQInputs: {
+				display: isMobile ? "column" : "flex",
+				gap: "1rem",
+				paddingBottom: "2rem",
+			},
+			dobleQlabel: {
+				paddingBottom: "0.5rem",
+				paddingTop: isMobile ? "1rem" : "0rem",
+				fontFamily: fonts.textFont,
+				fontSize: fontSize.textSize,
+			},
+		};
+	};
+
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const styles = getResponsiveStyles(windowWidth);
+
 	return (
 		<div
 			style={{
@@ -483,6 +537,7 @@ function NonPathologicalView({
 						style={{
 							color: "red",
 							paddingTop: "1rem",
+							paddingBottom: "1rem",
 							textAlign: "center",
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
@@ -531,19 +586,14 @@ function NonPathologicalView({
 										fontSize: fontSize.textSize,
 									}}
 								>
-									Tipo de sangre (para editarlo, vaya a la pestaña "General"):
+									Tipo de sangre:
 								</p>
 								<BaseInput
 									type="text"
 									value={bloodTypeResult?.result?.bloodType ?? ""}
 									readOnly
 									placeholder="Tipo de sangre:"
-									style={{
-										width: "20rem",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
+									style={styles.baseInput}
 								/>
 							</div>
 						</div>
@@ -588,13 +638,7 @@ function NonPathologicalView({
 							</div>
 							{smokingStatus && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											paddingBottom: "2rem",
-										}}
-									>
+									<div style={styles.dobleQInputs}>
 										<div>
 											<p
 												style={{
@@ -612,22 +656,11 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántos cigarrillos al día"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 										<div>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
+											<p style={styles.dobleQlabel}>
 												¿Desde hace cuántos años?
 											</p>
 											<BaseInput
@@ -637,12 +670,7 @@ function NonPathologicalView({
 												placeholder="Ingrese desde hace cuántos años"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
@@ -715,12 +743,7 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántas bebidas al mes"
 												min="1"
 												readOnly={!isAlcoholEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
@@ -768,13 +791,7 @@ function NonPathologicalView({
 							</div>
 							{drugUse && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div
-										style={{
-											display: "flex",
-											gap: "1rem",
-											paddingBottom: "2rem",
-										}}
-									>
+									<div style={styles.dobleQInputs}>
 										<div>
 											<p
 												style={{
@@ -792,36 +809,18 @@ function NonPathologicalView({
 												placeholder="Ingrese el tipo de droga"
 												min="1"
 												readOnly={!isDrugUseEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 										<div>
-											<p
-												style={{
-													paddingBottom: "0.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: fontSize.textSize,
-												}}
-											>
-												¿Con qué frecuencia?
-											</p>
+											<p style={styles.dobleQlabel}>¿Con qué frecuencia?</p>
 											<BaseInput
 												type="text"
 												value={drugFrequency}
 												onChange={(e) => setDrugFrequency(e.target.value)}
 												placeholder="Ingrese la frecuencia del consumo"
 												readOnly={!isDrugUseEditable}
-												style={{
-													width: "20rem",
-													height: "2.5rem",
-													fontFamily: fonts.textFont,
-													fontSize: "1rem",
-												}}
+												style={styles.baseInput}
 											/>
 										</div>
 									</div>
