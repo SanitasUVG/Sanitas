@@ -1,6 +1,10 @@
 import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
 	createTestPatient,
 	LOCAL_API_URL,
 	updatePatientSurgicalHistory,
@@ -33,12 +37,17 @@ async function createPatient() {
 
 describe("Get Surgical History integration tests", () => {
 	let patientId;
+	const validHeaders = createAuthorizationHeader(createDoctorJWT());
+	const invalidEmailHeaders = createAuthorizationHeader(createPatientJWT());
+
 	beforeAll(async () => {
 		patientId = await createPatient(true);
 	});
 
 	test("Retrieve existing surgical history", async () => {
-		const response = await axios.get(`${API_URL}${patientId}`);
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -58,6 +67,7 @@ describe("Get Surgical History integration tests", () => {
 		const nonExistentPatientId = 999999; // Assuming this ID does not exist
 		const response = await axios.get(`${API_URL}${nonExistentPatientId}`, {
 			validateStatus: () => true,
+			headers: validHeaders,
 		});
 
 		expect(response).toBeDefined();
@@ -75,6 +85,7 @@ describe("Get Surgical History integration tests", () => {
 		const invalidId = "abckdj";
 		const response = await axios.get(`${API_URL}${invalidId}`, {
 			validateStatus: () => true,
+			headers: validHeaders,
 		});
 
 		expect(response).toBeDefined();
@@ -82,5 +93,28 @@ describe("Get Surgical History integration tests", () => {
 
 		const { error } = response.data;
 		expect(error).toBe("Invalid request: No valid patientId supplied!");
+	});
+
+	test("Fail because of email without permissions", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: invalidEmailHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response).toBeDefined();
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe(
+			"The email doesn't belong to the patient id!",
+		);
+	});
+
+	test("Fail because of invalid JWT", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: createAuthorizationHeader(createInvalidJWT()),
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe("JWT couldn't be parsed");
 	});
 });
