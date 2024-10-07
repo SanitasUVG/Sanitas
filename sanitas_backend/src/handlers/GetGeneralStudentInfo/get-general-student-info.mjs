@@ -44,7 +44,7 @@ export const handler = async (event, context) => {
 			.setBody({ error: "Invalid request: No valid id supplied!" })
 			.build();
 	}
-	logger.info("CARNET received!");
+	logger.info("patientId received!");
 
 	let client;
 	try {
