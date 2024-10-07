@@ -9,6 +9,8 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import InformationCard from "src/components/InformationCard";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import { adjustWidth, adjustHeight } from "src/utils/measureScaling";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentTraumatologicalHistoryProps
@@ -30,7 +32,10 @@ export function StudentTraumatologicalHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const { height, width } = useWindowSize();
+
 	const id = useStore((s) => s.selectedPatientId);
+	// const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const traumatologicHistoryResource = WrapPromise(getTraumatologicHistory(id));
 
@@ -45,7 +50,8 @@ export function StudentTraumatologicalHistory({
 				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: "2rem",
+				padding: adjustHeight(height, "2rem"),
+				overflow: width < 768 ? "auto" : "hidden", //Menor a 768px el overflow se oculta
 			}}
 		>
 			<div
@@ -57,7 +63,7 @@ export function StudentTraumatologicalHistory({
 			>
 				<StudentDashboardTopbar
 					{...sidebarConfig}
-					activeSectionProp="traumatological"
+					activeSectionProp="traumatologicos"
 				/>
 			</div>
 
@@ -70,10 +76,12 @@ export function StudentTraumatologicalHistory({
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
+						padding: adjustHeight(height, "2rem"),
 						height: "100%",
 						borderRadius: "0.625rem",
 						flex: "1",
+						minHeight: "80vh",
+						overflow: "auto",
 					}}
 				>
 					<div
@@ -82,6 +90,7 @@ export function StudentTraumatologicalHistory({
 							flexDirection: "column",
 							justifyContent: "center",
 							alignItems: "center",
+							textAlign: "center",
 						}}
 					>
 						<h1
@@ -98,8 +107,8 @@ export function StudentTraumatologicalHistory({
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.5rem",
-								paddingBottom: "3rem",
+								paddingTop: adjustHeight(height, "0.5rem"),
+								paddingBottom: adjustHeight(height, "3rem"),
 							}}
 						>
 							Registro de antecedentes traumatológicos
@@ -113,7 +122,8 @@ export function StudentTraumatologicalHistory({
 							justifyContent: "space-between",
 							alignItems: "space-between",
 							width: "100%",
-							gap: "2rem",
+							height: "30vh",
+							gap: adjustHeight(height, "2rem"),
 						}}
 					>
 						<Suspense fallback={<LoadingView />}>
@@ -151,6 +161,8 @@ function StudentTraumatologicalView({
 	traumatologicHistoryResource,
 	updateTraumatologicalHistory,
 }) {
+	const { height, width } = useWindowSize();
+
 	const [selectedTrauma, setSelectedTrauma] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
@@ -299,31 +311,31 @@ function StudentTraumatologicalView({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: width < 768 ? "column-reverse" : "row",
 				width: "100%",
-				height: "100%",
-				gap: "1.5rem",
+				height: "175%",
+				gap: adjustHeight(height, "1.5rem"),
 			}}
 		>
 			<div
 				style={{
 					border: `1px solid ${colors.primaryBackground}`,
 					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
+					padding: adjustHeight(height, "1rem"),
+					height: width < 768 ? "85vh" : "65vh",
 					flex: 1,
 					overflowY: "auto",
 				}}
 			>
 				<div
 					style={{
-						paddingBottom: "0.5rem",
+						paddingBottom: adjustHeight(height, "0.5rem"),
 					}}
 				>
 					<BaseButton
 						text="Agregar antecedente traumatológico"
 						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
+						style={{ width: "100%", height: adjustHeight(height, "3rem") }}
 					/>
 				</div>
 
@@ -331,7 +343,7 @@ function StudentTraumatologicalView({
 					<div
 						style={{
 							color: "red",
-							paddingTop: "1rem",
+							paddingTop: adjustHeight(height, "1rem"),
 							textAlign: "center",
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
@@ -342,7 +354,12 @@ function StudentTraumatologicalView({
 				)}
 
 				{noTraumaData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+					<p
+						style={{
+							textAlign: "center",
+							paddingTop: adjustHeight(height, "1.25rem"),
+						}}
+					>
 						¡Parece que no hay antecedentes traumatológicos! Agrega uno en el
 						botón de arriba.
 					</p>
@@ -369,13 +386,13 @@ function StudentTraumatologicalView({
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
-						paddingLeft: "2rem",
+						paddingLeft: adjustWidth(width, "2rem"),
 					}}
 				>
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "1rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -395,15 +412,15 @@ function StudentTraumatologicalView({
 							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
-							fontSize: "1rem",
+							fontSize: adjustHeight(height, "1rem"),
 						}}
 						disabled={!isEditable}
 					/>
 
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "1.5rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -431,8 +448,8 @@ function StudentTraumatologicalView({
 
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
+							paddingBottom: adjustHeight(height, "0.5rem"),
+							paddingTop: adjustHeight(height, "1.5rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -443,8 +460,8 @@ function StudentTraumatologicalView({
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							gap: "0.5rem",
-							paddingLeft: "1.5rem",
+							gap: adjustHeight(height, "0.5rem"),
+							paddingLeft: adjustWidth(width, "1.5rem"),
 						}}
 					>
 						<RadioInput
@@ -477,9 +494,10 @@ function StudentTraumatologicalView({
 
 					<div
 						style={{
-							paddingTop: "5rem",
 							display: "flex",
 							justifyContent: "center",
+							paddingTop: width < 768 ? "2.5rem" : "5rem", //Cambia el padding top si es menor a 768px
+							paddingBottom: width < 768 ? "2.5rem" : "0rem", //Cambia el padding bottom si es menor a 768px
 						}}
 					>
 						{addingNew && (
@@ -487,15 +505,15 @@ function StudentTraumatologicalView({
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewTrauma}
-									style={{ width: "30%", height: "3rem" }}
+									style={{ width: "30%", height: adjustHeight(height, "3rem") }}
 								/>
-								<div style={{ width: "1rem" }} />
+								<div style={{ width: adjustWidth(width, "1rem") }} />
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
 									style={{
 										width: "30%",
-										height: "3rem",
+										height: adjustHeight(height, "3rem"),
 										backgroundColor: "#fff",
 										color: colors.primaryBackground,
 										border: `1.5px solid ${colors.primaryBackground}`,
