@@ -130,8 +130,6 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
