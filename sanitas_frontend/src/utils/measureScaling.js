@@ -17,6 +17,8 @@ export const adjustWidth = (width, remValues) => {
 		scaleFactor = 0.93;
 	} else if (width >= 1280) {
 		scaleFactor = 0.83;
+	} else if (width <= 768) {
+		scaleFactor = 0.49;
 	} else {
 		scaleFactor = 1.0;
 	}
