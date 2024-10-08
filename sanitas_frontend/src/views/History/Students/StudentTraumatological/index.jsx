@@ -111,7 +111,7 @@ export function StudentTraumatologicalHistory({
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
 								paddingTop: adjustHeight(height, "0.5rem"),
-								paddingBottom: adjustHeight(height, "3rem"),
+								paddingBottom: adjustHeight(height, "0.2rem"),
 							}}
 						>
 							¿Se ha fracturado algún hueso?
