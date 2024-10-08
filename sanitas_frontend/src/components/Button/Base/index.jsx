@@ -16,7 +16,7 @@ import { useState } from "react";
  */
 export default function BaseButton({ text, onClick, style = {} }) {
 	const [isHovered, setIsHovered] = useState(false);
-	const [canClick, setCanClick] = useState(false);
+	const [canClick, setCanClick] = useState(true);
 
 	const defaultStyle = {
 		backgroundColor: "#0F6838",

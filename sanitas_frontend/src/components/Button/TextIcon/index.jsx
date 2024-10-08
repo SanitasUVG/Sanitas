@@ -17,7 +17,7 @@ import { useState } from "react";
  */
 const TextIconButton = ({ icon, text, onClick, style, iconStyle }) => {
 	const [isHovered, setIsHovered] = useState(false);
-	const [canClick, setCanClick] = useState(false);
+	const [canClick, setCanClick] = useState(true);
 
 	const baseStyle = {
 		backgroundColor: isHovered ? "#E6E7E7" : "#FFFFFF",

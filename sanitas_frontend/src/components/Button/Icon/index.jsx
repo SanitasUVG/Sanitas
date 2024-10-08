@@ -16,7 +16,7 @@ import { useState } from "react";
  */
 const IconButton = ({ icon, onClick, style }) => {
 	const [isHovered, setIsHovered] = useState(false);
-	const [canClick, setCanClick] = useState(false);
+	const [canClick, setCanClick] = useState(true);
 
 	const baseStyle = {
 		backgroundColor: "#FFFFFF",
