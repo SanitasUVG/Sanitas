@@ -149,6 +149,7 @@ export function StudentObGynHistory({
 	);
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This is a view function, complexity is expected
 function DiagnosisSection({
 	title,
 	diagnosisKey,
@@ -168,6 +169,8 @@ function DiagnosisSection({
 	);
 	const [dose, setDose] = useState(diagnosisDetails.dosage || "");
 	const [frequency, setFrequency] = useState(diagnosisDetails.frequency || "");
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	const showFields = isNew || diagnosed;
 
@@ -259,7 +262,7 @@ function DiagnosisSection({
 								readOnly={editable}
 								placeholder="Ingrese el nombre del diagnóstico."
 								style={{
-									width: "60%",
+									width: isMobile ? "100%" : "60%",
 									height: "3rem",
 									fontFamily: fonts.textFont,
 									fontSize: "1rem",
@@ -285,7 +288,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese el medicamento administrado."
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -307,7 +310,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -331,7 +334,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -395,6 +398,8 @@ function OperationSection({
 	const [operationDetails, setOperationDetails] = useState(() =>
 		isArray ? operationDetailsResource : [operationDetailsResource],
 	);
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handlePerformedChangeInternal = (newPerformedStatus) => {
@@ -564,7 +569,7 @@ function OperationSection({
 							onChange={(e) => handleYearChange(index, e.target.value)}
 							style={{
 								container: {
-									width: "60%",
+									width: isMobile ? "100%" : "60%",
 									height: "10%",
 									paddingLeft: "0.5rem",
 								},
@@ -814,7 +819,7 @@ function ObGynView({
 						readOnly={!isEditable}
 						placeholder="Ingrese el medicamento tomado para regular los dolores de menstruación."
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -1282,7 +1287,7 @@ function ObGynView({
 							readOnly={!isEditable}
 							placeholder="Ingrese la edad (Ej. 15, 16...)"
 							style={{
-								width: "60%",
+								width: isMobile ? "100%" : "60%",
 								height: "3rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
