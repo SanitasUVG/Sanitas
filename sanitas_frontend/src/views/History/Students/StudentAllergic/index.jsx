@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -9,6 +9,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentAllergicHistoryProps
@@ -29,7 +30,10 @@ export function StudentAllergicHistory({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
-	const allergicHistoryResource = WrapPromise(getStudentAllergicHistory(id));
+	const allergicHistoryResource = useMemo(
+		() => WrapPromise(getStudentAllergicHistory(id)),
+		[getStudentAllergicHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
@@ -41,7 +45,6 @@ export function StudentAllergicHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				padding: "2rem",
@@ -161,6 +164,8 @@ function AllergicView({
 	const [isEditable, setIsEditable] = useState(false);
 	const isFirstTime = addingNew;
 	const allergicHistoryResult = allergicHistoryResource.read();
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	let errorMessage = "";
 	if (allergicHistoryResult.error) {
@@ -307,7 +312,7 @@ function AllergicView({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column-reverse" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
