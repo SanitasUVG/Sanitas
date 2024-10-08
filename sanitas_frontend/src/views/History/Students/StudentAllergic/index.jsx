@@ -87,6 +87,7 @@ export function StudentAllergicHistory({
 							color: colors.titleText,
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
 						Antecedentes Alérgicos
@@ -293,6 +294,14 @@ function AllergicView({
 		{ label: "Otros", value: "others" },
 	];
 
+	const buttonStyles = isMobile
+		? {
+				height: "3rem",
+			}
+		: {
+				height: "3rem",
+			};
+
 	return (
 		<div
 			style={{
@@ -479,6 +488,7 @@ function AllergicView({
 						style={{
 							paddingTop: "5rem",
 							display: "flex",
+							flexDirection: isMobile ? "column" : "row",
 							justifyContent: "center",
 						}}
 					>
@@ -487,15 +497,16 @@ function AllergicView({
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewAllergie}
-									style={{ width: "30%", height: "3rem" }}
+									style={buttonStyles}
 								/>
-								<div style={{ width: "1rem" }} />
+								<div
+									style={isMobile ? { height: "1rem" } : { width: "1rem" }}
+								/>
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
 									style={{
-										width: "30%",
-										height: "3rem",
+										...buttonStyles,
 										backgroundColor: "#fff",
 										color: colors.primaryBackground,
 										border: `1.5px solid ${colors.primaryBackground}`,
