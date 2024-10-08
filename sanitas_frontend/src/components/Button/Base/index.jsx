@@ -16,6 +16,7 @@ import { useState } from "react";
  */
 export default function BaseButton({ text, onClick, style = {} }) {
 	const [isHovered, setIsHovered] = useState(false);
+	const [canClick, setCanClick] = useState(false);
 
 	const defaultStyle = {
 		backgroundColor: "#0F6838",
@@ -60,10 +61,23 @@ export default function BaseButton({ text, onClick, style = {} }) {
 		justifyContent: "center",
 	};
 
+	const onClickHandler = async (...args) => {
+		if (canClick) {
+			setCanClick(false);
+			const isAsync = onClick.constructor.name === "AsyncFunction";
+			if (isAsync) {
+				await onClick.apply(null, args);
+			} else {
+				onClick.apply(null, args);
+			}
+			setCanClick(true);
+		}
+	};
+
 	return (
 		<button
 			type="button"
-			onClick={onClick}
+			onClick={onClickHandler}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 			style={defaultStyle}

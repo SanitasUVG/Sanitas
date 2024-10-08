@@ -17,6 +17,7 @@ import { useState } from "react";
  */
 const TextIconButton = ({ icon, text, onClick, style, iconStyle }) => {
 	const [isHovered, setIsHovered] = useState(false);
+	const [canClick, setCanClick] = useState(false);
 
 	const baseStyle = {
 		backgroundColor: isHovered ? "#E6E7E7" : "#FFFFFF",
@@ -45,11 +46,24 @@ const TextIconButton = ({ icon, text, onClick, style, iconStyle }) => {
 		return icon;
 	};
 
+	const onClickHandler = async (...args) => {
+		if (canClick) {
+			setCanClick(false);
+			const isAsync = onClick.constructor.name === "AsyncFunction";
+			if (isAsync) {
+				await onClick.apply(null, args);
+			} else {
+				onClick.apply(null, args);
+			}
+			setCanClick(true);
+		}
+	};
+
 	return (
 		<button
 			type="button"
 			style={baseStyle}
-			onClick={onClick}
+			onClick={onClickHandler}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>
