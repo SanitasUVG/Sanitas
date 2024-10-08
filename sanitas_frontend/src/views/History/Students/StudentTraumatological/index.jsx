@@ -412,7 +412,7 @@ function StudentTraumatologicalView({
 							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
-							fontSize: adjustHeight(height, "1rem"),
+							fontSize: adjustHeight(height, "1.25rem"),
 						}}
 						disabled={!isEditable}
 					/>
@@ -498,6 +498,7 @@ function StudentTraumatologicalView({
 							justifyContent: "center",
 							paddingTop: width < 768 ? "2.5rem" : "5rem", //Cambia el padding top si es menor a 768px
 							paddingBottom: width < 768 ? "2.5rem" : "0rem", //Cambia el padding bottom si es menor a 768px
+							gap: adjustHeight(height, "0.5rem"),
 						}}
 					>
 						{addingNew && (
