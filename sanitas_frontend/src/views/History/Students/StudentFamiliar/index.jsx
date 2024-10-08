@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -9,6 +9,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentStudentFamiliarHistoryProps
@@ -29,7 +30,6 @@ export function StudentFamiliarHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	//const id = 1;
 	const id = useStore((s) => s.selectedPatientId);
 	const StudentFamiliarHistoryResource = WrapPromise(
@@ -78,16 +78,7 @@ export function StudentFamiliarHistory({
 		};
 	};
 
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const styles = getResponsiveStyles(windowWidth);
+	const styles = getResponsiveStyles();
 
 	return (
 		<div style={styles.container}>
@@ -172,6 +163,8 @@ function FamiliarView({
 	const [selectedFamiliar, setSelectedFamiliar] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
+
+	const { width } = useWindowSize();
 
 	// Read the data from the resource and handle any potential errors
 	const StudentFamiliarHistoryResult = StudentFamiliarHistoryResource.read();
@@ -499,7 +492,6 @@ function FamiliarView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides responsive styles for the component
 	const getResponsiveStyles = (width) => {
 		const isMobile = width < 768;
 
@@ -514,8 +506,8 @@ function FamiliarView({
 			innerContainer: {
 				border: `1px solid ${colors.primaryBackground}`,
 				borderRadius: "10px",
-				padding: isMobile ? "0.5rem" : "1rem",
-				height: isMobile ? "auto" : "calc(65vh - 2rem)",
+				padding: "1rem",
+				minHeight: "65vh",
 				flex: 1,
 				overflowY: "auto",
 			},
@@ -542,24 +534,13 @@ function FamiliarView({
 			buttonContainer: {
 				display: "flex",
 				justifyContent: "center",
-				gap: "1rem",
+				gap: "0.5rem",
 				paddingTop: isMobile ? "3rem" : "5rem",
 			},
 		};
 	};
 
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const styles = getResponsiveStyles(windowWidth);
+	const styles = getResponsiveStyles(width);
 
 	return (
 		<div style={styles.container}>
@@ -568,7 +549,7 @@ function FamiliarView({
 					style={{
 						...styles.innerContainer,
 						flex: 1.5,
-						paddingLeft: windowWidth < 768 ? "0.5rem" : "2rem",
+						paddingLeft: width < 768 ? "0.5rem" : "2rem",
 						flexGrow: 1,
 						marginBottom: "1rem",
 					}}
