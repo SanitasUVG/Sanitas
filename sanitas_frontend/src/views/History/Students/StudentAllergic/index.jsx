@@ -99,6 +99,7 @@ export function StudentAllergicHistory({
 							fontSize: fontSize.subtitleSize,
 							paddingTop: "0.7rem",
 							paddingBottom: "0.2rem",
+							textAlign: "center",
 						}}
 					>
 						¿Es alérgico a alguno de los siguientes?
@@ -109,6 +110,7 @@ export function StudentAllergicHistory({
 							fontWeight: "normal",
 							fontSize: fontSize.subtitleSize,
 							paddingBottom: "1.5rem",
+							textAlign: "center",
 						}}
 					>
 						Por favor ingrese un elemento por alergia.
@@ -382,7 +384,6 @@ function AllergicView({
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
-						paddingLeft: "2rem",
 					}}
 				>
 					<p
