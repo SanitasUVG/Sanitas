@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import { useRef } from "react";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentObGynHistoryProps
@@ -104,6 +105,7 @@ export function StudentObGynHistory({
 							color: colors.titleText,
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
 						Antecedentes Ginecoobstétricos
@@ -786,6 +788,9 @@ function ObGynView({
 		setG(P + C + A);
 	}, [P, C, A]);
 
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
+
 	// GENERAL INFO SECTION
 
 	// RENDER BASE INPUT IF MENSTRUATION IS PAINFUL
@@ -1357,31 +1362,21 @@ function ObGynView({
 
 						<div
 							style={{
+								padding: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 								display: "flex",
 								justifyContent: "center",
-								alignItems: "center",
-								width: "100%",
 							}}
-						>
-							<div
-								style={{
-									padding: "1rem",
-									borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-									width: "95%",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							/>
-						</div>
+						/>
 						<div
 							style={{
 								display: "flex",
 								flexDirection: "row",
 								alignItems: "center",
 								justifyContent: "center",
-								gap: "2rem",
-								width: "90%",
-								paddingLeft: "3rem",
+								flexWrap: isMobile ? "wrap" : "initial",
+								gap: isMobile ? "1rem" : "2rem",
+								padding: "1rem 2rem",
 							}}
 						>
 							<div
@@ -1395,7 +1390,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: "2rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1418,7 +1413,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1436,12 +1431,12 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
 								>
-									# Partos vía vaginal
+									# Partos vaginales
 								</p>
 								<BaseInput
 									value={P}
@@ -1460,7 +1455,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1478,7 +1473,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1502,7 +1497,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1520,7 +1515,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
