@@ -45,6 +45,7 @@ export function StudentAllergicHistory({
 		<div
 			style={{
 				display: "flex",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				padding: "2rem",
@@ -52,90 +53,74 @@ export function StudentAllergicHistory({
 		>
 			<div
 				style={{
-					height: "100%",
 					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="alergicos"
+				/>
+			</div>
+			<div
+				style={{
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
 					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="alergicos"
-					/>
-				</div>
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
-					<div
+					<h1
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Alérgicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
-							}}
-						>
-							¿Es alérgico a alguno de los siguientes?
-						</h3>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							Por favor ingrese un elemento por alergia.
-						</h3>
-					</div>
+						Antecedentes Alérgicos
+					</h1>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.7rem",
+							paddingBottom: "0.2rem",
+						}}
+					>
+						¿Es alérgico a alguno de los siguientes?
+					</h3>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingBottom: "1.5rem",
+						}}
+					>
+						Por favor ingrese un elemento por alergia.
+					</h3>
+				</div>
 
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<AllergicView
-								id={id}
-								allergicHistoryResource={allergicHistoryResource}
-								updateStudentAllergicHistory={updateStudentAllergicHistory}
-							/>
-						</Suspense>
-					</div>
-				</div>
+				<Suspense fallback={<LoadingView />}>
+					<AllergicView
+						id={id}
+						allergicHistoryResource={allergicHistoryResource}
+						updateStudentAllergicHistory={updateStudentAllergicHistory}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -314,7 +299,7 @@ function AllergicView({
 				display: "flex",
 				flexDirection: isMobile ? "column-reverse" : "row",
 				width: "100%",
-				height: "100%",
+				flexGrow: 1,
 				gap: "1.5rem",
 			}}
 		>
