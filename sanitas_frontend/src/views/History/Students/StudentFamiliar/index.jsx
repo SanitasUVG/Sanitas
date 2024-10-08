@@ -49,7 +49,7 @@ export function StudentFamiliarHistory({
 				color: colors.titleText,
 				fontFamily: fonts.titleFont,
 				fontSize: fontSize.titleSize,
-				textAlign: isMobile ? "center" : "left",
+				textAlign: "center",
 			},
 			subtitle: {
 				fontFamily: fonts.textFont,
@@ -57,13 +57,13 @@ export function StudentFamiliarHistory({
 				fontSize: fontSize.subtitleSize,
 				paddingTop: "0.5rem",
 				paddingBottom: "3rem",
-				textAlign: isMobile ? "center" : "left",
+				textAlign: "center",
 			},
 			container: {
 				display: "flex",
 				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
-				minHeight: "100vh",
+				height: "100vh",
 				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
 			},
@@ -72,7 +72,7 @@ export function StudentFamiliarHistory({
 				padding: "2rem",
 				borderRadius: "0.625rem",
 				overflow: "auto",
-				minHeight: "84vh",
+				height: "84vh",
 				flex: 1,
 			},
 		};
@@ -507,7 +507,7 @@ function FamiliarView({
 				border: `1px solid ${colors.primaryBackground}`,
 				borderRadius: "10px",
 				padding: "1rem",
-				minHeight: "65vh",
+				height: "65vh",
 				flex: 1,
 				overflowY: "auto",
 			},
@@ -526,16 +526,18 @@ function FamiliarView({
 			dropdownSelect: {
 				width: "100%",
 			},
-			button: {
-				width: isMobile ? "45%" : "30%",
-				height: isMobile ? "2.5rem" : "3rem",
-				fontSize: isMobile ? "0.9rem" : "1rem",
-			},
 			buttonContainer: {
 				display: "flex",
-				justifyContent: "center",
+				flexDirection: "column",
+				alignItems: "center",
 				gap: "0.5rem",
-				paddingTop: isMobile ? "3rem" : "5rem",
+				paddingTop: isMobile ? "2rem" : "3rem",
+			},
+			button: {
+				width: isMobile ? "80%" : "60%",
+				height: "2.5rem",
+				fontSize: "1rem",
+				marginBottom: "0.5rem",
 			},
 		};
 	};
@@ -549,7 +551,7 @@ function FamiliarView({
 					style={{
 						...styles.innerContainer,
 						flex: 1.5,
-						paddingLeft: width < 768 ? "0.5rem" : "2rem",
+						paddingLeft: width < 768 ? "1rem" : "2rem",
 						flexGrow: 1,
 						marginBottom: "1rem",
 					}}
