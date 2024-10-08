@@ -85,10 +85,7 @@ export function StudentSurgicalHistory({
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						paddingTop: adjustHeight(height, "2rem"),
-						paddingBottom: adjustHeight(height, "2rem"),
-						paddingLeft: adjustWidth(width, "2rem"),
-						paddingRight: adjustWidth(width, "2rem"),
+						padding: adjustHeight(height, "2rem"),
 						borderRadius: "0.625rem",
 						overflow: "auto",
 						minHeight: "80vh",
@@ -144,7 +141,7 @@ export function StudentSurgicalHistory({
 							alignItems: "space-between",
 							width: "100%",
 							height: "30vh",
-							gap: "2rem",
+							gap: adjustHeight(height, "2rem"),
 						}}
 					>
 						<Suspense fallback={<LoadingView />}>
