@@ -17,8 +17,7 @@ import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
  * @property {import("src/dataLayer.mjs").GetGynecologicalHistoryCallback} getObGynHistory
  * @property {import("src/dataLayer.mjs").UpdateStudentGynecologialHistoryCallback} updateObGynHistory
  * @property {import("src/store.mjs").UseStoreHook} useStore
- * FIXME: Type to the props from student dashboard
- * @property {Object} sidebarConfig
+ * @property {import("src/components/StudentDashboardTopBar").StudentDashboardTopbarProps} sidebarConfig
  */
 
 /**
