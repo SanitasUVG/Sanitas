@@ -111,7 +111,17 @@ export function StudentTraumatologicalHistory({
 								paddingBottom: adjustHeight(height, "3rem"),
 							}}
 						>
-							Registro de antecedentes traumatológicos
+							¿Se ha fracturado algún hueso?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingBottom: "1.5rem",
+							}}
+						>
+							Por favor ingrese un elemento por diagnóstico.
 						</h3>
 					</div>
 
@@ -412,7 +422,7 @@ function StudentTraumatologicalView({
 							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
-							fontSize: adjustHeight(height, "1.25rem"),
+							fontSize: adjustHeight(height, "1.10rem"),
 						}}
 						disabled={!isEditable}
 					/>

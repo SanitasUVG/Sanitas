@@ -435,7 +435,7 @@ function SurgicalView({
 							width: "95%",
 							height: adjustHeight(height, "3rem"),
 							fontFamily: fonts.textFont,
-							fontSize: adjustHeight(height, "1.25rem"),
+							fontSize: adjustHeight(height, "1.10rem"),
 						}}
 					/>
 
@@ -494,7 +494,7 @@ function SurgicalView({
 							width: "95%",
 							height: adjustHeight(height, "3rem"),
 							fontFamily: fonts.textFont,
-							fontSize: adjustHeight(height, "1.25rem"),
+							fontSize: adjustHeight(height, "1.10rem"),
 						}}
 					/>
 
