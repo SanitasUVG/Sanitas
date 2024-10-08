@@ -402,7 +402,7 @@ function AllergicView({
 						disabled={!addingNew}
 						onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
 						style={{
-							container: { width: "90%" },
+							container: { width: isMobile ? "100%" : "90%" },
 							select: {},
 							option: {},
 							indicator: {},
@@ -424,7 +424,7 @@ function AllergicView({
 						onChange={(e) => handleFieldChange("whichAllergie", e.target.value)}
 						placeholder="Ingrese a cuál del tipo seleccionado"
 						style={{
-							width: "90%",
+							width: isMobile ? "100%" : "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
