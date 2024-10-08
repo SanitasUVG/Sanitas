@@ -35,7 +35,7 @@ export function StudentTraumatologicalHistory({
 	const { height, width } = useWindowSize();
 
 	const id = useStore((s) => s.selectedPatientId);
-	// const id = 1;
+	//   const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const traumatologicHistoryResource = WrapPromise(getTraumatologicHistory(id));
 
@@ -122,7 +122,7 @@ export function StudentTraumatologicalHistory({
 							justifyContent: "space-between",
 							alignItems: "space-between",
 							width: "100%",
-							height: "30vh",
+							height: "35vh",
 							gap: adjustHeight(height, "2rem"),
 						}}
 					>
@@ -321,8 +321,8 @@ function StudentTraumatologicalView({
 				style={{
 					border: `1px solid ${colors.primaryBackground}`,
 					borderRadius: "10px",
-					padding: adjustHeight(height, "1rem"),
-					height: width < 768 ? "85vh" : "65vh",
+					padding: adjustHeight(height, "0.625rem"),
+					height: width < 768 ? "85vh" : "61vh",
 					flex: 1,
 					overflowY: "auto",
 				}}
@@ -380,9 +380,9 @@ function StudentTraumatologicalView({
 				<div
 					style={{
 						border: `1px solid ${colors.primaryBackground}`,
-						borderRadius: "10px",
-						padding: "1rem",
-						height: "65vh",
+						borderRadius: adjustWidth(width, "0.625rem"),
+						padding: adjustWidth(width, "1rem"),
+						height: width < 768 ? "85vh" : "61vh",
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",

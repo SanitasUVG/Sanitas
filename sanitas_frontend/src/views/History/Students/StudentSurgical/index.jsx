@@ -34,7 +34,7 @@ export function StudentSurgicalHistory({
 }) {
 	const { height, width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	// const id = 1;
+	//   const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
 	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
 
@@ -344,7 +344,7 @@ function SurgicalView({
 					border: `1px solid ${colors.primaryBackground}`,
 					borderRadius: adjustWidth(width, "0.625rem"),
 					padding: adjustWidth(width, "1rem"),
-					height: width < 768 ? "85vh" : "65vh",
+					height: width < 768 ? "85vh" : "61vh",
 					flex: 1,
 					overflowY: "auto",
 				}}
@@ -404,7 +404,7 @@ function SurgicalView({
 						border: `1px solid ${colors.primaryBackground}`,
 						borderRadius: "10px",
 						padding: adjustWidth(width, "1rem"),
-						height: "65vh",
+						height: width < 768 ? "85vh" : "61vh",
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
