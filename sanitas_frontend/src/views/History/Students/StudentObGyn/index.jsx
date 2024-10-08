@@ -117,6 +117,7 @@ export function StudentObGynHistory({
 							fontSize: fontSize.subtitleSize,
 							paddingTop: "0.5rem",
 							paddingBottom: "3rem",
+							textAlign: "center",
 						}}
 					>
 						Por favor, completa la información solicitada; será tratada con
@@ -132,6 +133,9 @@ export function StudentObGynHistory({
 						alignItems: "space-between",
 						width: "100%",
 						gap: "2rem",
+						border: `1px solid ${colors.primaryBackground}`,
+						borderRadius: "10px",
+						paddingBottom: "1rem",
 					}}
 				>
 					<Suspense fallback={<LoadingView />}>
