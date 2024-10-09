@@ -29,8 +29,11 @@ export default function RegisterView({ registerUser }) {
 
 	const { width, height } = useWindowSize();
 
+	const isMobile = width < 768;
+
 	const [showPopup, setShowPopup] = useState(false);
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const Child = () => {
 		const navigate = useNavigate();
 		const [username, setUsername] = useState("");
@@ -98,12 +101,12 @@ export default function RegisterView({ registerUser }) {
 				<div
 					style={{
 						background: "white",
-						padding: "4rem 8vw 0 8vw",
+						padding: isMobile ? "2rem 4vw 2rem 4vw" : "4rem 8vw 0 8vw", // Ajuste responsivo
 						display: "flex",
 						flexDirection: "column",
-						gap: "3rem",
-						width: "45%",
-						height: "90%",
+						gap: isMobile ? "1.5rem" : "3rem", // Ajuste responsivo
+						width: isMobile ? "90%" : "45%", // Ajuste responsivo
+						height: isMobile ? "auto" : "90%", // Ajuste responsivo
 						position: "relative",
 						borderRadius: "1rem",
 					}}
@@ -118,8 +121,7 @@ export default function RegisterView({ registerUser }) {
 						<img
 							style={{
 								alignSelf: "center",
-								// maxWidth: "33%",
-								height: "15vh",
+								height: isMobile ? "10vh" : "15vh", // Ajuste responsivo
 							}}
 							alt="UVG Logo"
 							src={uvgLogo}
@@ -138,7 +140,7 @@ export default function RegisterView({ registerUser }) {
 							style={{
 								textAlign: "center",
 								fontFamily: fonts.textFont,
-								fontSize: fontSize.subtitleSize,
+								fontSize: isMobile ? "0.85rem" : fontSize.subtitleSize, // Ajuste responsivo
 							}}
 						>
 							Por favor, regístrate
@@ -210,7 +212,7 @@ export default function RegisterView({ registerUser }) {
 							style={{
 								alignSelf: "center",
 								fontFamily: fonts.titleFont,
-								fontSize: fontSize.textSize,
+								fontSize: isMobile ? "0.85rem" : fontSize.textSize,
 							}}
 						>
 							¿Ya tienes cuenta?{" "}
@@ -244,23 +246,26 @@ export default function RegisterView({ registerUser }) {
 								color: colors.statusDenied,
 								fontWeight: "bold",
 								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
+								fontSize: isMobile ? "0.85rem" : fontSize.textSize,
 							}}
 						>
 							{errorMessage}
 						</p>
 					</div>
 
-					<img
-						src={logoSanitas}
-						alt="Sanitas logo"
-						style={{
-							width: "4rem",
-							position: "absolute",
-							bottom: "1rem",
-							right: "1rem",
-						}}
-					/>
+					{/* Logo */}
+					{!isMobile && (
+						<img
+							src={logoSanitas}
+							alt="Sanitas logo"
+							style={{
+								width: "4rem",
+								position: "absolute",
+								bottom: "1rem",
+								right: "1rem",
+							}}
+						/>
+					)}
 				</div>
 			</div>
 		);
@@ -338,7 +343,7 @@ export default function RegisterView({ registerUser }) {
 							<p
 								style={{
 									textAlign: "center",
-									fontSize: fontSize.textSize,
+									fontSize: isMobile ? "0.75rem" : fontSize.textSize,
 									paddingTop: adjustHeight(height, "1rem"),
 									paddingBottom: adjustHeight(height, "2rem"),
 								}}
