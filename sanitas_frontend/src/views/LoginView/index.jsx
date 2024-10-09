@@ -176,7 +176,7 @@ export default function LoginView({
 							style={{
 								textAlign: "center",
 								fontFamily: fonts.textFont,
-								fontSize: isMobile ? "0.85rem" : fontSize.subtitleSize,
+								fontSize: isMobile ? "1.06rem" : fontSize.subtitleSize,
 							}}
 						>
 							Ingresa tus datos
