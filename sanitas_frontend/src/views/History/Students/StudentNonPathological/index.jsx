@@ -71,90 +71,72 @@ export function StudentNonPathologicalHistory({
 		>
 			<div
 				style={{
-					height: "100%",
 					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="no_patologicos"
+				/>
+			</div>
+
+			<div
+				style={{
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
 					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="no_patologicos"
-					/>
-				</div>
-
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
 						display: "flex",
 						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<div
+					<h1
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-								textAlign: "center",
-							}}
-						>
-							Antecedentes No Patológicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "1.3rem",
-								textAlign: "center",
-							}}
-						>
-							Por favor, completa la información solicitada; será tratada con
-							estricta confidencialidad.
-						</h3>
-					</div>
-
-					<div
+						Antecedentes No Patológicos
+					</h1>
+					<h3
 						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.7rem",
+							paddingBottom: "1.3rem",
+							textAlign: "center",
 						}}
 					>
-						<Suspense fallback={<LoadingView />}>
-							<NonPathologicalView
-								id={id}
-								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
-								bloodTypeResource={bloodTypeResource}
-								updateStudentNonPathologicalHistory={
-									updateStudentNonPathologicalHistory
-								}
-								triggerReload={triggerReload}
-							/>
-						</Suspense>
-					</div>
+						Por favor, completa la información solicitada; será tratada con
+						estricta confidencialidad.
+					</h3>
 				</div>
+
+				<Suspense fallback={<LoadingView />}>
+					<NonPathologicalView
+						id={id}
+						nonPathologicalHistoryResource={nonPathologicalHistoryResource}
+						bloodTypeResource={bloodTypeResource}
+						updateStudentNonPathologicalHistory={
+							updateStudentNonPathologicalHistory
+						}
+						triggerReload={triggerReload}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
