@@ -30,6 +30,28 @@ export async function isDoctor(client, email) {
 }
 
 /**
+ * Checks if the given email belongs to the given patient.
+ * @param {import("pg").Client} client - The Pg Client
+ * @param {string} email - The user email.
+ * @param {string} id - The user Id.
+ */
+export async function isEmailOfPatient(client, email, id) {
+	const query = `
+	SELECT * FROM CUENTA_PACIENTE cp
+	INNER JOIN PACIENTE p ON cp.cui_paciente = p.cui
+	WHERE p.id=$1 AND cp.email=$2
+`;
+	const params = [id, email];
+
+	try {
+		const result = await client.query(query, params);
+		return result.rowCount > 0;
+	} catch (error) {
+		return { error };
+	}
+}
+
+/**
  * @template T
  * Wrapper for common logic to do when doing a transaction in Postgres.
  *
