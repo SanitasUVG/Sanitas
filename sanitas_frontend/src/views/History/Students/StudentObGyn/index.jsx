@@ -133,9 +133,6 @@ export function StudentObGynHistory({
 						alignItems: "space-between",
 						width: "100%",
 						gap: "2rem",
-						border: `1px solid ${colors.primaryBackground}`,
-						borderRadius: "10px",
-						paddingBottom: "1rem",
 					}}
 				>
 					<Suspense fallback={<LoadingView />}>
@@ -1105,6 +1102,7 @@ function ObGynView({
 
 		return true;
 	};
+
 	const structuredOperations = operations.reduce((acc, operation) => {
 		const details = mapOperationDetails(operation.key);
 
@@ -1211,6 +1209,9 @@ function ObGynView({
 				flexDirection: "row",
 				width: "100%",
 				height: "100%",
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				paddingBottom: "1rem",
 			}}
 		>
 			<div
