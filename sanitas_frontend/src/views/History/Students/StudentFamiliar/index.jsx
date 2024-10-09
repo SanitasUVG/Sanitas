@@ -63,7 +63,7 @@ export function StudentFamiliarHistory({
 				display: "flex",
 				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
-				height: "100vh",
+				minHeight: "100vh",
 				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
 			},
@@ -72,7 +72,7 @@ export function StudentFamiliarHistory({
 				padding: "2rem",
 				borderRadius: "0.625rem",
 				overflow: "auto",
-				height: "84vh",
+				minHeight: "84vh",
 				flex: 1,
 			},
 		};
@@ -528,16 +528,16 @@ function FamiliarView({
 			},
 			buttonContainer: {
 				display: "flex",
-				flexDirection: "column",
+				flexDirection: isMobile ? "column" : "row",
 				alignItems: "center",
-				gap: "0.5rem",
-				paddingTop: isMobile ? "2rem" : "3rem",
+				justifyContent: "center",
+				gap: isMobile ? "1rem" : "1rem",
+				paddingTop: "2rem",
 			},
 			button: {
-				width: isMobile ? "80%" : "60%",
-				height: "2.5rem",
+				width: isMobile ? "100%" : "12rem",
+				height: "3rem",
 				fontSize: "1rem",
-				marginBottom: "0.5rem",
 			},
 		};
 	};
@@ -677,27 +677,25 @@ function FamiliarView({
 									/>
 								</>
 							)}
-							<div style={styles.buttonContainer}>
-								{addingNew && (
-									<>
-										<BaseButton
-											text="Guardar"
-											onClick={handleSaveNewFamiliar}
-											style={styles.button}
-										/>
-										<BaseButton
-											text="Cancelar"
-											onClick={handleCancel}
-											style={{
-												...styles.button,
-												backgroundColor: "#fff",
-												color: colors.primaryBackground,
-												border: `1.5px solid ${colors.primaryBackground}`,
-											}}
-										/>
-									</>
-								)}
-							</div>
+							{addingNew && (
+								<div style={styles.buttonContainer}>
+									<BaseButton
+										text="Guardar"
+										onClick={handleSaveNewFamiliar}
+										style={styles.button}
+									/>
+									<BaseButton
+										text="Cancelar"
+										onClick={handleCancel}
+										style={{
+											...styles.button,
+											backgroundColor: "#fff",
+											color: colors.primaryBackground,
+											border: `1.5px solid ${colors.primaryBackground}`,
+										}}
+									/>
+								</div>
+							)}
 						</>
 					)}
 				</div>
