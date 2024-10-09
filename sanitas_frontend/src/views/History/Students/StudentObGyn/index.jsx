@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import { useRef } from "react";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentObGynHistoryProps
@@ -17,8 +18,7 @@ import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
  * @property {import("src/dataLayer.mjs").GetGynecologicalHistoryCallback} getObGynHistory
  * @property {import("src/dataLayer.mjs").UpdateStudentGynecologialHistoryCallback} updateObGynHistory
  * @property {import("src/store.mjs").UseStoreHook} useStore
- * FIXME: Type to the props from student dashboard
- * @property {Object} sidebarConfig
+ * @property {import("src/components/StudentDashboardTopBar").StudentDashboardTopbarProps} sidebarConfig
  */
 
 /**
@@ -105,6 +105,7 @@ export function StudentObGynHistory({
 							color: colors.titleText,
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
 						Antecedentes Ginecoobstétricos
@@ -116,6 +117,7 @@ export function StudentObGynHistory({
 							fontSize: fontSize.subtitleSize,
 							paddingTop: "0.5rem",
 							paddingBottom: "3rem",
+							textAlign: "center",
 						}}
 					>
 						Por favor, completa la información solicitada; será tratada con
@@ -148,6 +150,7 @@ export function StudentObGynHistory({
 	);
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This is a view function, complexity is expected
 function DiagnosisSection({
 	title,
 	diagnosisKey,
@@ -167,6 +170,8 @@ function DiagnosisSection({
 	);
 	const [dose, setDose] = useState(diagnosisDetails.dosage || "");
 	const [frequency, setFrequency] = useState(diagnosisDetails.frequency || "");
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	const showFields = isNew || diagnosed;
 
@@ -258,7 +263,7 @@ function DiagnosisSection({
 								readOnly={editable}
 								placeholder="Ingrese el nombre del diagnóstico."
 								style={{
-									width: "60%",
+									width: isMobile ? "100%" : "60%",
 									height: "3rem",
 									fontFamily: fonts.textFont,
 									fontSize: "1rem",
@@ -284,7 +289,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese el medicamento administrado."
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -306,7 +311,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -330,7 +335,7 @@ function DiagnosisSection({
 						readOnly={editable}
 						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -394,6 +399,8 @@ function OperationSection({
 	const [operationDetails, setOperationDetails] = useState(() =>
 		isArray ? operationDetailsResource : [operationDetailsResource],
 	);
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handlePerformedChangeInternal = (newPerformedStatus) => {
@@ -563,7 +570,7 @@ function OperationSection({
 							onChange={(e) => handleYearChange(index, e.target.value)}
 							style={{
 								container: {
-									width: "60%",
+									width: isMobile ? "100%" : "60%",
 									height: "10%",
 									paddingLeft: "0.5rem",
 								},
@@ -787,6 +794,9 @@ function ObGynView({
 		setG(P + C + A);
 	}, [P, C, A]);
 
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
+
 	// GENERAL INFO SECTION
 
 	// RENDER BASE INPUT IF MENSTRUATION IS PAINFUL
@@ -810,7 +820,7 @@ function ObGynView({
 						readOnly={!isEditable}
 						placeholder="Ingrese el medicamento tomado para regular los dolores de menstruación."
 						style={{
-							width: "60%",
+							width: isMobile ? "100%" : "60%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -1092,6 +1102,7 @@ function ObGynView({
 
 		return true;
 	};
+
 	const structuredOperations = operations.reduce((acc, operation) => {
 		const details = mapOperationDetails(operation.key);
 
@@ -1198,6 +1209,9 @@ function ObGynView({
 				flexDirection: "row",
 				width: "100%",
 				height: "100%",
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				paddingBottom: "1rem",
 			}}
 		>
 			<div
@@ -1278,7 +1292,7 @@ function ObGynView({
 							readOnly={!isEditable}
 							placeholder="Ingrese la edad (Ej. 15, 16...)"
 							style={{
-								width: "60%",
+								width: isMobile ? "100%" : "60%",
 								height: "3rem",
 								fontFamily: fonts.textFont,
 								fontSize: "1rem",
@@ -1358,31 +1372,21 @@ function ObGynView({
 
 						<div
 							style={{
+								padding: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 								display: "flex",
 								justifyContent: "center",
-								alignItems: "center",
-								width: "100%",
 							}}
-						>
-							<div
-								style={{
-									padding: "1rem",
-									borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-									width: "95%",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							/>
-						</div>
+						/>
 						<div
 							style={{
 								display: "flex",
 								flexDirection: "row",
 								alignItems: "center",
 								justifyContent: "center",
-								gap: "2rem",
-								width: "90%",
-								paddingLeft: "3rem",
+								flexWrap: isMobile ? "wrap" : "initial",
+								gap: isMobile ? "1rem" : "2rem",
+								padding: "1rem 2rem",
 							}}
 						>
 							<div
@@ -1396,7 +1400,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: "2rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1419,7 +1423,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1437,12 +1441,12 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
 								>
-									# Partos vía vaginal
+									# Partos vaginales
 								</p>
 								<BaseInput
 									value={P}
@@ -1461,7 +1465,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1479,7 +1483,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
@@ -1503,7 +1507,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									paddingTop: "3.5rem",
+									// paddingTop: isMobile ? 0 : "3.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1521,7 +1525,7 @@ function ObGynView({
 								<p
 									style={{
 										paddingBottom: "0.5rem",
-										paddingTop: "2rem",
+										// paddingTop: isMobile ? 0 : "3.5rem",
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
 									}}
