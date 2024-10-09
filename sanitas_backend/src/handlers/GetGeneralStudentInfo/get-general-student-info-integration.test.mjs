@@ -1,23 +1,33 @@
 import { describe, expect, it } from "@jest/globals";
 import axios from "axios";
-import { LOCAL_API_URL } from "../testHelpers.mjs";
+import {
+	createAuthorizationHeader,
+	createDoctorJWT,
+	createInvalidJWT,
+	createPatientJWT,
+	LOCAL_API_URL,
+} from "../testHelpers.mjs";
 
 const API_URL = `${LOCAL_API_URL}/patient/student/`;
 
 describe("Student Handler", () => {
 	const studentId = 1;
 	const fakestudentId = 9999;
+	const validHeaders = createAuthorizationHeader(createDoctorJWT());
+	const invalidEmailHeaders = createAuthorizationHeader(createPatientJWT());
 
 	it("should return 403 if no CARNET is provided", async () => {
-		try {
-			await axios.get(API_URL);
-		} catch (error) {
-			expect(error.response.status).toBe(403);
-		}
+		const response = await axios.get(API_URL, {
+			validateStatus: () => true,
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(403);
 	});
 
 	it("should return a patient", async () => {
-		const response = await axios.get(API_URL + studentId);
+		const response = await axios.get(API_URL + studentId, {
+			headers: validHeaders,
+		});
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(200);
@@ -29,11 +39,46 @@ describe("Student Handler", () => {
 		expect(user.idPatient).toBe(1);
 	});
 
-	it("should not found a patiend", async () => {
-		try {
-			await axios.get(API_URL + fakestudentId);
-		} catch (error) {
-			expect(error.response.status).toBe(404);
-		}
+	it("Returns default data when patient is not found", async () => {
+		const response = await axios.get(API_URL + fakestudentId, {
+			validateStatus: () => true,
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(200);
+	});
+
+	it("Invalid ID provided", async () => {
+		const invalidId = "invalid123";
+		const response = await axios.get(`${API_URL}${invalidId}`, {
+			validateStatus: () => true,
+			headers: validHeaders,
+		});
+
+		expect(response).toBeDefined();
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe("Invalid request: No valid id supplied!");
+	});
+
+	it("Fail because of email without permissions", async () => {
+		const response = await axios.get(`${API_URL}${studentId}`, {
+			headers: invalidEmailHeaders,
+			validateStatus: () => true,
+		});
+
+		expect(response).toBeDefined();
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe(
+			"The email doesn't belong to the patient id!",
+		);
+	});
+
+	it("Fail because of invalid JWT", async () => {
+		const response = await axios.get(`${API_URL}${studentId}`, {
+			headers: createAuthorizationHeader(createInvalidJWT()),
+			validateStatus: () => true,
+		});
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toBe("JWT couldn't be parsed");
 	});
 });
