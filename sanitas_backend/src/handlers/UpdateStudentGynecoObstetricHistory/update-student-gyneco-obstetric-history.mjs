@@ -101,16 +101,22 @@ function requestModifiesDBData(dbData, requestData) {
 
 	const hasSurgeriesChanges = Object.keys(dbData.hasSurgeries?.data ?? {}).some(
 		(key) => {
+			logger.debug(
+				`Checking if dbData.hasSurgeries.data[${key}] is an array...`,
+			);
 			if (Array.isArray(dbData.hasSurgeries.data[key])) {
+				const dbValue = dbData.hasSurgeries.data[key];
+				const requestValue = requestData.hasSurgeries?.data[key];
 				logger.debug(
+					{ dbValue, requestValue },
 					`dbData.hasSurgeries.data[${key}] is an array! Checking if is subset...`,
 				);
-				return !requestIsSubset(
-					dbData.hasSurgeries.data[key],
-					requestData.hasSurgeries?.data[key],
-				);
+				return !requestIsSubset(dbValue, requestValue, logger);
 			}
 
+			logger.debug(
+				`Checking if dbData.hasSurgeries.data[${key}] is an object...`,
+			);
 			if (typeof dbData.hasSurgeries.data[key] === "object") {
 				logger.debug(
 					`dbData.hasSurgeries.data[${key}] is an object! Checking keys...`,
