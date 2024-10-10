@@ -80,7 +80,7 @@
               echo Building backend
               sam build
 
-              sam local start-api --debug --add-host=hostpc:$(${ipCommand})
+              sam local start-api --debug --add-host=hostpc:$(${ipCommand}) --warm-containers eager
             '';
             startPostgres = ''
               set -euo pipefail
