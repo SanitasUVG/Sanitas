@@ -46,10 +46,10 @@ export function StudentObGynHistory({
 		[id, reload, getBirthdayPatientInfo],
 	);
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
-	const obgynHistoryResource = useMemo(
-		() => WrapPromise(getObGynHistory(id)),
-		[id, reload, getObGynHistory],
-	);
+	const obgynHistoryResource = useMemo(() => {
+		console.log("Recalculating getObGynHistory resource...");
+		return WrapPromise(getObGynHistory(id));
+	}, [id, reload, getObGynHistory]);
 
 	// Triggers a state change to force reloading of data
 	const triggerReload = () => {
@@ -578,7 +578,7 @@ function OperationSection({
 						<DropdownMenu
 							options={yearOptions}
 							value={detail.year}
-							disabled={editable}
+							disabled={!editable}
 							onChange={(e) => handleYearChange(index, e.target.value)}
 							style={{
 								container: {
@@ -618,14 +618,14 @@ function OperationSection({
 								checked={detail.complications}
 								onChange={() => handleComplicationChange(index, true)}
 								label="Sí"
-								disabled={editable}
+								disabled={!editable}
 							/>
 							<RadioInput
 								name={`complications-${index}`}
 								checked={!detail.complications}
 								onChange={() => handleComplicationChange(index, false)}
 								label="No"
-								disabled={editable}
+								disabled={!editable}
 							/>
 						</div>
 						{index !== 0 && (isFirstTime || !editable) ? (
@@ -1023,15 +1023,8 @@ function ObGynView({
 	});
 
 	const hasBeenEdited =
-		operations.some((op) => {
-			console.log("Operation", op);
-			return op.hasBeenEdited;
-		}) ||
-		diagnoses.some((d) => {
-			console.log("Diagnose", d);
-			return d.hasBeenEdited;
-		});
-	console.log("HAS BEEN EDITED: ", hasBeenEdited);
+		operations.some((op) => op.hasBeenEdited) ||
+		diagnoses.some((d) => d.hasBeenEdited);
 
 	const mapOperationDetails = (operationKey) => {
 		const operation = operations.find((op) => op.key === operationKey);
