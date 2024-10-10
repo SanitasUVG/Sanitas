@@ -8,7 +8,6 @@ import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import { useRef } from "react";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
 
@@ -161,7 +160,8 @@ function DiagnosisSection({
 	diagnosisDetails,
 	handleDiagnosedChange,
 }) {
-	const [diagnosed, setDiagnosed] = useState(!!diagnosisDetails.medication);
+	const originalDiagnosed = !!diagnosisDetails.medication;
+	const [diagnosed, setDiagnosed] = useState(originalDiagnosed);
 	const [diagnosisName, setDiagnosisName] = useState(
 		diagnosisDetails.illness || "",
 	);
@@ -175,18 +175,15 @@ function DiagnosisSection({
 
 	const showFields = isNew || diagnosed;
 
-	const handleDiagnosedChangeRef = useRef(handleDiagnosedChange);
-	handleDiagnosedChangeRef.current = handleDiagnosedChange;
-
-	useEffect(() => {
-		const stableHandleDiagnosedChange = handleDiagnosedChangeRef.current;
-		stableHandleDiagnosedChange(diagnosisKey, true, {
+	const updateField = (field, value) => {
+		handleDiagnosedChange(diagnosisKey, true, {
 			illness: diagnosisName,
 			medication: medication,
 			dosage: dose,
 			frequency: frequency,
+			[field]: value,
 		});
-	}, [diagnosisName, medication, dose, frequency, diagnosisKey]);
+	};
 
 	return (
 		<div>
@@ -259,7 +256,11 @@ function DiagnosisSection({
 
 							<BaseInput
 								value={diagnosisName}
-								onChange={(e) => setDiagnosisName(e.target.value)}
+								onChange={(e) => {
+									const value = e.target.value;
+									setDiagnosisName(value);
+									updateField("illness", value);
+								}}
 								readOnly={editable}
 								placeholder="Ingrese el nombre del diagnóstico."
 								style={{
@@ -285,7 +286,11 @@ function DiagnosisSection({
 
 					<BaseInput
 						value={medication}
-						onChange={(e) => setMedication(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setMedication(value);
+							updateField("medication", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese el medicamento administrado."
 						style={{
@@ -307,7 +312,11 @@ function DiagnosisSection({
 					</p>
 					<BaseInput
 						value={dose}
-						onChange={(e) => setDose(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setDose(value);
+							updateField("dosage", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
@@ -331,7 +340,11 @@ function DiagnosisSection({
 
 					<BaseInput
 						value={frequency}
-						onChange={(e) => setFrequency(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setFrequency(value);
+							updateField("frequency", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
 						style={{
@@ -371,6 +384,15 @@ function DiagnosisSection({
 		</div>
 	);
 }
+const checkPerformed = (resource) => {
+	if (Array.isArray(resource)) {
+		return resource.length > 0;
+	}
+	if (typeof resource === "object" && resource !== null) {
+		return Object.keys(resource).length > 0 && resource.year !== null;
+	}
+	return !!resource;
+};
 
 function OperationSection({
 	title,
@@ -382,16 +404,6 @@ function OperationSection({
 	handlePerformedChange,
 	birthdayResource,
 }) {
-	const checkPerformed = (resource) => {
-		if (Array.isArray(resource)) {
-			return resource.length > 0;
-		}
-		if (typeof resource === "object" && resource !== null) {
-			return Object.keys(resource).length > 0 && resource.year !== null;
-		}
-		return !!resource;
-	};
-
 	const [performed, setPerformed] = useState(() =>
 		checkPerformed(operationDetailsResource),
 	);
@@ -840,18 +852,21 @@ function ObGynView({
 				key: "ovarianCysts",
 				title: "Diagnóstico por Quistes Ováricos:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.ovarianCysts?.medication || {},
 			},
 			{
 				key: "uterineMyomatosis",
 				title: "Diagnóstico por Miomatosis Uterina:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.uterineMyomatosis?.medication || {},
 			},
 			{
 				key: "endometriosis",
 				title: "Diagnóstico por Endometriosis:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.endometriosis?.medication || {},
 			},
 		];
@@ -863,6 +878,7 @@ function ObGynView({
 				title: `Nuevo Diagnóstico: ${condition.medication.illness}`,
 				isNew: false,
 				active: true,
+				hasBeenEdited: false,
 				details: condition.medication,
 			});
 		}
@@ -878,6 +894,7 @@ function ObGynView({
 			title: `Nuevo Diagnóstico ${diagnosisCount}`,
 			isNew: true,
 			active: true,
+			hasBeenEdited: false,
 			details: {
 				illness: "",
 				medication: "",
@@ -938,6 +955,7 @@ function ObGynView({
 						return {
 							...diagnosis,
 							active: false,
+							hasBeenEdited: true,
 							details: { medication: "", dosage: "", frequency: "" },
 						};
 						// biome-ignore lint/style/noUselessElse: Handles the data structure of the diagnoses for static ones and the new diagnostics
@@ -961,6 +979,7 @@ function ObGynView({
 						return {
 							...diagnosis,
 							active: true,
+							hasBeenEdited: true,
 							details: updatedDetails,
 						};
 					}
@@ -977,27 +996,42 @@ function ObGynView({
 			{
 				key: "hysterectomy",
 				title: "Operación por Histerectomía:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.hysterectomy || {},
 			},
 			{
 				key: "sterilization",
 				title: "Cirugía para no tener más hijos:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.sterilizationSurgery || {},
 			},
 			{
 				key: "ovarianCysts",
 				title: "Operación por Quistes Ováricos:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.ovarianCystsSurgery || [],
 			},
 			{
 				key: "breastMassResection",
 				title: "Operación por Resección de masas en mamas:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.breastMassResection || [],
 			},
 		];
 
 		return initialOperations;
 	});
+
+	const hasBeenEdited =
+		operations.some((op) => {
+			console.log("Operation", op);
+			return op.hasBeenEdited;
+		}) ||
+		diagnoses.some((d) => {
+			console.log("Diagnose", d);
+			return d.hasBeenEdited;
+		});
+	console.log("HAS BEEN EDITED: ", hasBeenEdited);
 
 	const mapOperationDetails = (operationKey) => {
 		const operation = operations.find((op) => op.key === operationKey);
@@ -1009,7 +1043,7 @@ function ObGynView({
 		setOperations(
 			operations.map((op) => {
 				if (op.key === operationKey) {
-					return { ...op, details: newDetails };
+					return { ...op, hasBeenEdited: true, details: newDetails };
 				}
 				return op;
 			}),
@@ -1030,6 +1064,7 @@ function ObGynView({
 
 					return {
 						...operation,
+						hasBeenEdited: true,
 						details: clearedDetails,
 					};
 				}
@@ -1578,7 +1613,7 @@ function ObGynView({
 									<DiagnosisSection
 										title={diagnosis.title}
 										diagnosisKey={diagnosis.key}
-										editable={!isEditable}
+										editable={!!getDiagnosisDetails(diagnosis.key).medication}
 										isNew={diagnosis.isNew}
 										onCancel={() => removeDiagnosis(diagnosis.key)}
 										diagnosisDetails={getDiagnosisDetails(diagnosis.key)}
@@ -1652,7 +1687,9 @@ function ObGynView({
 										<OperationSection
 											title={operation.title}
 											operationKey={operation.key}
-											editable={!isEditable}
+											editable={
+												!!checkPerformed(mapOperationDetails(operation.key))
+											}
 											birthdayResource={birthdayResource}
 											operationDetailsResource={mapOperationDetails(
 												operation.key,
@@ -1678,7 +1715,7 @@ function ObGynView({
 									}}
 								/>
 
-								{isFirstTime && (
+								{(isFirstTime || hasBeenEdited) && (
 									<div
 										style={{
 											display: "flex",
