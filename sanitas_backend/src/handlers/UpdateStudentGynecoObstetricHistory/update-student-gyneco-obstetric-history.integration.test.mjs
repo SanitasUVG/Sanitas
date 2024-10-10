@@ -11,6 +11,63 @@ import {
 
 const API_URL = `${LOCAL_API_URL}patient/student-gyneco-history`;
 
+function generateEmptyUpdate(patientId) {
+	return {
+		patientId,
+		medicalHistory: {
+			firstMenstrualPeriod: {
+				version: 1,
+				data: {
+					age: 13,
+				},
+			},
+			regularCycles: {
+				version: 1,
+				data: {
+					isRegular: true,
+				},
+			},
+			painfulMenstruation: {
+				version: 1,
+				data: { isPainful: true, medication: "Ibuprofen" },
+			},
+			pregnancies: {
+				version: 1,
+				data: {
+					totalPregnancies: 2,
+					vaginalDeliveries: 1,
+					cesareanSections: 1,
+					abortions: 0,
+				},
+			},
+			diagnosedIllnesses: {
+				version: 1,
+				data: {
+					ovarianCysts: {
+						medication: {},
+					},
+					uterineMyomatosis: {
+						medication: {},
+					},
+					endometriosis: {
+						medication: {},
+					},
+					otherCondition: null,
+				},
+			},
+			hasSurgeries: {
+				version: 1,
+				data: {
+					ovarianCystsSurgery: [],
+					hysterectomy: {},
+					sterilizationSurgery: {},
+					breastMassResection: [],
+				},
+			},
+		},
+	};
+}
+
 function generateValidUpdate(patientId) {
 	return {
 		patientId,
@@ -129,6 +186,25 @@ describe("Update Patient Gynecological Medical History integration tests", () =>
 
 		expect(response.status).toBe(403);
 		expect(response.data.error).toBe("Not authorized to modify data!");
+	});
+
+	test("Can add a new diagnostic or operation", async () => {
+		let gynecologicalHistoryData = generateEmptyUpdate(patientId);
+		await axios.post(API_URL, gynecologicalHistoryData, {
+			headers: validHeaders,
+		});
+
+		gynecologicalHistoryData = generateValidUpdate(patientId);
+		const response = await axios.post(API_URL, gynecologicalHistoryData, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		if (response.status !== 200) {
+			console.error(response);
+		}
+
+		expect(response.status).toBe(200);
 	});
 
 	test("Fail to update gynecological history with invalid ID", async () => {
