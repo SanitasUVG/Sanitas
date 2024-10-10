@@ -131,6 +131,7 @@ export const handler = async (event, context) => {
 			.setStatusCode(200)
 			.setBody(mapToAPIPatient(dbResponse.rows[0]))
 			.build();
+
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {

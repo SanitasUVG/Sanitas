@@ -130,7 +130,7 @@ export const getCollaboratorHandler = async (event, context) => {
 			.setBody(mapToAPICollaboratorInfo(dbResponse.rows[0]))
 			.build();
 
-		logger.info(response, "Responding with:");
+		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
 		logger.error(error, "An error has occurred!");
