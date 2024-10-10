@@ -101,6 +101,8 @@ export const getCollaboratorHandler = async (event, context) => {
 				[patientId],
 			);
 			logger.info(dbResponse, "Query done!");
+
+			return dbResponse;
 		});
 
 		if (transactionResult.error) {
