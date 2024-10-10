@@ -8,6 +8,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * Component responsible for managing and displaying non-pathological history information of a patient.
@@ -29,8 +30,6 @@ export function StudentNonPathologicalHistory({
 	useStore,
 }) {
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
-
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
@@ -60,113 +59,84 @@ export function StudentNonPathologicalHistory({
 		);
 	};
 
-	const getResponsiveStyles = (width) => {
-		const isMobile = width < 768;
-		return {
-			title: {
-				color: colors.titleText,
-				fontFamily: fonts.titleFont,
-				fontSize: fontSize.titleSize,
-				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
-			},
-			subtitle: {
-				fontFamily: fonts.textFont,
-				fontWeight: "normal",
-				fontSize: fontSize.subtitleSize,
-				paddingTop: "0.5rem",
-				paddingBottom: "3rem",
-				textAlign: isMobile ? "center" : "left",
-			},
-			container: {
+	return (
+		<div
+			style={{
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			},
-			innerContent: {
-				backgroundColor: colors.secondaryBackground,
-				padding: "2rem",
-				borderRadius: "0.625rem",
-				overflow: "auto",
-				minHeight: "84vh",
-				flex: 1,
-			},
-		};
-	};
-
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const styles = getResponsiveStyles(windowWidth);
-
-	return (
-		<div style={styles.container}>
+			}}
+		>
 			<div
 				style={{
-					height: "100%",
 					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="no_patologicos"
+				/>
+			</div>
+
+			<div
+				style={{
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
 					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="no_patologicos"
+					<h1
+						style={{
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
+							textAlign: "center",
+						}}
+					>
+						Antecedentes No Patológicos
+					</h1>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.7rem",
+							paddingBottom: "1.3rem",
+							textAlign: "center",
+						}}
+					>
+						Por favor, completa la información solicitada; será tratada con
+						estricta confidencialidad.
+					</h3>
+				</div>
+
+				<Suspense fallback={<LoadingView />}>
+					<NonPathologicalView
+						id={id}
+						nonPathologicalHistoryResource={nonPathologicalHistoryResource}
+						bloodTypeResource={bloodTypeResource}
+						updateStudentNonPathologicalHistory={
+							updateStudentNonPathologicalHistory
+						}
+						triggerReload={triggerReload}
 					/>
-				</div>
-
-				<div style={styles.innerContent}>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					>
-						<h1 style={styles.title}>Antecedentes No Patológicos</h1>
-						<h3 style={styles.subtitle}>
-							Por favor, completa la información solicitada; será tratada con
-							estricta confidencialidad.
-						</h3>
-					</div>
-
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<NonPathologicalView
-								id={id}
-								nonPathologicalHistoryResource={nonPathologicalHistoryResource}
-								bloodTypeResource={bloodTypeResource}
-								updateStudentNonPathologicalHistory={
-									updateStudentNonPathologicalHistory
-								}
-								triggerReload={triggerReload}
-							/>
-						</Suspense>
-					</div>
-				</div>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -197,6 +167,8 @@ function NonPathologicalView({
 	// Reading the results from the provided resources.
 	const nonPathologicalHistoryResult = nonPathologicalHistoryResource.read();
 	const bloodTypeResult = bloodTypeResource.read();
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	// Extracting data from the fetched results, defaulting to predefined values if not found.
 	const {
@@ -475,42 +447,45 @@ function NonPathologicalView({
 		);
 	};
 
-	const getResponsiveStyles = (width) => {
-		const isMobile = width < 768;
+	const dobleQInputs = isMobile
+		? {
+				display: "column",
+				gap: "1rem",
+				paddingBottom: "2rem",
+			}
+		: {
+				display: "flex",
+				gap: "1rem",
+				paddingBottom: "2rem",
+			};
 
-		return {
-			baseInput: {
-				width: isMobile ? "11rem" : "20rem",
+	const dobleQLabels = isMobile
+		? {
+				paddingTop: "1rem",
+				paddingBottom: "0.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: fontSize.textSize,
+			}
+		: {
+				paddingTop: "0rem",
+				paddingBottom: "0.5rem",
+				fontFamily: fonts.textFont,
+				fontSize: fontSize.textSize,
+			};
+
+	const baseInput = isMobile
+		? {
+				width: "90%",
 				height: "2.5rem",
 				fontFamily: fonts.textFont,
 				fontSize: "1rem",
-			},
-			dobleQInputs: {
-				display: isMobile ? "column" : "flex",
-				gap: "1rem",
-				paddingBottom: "2rem",
-			},
-			dobleQlabel: {
-				paddingBottom: "0.5rem",
-				paddingTop: isMobile ? "1rem" : "0rem",
+			}
+		: {
+				width: "20rem",
+				height: "2.5rem",
 				fontFamily: fonts.textFont,
-				fontSize: fontSize.textSize,
-			},
-		};
-	};
-
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const styles = getResponsiveStyles(windowWidth);
+				fontSize: "1rem",
+			};
 
 	return (
 		<div
@@ -593,7 +568,12 @@ function NonPathologicalView({
 									value={bloodTypeResult?.result?.bloodType ?? ""}
 									readOnly
 									placeholder="Tipo de sangre:"
-									style={styles.baseInput}
+									style={{
+										width: isMobile ? "13rem" : "20rem",
+										height: "2.5rem",
+										fontFamily: fonts.textFont,
+										fontSize: "1rem",
+									}}
 								/>
 							</div>
 						</div>
@@ -638,7 +618,7 @@ function NonPathologicalView({
 							</div>
 							{smokingStatus && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div style={styles.dobleQInputs}>
+									<div style={{ ...dobleQInputs }}>
 										<div>
 											<p
 												style={{
@@ -656,11 +636,11 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántos cigarrillos al día"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={styles.baseInput}
+												style={{ ...baseInput }}
 											/>
 										</div>
 										<div>
-											<p style={styles.dobleQlabel}>
+											<p style={{ ...dobleQLabels }}>
 												¿Desde hace cuántos años?
 											</p>
 											<BaseInput
@@ -670,7 +650,7 @@ function NonPathologicalView({
 												placeholder="Ingrese desde hace cuántos años"
 												min="1"
 												readOnly={!isSmokingEditable}
-												style={styles.baseInput}
+												style={{ ...baseInput }}
 											/>
 										</div>
 									</div>
@@ -743,7 +723,7 @@ function NonPathologicalView({
 												placeholder="Ingrese cuántas bebidas al mes"
 												min="1"
 												readOnly={!isAlcoholEditable}
-												style={styles.baseInput}
+												style={{ ...baseInput }}
 											/>
 										</div>
 									</div>
@@ -791,7 +771,7 @@ function NonPathologicalView({
 							</div>
 							{drugUse && (
 								<div style={{ display: "flex", flexDirection: "column" }}>
-									<div style={styles.dobleQInputs}>
+									<div style={{ ...dobleQInputs }}>
 										<div>
 											<p
 												style={{
@@ -809,18 +789,18 @@ function NonPathologicalView({
 												placeholder="Ingrese el tipo de droga"
 												min="1"
 												readOnly={!isDrugUseEditable}
-												style={styles.baseInput}
+												style={{ ...baseInput }}
 											/>
 										</div>
 										<div>
-											<p style={styles.dobleQlabel}>¿Con qué frecuencia?</p>
+											<p style={{ ...dobleQLabels }}>¿Con qué frecuencia?</p>
 											<BaseInput
 												type="text"
 												value={drugFrequency}
 												onChange={(e) => setDrugFrequency(e.target.value)}
 												placeholder="Ingrese la frecuencia del consumo"
 												readOnly={!isDrugUseEditable}
-												style={styles.baseInput}
+												style={{ ...baseInput }}
 											/>
 										</div>
 									</div>
