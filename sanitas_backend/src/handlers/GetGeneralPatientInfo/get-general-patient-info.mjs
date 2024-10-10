@@ -60,7 +60,11 @@ export const handler = async (event, context) => {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
 				logger.error(itsDoctor, msg);
-				return responseBuilder.setStatusCode(500).setBody(itsDoctor).build();
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
+					.build();
+				return { response };
 			}
 
 			if (!itsDoctor) {
@@ -75,19 +79,21 @@ export const handler = async (event, context) => {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
 					logger.error(emailBelongs, msg);
-					return responseBuilder
+					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
 						.build();
+					return { response };
 				}
 
 				if (!emailBelongs) {
 					const msg = "The email doesn't belong to the patient id!";
 					logger.error({ email, patientId }, msg);
-					return responseBuilder
+					const response = responseBuilder
 						.setStatusCode(400)
 						.setBody({ error: msg })
 						.build();
+					return { response };
 				}
 				logger.info("The email belongs to the patient!");
 			} else {
