@@ -9,7 +9,7 @@ export const handler = async (event, context) => {
 	if (event.httpMethod !== "GET") {
 		const msg = `Check Cui solo acepta el método GET, intentaste: ${event.httpMethod}`;
 		logger.error(msg);
-		return responseBuilder.setStatusCode(405).setBody({ error: msg }).build()
+		return responseBuilder.setStatusCode(405).setBody({ error: msg }).build();
 	}
 
 	const cui = event.pathParameters.cui;
@@ -31,10 +31,7 @@ export const handler = async (event, context) => {
 
 		await client.end();
 
-		return responseBuilder
-			.setStatusCode(200)
-			.setBody({ exists })
-			.build();
+		return responseBuilder.setStatusCode(200).setBody({ exists }).build();
 	} catch (error) {
 		logger.error(error, "Error querying database:");
 		await client?.end();

@@ -74,7 +74,7 @@ export const createPatientHandler = async (event, context) => {
 					.setBody({ error: "CUI already exists." })
 					.build();
 
-				return { response }
+				return { response };
 			}
 
 			logger.info(
