@@ -123,7 +123,11 @@ export default function StudentDashboardTopbar({
 	useEffect(() => {
 		const elem = document.querySelector(`#${activeSection}`);
 		if ("scrollIntoView" in elem) {
-			elem?.scrollIntoView({ behavior: "smooth", inline: "center" });
+			elem?.scrollIntoView({
+				behavior: "smooth",
+				inline: "center",
+				block: "nearest",
+			});
 		}
 	}, [activeSection]);
 

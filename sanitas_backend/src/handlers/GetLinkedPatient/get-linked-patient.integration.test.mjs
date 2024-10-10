@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
+	createDoctorJWT,
 	createJWT,
 	createTestPatient,
 	generateUniqueEmail,
@@ -18,7 +19,9 @@ describe("Get linked patient integration tests", () => {
 	beforeAll(async () => {
 		const patientId = await createTestPatient();
 		patientData = (
-			await axios.get(`${LOCAL_API_URL}patient/general/${patientId}`)
+			await axios.get(`${LOCAL_API_URL}patient/general/${patientId}`, {
+				headers: createAuthorizationHeader(createDoctorJWT()),
+			})
 		).data;
 		linkedEmail = generateUniqueEmail();
 		await linkToTestAccount(linkedEmail, patientData.cui);
