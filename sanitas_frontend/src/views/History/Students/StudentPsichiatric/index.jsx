@@ -7,6 +7,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} PsichiatricHistoryProps
@@ -30,7 +31,6 @@ export function StudentPsichiatricHistory({
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
@@ -49,112 +49,78 @@ export function StudentPsichiatricHistory({
 		);
 	};
 
-	const getResponsiveStyles = (width) => {
-		const isMobile = width < 768;
-
-		return {
-			title: {
-				color: colors.titleText,
-				fontFamily: fonts.titleFont,
-				fontSize: fontSize.titleSize,
-				textAlign: isMobile ? "center" : "left", // Centrar el título en móviles
-			},
-			subtitle: {
-				fontFamily: fonts.textFont,
-				fontWeight: "normal",
-				fontSize: fontSize.subtitleSize,
-				paddingTop: "0.5rem",
-				paddingBottom: "3rem",
-				textAlign: isMobile ? "center" : "left",
-			},
-			container: {
+	return (
+		<div
+			style={{
 				display: "flex",
-				flexDirection: isMobile ? "column" : "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				overflow: isMobile ? "auto" : "none",
 				padding: "2rem",
-			},
-			innerContent: {
-				backgroundColor: colors.secondaryBackground,
-				padding: "2rem",
-				borderRadius: "0.625rem",
-				overflow: "auto",
-				minHeight: "84vh",
-				flex: 1,
-			},
-		};
-	};
-
-	useEffect(() => {
-		const handleResize = () => {
-			setWindowWidth(window.innerWidth);
-		};
-
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
-
-	const styles = getResponsiveStyles(windowWidth);
-
-	return (
-		<div style={styles.container}>
+			}}
+		>
 			<div
 				style={{
-					height: "100%",
 					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="psiquiatricos"
+				/>
+			</div>
+			<div
+				style={{
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
 				}}
 			>
 				<div
 					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="psiquiatricos"
-					/>
-				</div>
-				<div style={styles.innerContent}>
-					<div
+					<h1
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
-						<h1 style={styles.title}>Antecedentes Psiquiátricos</h1>
-						<h3 style={styles.subtitle}>
-							¿Actualmente se encuentra bajo tratamiento médico por alguna de
-							las siguientes enfermedades?
-						</h3>
-					</div>
+						Antecedentes Psiquiátricos
+					</h1>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.7rem",
+							paddingBottom: "1.3rem",
+							textAlign: "center",
+						}}
+					>
+						¿Actualmente se encuentra bajo tratamiento médico por alguna de las
+						siguientes enfermedades?
+					</h3>
+				</div>
 
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<PsichiatricView
-								id={id}
-								psichiatricHistoryResource={psichiatricHistoryResource}
-								updateStudentPsychiatricHistory={
-									updateStudentPsychiatricHistory
-								}
-								triggerReload={triggerReload}
-							/>
-						</Suspense>
-					</div>
-				</div>
+				<Suspense fallback={<LoadingView />}>
+					<PsichiatricView
+						id={id}
+						psichiatricHistoryResource={psichiatricHistoryResource}
+						updateStudentPsychiatricHistory={updateStudentPsychiatricHistory}
+						triggerReload={triggerReload}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -181,6 +147,8 @@ function PsichiatricView({
 }) {
 	const psichiatricHistoryResult = psichiatricHistoryResource.read();
 	const psichiatricHistoryData = psichiatricHistoryResult.result || {};
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	const medicalHistory = psichiatricHistoryData?.medicalHistory || {
 		depression: { data: [] },
@@ -1145,6 +1113,29 @@ function PsichiatricView({
 		},
 	};
 
+	const buttonStyles = isMobile
+		? {
+				height: "3rem",
+			}
+		: {
+				height: "3rem",
+				minWidth: "15rem",
+			};
+
+	const inputStyles = isMobile
+		? {
+				width: "90%",
+				height: "3rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			}
+		: {
+				width: "70%",
+				height: "3rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			};
+
 	return (
 		<div
 			style={{
@@ -1344,10 +1335,7 @@ function PsichiatricView({
 															}}
 															placeholder="Ingrese información adicional"
 															style={{
-																width: "90%",
-																height: "3rem",
-																fontFamily: fonts.textFont,
-																fontSize: "1rem",
+																...inputStyles,
 															}}
 															readOnly={
 																!isEditing[`illness-${index}`] &&
@@ -1391,10 +1379,7 @@ function PsichiatricView({
 													}}
 													placeholder="Ingrese el medicamento administrado"
 													style={{
-														width: "90%",
-														height: "3rem",
-														fontFamily: fonts.textFont,
-														fontSize: "1rem",
+														...inputStyles,
 													}}
 													readOnly={
 														!isEditing[`medication-${index}`] &&
@@ -1428,10 +1413,7 @@ function PsichiatricView({
 													}}
 													placeholder="Ingrese cuánto (opcional)"
 													style={{
-														width: "90%",
-														height: "3rem",
-														fontFamily: fonts.textFont,
-														fontSize: "1rem",
+														...inputStyles,
 													}}
 													readOnly={
 														!!medication.medication && !!medication.frequency
@@ -1463,7 +1445,7 @@ function PsichiatricView({
 													}}
 													placeholder="Ingrese cada cuánto administra el medicamento"
 													style={{
-														width: "90%",
+														width: isMobile ? "90%" : "70%",
 														height: "3rem",
 														fontFamily: fonts.textFont,
 														fontSize: "1rem",
@@ -1543,23 +1525,28 @@ function PsichiatricView({
 
 										<div
 											style={{
-												borderTop: `0.1rem solid ${colors.darkerGrey}`,
+												borderTop: `0.04rem solid ${colors.darkerGrey}`,
 												paddingTop: "2rem",
 												display: "flex",
+												flexDirection: isMobile ? "column" : "flex",
 												justifyContent: "center",
+												alignItems: "center",
 											}}
 										>
 											<BaseButton
 												text="Agregar otro medicamento"
 												onClick={section.addMedication}
 												style={{
-													width: "20%",
-													height: "3rem",
-													border: `1.5px solid ${colors.primaryBackground}`,
+													...buttonStyles,
 												}}
 											/>
 
-											<div style={{ width: "1rem" }} />
+											<div
+												style={{
+													width: "1rem",
+													paddingTop: isMobile ? "0.5rem" : "0rem",
+												}}
+											/>
 											{section.medications.length > 1 && (
 												<BaseButton
 													text="Cancelar Medicamento"
@@ -1592,8 +1579,7 @@ function PsichiatricView({
 														}
 													}}
 													style={{
-														width: "20%",
-														height: "3rem",
+														...buttonStyles,
 														backgroundColor: colors.secondaryBackground,
 														color: colors.primaryBackground,
 														border: `1.5px solid ${colors.primaryBackground}`,
@@ -1617,7 +1603,7 @@ function PsichiatricView({
 							<BaseButton
 								text="Guardar"
 								onClick={handleSaveNewHistory}
-								style={{ width: "30%", height: "3rem" }}
+								style={{ width: "35%", height: "3rem" }}
 							/>
 						</div>
 					</>
