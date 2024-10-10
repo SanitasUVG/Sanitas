@@ -1,18 +1,20 @@
 import { getPgClient } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils";
+import { createResponse } from "utils/index.mjs";
 
 export const handler = async (event, context) => {
 	withRequest(event, context);
+	const responseBuilder = createResponse().addCORSHeaders();
 
 	if (event.httpMethod !== "GET") {
-		throw new Error(
-			`Check Cui solo acepta el método GET, intentaste: ${event.httpMethod}`,
-		);
+		const msg = `Check Cui solo acepta el método GET, intentaste: ${event.httpMethod}`;
+		logger.error(msg);
+		return responseBuilder.setStatusCode(405).setBody({ error: msg }).build()
 	}
 
 	const cui = event.pathParameters.cui;
 	logger.info(process.env, "Las variables de entorno son:");
+
 	let client;
 	try {
 		const url = process.env.POSTGRES_URL;
@@ -29,18 +31,16 @@ export const handler = async (event, context) => {
 
 		await client.end();
 
-		return createResponse()
+		return responseBuilder
 			.setStatusCode(200)
-			.addCORSHeaders()
 			.setBody({ exists })
 			.build();
 	} catch (error) {
 		logger.error(error, "Error querying database:");
 		await client?.end();
 
-		return createResponse()
+		return responseBuilder
 			.setStatusCode(500)
-			.addCORSHeaders()
 			.setBody({ error: "Internal Server Error" })
 			.build();
 	}

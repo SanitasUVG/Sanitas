@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { cuiIsValid } from "utils/cui.mjs";
 import { createResponse } from "utils/index.mjs";
@@ -23,6 +23,7 @@ function checkValidInput(patientData) {
 
 	return { isValid: true };
 }
+
 export const createPatientHandler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("POST");
@@ -57,22 +58,23 @@ export const createPatientHandler = async (event, context) => {
 		}
 		logger.info({ patientData }, "Data is valid!");
 
-		try {
-			await client.query("BEGIN");
-			// Check if the CUI already exists in the database
+		const transactionResult = await transaction(client, logger, async () => {
 			const existingPatientQuery = `
 			SELECT 1 FROM PACIENTE WHERE CUI = $1
 		`;
 			const existingPatientResult = await client.query(existingPatientQuery, [
 				patientData.cui,
 			]);
+
 			if (existingPatientResult.rows.length > 0) {
 				logger.error("CUI already exists.");
 
-				return responseBuilder
+				const response = responseBuilder
 					.setStatusCode(409)
 					.setBody({ error: "CUI already exists." })
 					.build();
+
+				return { response }
 			}
 
 			logger.info(
@@ -92,21 +94,27 @@ export const createPatientHandler = async (event, context) => {
 				patientData.isWoman,
 				new Date(patientData.birthdate),
 			];
-			const dbresponse = await client.query(query, values);
-			await client.query("COMMIT");
-			logger.info("Patient record created successfully.");
+			return await client.query(query, values);
+		});
 
-			const response = responseBuilder
-				.setStatusCode(200)
-				.setBody(dbresponse.rows[0].id)
-				.build();
-			logger.info(response, "Responding with:");
-			return response;
-		} catch (error) {
-			logger.error("Transaction failed! Rolling back...");
-			await client.query("ROLLBACK");
-			throw error;
+		if (transactionResult.error) {
+			throw transactionResult.error;
 		}
+
+		if (transactionResult.response) {
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
+		}
+
+		const { result: dbresponse } = transactionResult;
+		logger.info("Patient record created successfully.");
+
+		const response = responseBuilder
+			.setStatusCode(200)
+			.setBody(dbresponse.rows[0].id)
+			.build();
+		logger.info(response, "Responding with:");
+		return response;
 	} catch (error) {
 		logger.error(error, "An error occurred while creating the patient record.");
 
