@@ -58,16 +58,17 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 		logger.info("Connected!");
 
 		const transactionResult = await transaction(client, logger, async () => {
-
-
 			logger.info("Checking if user is doctor...");
 			const itsDoctor = await isDoctor(client, email);
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
 				logger.error(itsDoctor, msg);
-				const response = responseBuilder.setStatusCode(500).setBody(itsDoctor).build();
-				return { response }
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
+					.build();
+				return { response };
 			}
 
 			if (!itsDoctor) {
@@ -82,8 +83,11 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
 					logger.error(emailBelongs, msg);
-					const response = responseBuilder.setStatusCode(500).setBody(emailBelongs).build();
-					return { response }
+					const response = responseBuilder
+						.setStatusCode(500)
+						.setBody(emailBelongs)
+						.build();
+					return { response };
 				}
 
 				if (!emailBelongs) {
@@ -93,7 +97,7 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 						.setStatusCode(400)
 						.setBody({ error: msg })
 						.build();
-					return { response }
+					return { response };
 				}
 				logger.info("The email belongs to the patient!");
 			} else {
@@ -110,16 +114,16 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 			const dbResponse = await client.query(query, args);
 
 			logger.info("Query done!");
-			return dbResponse
-		})
+			return dbResponse;
+		});
 
 		if (transactionResult.error) {
-			throw transactionResult.error
+			throw transactionResult.error;
 		}
 
 		if (transactionResult.response) {
-			logger.info(transactionResult, "Responding with:")
-			return transactionResult.response
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
 		}
 
 		const { result: dbResponse } = transactionResult;
