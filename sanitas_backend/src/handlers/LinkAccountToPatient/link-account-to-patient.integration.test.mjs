@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
+	createDoctorJWT,
 	createJWT,
 	createTestPatient,
 	generateUniqueCUI,
@@ -18,7 +19,11 @@ const API_URL = `${LOCAL_API_URL}account/link`;
  * @returns {Promise<Object>}
  */
 async function getPatientData(id) {
-	return (await axios.get(`${LOCAL_API_URL}patient/general/${id}`)).data;
+	return (
+		await axios.get(`${LOCAL_API_URL}patient/general/${id}`, {
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		})
+	).data;
 }
 
 describe("Link patient to an account integration tests", () => {
