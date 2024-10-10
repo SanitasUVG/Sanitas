@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -9,6 +9,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { BaseInput, RadioInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentAllergicHistoryProps
@@ -29,7 +30,10 @@ export function StudentAllergicHistory({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
-	const allergicHistoryResource = WrapPromise(getStudentAllergicHistory(id));
+	const allergicHistoryResource = useMemo(
+		() => WrapPromise(getStudentAllergicHistory(id)),
+		[getStudentAllergicHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
@@ -41,7 +45,7 @@ export function StudentAllergicHistory({
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				padding: "2rem",
@@ -49,90 +53,77 @@ export function StudentAllergicHistory({
 		>
 			<div
 				style={{
-					height: "100%",
 					width: "100%",
+					padding: "0 0 1rem 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="alergicos"
+				/>
+			</div>
+			<div
+				style={{
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
 					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="alergicos"
-					/>
-				</div>
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
-					<div
+					<h1
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
+							textAlign: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Alérgicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
-							}}
-						>
-							¿Es alérgico a alguno de los siguientes?
-						</h3>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							Por favor ingrese un elemento por alergia.
-						</h3>
-					</div>
+						Antecedentes Alérgicos
+					</h1>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.7rem",
+							paddingBottom: "0.2rem",
+							textAlign: "center",
+						}}
+					>
+						¿Es alérgico a alguno de los siguientes?
+					</h3>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingBottom: "1.5rem",
+							textAlign: "center",
+						}}
+					>
+						Por favor ingrese un elemento por alergia.
+					</h3>
+				</div>
 
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-align",
-							alignItems: "space-between",
-							width: "100%",
-							gap: "2rem",
-						}}
-					>
-						<Suspense fallback={<LoadingView />}>
-							<AllergicView
-								id={id}
-								allergicHistoryResource={allergicHistoryResource}
-								updateStudentAllergicHistory={updateStudentAllergicHistory}
-							/>
-						</Suspense>
-					</div>
-				</div>
+				<Suspense fallback={<LoadingView />}>
+					<AllergicView
+						id={id}
+						allergicHistoryResource={allergicHistoryResource}
+						updateStudentAllergicHistory={updateStudentAllergicHistory}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -161,6 +152,8 @@ function AllergicView({
 	const [isEditable, setIsEditable] = useState(false);
 	const isFirstTime = addingNew;
 	const allergicHistoryResult = allergicHistoryResource.read();
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 
 	let errorMessage = "";
 	if (allergicHistoryResult.error) {
@@ -303,13 +296,21 @@ function AllergicView({
 		{ label: "Otros", value: "others" },
 	];
 
+	const buttonStyles = isMobile
+		? {
+				height: "3rem",
+			}
+		: {
+				height: "3rem",
+			};
+
 	return (
 		<div
 			style={{
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column-reverse" : "row",
 				width: "100%",
-				height: "100%",
+				flexGrow: 1,
 				gap: "1.5rem",
 			}}
 		>
@@ -383,7 +384,6 @@ function AllergicView({
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
-						paddingLeft: "2rem",
 					}}
 				>
 					<p
@@ -402,7 +402,7 @@ function AllergicView({
 						disabled={!addingNew}
 						onChange={(e) => handleFieldChange("selectedMed", e.target.value)}
 						style={{
-							container: { width: "90%" },
+							container: { width: isMobile ? "100%" : "90%" },
 							select: {},
 							option: {},
 							indicator: {},
@@ -424,7 +424,7 @@ function AllergicView({
 						onChange={(e) => handleFieldChange("whichAllergie", e.target.value)}
 						placeholder="Ingrese a cuál del tipo seleccionado"
 						style={{
-							width: "90%",
+							width: isMobile ? "100%" : "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
 							fontSize: "1rem",
@@ -489,6 +489,7 @@ function AllergicView({
 						style={{
 							paddingTop: "5rem",
 							display: "flex",
+							flexDirection: isMobile ? "column" : "row",
 							justifyContent: "center",
 						}}
 					>
@@ -497,15 +498,16 @@ function AllergicView({
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewAllergie}
-									style={{ width: "30%", height: "3rem" }}
+									style={buttonStyles}
 								/>
-								<div style={{ width: "1rem" }} />
+								<div
+									style={isMobile ? { height: "1rem" } : { width: "1rem" }}
+								/>
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
 									style={{
-										width: "30%",
-										height: "3rem",
+										...buttonStyles,
 										backgroundColor: "#fff",
 										color: colors.primaryBackground,
 										border: `1.5px solid ${colors.primaryBackground}`,
