@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, isEmailOfPatient } from "db-conn";
+import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultPersonalHistory } from "utils/defaultValues.mjs";
@@ -57,52 +57,76 @@ export const getPersonalHistoryHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected!");
 
-		logger.info("Checking if user is doctor...");
-		const itsDoctor = await isDoctor(client, email);
-		if (itsDoctor.error) {
-			const msg =
-				"An error occurred while trying to check if the user is a doctor!";
-			logger.error(itsDoctor, msg);
-			return responseBuilder.setStatusCode(500).setBody(itsDoctor).build();
-		}
-
-		if (!itsDoctor) {
-			logger.info("User is patient!");
-			logger.info(
-				{ email, patientId },
-				"Checking if email belongs to patient id",
-			);
-			const emailBelongs = await isEmailOfPatient(client, email, patientId);
-
-			if (emailBelongs.error) {
+		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Checking if user is doctor...");
+			const itsDoctor = await isDoctor(client, email);
+			if (itsDoctor.error) {
 				const msg =
-					"An error ocurred while trying to check if the email belongs to the patient!";
-				logger.error(emailBelongs, msg);
-				return responseBuilder.setStatusCode(500).setBody(emailBelongs).build();
-			}
-
-			if (!emailBelongs) {
-				const msg = "The email doesn't belong to the patient id!";
-				logger.error({ email, patientId }, msg);
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({ error: msg })
+					"An error occurred while trying to check if the user is a doctor!";
+				logger.error(itsDoctor, msg);
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
 					.build();
+				return { response };
 			}
-			logger.info("The email belongs to the patient!");
-		} else {
-			logger.info("The user is a doctor!");
-		}
 
-		const query = `
+			if (!itsDoctor) {
+				logger.info("User is patient!");
+				logger.info(
+					{ email, patientId },
+					"Checking if email belongs to patient id",
+				);
+				const emailBelongs = await isEmailOfPatient(client, email, patientId);
+
+				if (emailBelongs.error) {
+					const msg =
+						"An error ocurred while trying to check if the email belongs to the patient!";
+					logger.error(emailBelongs, msg);
+					const response = responseBuilder
+						.setStatusCode(500)
+						.setBody(emailBelongs)
+						.build();
+					return { response };
+				}
+
+				if (!emailBelongs) {
+					const msg = "The email doesn't belong to the patient id!";
+					logger.error({ email, patientId }, msg);
+					const response = responseBuilder
+						.setStatusCode(400)
+						.setBody({ error: msg })
+						.build();
+					return { response };
+				}
+				logger.info("The email belongs to the patient!");
+			} else {
+				logger.info("The user is a doctor!");
+			}
+
+			const query = `
       SELECT id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data
       FROM antecedentes_personales
       WHERE id_paciente = $1;
     `;
-		const args = [patientId];
-		logger.info({ query, args }, "Querying DB...");
-		const dbResponse = await client.query(query, args);
-		logger.info("Query done!");
+			const args = [patientId];
+			logger.info({ query, args }, "Querying DB...");
+			const dbResponse = await client.query(query, args);
+
+			logger.info("Query done!");
+			return dbResponse;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+
+		if (transactionResult.response) {
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
+		}
+
+		const { result: dbResponse } = transactionResult;
 
 		if (dbResponse.rowCount === 0) {
 			logger.info("No personal history found! Returning default values...");
