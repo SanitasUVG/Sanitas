@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -9,6 +9,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} StudentPersonalHistoryProps
@@ -28,6 +29,7 @@ export function StudentPersonalHistory({
 	sidebarConfig,
 	useStore,
 }) {
+	const { width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
 	//const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
@@ -39,16 +41,62 @@ export function StudentPersonalHistory({
 		);
 	};
 
-	return (
-		<div
-			style={{
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+		return {
+			title: {
+				color: colors.titleText,
+				fontFamily: fonts.titleFont,
+				fontSize: fontSize.titleSize,
+				textAlign: isMobile ? "center" : "left",
+			},
+			subtitle: {
+				fontFamily: fonts.textFont,
+				fontWeight: "normal",
+				fontSize: fontSize.subtitleSize,
+				paddingTop: "1rem", // Incrementar el espaciado superior
+				paddingBottom: "1.5rem", // Incrementar el espaciado inferior
+				textAlign: isMobile ? "center" : "left",
+			},
+
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: "2rem",
-			}}
-		>
+				overflow: isMobile ? "auto" : "none",
+				padding: "1rem",
+			},
+			innerContent: {
+				backgroundColor: colors.secondaryBackground,
+				padding: "1rem",
+				borderRadius: "0.625rem",
+				overflow: "auto",
+				minHeight: "84vh",
+				flex: 1,
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: "1rem",
+				paddingLeft: isMobile ? "1rem" : "2rem",
+				height: isMobile ? "55vh" : "65vh",
+				overflowY: "auto",
+				display: "flex",
+				flexDirection: "column",
+				"& > *:first-child": {},
+			},
+			addButton: {
+				width: "100%",
+				height: "3rem",
+			},
+		};
+	};
+
+	const styles = getResponsiveStyles(width);
+
+	return (
+		<div style={styles.container}>
 			<div
 				style={{
 					height: "100%",
@@ -68,15 +116,7 @@ export function StudentPersonalHistory({
 					/>
 				</div>
 
-				<div
-					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: "2rem",
-						borderRadius: "0.625rem",
-						overflow: "auto",
-						flex: "1",
-					}}
-				>
+				<div style={styles.innerContent}>
 					<div
 						style={{
 							display: "flex",
@@ -85,38 +125,10 @@ export function StudentPersonalHistory({
 							alignItems: "center",
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Personales
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: "0.7rem",
-								paddingBottom: "0.2rem",
-							}}
-						>
-							{" "}
+						<h1 style={styles.title}>Antecedentes Personales</h1>
+						<h3 style={styles.subtitle}>
 							¿Usted ha sido diagnosticado por un médico con una de las
-							siguientes enfermedades?{" "}
-						</h3>{" "}
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							{" "}
-							Por favor ingrese un elemento por diagnóstico.{" "}
+							siguientes enfermedades?
 						</h3>
 					</div>
 
@@ -144,6 +156,7 @@ export function StudentPersonalHistory({
 		</div>
 	);
 }
+
 /**
  * @typedef {Object} PersonalViewProps
  * @property {string} id - The unique identifier for the patient.
@@ -169,6 +182,8 @@ function PersonalView({
 	const [addingNew, setAddingNew] = useState(false);
 	const [yearOptions, setYearOptions] = useState([]);
 	const [isEditable, setIsEditable] = useState(false);
+
+	const { width } = useWindowSize();
 
 	// Read the data from the resource and handle any potential errors
 	const personalHistoryResult = personalHistoryResource.read();
@@ -433,412 +448,424 @@ function PersonalView({
 		return translations[diseaseKey] || diseaseKey;
 	};
 
-	return (
-		<div
-			style={{
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Provides responsive styles
+	const getResponsiveStyles = (width) => {
+		const isMobile = width < 768;
+
+		return {
+			container: {
 				display: "flex",
-				flexDirection: "row",
+				flexDirection: isMobile ? "column" : "row",
 				width: "100%",
 				height: "100%",
 				gap: "1.5rem",
-			}}
-		>
-			<div
-				style={{
-					border: `1px solid ${colors.primaryBackground}`,
-					borderRadius: "10px",
-					padding: "1rem",
-					height: "65vh",
-					flex: 1,
-					overflowY: "auto",
-				}}
-			>
-				<div style={{ paddingBottom: "0.5rem" }}>
-					<BaseButton
-						text="Agregar antecedente personal"
-						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: "3rem" }}
-					/>
-				</div>
+			},
+			leftContainer: {
+				flex: isMobile ? "0 0 100%" : 1,
+				order: isMobile ? 2 : 1,
+				transition: "flex 0.3s ease-in-out",
+			},
+			rightContainer: {
+				flex: isMobile ? "0 0 100%" : 1,
+				order: isMobile ? 1 : 2,
+				transition: "flex 0.3s ease-in-out",
+				display: addingNew || selectedPersonal.disease ? "block" : "none",
+			},
+			innerContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: "1rem",
+				paddingLeft: isMobile ? "1rem" : "2rem",
+				height: "65vh",
+				overflowY: "auto",
+				display: "flex",
+				flexDirection: "column",
+				"& button": {
+					height: "3rem",
+					fontSize: isMobile ? "0.875rem" : "1rem",
+				},
+			},
+			baseInput: {
+				width: isMobile ? "100%" : "90%",
+				height: "3rem",
+				fontFamily: fonts.textFont,
+				fontSize: "1rem",
+			},
+			dropdownContainer: {
+				width: isMobile ? "100%" : "90%",
+			},
+			dropdownSelect: {
+				width: "100%",
+			},
+			buttonContainer: {
+				display: "flex",
+				flexDirection: isMobile ? "column" : "row",
+				alignItems: "center",
+				justifyContent: "center",
+				gap: isMobile ? "1rem" : "1rem",
+				paddingTop: "2rem",
+			},
+			button: {
+				width: isMobile ? "100%" : "12rem",
+			},
+			addButton: {
+				width: "100%",
+				height: "3rem",
+			},
+			formContent: {
+				flex: 1,
+				display: "flex",
+				flexDirection: "column",
+			},
+			spacer: {
+				flex: 1,
+			},
+		};
+	};
 
-				{errorMessage && (
-					<div
-						style={{
-							color: "red",
-							paddingTop: "1rem",
-							textAlign: "center",
-							fontFamily: fonts.titleFont,
-							fontSize: fontSize.textSize,
-						}}
-					>
-						{errorMessage}
+	const styles = getResponsiveStyles(width);
+
+	return (
+		<div style={styles.container}>
+			<div style={styles.leftContainer}>
+				<div style={styles.innerContainer}>
+					<div style={{ paddingBottom: "0.5rem" }}>
+						<BaseButton
+							text="Agregar antecedente personal"
+							onClick={handleOpenNewForm}
+							style={styles.addButton}
+						/>
 					</div>
-				)}
 
-				{noPersonalData && !errorMessage ? (
-					<p style={{ textAlign: "center", paddingTop: "20px" }}>
-						¡Parece que no hay antecedentes personales! Agrega uno en el botón
-						de arriba.
-					</p>
-				) : (
-					Object.entries(personalHistory).map(
-						([diseaseKey, { data = [], version: _version }]) => {
-							if (data.length === 0) {
-								return null;
-							}
+					{errorMessage && (
+						<div
+							style={{
+								color: "red",
+								paddingTop: "1rem",
+								textAlign: "center",
+								fontFamily: fonts.titleFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							{errorMessage}
+						</div>
+					)}
 
-							const displayedDisease = translateDisease(diseaseKey);
-							if (diseaseKey === "myocardialInfarction") {
+					{noPersonalData && !errorMessage ? (
+						<p style={{ textAlign: "center", paddingTop: "20px" }}>
+							¡Parece que no hay antecedentes personales! Agrega uno en el botón
+							de arriba.
+						</p>
+					) : (
+						Object.entries(personalHistory).map(
+							([diseaseKey, { data = [], version: _version }]) => {
+								if (data.length === 0) {
+									return null;
+								}
+
+								const displayedDisease = translateDisease(diseaseKey);
+								if (diseaseKey === "myocardialInfarction") {
+									return data.map((entry, _index) => {
+										return (
+											<InformationCard
+												key={`${diseaseKey}-${entry.surgeryYear}`}
+												type="personalMiocadio"
+												disease={displayedDisease}
+												year={entry.surgeryYear}
+												onClick={() =>
+													handleSelectDiseaseCard(diseaseKey, entry)
+												}
+											/>
+										);
+									});
+								}
+
 								return data.map((entry, _index) => {
 									return (
 										<InformationCard
-											key={`${diseaseKey}-${entry.surgeryYear}`}
-											type="personalMiocadio"
+											key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
+											type="personal"
 											disease={displayedDisease}
-											year={entry.surgeryYear}
+											reasonInfo={
+												entry.medicine ? entry.medicine : entry.treatment
+											}
 											onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
 										/>
 									);
 								});
-							}
-
-							return data.map((entry, _index) => {
-								return (
-									<InformationCard
-										key={`${diseaseKey}-${entry.medicine}-${entry.treatment}`}
-										type="personal"
-										disease={displayedDisease}
-										reasonInfo={
-											entry.medicine ? entry.medicine : entry.treatment
-										}
-										onClick={() => handleSelectDiseaseCard(diseaseKey, entry)}
-									/>
-								);
-							});
-						},
-					)
-				)}
-			</div>
-
-			{addingNew || selectedPersonal.disease ? (
-				<div
-					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
-						borderRadius: "0.625rem",
-						padding: "1rem",
-						height: "65vh",
-						flex: 1.5,
-						width: "100%",
-						paddingLeft: "2rem",
-						flexGrow: 1,
-						overflowY: "auto",
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							width: "100%",
-						}}
-					>
-						<p
-							style={{
-								paddingBottom: "0.5rem",
-								paddingTop: "1.5rem",
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-								fontWeight: "bold",
-							}}
-						>
-							Seleccione la enfermedad:
-						</p>
-						<DropdownMenu
-							options={diseaseOptions}
-							value={selectedPersonal.disease || ""}
-							disabled={!addingNew}
-							onChange={handleDiseaseChange}
-							style={{
-								container: { width: "80%" },
-								select: {},
-								option: {},
-								indicator: {},
-							}}
-						/>
-					</div>
-
-					{selectedPersonal.disease && (
-						<>
-							{selectedPersonal.disease === "cancer" && (
-								<React.Fragment>
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "1.5rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										Tipo:
-									</p>
-									<BaseInput
-										value={
-											selectedPersonal.typeOfDisease
-												? selectedPersonal.typeOfDisease
-												: ""
-										}
-										onChange={(e) =>
-											setSelectedPersonal({
-												...selectedPersonal,
-												typeOfDisease: e.target.value,
-											})
-										}
-										disabled={!isEditable}
-										placeholder="Ingrese el tipo de cáncer"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
-									/>
-
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "1.5rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										Tratamiento:
-									</p>
-									<BaseInput
-										value={
-											selectedPersonal.treatment
-												? selectedPersonal.treatment
-												: ""
-										}
-										onChange={(e) =>
-											setSelectedPersonal({
-												...selectedPersonal,
-												treatment: e.target.value,
-											})
-										}
-										disabled={!isEditable}
-										placeholder="Ingrese el tratamiento administrado"
-										style={{
-											width: "95%",
-											height: "10%",
-											fontFamily: fonts.textFont,
-											fontSize: "1rem",
-										}}
-									/>
-								</React.Fragment>
-							)}
-
-							{selectedPersonal.disease === "myocardialInfarction" && (
-								<React.Fragment>
-									<p
-										style={{
-											paddingBottom: "0.5rem",
-											paddingTop: "2rem",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-										}}
-									>
-										¿En qué año?
-									</p>
-									<DropdownMenu
-										options={yearOptions}
-										value={selectedPersonal.surgeryYear}
-										disabled={!isEditable}
-										onChange={(e) =>
-											setSelectedPersonal({
-												...selectedPersonal,
-												surgeryYear: e.target.value,
-											})
-										}
-										styles={{
-											container: { width: "90%" },
-											select: {},
-											option: {},
-											indicator: {},
-										}}
-									/>
-								</React.Fragment>
-							)}
-
-							{selectedPersonal.disease !== "cancer" &&
-								selectedPersonal.disease !== "myocardialInfarction" && (
-									<React.Fragment>
-										{selectedPersonal.disease !== "hypertension" &&
-											selectedPersonal.disease !== "asthma" &&
-											selectedPersonal.disease !== "convulsions" &&
-											selectedPersonal.disease !== "diabetesMellitus" &&
-											selectedPersonal.disease !== "hypothyroidism" && (
-												<React.Fragment>
-													<p
-														style={{
-															paddingBottom: "0.5rem",
-															paddingTop: "1.5rem",
-															fontFamily: fonts.textFont,
-															fontSize: fontSize.textSize,
-														}}
-													>
-														¿Qué enfermedad?
-													</p>
-													<BaseInput
-														value={
-															selectedPersonal.typeOfDisease
-																? selectedPersonal.typeOfDisease
-																: ""
-														}
-														onChange={(e) =>
-															setSelectedPersonal({
-																...selectedPersonal,
-																typeOfDisease: e.target.value,
-															})
-														}
-														disabled={!isEditable}
-														placeholder="Ingrese el tipo de enfermedad"
-														style={{
-															width: "95%",
-															height: "10%",
-															fontFamily: fonts.textFont,
-															fontSize: "1rem",
-														}}
-													/>
-												</React.Fragment>
-											)}
-
-										<p
-											style={{
-												paddingBottom: "0.5rem",
-												paddingTop: "1.5rem",
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Medicamento:
-										</p>
-										<BaseInput
-											value={
-												selectedPersonal.medicine
-													? selectedPersonal.medicine
-													: ""
-											}
-											onChange={(e) =>
-												setSelectedPersonal({
-													...selectedPersonal,
-													medicine: e.target.value,
-												})
-											}
-											disabled={!isEditable}
-											placeholder="Ingrese el tratamiento administrado"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
-										/>
-
-										<p
-											style={{
-												paddingBottom: "0.5rem",
-												paddingTop: "1.5rem",
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Dosis:
-										</p>
-										<BaseInput
-											value={selectedPersonal.dose ? selectedPersonal.dose : ""}
-											onChange={(e) =>
-												setSelectedPersonal({
-													...selectedPersonal,
-													dose: e.target.value,
-												})
-											}
-											disabled={!isEditable}
-											placeholder="Ingrese el tratamiento administrado (opcional)"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
-										/>
-
-										<p
-											style={{
-												paddingBottom: "0.5rem",
-												paddingTop: "1.5rem",
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Frecuencia:
-										</p>
-										<BaseInput
-											value={
-												selectedPersonal.frequency
-													? selectedPersonal.frequency
-													: ""
-											}
-											onChange={(e) =>
-												setSelectedPersonal({
-													...selectedPersonal,
-													frequency: e.target.value,
-												})
-											}
-											disabled={!isEditable}
-											placeholder="Ingrese la frecuencia con la que toma el medicamento"
-											style={{
-												width: "95%",
-												height: "10%",
-												fontFamily: fonts.textFont,
-												fontSize: "1rem",
-											}}
-										/>
-									</React.Fragment>
-								)}
-
-							<div
-								style={{
-									paddingTop: "5rem",
-									display: "flex",
-									justifyContent: "center",
-								}}
-							>
-								{addingNew && (
-									<>
-										<BaseButton
-											text="Guardar"
-											onClick={handleSaveNewPersonal}
-											style={{ width: "30%", height: "3rem" }}
-										/>
-										<div style={{ width: "1rem" }} />
-										<BaseButton
-											text="Cancelar"
-											onClick={handleCancel}
-											style={{
-												width: "30%",
-												height: "3rem",
-												backgroundColor: "#fff",
-												color: colors.primaryBackground,
-												border: `1.5px solid ${colors.primaryBackground}`,
-											}}
-										/>
-									</>
-								)}
-							</div>
-						</>
+							},
+						)
 					)}
 				</div>
-			) : null}
+			</div>
+
+			<div style={styles.rightContainer}>
+				{(addingNew || selectedPersonal.disease) && (
+					<div style={styles.innerContainer}>
+						<div style={styles.formContent}>
+							<div style={styles.dropdownContainer}>
+								<p
+									style={{
+										paddingBottom: "0.5rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+										fontWeight: "bold",
+									}}
+								>
+									Seleccione la enfermedad:
+								</p>
+								<DropdownMenu
+									options={diseaseOptions}
+									value={selectedPersonal.disease || ""}
+									onChange={handleDiseaseChange}
+									style={{
+										container: { width: "100%" },
+										select: styles.dropdownSelect,
+										option: {},
+										indicator: {},
+									}}
+								/>
+							</div>
+
+							{selectedPersonal.disease && (
+								<>
+									{selectedPersonal.disease === "cancer" && (
+										<React.Fragment>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													paddingTop: "1.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												Tipo:
+											</p>
+											<BaseInput
+												value={
+													selectedPersonal.typeOfDisease
+														? selectedPersonal.typeOfDisease
+														: ""
+												}
+												onChange={(e) =>
+													setSelectedPersonal({
+														...selectedPersonal,
+														typeOfDisease: e.target.value,
+													})
+												}
+												disabled={!isEditable}
+												placeholder="Ingrese el tipo de cáncer"
+												style={styles.baseInput}
+											/>
+
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													paddingTop: "1.5rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												Tratamiento:
+											</p>
+											<BaseInput
+												value={
+													selectedPersonal.treatment
+														? selectedPersonal.treatment
+														: ""
+												}
+												onChange={(e) =>
+													setSelectedPersonal({
+														...selectedPersonal,
+														treatment: e.target.value,
+													})
+												}
+												disabled={!isEditable}
+												placeholder="Ingrese el tratamiento administrado"
+												style={styles.baseInput}
+											/>
+										</React.Fragment>
+									)}
+
+									{selectedPersonal.disease === "myocardialInfarction" && (
+										<React.Fragment>
+											<p
+												style={{
+													paddingBottom: "0.5rem",
+													paddingTop: "2rem",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+												}}
+											>
+												¿En qué año?
+											</p>
+											<DropdownMenu
+												options={yearOptions}
+												value={selectedPersonal.surgeryYear}
+												disabled={!isEditable}
+												onChange={(e) =>
+													setSelectedPersonal({
+														...selectedPersonal,
+														surgeryYear: e.target.value,
+													})
+												}
+												styles={{
+													container: { width: "90%" },
+													select: {},
+													option: {},
+													indicator: {},
+												}}
+											/>
+										</React.Fragment>
+									)}
+
+									{selectedPersonal.disease !== "cancer" &&
+										selectedPersonal.disease !== "myocardialInfarction" && (
+											<React.Fragment>
+												{selectedPersonal.disease !== "hypertension" &&
+													selectedPersonal.disease !== "asthma" &&
+													selectedPersonal.disease !== "convulsions" &&
+													selectedPersonal.disease !== "diabetesMellitus" &&
+													selectedPersonal.disease !== "hypothyroidism" && (
+														<React.Fragment>
+															<p
+																style={{
+																	paddingBottom: "0.5rem",
+																	paddingTop: "1.5rem",
+																	fontFamily: fonts.textFont,
+																	fontSize: fontSize.textSize,
+																}}
+															>
+																¿Qué enfermedad?
+															</p>
+															<BaseInput
+																value={
+																	selectedPersonal.typeOfDisease
+																		? selectedPersonal.typeOfDisease
+																		: ""
+																}
+																onChange={(e) =>
+																	setSelectedPersonal({
+																		...selectedPersonal,
+																		typeOfDisease: e.target.value,
+																	})
+																}
+																disabled={!isEditable}
+																placeholder="Ingrese el tipo de enfermedad"
+																style={styles.baseInput}
+															/>
+														</React.Fragment>
+													)}
+
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "1.5rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													}}
+												>
+													Medicamento:
+												</p>
+												<BaseInput
+													value={
+														selectedPersonal.medicine
+															? selectedPersonal.medicine
+															: ""
+													}
+													onChange={(e) =>
+														setSelectedPersonal({
+															...selectedPersonal,
+															medicine: e.target.value,
+														})
+													}
+													disabled={!isEditable}
+													placeholder="Ingrese el tratamiento administrado"
+													style={styles.baseInput}
+												/>
+
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "1.5rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													}}
+												>
+													Dosis:
+												</p>
+												<BaseInput
+													value={
+														selectedPersonal.dose ? selectedPersonal.dose : ""
+													}
+													onChange={(e) =>
+														setSelectedPersonal({
+															...selectedPersonal,
+															dose: e.target.value,
+														})
+													}
+													disabled={!isEditable}
+													placeholder="Ingrese el tratamiento administrado (opcional)"
+													style={styles.baseInput}
+												/>
+
+												<p
+													style={{
+														paddingBottom: "0.5rem",
+														paddingTop: "1.5rem",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+													}}
+												>
+													Frecuencia:
+												</p>
+												<BaseInput
+													value={
+														selectedPersonal.frequency
+															? selectedPersonal.frequency
+															: ""
+													}
+													onChange={(e) =>
+														setSelectedPersonal({
+															...selectedPersonal,
+															frequency: e.target.value,
+														})
+													}
+													disabled={!isEditable}
+													placeholder="Ingrese la frecuencia con la que toma el medicamento"
+													style={styles.baseInput}
+												/>
+											</React.Fragment>
+										)}
+
+									<div style={styles.spacer} />
+								</>
+							)}
+						</div>
+						<div style={styles.buttonContainer}>
+							{addingNew && (
+								<>
+									<BaseButton
+										text="Guardar"
+										onClick={handleSaveNewPersonal}
+										style={styles.button}
+									/>
+									<BaseButton
+										text="Cancelar"
+										onClick={handleCancel}
+										style={{
+											...styles.button,
+											backgroundColor: "#fff",
+											color: colors.primaryBackground,
+											border: `1.5px solid ${colors.primaryBackground}`,
+										}}
+									/>
+								</>
+							)}
+						</div>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
