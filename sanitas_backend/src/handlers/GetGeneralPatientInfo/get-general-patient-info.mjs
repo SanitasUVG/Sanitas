@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, isEmailOfPatient } from "db-conn";
+import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 
@@ -9,6 +9,7 @@ import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 export const handler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders();
+
 	if (event.httpMethod !== "GET") {
 		const msg = `/patient/general/{id} only accepts GET method, you tried: ${event.httpMethod}`;
 		logger.error(msg);
@@ -52,49 +53,73 @@ export const handler = async (event, context) => {
 		client = getPgClient(url);
 		await client.connect();
 
-		logger.info("Checking if user is doctor...");
-		const itsDoctor = await isDoctor(client, email);
-		if (itsDoctor.error) {
-			const msg =
-				"An error occurred while trying to check if the user is a doctor!";
-			logger.error(itsDoctor, msg);
-			return responseBuilder.setStatusCode(500).setBody(itsDoctor).build();
-		}
-
-		if (!itsDoctor) {
-			logger.info("User is patient!");
-			logger.info(
-				{ email, patientId },
-				"Checking if email belongs to patient id",
-			);
-			const emailBelongs = await isEmailOfPatient(client, email, patientId);
-
-			if (emailBelongs.error) {
+		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Checking if user is doctor...");
+			const itsDoctor = await isDoctor(client, email);
+			if (itsDoctor.error) {
 				const msg =
-					"An error ocurred while trying to check if the email belongs to the patient!";
-				logger.error(emailBelongs, msg);
-				return responseBuilder.setStatusCode(500).setBody(emailBelongs).build();
+					"An error occurred while trying to check if the user is a doctor!";
+				logger.error(itsDoctor, msg);
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
+					.build();
+				return { response };
 			}
 
-			if (!emailBelongs) {
-				const msg = "The email doesn't belong to the patient id!";
-				logger.error({ email, patientId }, msg);
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({ error: msg })
-					.build();
+			if (!itsDoctor) {
+				logger.info("User is patient!");
+				logger.info(
+					{ email, patientId },
+					"Checking if email belongs to patient id",
+				);
+				const emailBelongs = await isEmailOfPatient(client, email, patientId);
+
+				if (emailBelongs.error) {
+					const msg =
+						"An error ocurred while trying to check if the email belongs to the patient!";
+					logger.error(emailBelongs, msg);
+					const response = responseBuilder
+						.setStatusCode(500)
+						.setBody(emailBelongs)
+						.build();
+					return { response };
+				}
+
+				if (!emailBelongs) {
+					const msg = "The email doesn't belong to the patient id!";
+					logger.error({ email, patientId }, msg);
+					const response = responseBuilder
+						.setStatusCode(400)
+						.setBody({ error: msg })
+						.build();
+					return { response };
+				}
+				logger.info("The email belongs to the patient!");
+			} else {
+				logger.info("The user is a doctor!");
 			}
-			logger.info("The email belongs to the patient!");
-		} else {
-			logger.info("The user is a doctor!");
+
+			logger.info("Querying DB...");
+			const dbResponse = await client.query(
+				"SELECT * FROM paciente WHERE id = $1 LIMIT 1;",
+				[patientId],
+			);
+			logger.info("Query done!");
+
+			return dbResponse;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
 		}
 
-		logger.info("Querying DB...");
-		const dbResponse = await client.query(
-			"SELECT * FROM paciente WHERE id = $1 LIMIT 1;",
-			[patientId],
-		);
-		logger.info("Query done!");
+		if (transactionResult.response) {
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
+		}
+
+		const { result: dbResponse } = transactionResult;
 
 		if (dbResponse.rowCount === 0) {
 			logger.error("No record found!");
@@ -112,6 +137,7 @@ export const handler = async (event, context) => {
 			.setStatusCode(200)
 			.setBody(mapToAPIPatient(dbResponse.rows[0]))
 			.build();
+
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {

@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -102,80 +102,108 @@ export const searchPatientHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected to DB!");
 
-		const itsDoctor = await isDoctor(client, email);
-		if (itsDoctor.error) {
-			const msg = "An error occurred while trying to check if user is doctor!";
-			logger.error({ error: itsDoctor.error }, msg);
-			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
-		}
+		const transactionResult = await transaction(client, logger, async () => {
+			const itsDoctor = await isDoctor(client, email);
+			if (itsDoctor.error) {
+				const msg =
+					"An error occurred while trying to check if user is doctor!";
+				logger.error({ error: itsDoctor.error }, msg);
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody({ error: msg })
+					.build();
+				return { response };
+			}
 
-		if (!itsDoctor) {
-			const msg = "Unauthorized, you're not a doctor!";
-			const body = { error: msg };
-			logger.error(body, msg);
-			return responseBuilder.setStatusCode(401).setBody(body).build();
-		}
-		logger.info(`${email} is a doctor!`);
+			if (!itsDoctor) {
+				const msg = "Unauthorized, you're not a doctor!";
+				const body = { error: msg };
+				logger.error(body, msg);
+				const response = responseBuilder
+					.setStatusCode(401)
+					.setBody(body)
+					.build();
+				return { response };
+			}
+			logger.info(`${email} is a doctor!`);
 
-		let sqlQuery = "";
-		const queryParams = [];
+			let sqlQuery = "";
+			const queryParams = [];
 
-		switch (searchType) {
-			case "Carnet":
-				sqlQuery =
-					"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
-				queryParams.push(requestSearch);
-				logger.info({ sqlQuery, queryParams }, "Querying by student ID");
-				break;
-			case "NumeroColaborador":
-				sqlQuery =
-					"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
-				queryParams.push(requestSearch);
-				logger.info({ sqlQuery, queryParams }, "Querying by employee code");
-				break;
-			case "CUI":
-				sqlQuery =
-					"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE WHERE CUI = $1";
-				queryParams.push(requestSearch);
-				logger.info({ sqlQuery, queryParams }, "Querying by CUI");
-				break;
-			case "Nombres": {
-				const request_search_processed = requestSearch
-					.normalize("NFD")
-					// biome-ignore lint/suspicious/noMisleadingCharacterClass: It detects all accents correctly.
-					.replace(/[\u0300-\u036f]/g, "")
-					.toLowerCase();
+			switch (searchType) {
+				case "Carnet":
+					sqlQuery =
+						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
+					queryParams.push(requestSearch);
+					logger.info({ sqlQuery, queryParams }, "Querying by student ID");
+					break;
+				case "NumeroColaborador":
+					sqlQuery =
+						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
+					queryParams.push(requestSearch);
+					logger.info({ sqlQuery, queryParams }, "Querying by employee code");
+					break;
+				case "CUI":
+					sqlQuery =
+						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE WHERE CUI = $1";
+					queryParams.push(requestSearch);
+					logger.info({ sqlQuery, queryParams }, "Querying by CUI");
+					break;
+				case "Nombres": {
+					const request_search_processed = requestSearch
+						.normalize("NFD")
+						// biome-ignore lint/suspicious/noMisleadingCharacterClass: It detects all accents correctly.
+						.replace(/[\u0300-\u036f]/g, "")
+						.toLowerCase();
 
-				sqlQuery = `
+					sqlQuery = `
                 SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO 
                 FROM PACIENTE 
                 WHERE TRANSLATE(NOMBRES, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1 
                 OR TRANSLATE(APELLIDOS, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1`;
-				queryParams.push(`%${request_search_processed}%`);
-				logger.info({ sqlQuery, queryParams }, "Querying by names or surnames");
-				break;
+					queryParams.push(`%${request_search_processed}%`);
+					logger.info(
+						{ sqlQuery, queryParams },
+						"Querying by names or surnames",
+					);
+					break;
+				}
+				default: {
+					const response = responseBuilder
+						.setStatusCode(400)
+						.setBody({
+							isValidRequest: false,
+							errorResponse: {
+								statusCode: 400,
+								body: JSON.stringify({
+									error: "Invalid search type received",
+								}),
+							},
+						})
+						.build();
+					return { response };
+				}
 			}
-			default:
-				return responseBuilder
-					.setStatusCode(400)
-					.setBody({
-						isValidRequest: false,
-						errorResponse: {
-							statusCode: 400,
-							body: JSON.stringify({
-								error: "Invalid search type received",
-							}),
-						},
-					})
-					.build();
+
+			logger.info("Executing DB query...");
+			const response = await client.query(sqlQuery, queryParams);
+			logger.info(
+				{ rowCount: response.rowCount },
+				"DB query executed successfully",
+			);
+			return response;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
 		}
 
-		logger.info("Executing DB query...");
-		const response = await client.query(sqlQuery, queryParams);
-		logger.info(
-			{ rowCount: response.rowCount },
-			"DB query executed successfully",
-		);
+		if (transactionResult.response) {
+			logger.info(transactionResult, "Responding with:");
+			return transactionResult.response;
+		}
+
+		const { result: response } = transactionResult;
 
 		if (response.rowCount === 0) {
 			logger.info("No patients found, returning empty array.");
