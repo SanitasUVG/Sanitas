@@ -13,12 +13,7 @@ import {
  */
 function requestModifiesDBData(dbData, requestData) {
 	// Comparing fields that contain a `.data` which is an object!
-	const dotDataFields = [
-		"firstMenstrualPeriod",
-		"regularCycles",
-		"painfulMenstruation",
-		"pregnancies",
-	];
+	const dotDataFields = ["firstMenstrualPeriod"];
 	logger.debug({ dotDataFields }, "Comparing fields with .data!");
 
 	const dotDataObjectFieldsModified = [
@@ -101,6 +96,11 @@ function requestModifiesDBData(dbData, requestData) {
 
 	const hasSurgeriesChanges = Object.keys(dbData.hasSurgeries?.data ?? {}).some(
 		(key) => {
+			if (key === "ovarianCystsSurgery") {
+				logger.debug(`Skipping changes check for key ${key}`);
+				return false; // Ignore changes for 'ovarianCystsSurgery'
+			}
+
 			logger.debug(
 				`Checking if dbData.hasSurgeries.data[${key}] is an array...`,
 			);

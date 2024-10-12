@@ -141,6 +141,8 @@ export function StudentObGynHistory({
 							obgynHistoryResource={obgynHistoryResource}
 							updateObGynHistory={updateObGynHistory}
 							triggerReload={triggerReload}
+							reload={reload}
+							key={reload}
 						/>
 					</Suspense>
 				</div>
@@ -423,6 +425,7 @@ function OperationSection({
 			...detail,
 			complications: detail.complications ?? false,
 			year: detail.year ?? "",
+			isNew: false,
 		}));
 		return normalizedDetails;
 	});
@@ -436,7 +439,7 @@ function OperationSection({
 
 		if (newPerformedStatus) {
 			if (operationDetails.length === 0) {
-				const defaultDetail = { year: null, complications: false };
+				const defaultDetail = { year: "", complications: false };
 				const newDetails = [defaultDetail];
 				setOperationDetails(newDetails);
 				updateGlobalOperations(operationKey, newDetails);
@@ -467,7 +470,7 @@ function OperationSection({
 	const addOperationDetail = () => {
 		if (!canAddMore()) return;
 		//Aquí lo mismo para que no salga lo de: A value changed from a controlled input to a uncontrolled input
-		const newDetail = { year: "", complications: false };
+		const newDetail = { year: "", complications: false, isNew: true };
 		const newDetails = [...operationDetails, newDetail];
 		setOperationDetails(newDetails);
 		updateGlobalOperations(operationKey, newDetails);
@@ -481,7 +484,9 @@ function OperationSection({
 			if (operationKey === "breastMassResection") {
 				return operationDetails.length < 2;
 			}
-			return true;
+			if (operationKey === "ovarianCysts") {
+				return operationDetails.length >= 0;
+			}
 		}
 		return false;
 	};
@@ -527,6 +532,9 @@ function OperationSection({
 		setOperationDetails(updatedDetails);
 		updateGlobalOperations(operationKey, updatedDetails);
 	};
+
+	const editableField = operationKey === "ovarianCysts" ? false : editable;
+	console.log(operationKey, editableField);
 
 	return (
 		<div>
@@ -603,7 +611,7 @@ function OperationSection({
 						<DropdownMenu
 							options={yearOptions}
 							value={detail.year}
-							disabled={editable}
+							disabled={editableField}
 							onChange={(e) => {
 								handleYearChange(index, e.target.value);
 							}}
@@ -645,17 +653,17 @@ function OperationSection({
 								checked={detail.complications}
 								onChange={() => handleComplicationChange(index, true)}
 								label="Sí"
-								disabled={editable}
+								disabled={editableField}
 							/>
 							<RadioInput
 								name={`complications-${index}`}
 								checked={!detail.complications}
 								onChange={() => handleComplicationChange(index, false)}
 								label="No"
-								disabled={editable}
+								disabled={editableField}
 							/>
 						</div>
-						{index !== 0 && (isFirstTime || !editable) ? (
+						{detail.isNew && (
 							<div
 								style={{
 									display: "flex",
@@ -676,13 +684,12 @@ function OperationSection({
 									}}
 								/>
 							</div>
-						) : null}
+						)}
 					</div>
 				))}
-
 			{performed && canAddMore() && (
 				<div>
-					{(isFirstTime || !editable) && (
+					{(isFirstTime || !editableField) && (
 						<div>
 							<div
 								style={{
@@ -719,6 +726,7 @@ function ObGynView({
 	obgynHistoryResource,
 	updateObGynHistory,
 	triggerReload,
+	reload,
 }) {
 	const gynecologicalHistoryResult = obgynHistoryResource.read();
 
@@ -805,7 +813,7 @@ function ObGynView({
 	//Quite la edad de acá porque si ingresaba la edad ya no me dejaba ingresar más datos JSADKJASDJKASD
 	const isFirstTime = !(
 		gynecologicalHistoryResult.result?.medicalHistory?.diagnosedIllnesses?.data
-			.length ||
+			.length &&
 		gynecologicalHistoryResult.result?.medicalHistory?.hasSurgeries?.data.length
 	);
 
@@ -1377,14 +1385,12 @@ function ObGynView({
 								checked={isRegular === true}
 								onChange={() => setIsRegular(true)}
 								label="Sí"
-								disabled={isEditable}
 							/>
 							<RadioInput
 								name="notregular"
 								checked={isRegular === false}
 								onChange={() => setIsRegular(false)}
 								label="No"
-								disabled={isEditable}
 							/>
 						</div>
 						<p
@@ -1410,7 +1416,6 @@ function ObGynView({
 								checked={isPainful === true}
 								onChange={() => setIsPainful(true)}
 								label="Sí"
-								disabled={isEditable}
 							/>
 							<RadioInput
 								name="nopain"
@@ -1420,7 +1425,6 @@ function ObGynView({
 									setMedication("");
 								}}
 								label="No"
-								disabled={isEditable}
 							/>
 						</div>
 
@@ -1718,9 +1722,13 @@ function ObGynView({
 									// así no se re-renderizaba el componente y ya dejaba volver a utilizar el
 									//DropdownMenu para seleccionar el año de la operación
 
+									//Esta key obliga al componente a desmontarse y montarse de nuevo, entonces el boton de Cancelar nueva operación funciona
+									const key = `${operation.key}-${reload}`;
+
 									return (
 										<div key={operation.key}>
 											<OperationSection
+												key={key}
 												title={operation.title}
 												operationKey={operation.key}
 												editable={!!checkPerformed(requestDetails)}
