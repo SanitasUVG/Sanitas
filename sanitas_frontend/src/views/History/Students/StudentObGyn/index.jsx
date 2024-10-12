@@ -30,8 +30,8 @@ export function StudentObGynHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	//   const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	// const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	const LoadingView = () => {
@@ -446,7 +446,7 @@ function OperationSection({
 			}
 		}
 
-		//Este código lo quité porque no se necesita limpiar los detalles de la operación, cuando
+		// NOTE: Este código lo quité porque no se necesita limpiar los detalles de la operación, cuando
 		// le dabas a Sí y elegías algo en el dropdown de año, se insta reseteaba y no se podía elegir
 
 		// if (!newPerformedStatus) {
@@ -469,7 +469,7 @@ function OperationSection({
 
 	const addOperationDetail = () => {
 		if (!canAddMore()) return;
-		//Aquí lo mismo para que no salga lo de: A value changed from a controlled input to a uncontrolled input
+		// NOTE: Aquí lo mismo para que no salga lo de: A value changed from a controlled input to a uncontrolled input
 		const newDetail = { year: "", complications: false, isNew: true };
 		const newDetails = [...operationDetails, newDetail];
 		setOperationDetails(newDetails);
@@ -810,7 +810,7 @@ function ObGynView({
 			: "",
 	);
 
-	//Quite la edad de acá porque si ingresaba la edad ya no me dejaba ingresar más datos JSADKJASDJKASD
+	// NOTE: Quite la edad de acá porque si ingresaba la edad ya no me dejaba ingresar más datos JSADKJASDJKASD
 	const isFirstTime = !(
 		gynecologicalHistoryResult.result?.medicalHistory?.diagnosedIllnesses?.data
 			.length &&
@@ -820,23 +820,20 @@ function ObGynView({
 	const [isEditable, setIsEditable] = useState(isFirstTime);
 
 	// TOTAL P SECTION
-
-	const [P, setP] = useState(
+	const [initialP, initialC, initialA] = [
 		pregnancies.data.vaginalDeliveries != null
 			? pregnancies.data.vaginalDeliveries
 			: 0,
-	);
-	const [C, setC] = useState(
-		pregnancies.data.cesareanSections != null
-			? pregnancies.data.cesareanSections
+		pregnancies.data.cesareansections != null
+			? pregnancies.data.cesareansections
 			: 0,
-	);
-	const [A, setA] = useState(
 		pregnancies.data.abortions != null ? pregnancies.data.abortions : 0,
-	); // Abortos
-	const [G, setG] = useState(0);
+	];
 
-	//Aqui talvez iría algo como initialA, initialC, initialP que traiga los datos del JSON
+	const [P, setP] = useState(initialP);
+	const [C, setC] = useState(initialC);
+	const [A, setA] = useState(initialA); // Abortos
+	const [G, setG] = useState(0);
 
 	useEffect(() => {
 		setG(P + C + A);
@@ -1469,7 +1466,7 @@ function ObGynView({
 								</p>
 								<BaseInput
 									value={G}
-									readOnly={true}
+									readOnly={false}
 									placeholder="Total de partos"
 									style={{
 										width: "100%",
@@ -1511,7 +1508,6 @@ function ObGynView({
 								<BaseInput
 									value={P}
 									onChange={(e) => setP(Number(e.target.value) || 0)}
-									readOnly={!isEditable}
 									placeholder="# vía vaginal"
 									style={{
 										width: "100%",
@@ -1553,7 +1549,6 @@ function ObGynView({
 								<BaseInput
 									value={C}
 									onChange={(e) => setC(Number(e.target.value) || 0)}
-									readOnly={!isEditable}
 									placeholder="# cesáreas"
 									style={{
 										width: "100%",
@@ -1595,7 +1590,6 @@ function ObGynView({
 								<BaseInput
 									value={A}
 									onChange={(e) => setA(Number(e.target.value) || 0)}
-									readOnly={!isEditable}
 									placeholder="# abortos"
 									style={{
 										width: "100%",
