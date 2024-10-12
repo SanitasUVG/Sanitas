@@ -12,16 +12,47 @@ import {
  * @param {import("utils/index.mjs").GynecologicalMedicalHistory} requestData - The request incoming data.
  */
 function requestModifiesDBData(dbData, requestData) {
-	// Comparing fields that contain a `.data` which is an object!
-	const dotDataFields = ["firstMenstrualPeriod"];
-	logger.debug({ dotDataFields }, "Comparing fields with .data!");
+	logger.debug({ pregnancies: dbData.pregnancies }, "Comparing pregnancies...");
+	const modifiesData = Object.keys(dbData.pregnancies.data).some((key) => {
+		const dbNumber = dbData.pregnancies.data[key];
 
-	const dotDataObjectFieldsModified = [
+		logger.debug(
+			{ key },
+			"Checking if request.pregnancies.data contains key...",
+		);
+		if (!Object.hasOwn(requestData.pregnancies.data, key)) {
+			logger.debug({ key }, "It doesn't contains the key!");
+			return true;
+		}
+		const requestNumber = Number.parseInt(requestData.pregnancies.data[key]);
+
+		logger.debug(
+			{ requestNumber },
+			`Checking if requestData.pregnancies.data[${key}] is a number...`,
+		);
+		if (Number.isNaN(requestNumber)) {
+			return true;
+		}
+
+		const requestIsLessThanDB = requestNumber < dbNumber;
+		logger.debug(
+			`Comparing: ${requestNumber} < ${dbNumber}: ${requestIsLessThanDB}`,
+		);
+		return requestIsLessThanDB;
+	});
+
+	if (modifiesData) {
+		return true;
+	}
+
+	const dotDataFields = [
 		"firstMenstrualPeriod",
 		"regularCycles",
 		"painfulMenstruation",
-		"pregnancies",
-	].some((field) => {
+	];
+	logger.debug({ dotDataFields }, "Comparing fields with .data!");
+
+	const dotDataObjectFieldsModified = dotDataFields.some((field) => {
 		const dbDataContainsField = Object.hasOwn(dbData, field);
 		if (!dbDataContainsField) {
 			logger.debug(`The DB doesn't contain ${field}!`);
