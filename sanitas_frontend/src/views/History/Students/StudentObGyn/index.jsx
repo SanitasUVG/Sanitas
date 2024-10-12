@@ -1507,7 +1507,10 @@ function ObGynView({
 								</p>
 								<BaseInput
 									value={P}
-									onChange={(e) => setP(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value) || 0;
+										setP(n < initialP ? initialP : n);
+									}}
 									placeholder="# vía vaginal"
 									style={{
 										width: "100%",
@@ -1548,7 +1551,10 @@ function ObGynView({
 								</p>
 								<BaseInput
 									value={C}
-									onChange={(e) => setC(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value) || 0;
+										setC(n < initialC ? initialC : n);
+									}}
 									placeholder="# cesáreas"
 									style={{
 										width: "100%",
@@ -1589,7 +1595,10 @@ function ObGynView({
 								</p>
 								<BaseInput
 									value={A}
-									onChange={(e) => setA(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value);
+										setA(n < initialA ? initialA : n);
+									}}
 									placeholder="# abortos"
 									style={{
 										width: "100%",
