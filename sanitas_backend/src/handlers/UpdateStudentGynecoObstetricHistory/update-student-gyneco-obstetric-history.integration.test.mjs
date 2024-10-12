@@ -166,8 +166,8 @@ describe("Update Patient Gynecological Medical History integration tests", () =>
 			headers: validHeaders,
 		});
 
-		// Patient can't modify data...
-		gynecologicalHistoryData.medicalHistory.pregnancies.data.totalPregnancies = 3;
+		// Patient can't send a lower number...
+		gynecologicalHistoryData.medicalHistory.pregnancies.data.totalPregnancies = 0;
 		let response = await axios.post(API_URL, gynecologicalHistoryData, {
 			headers: validHeaders,
 			validateStatus: () => true,
