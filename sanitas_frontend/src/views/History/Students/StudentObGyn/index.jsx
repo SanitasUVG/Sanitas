@@ -47,7 +47,7 @@ export function StudentObGynHistory({
 	);
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
 	const obgynHistoryResource = useMemo(() => {
-		console.log("Recalculating getObGynHistory resource...");
+		// console.log("Recalculating getObGynHistory resource...");
 		return WrapPromise(getObGynHistory(id));
 	}, [id, reload, getObGynHistory]);
 
