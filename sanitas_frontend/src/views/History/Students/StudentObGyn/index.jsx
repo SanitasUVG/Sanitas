@@ -990,8 +990,7 @@ function ObGynView({
 	};
 
 	// OPERACIONES SECTION
-
-	const [operations, setOperations] = useState(() => {
+	const genResultOperations = () => {
 		const initialOperations = [
 			{
 				key: "hysterectomy",
@@ -1018,9 +1017,10 @@ function ObGynView({
 				details: hasSurgeries.data.breastMassResection || [],
 			},
 		];
-
 		return initialOperations;
-	});
+	};
+
+	const [operations, setOperations] = useState(() => genResultOperations());
 
 	const hasBeenEdited =
 		operations.some((op) => op.hasBeenEdited) ||
@@ -1675,32 +1675,37 @@ function ObGynView({
 									Operaciones del Paciente:{" "}
 								</p>
 
-								{operations.map((operation, index) => (
-									<div key={operation.key}>
-										<OperationSection
-											title={operation.title}
-											operationKey={operation.key}
-											editable={
-												!!checkPerformed(mapOperationDetails(operation.key))
-											}
-											birthdayResource={birthdayResource}
-											operationDetailsResource={mapOperationDetails(
-												operation.key,
-											)}
-											updateGlobalOperations={updateGlobalOperations}
-											handlePerformedChange={handlePerformedChange}
-											isFirstTime={isFirstTime}
-										/>
-										{index < operations.length - 1 && (
-											<div // BORDER
-												style={{
-													padding: "1rem",
-													borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-												}}
+								{operations.map((operation, index) => {
+									const getRequestOperations = genResultOperations();
+									const requestDetails =
+										getRequestOperations.find((op) => op.key === operation.key)
+											?.details || {};
+
+									return (
+										<div key={operation.key}>
+											<OperationSection
+												title={operation.title}
+												operationKey={operation.key}
+												editable={!!checkPerformed(requestDetails)}
+												birthdayResource={birthdayResource}
+												operationDetailsResource={mapOperationDetails(
+													operation.key,
+												)}
+												updateGlobalOperations={updateGlobalOperations}
+												handlePerformedChange={handlePerformedChange}
+												isFirstTime={isFirstTime}
 											/>
-										)}
-									</div>
-								))}
+											{index < operations.length - 1 && (
+												<div // BORDER
+													style={{
+														padding: "1rem",
+														borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+													}}
+												/>
+											)}
+										</div>
+									);
+								})}
 								<div
 									style={{
 										padding: "1rem",
