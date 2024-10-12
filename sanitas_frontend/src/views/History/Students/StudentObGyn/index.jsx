@@ -408,6 +408,7 @@ function OperationSection({
 		checkPerformed(operationDetailsResource),
 	);
 	const isArray = Array.isArray(operationDetailsResource);
+	// Se agrego como defaultDetails un objeto con year como "" y complications como false para evitar el error de: A value changed from a controlled input to a uncontrolled input
 	const [operationDetails, setOperationDetails] = useState(() => {
 		const initialDetails = isArray
 			? operationDetailsResource
@@ -429,7 +430,6 @@ function OperationSection({
 	const { width } = useWindowSize();
 	const isMobile = width < 768;
 
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handlePerformedChangeInternal = (newPerformedStatus) => {
 		setPerformed(newPerformedStatus);
 		handlePerformedChange(operationKey, newPerformedStatus);
@@ -442,6 +442,9 @@ function OperationSection({
 				updateGlobalOperations(operationKey, newDetails);
 			}
 		}
+
+		//Este código lo quité porque no se necesita limpiar los detalles de la operación, cuando
+		// le dabas a Sí y elegías algo en el dropdown de año, se insta reseteaba y no se podía elegir
 
 		// if (!newPerformedStatus) {
 		//   const clearedDetails = isArray ? [] : {};
@@ -463,6 +466,7 @@ function OperationSection({
 
 	const addOperationDetail = () => {
 		if (!canAddMore()) return;
+		//Aquí lo mismo para que no salga lo de: A value changed from a controlled input to a uncontrolled input
 		const newDetail = { year: "", complications: false };
 		const newDetails = [...operationDetails, newDetail];
 		setOperationDetails(newDetails);
@@ -822,6 +826,8 @@ function ObGynView({
 		pregnancies.data.abortions != null ? pregnancies.data.abortions : 0,
 	); // Abortos
 	const [G, setG] = useState(0);
+
+	//Aqui talvez iría algo como initialA, initialC, initialP que traiga los datos del JSON
 
 	useEffect(() => {
 		setG(P + C + A);
@@ -1702,10 +1708,14 @@ function ObGynView({
 										getRequestOperations.find((op) => op.key === operation.key)
 											?.details || {};
 
+									// biome-ignore  lint/correctness/useHookAtTopLevel: Reload the page
 									const operationDetailsResourceMemo = useMemo(
 										() => mapOperationDetails(operation.key),
-										[operation.key, operations],
+										[operation.key],
 									);
+									// Se usa useMemo para evitar que se resetee el valor de operationDetailsResources
+									// así no se re-renderizaba el componente y ya dejaba volver a utilizar el
+									//DropdownMenu para seleccionar el año de la operación
 
 									return (
 										<div key={operation.key}>
