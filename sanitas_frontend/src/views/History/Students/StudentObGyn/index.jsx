@@ -802,6 +802,7 @@ function ObGynView({
 			: "",
 	);
 
+	//Quite la edad de acá porque si ingresaba la edad ya no me dejaba ingresar más datos JSADKJASDJKASD
 	const isFirstTime = !(
 		gynecologicalHistoryResult.result?.medicalHistory?.diagnosedIllnesses?.data
 			.length ||
