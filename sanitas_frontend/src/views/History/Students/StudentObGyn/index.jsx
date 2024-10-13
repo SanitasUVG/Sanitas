@@ -800,7 +800,7 @@ function ObGynView({
 
   const [initialP, initialC, initialA] = [
     pregnancies.data.vaginalDeliveries != null ? pregnancies.data.vaginalDeliveries : 0,
-    pregnancies.data.cesareansections != null ? pregnancies.data.cesareansections : 0,
+    pregnancies.data.cesareanSections != null ? pregnancies.data.cesareanSections : 0,
     pregnancies.data.abortions != null ? pregnancies.data.abortions : 0,
   ];
   const [P, setP] = useState(initialP);
