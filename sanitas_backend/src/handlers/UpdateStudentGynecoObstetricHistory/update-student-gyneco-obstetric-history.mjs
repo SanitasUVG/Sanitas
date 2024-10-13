@@ -45,11 +45,7 @@ function requestModifiesDBData(dbData, requestData) {
 		return true;
 	}
 
-	const dotDataFields = [
-		"firstMenstrualPeriod",
-		"regularCycles",
-		"painfulMenstruation",
-	];
+	const dotDataFields = ["firstMenstrualPeriod"];
 	logger.debug({ dotDataFields }, "Comparing fields with .data!");
 
 	const dotDataObjectFieldsModified = dotDataFields.some((field) => {
