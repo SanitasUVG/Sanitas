@@ -535,7 +535,11 @@ function OperationSection({
 	};
 
 	const editableField = (compareStatus) =>
-		operationKey === "ovarianCysts" && compareStatus ? false : editable;
+		(operationKey === "ovarianCysts" ||
+			operationKey === "breastMassResection") &&
+		compareStatus
+			? false
+			: editable;
 
 	return (
 		<div>
