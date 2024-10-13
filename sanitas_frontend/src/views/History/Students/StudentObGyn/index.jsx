@@ -8,7 +8,6 @@ import { RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import { useRef } from "react";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
 
@@ -46,11 +45,12 @@ export function StudentObGynHistory({
 		() => WrapPromise(getBirthdayPatientInfo(id)),
 		[id, reload, getBirthdayPatientInfo],
 	);
+
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
-	const obgynHistoryResource = useMemo(
-		() => WrapPromise(getObGynHistory(id)),
-		[id, reload, getObGynHistory],
-	);
+	const obgynHistoryResource = useMemo(() => {
+		// console.log("Recalculating getObGynHistory resource...");
+		return WrapPromise(getObGynHistory(id));
+	}, [id, reload, getObGynHistory]);
 
 	// Triggers a state change to force reloading of data
 	const triggerReload = () => {
@@ -142,6 +142,8 @@ export function StudentObGynHistory({
 							obgynHistoryResource={obgynHistoryResource}
 							updateObGynHistory={updateObGynHistory}
 							triggerReload={triggerReload}
+							reload={reload}
+							key={reload}
 						/>
 					</Suspense>
 				</div>
@@ -161,7 +163,8 @@ function DiagnosisSection({
 	diagnosisDetails,
 	handleDiagnosedChange,
 }) {
-	const [diagnosed, setDiagnosed] = useState(!!diagnosisDetails.medication);
+	const originalDiagnosed = !!diagnosisDetails.medication;
+	const [diagnosed, setDiagnosed] = useState(originalDiagnosed);
 	const [diagnosisName, setDiagnosisName] = useState(
 		diagnosisDetails.illness || "",
 	);
@@ -175,18 +178,15 @@ function DiagnosisSection({
 
 	const showFields = isNew || diagnosed;
 
-	const handleDiagnosedChangeRef = useRef(handleDiagnosedChange);
-	handleDiagnosedChangeRef.current = handleDiagnosedChange;
-
-	useEffect(() => {
-		const stableHandleDiagnosedChange = handleDiagnosedChangeRef.current;
-		stableHandleDiagnosedChange(diagnosisKey, true, {
+	const updateField = (field, value) => {
+		handleDiagnosedChange(diagnosisKey, true, {
 			illness: diagnosisName,
 			medication: medication,
 			dosage: dose,
 			frequency: frequency,
+			[field]: value,
 		});
-	}, [diagnosisName, medication, dose, frequency, diagnosisKey]);
+	};
 
 	return (
 		<div>
@@ -259,7 +259,11 @@ function DiagnosisSection({
 
 							<BaseInput
 								value={diagnosisName}
-								onChange={(e) => setDiagnosisName(e.target.value)}
+								onChange={(e) => {
+									const value = e.target.value;
+									setDiagnosisName(value);
+									updateField("illness", value);
+								}}
 								readOnly={editable}
 								placeholder="Ingrese el nombre del diagnóstico."
 								style={{
@@ -285,7 +289,11 @@ function DiagnosisSection({
 
 					<BaseInput
 						value={medication}
-						onChange={(e) => setMedication(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setMedication(value);
+							updateField("medication", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese el medicamento administrado."
 						style={{
@@ -307,7 +315,11 @@ function DiagnosisSection({
 					</p>
 					<BaseInput
 						value={dose}
-						onChange={(e) => setDose(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setDose(value);
+							updateField("dosage", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese cuánto. Ej. 50mg (Este campo es opcional)"
 						style={{
@@ -331,7 +343,11 @@ function DiagnosisSection({
 
 					<BaseInput
 						value={frequency}
-						onChange={(e) => setFrequency(e.target.value)}
+						onChange={(e) => {
+							const value = e.target.value;
+							setFrequency(value);
+							updateField("frequency", value);
+						}}
 						readOnly={editable}
 						placeholder="Ingrese cada cuándo administra el medicamento (Ej. Cada dos días, cada 12 horas...)"
 						style={{
@@ -371,6 +387,15 @@ function DiagnosisSection({
 		</div>
 	);
 }
+const checkPerformed = (resource) => {
+	if (Array.isArray(resource)) {
+		return resource.length > 0;
+	}
+	if (typeof resource === "object" && resource !== null) {
+		return Object.keys(resource).length > 0 && resource.year !== null;
+	}
+	return !!resource;
+};
 
 function OperationSection({
 	title,
@@ -382,55 +407,71 @@ function OperationSection({
 	handlePerformedChange,
 	birthdayResource,
 }) {
-	const checkPerformed = (resource) => {
-		if (Array.isArray(resource)) {
-			return resource.length > 0;
-		}
-		if (typeof resource === "object" && resource !== null) {
-			return Object.keys(resource).length > 0 && resource.year !== null;
-		}
-		return !!resource;
-	};
-
 	const [performed, setPerformed] = useState(() =>
 		checkPerformed(operationDetailsResource),
 	);
 	const isArray = Array.isArray(operationDetailsResource);
-	const [operationDetails, setOperationDetails] = useState(() =>
-		isArray ? operationDetailsResource : [operationDetailsResource],
-	);
+	// Se agrego como defaultDetails un objeto con year como "" y complications como false para evitar el error de: A value changed from a controlled input to a uncontrolled input
+	const [operationDetails, setOperationDetails] = useState(() => {
+		const initialDetails = isArray
+			? operationDetailsResource
+			: [operationDetailsResource];
+
+		if (performed && initialDetails.length === 0) {
+			const defaultDetail = { year: "", complications: false };
+			return [defaultDetail];
+		}
+
+		const normalizedDetails = initialDetails.map((detail) => ({
+			...detail,
+			complications: detail.complications ?? false,
+			year: detail.year ?? "",
+			isNew: false,
+		}));
+		return normalizedDetails;
+	});
+
 	const { width } = useWindowSize();
 	const isMobile = width < 768;
 
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 	const handlePerformedChangeInternal = (newPerformedStatus) => {
 		setPerformed(newPerformedStatus);
 		handlePerformedChange(operationKey, newPerformedStatus);
 
-		if (!newPerformedStatus) {
-			const clearedDetails = isArray ? [] : {};
-			setOperationDetails(clearedDetails);
-			updateGlobalOperations(operationKey, clearedDetails);
-		} else {
-			if (isArray && (!operationDetails || operationDetails.length === 0)) {
+		if (newPerformedStatus) {
+			if (operationDetails.length === 0) {
 				const defaultDetail = { year: "", complications: false };
 				const newDetails = [defaultDetail];
 				setOperationDetails(newDetails);
 				updateGlobalOperations(operationKey, newDetails);
-			} else if (
-				!isArray &&
-				(!operationDetails || Object.keys(operationDetails).length === 0)
-			) {
-				const defaultDetail = { year: "", complications: false };
-				setOperationDetails([defaultDetail]);
-				updateGlobalOperations(operationKey, [defaultDetail]);
 			}
 		}
+
+		// NOTE: Este código lo quité porque no se necesita limpiar los detalles de la operación, cuando
+		// le dabas a Sí y elegías algo en el dropdown de año, se insta reseteaba y no se podía elegir
+
+		// if (!newPerformedStatus) {
+		//   const clearedDetails = isArray ? [] : {};
+		//   setOperationDetails(clearedDetails);
+		//   updateGlobalOperations(operationKey, clearedDetails);
+		// } else {
+		//   if (isArray && (!operationDetails || operationDetails.length === 0)) {
+		//     const defaultDetail = { year: "", complications: false };
+		//     const newDetails = [defaultDetail];
+		//     setOperationDetails(newDetails);
+		//     updateGlobalOperations(operationKey, newDetails);
+		//   } else if (!isArray && (!operationDetails || Object.keys(operationDetails).length === 0)) {
+		//     const defaultDetail = { year: "", complications: false };
+		//     setOperationDetails([defaultDetail]);
+		//     updateGlobalOperations(operationKey, [defaultDetail]);
+		//   }
+		// }
 	};
 
 	const addOperationDetail = () => {
 		if (!canAddMore()) return;
-		const newDetail = { year: null, complications: false };
+		//NOTE: Aquí lo mismo para que no salga lo de: A value changed from a controlled input to a uncontrolled input
+		const newDetail = { year: "", complications: false, isNew: true };
 		const newDetails = [...operationDetails, newDetail];
 		setOperationDetails(newDetails);
 		updateGlobalOperations(operationKey, newDetails);
@@ -444,7 +485,9 @@ function OperationSection({
 			if (operationKey === "breastMassResection") {
 				return operationDetails.length < 2;
 			}
-			return true;
+			if (operationKey === "ovarianCysts") {
+				return operationDetails.length >= 0;
+			}
 		}
 		return false;
 	};
@@ -486,10 +529,17 @@ function OperationSection({
 
 	const handleYearChange = (index, year) => {
 		const updatedDetails = [...operationDetails];
-		updatedDetails[index].year = year || "";
+		updatedDetails[index] = { ...updatedDetails[index], year };
 		setOperationDetails(updatedDetails);
 		updateGlobalOperations(operationKey, updatedDetails);
 	};
+
+	const editableField = (compareStatus) =>
+		(operationKey === "ovarianCysts" ||
+			operationKey === "breastMassResection") &&
+		compareStatus
+			? false
+			: editable;
 
 	return (
 		<div>
@@ -566,8 +616,10 @@ function OperationSection({
 						<DropdownMenu
 							options={yearOptions}
 							value={detail.year}
-							disabled={editable}
-							onChange={(e) => handleYearChange(index, e.target.value)}
+							disabled={editableField(detail.isNew)}
+							onChange={(e) => {
+								handleYearChange(index, e.target.value);
+							}}
 							style={{
 								container: {
 									width: isMobile ? "100%" : "60%",
@@ -606,17 +658,17 @@ function OperationSection({
 								checked={detail.complications}
 								onChange={() => handleComplicationChange(index, true)}
 								label="Sí"
-								disabled={editable}
+								disabled={editableField(detail.isNew)}
 							/>
 							<RadioInput
 								name={`complications-${index}`}
 								checked={!detail.complications}
 								onChange={() => handleComplicationChange(index, false)}
 								label="No"
-								disabled={editable}
+								disabled={editableField(detail.isNew)}
 							/>
 						</div>
-						{index !== 0 && (isFirstTime || !editable) ? (
+						{detail.isNew && (
 							<div
 								style={{
 									display: "flex",
@@ -637,13 +689,12 @@ function OperationSection({
 									}}
 								/>
 							</div>
-						) : null}
+						)}
 					</div>
 				))}
-
 			{performed && canAddMore() && (
 				<div>
-					{(isFirstTime || !editable) && (
+					{(isFirstTime || !editableField) && (
 						<div>
 							<div
 								style={{
@@ -680,6 +731,7 @@ function ObGynView({
 	obgynHistoryResource,
 	updateObGynHistory,
 	triggerReload,
+	reload,
 }) {
 	const gynecologicalHistoryResult = obgynHistoryResource.read();
 
@@ -747,6 +799,8 @@ function ObGynView({
 			: "",
 	);
 
+	const isAgeReadOnly = firstMenstrualPeriod.data.age != null;
+
 	const [isRegular, setIsRegular] = useState(
 		regularCycles.data.isRegular != null ? regularCycles.data.isRegular : false,
 	);
@@ -763,11 +817,10 @@ function ObGynView({
 			: "",
 	);
 
+	// NOTE: Quite la edad de acá porque si ingresaba la edad ya no me dejaba ingresar más datos JSADKJASDJKASD
 	const isFirstTime = !(
-		gynecologicalHistoryResult.result?.medicalHistory?.firstMenstrualPeriod
-			?.data?.age ||
 		gynecologicalHistoryResult.result?.medicalHistory?.diagnosedIllnesses?.data
-			.length ||
+			.length &&
 		gynecologicalHistoryResult.result?.medicalHistory?.hasSurgeries?.data.length
 	);
 
@@ -775,19 +828,18 @@ function ObGynView({
 
 	// TOTAL P SECTION
 
-	const [P, setP] = useState(
+	const [initialP, initialC, initialA] = [
 		pregnancies.data.vaginalDeliveries != null
 			? pregnancies.data.vaginalDeliveries
 			: 0,
-	);
-	const [C, setC] = useState(
 		pregnancies.data.cesareanSections != null
 			? pregnancies.data.cesareanSections
 			: 0,
-	);
-	const [A, setA] = useState(
 		pregnancies.data.abortions != null ? pregnancies.data.abortions : 0,
-	); // Abortos
+	];
+	const [P, setP] = useState(initialP);
+	const [C, setC] = useState(initialC);
+	const [A, setA] = useState(initialA);
 	const [G, setG] = useState(0);
 
 	useEffect(() => {
@@ -840,18 +892,21 @@ function ObGynView({
 				key: "ovarianCysts",
 				title: "Diagnóstico por Quistes Ováricos:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.ovarianCysts?.medication || {},
 			},
 			{
 				key: "uterineMyomatosis",
 				title: "Diagnóstico por Miomatosis Uterina:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.uterineMyomatosis?.medication || {},
 			},
 			{
 				key: "endometriosis",
 				title: "Diagnóstico por Endometriosis:",
 				active: true,
+				hasBeenEdited: false,
 				details: diagnosedIllnesses.data.endometriosis?.medication || {},
 			},
 		];
@@ -863,6 +918,7 @@ function ObGynView({
 				title: `Nuevo Diagnóstico: ${condition.medication.illness}`,
 				isNew: false,
 				active: true,
+				hasBeenEdited: false,
 				details: condition.medication,
 			});
 		}
@@ -878,6 +934,7 @@ function ObGynView({
 			title: `Nuevo Diagnóstico ${diagnosisCount}`,
 			isNew: true,
 			active: true,
+			hasBeenEdited: false,
 			details: {
 				illness: "",
 				medication: "",
@@ -938,6 +995,7 @@ function ObGynView({
 						return {
 							...diagnosis,
 							active: false,
+							hasBeenEdited: true,
 							details: { medication: "", dosage: "", frequency: "" },
 						};
 						// biome-ignore lint/style/noUselessElse: Handles the data structure of the diagnoses for static ones and the new diagnostics
@@ -961,6 +1019,7 @@ function ObGynView({
 						return {
 							...diagnosis,
 							active: true,
+							hasBeenEdited: true,
 							details: updatedDetails,
 						};
 					}
@@ -971,33 +1030,41 @@ function ObGynView({
 	};
 
 	// OPERACIONES SECTION
-
-	const [operations, setOperations] = useState(() => {
+	const genResultOperations = () => {
 		const initialOperations = [
 			{
 				key: "hysterectomy",
 				title: "Operación por Histerectomía:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.hysterectomy || {},
 			},
 			{
 				key: "sterilization",
 				title: "Cirugía para no tener más hijos:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.sterilizationSurgery || {},
 			},
 			{
 				key: "ovarianCysts",
 				title: "Operación por Quistes Ováricos:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.ovarianCystsSurgery || [],
 			},
 			{
 				key: "breastMassResection",
 				title: "Operación por Resección de masas en mamas:",
+				hasBeenEdited: false,
 				details: hasSurgeries.data.breastMassResection || [],
 			},
 		];
-
 		return initialOperations;
-	});
+	};
+
+	const [operations, setOperations] = useState(() => genResultOperations());
+
+	const hasBeenEdited =
+		operations.some((op) => op.hasBeenEdited) ||
+		diagnoses.some((d) => d.hasBeenEdited);
 
 	const mapOperationDetails = (operationKey) => {
 		const operation = operations.find((op) => op.key === operationKey);
@@ -1009,7 +1076,7 @@ function ObGynView({
 		setOperations(
 			operations.map((op) => {
 				if (op.key === operationKey) {
-					return { ...op, details: newDetails };
+					return { ...op, hasBeenEdited: true, details: newDetails };
 				}
 				return op;
 			}),
@@ -1030,6 +1097,7 @@ function ObGynView({
 
 					return {
 						...operation,
+						hasBeenEdited: true,
 						details: clearedDetails,
 					};
 				}
@@ -1289,7 +1357,7 @@ function ObGynView({
 							min="1"
 							value={age}
 							onChange={(e) => setAge(e.target.value)}
-							readOnly={!isEditable}
+							readOnly={isAgeReadOnly}
 							placeholder="Ingrese la edad (Ej. 15, 16...)"
 							style={{
 								width: isMobile ? "100%" : "60%",
@@ -1321,14 +1389,12 @@ function ObGynView({
 								checked={isRegular === true}
 								onChange={() => setIsRegular(true)}
 								label="Sí"
-								disabled={!isEditable}
 							/>
 							<RadioInput
 								name="notregular"
 								checked={isRegular === false}
 								onChange={() => setIsRegular(false)}
 								label="No"
-								disabled={!isEditable}
 							/>
 						</div>
 						<p
@@ -1354,7 +1420,6 @@ function ObGynView({
 								checked={isPainful === true}
 								onChange={() => setIsPainful(true)}
 								label="Sí"
-								disabled={!isEditable}
 							/>
 							<RadioInput
 								name="nopain"
@@ -1364,7 +1429,6 @@ function ObGynView({
 									setMedication("");
 								}}
 								label="No"
-								disabled={!isEditable}
 							/>
 						</div>
 
@@ -1449,8 +1513,12 @@ function ObGynView({
 									# Partos vaginales
 								</p>
 								<BaseInput
+									type="number"
 									value={P}
-									onChange={(e) => setP(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value) || 0;
+										setP(n < initialP ? initialP : n);
+									}}
 									readOnly={!isEditable}
 									placeholder="# vía vaginal"
 									style={{
@@ -1491,8 +1559,12 @@ function ObGynView({
 									# Cesáreas
 								</p>
 								<BaseInput
+									type="number"
 									value={C}
-									onChange={(e) => setC(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value) || 0;
+										setC(n < initialC ? initialC : n);
+									}}
 									readOnly={!isEditable}
 									placeholder="# cesáreas"
 									style={{
@@ -1533,8 +1605,12 @@ function ObGynView({
 									# Abortos:
 								</p>
 								<BaseInput
+									type="number"
 									value={A}
-									onChange={(e) => setA(Number(e.target.value) || 0)}
+									onChange={(e) => {
+										const n = Number(e.target.value);
+										setA(n < initialA ? initialA : n);
+									}}
 									readOnly={!isEditable}
 									placeholder="# abortos"
 									style={{
@@ -1578,7 +1654,7 @@ function ObGynView({
 									<DiagnosisSection
 										title={diagnosis.title}
 										diagnosisKey={diagnosis.key}
-										editable={!isEditable}
+										editable={!!getDiagnosisDetails(diagnosis.key).medication}
 										isNew={diagnosis.isNew}
 										onCancel={() => removeDiagnosis(diagnosis.key)}
 										diagnosisDetails={getDiagnosisDetails(diagnosis.key)}
@@ -1647,30 +1723,48 @@ function ObGynView({
 									Operaciones del Paciente:{" "}
 								</p>
 
-								{operations.map((operation, index) => (
-									<div key={operation.key}>
-										<OperationSection
-											title={operation.title}
-											operationKey={operation.key}
-											editable={!isEditable}
-											birthdayResource={birthdayResource}
-											operationDetailsResource={mapOperationDetails(
-												operation.key,
-											)}
-											updateGlobalOperations={updateGlobalOperations}
-											handlePerformedChange={handlePerformedChange}
-											isFirstTime={isFirstTime}
-										/>
-										{index < operations.length - 1 && (
-											<div // BORDER
-												style={{
-													padding: "1rem",
-													borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-												}}
+								{operations.map((operation, index) => {
+									const getRequestOperations = genResultOperations();
+									const requestDetails =
+										getRequestOperations.find((op) => op.key === operation.key)
+											?.details || {};
+
+									// biome-ignore  lint/correctness/useHookAtTopLevel: Reload the page
+									const operationDetailsResourceMemo = useMemo(
+										() => mapOperationDetails(operation.key),
+										[operation.key],
+									);
+									// Se usa useMemo para evitar que se resetee el valor de operationDetailsResources
+									// así no se re-renderizaba el componente y ya dejaba volver a utilizar el
+									//DropdownMenu para seleccionar el año de la operación
+
+									//Esta key obliga al componente a desmontarse y montarse de nuevo, entonces el boton de Cancelar nueva operación funciona
+									const key = `${operation.key}-${reload}`;
+
+									return (
+										<div key={operation.key}>
+											<OperationSection
+												key={key}
+												title={operation.title}
+												operationKey={operation.key}
+												editable={!!checkPerformed(requestDetails)}
+												birthdayResource={birthdayResource}
+												operationDetailsResource={operationDetailsResourceMemo}
+												updateGlobalOperations={updateGlobalOperations}
+												handlePerformedChange={handlePerformedChange}
+												isFirstTime={isFirstTime}
 											/>
-										)}
-									</div>
-								))}
+											{index < operations.length - 1 && (
+												<div // BORDER
+													style={{
+														padding: "1rem",
+														borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+													}}
+												/>
+											)}
+										</div>
+									);
+								})}
 								<div
 									style={{
 										padding: "1rem",
@@ -1678,7 +1772,7 @@ function ObGynView({
 									}}
 								/>
 
-								{isFirstTime && (
+								{(isFirstTime || hasBeenEdited) && (
 									<div
 										style={{
 											display: "flex",
