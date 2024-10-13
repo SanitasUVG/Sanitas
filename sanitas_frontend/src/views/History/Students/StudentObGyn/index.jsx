@@ -30,8 +30,8 @@ export function StudentObGynHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	//   const id = useStore((s) => s.selectedPatientId);
-	const id = 1;
+	const id = useStore((s) => s.selectedPatientId);
+	//   const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	const LoadingView = () => {
@@ -47,7 +47,6 @@ export function StudentObGynHistory({
 	);
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
 	const obgynHistoryResource = useMemo(() => {
-		// console.log("Recalculating getObGynHistory resource...");
 		return WrapPromise(getObGynHistory(id));
 	}, [id, reload, getObGynHistory]);
 
@@ -533,8 +532,8 @@ function OperationSection({
 		updateGlobalOperations(operationKey, updatedDetails);
 	};
 
-	const editableField = operationKey === "ovarianCysts" ? false : editable;
-	console.log(operationKey, editableField);
+	const editableField = (compareStatus) =>
+		operationKey === "ovarianCysts" && compareStatus ? false : editable;
 
 	return (
 		<div>
@@ -611,7 +610,7 @@ function OperationSection({
 						<DropdownMenu
 							options={yearOptions}
 							value={detail.year}
-							disabled={editableField}
+							disabled={editableField(detail.isNew)}
 							onChange={(e) => {
 								handleYearChange(index, e.target.value);
 							}}
@@ -653,14 +652,14 @@ function OperationSection({
 								checked={detail.complications}
 								onChange={() => handleComplicationChange(index, true)}
 								label="Sí"
-								disabled={editableField}
+								disabled={editableField(detail.isNew)}
 							/>
 							<RadioInput
 								name={`complications-${index}`}
 								checked={!detail.complications}
 								onChange={() => handleComplicationChange(index, false)}
 								label="No"
-								disabled={editableField}
+								disabled={editableField(detail.isNew)}
 							/>
 						</div>
 						{detail.isNew && (
