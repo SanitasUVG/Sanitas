@@ -12,57 +12,183 @@ import {
  * @param {import("utils/index.mjs").GynecologicalMedicalHistory} requestData - The request incoming data.
  */
 function requestModifiesDBData(dbData, requestData) {
-	// Comparing fields that contain a `.data` which is an object!
-	const dotDataObjectFieldsModified = [
-		"firstMenstrualPeriod",
-		"regularCycles",
-		"painfulMenstruation",
-		"pregnancies",
-	].some((field) => {
-		const dbDataContainsField = Object.hasOwn(dbData, field);
-		if (!dbDataContainsField) {
-			return false;
+	logger.debug({ pregnancies: dbData.pregnancies }, "Comparing pregnancies...");
+	const modifiesData = Object.keys(dbData.pregnancies.data).some((key) => {
+		const dbNumber = dbData.pregnancies.data[key];
+
+		logger.debug(
+			{ key },
+			"Checking if request.pregnancies.data contains key...",
+		);
+		if (!Object.hasOwn(requestData.pregnancies.data, key)) {
+			logger.debug({ key }, "It doesn't contains the key!");
+			return true;
+		}
+		const requestNumber = Number.parseInt(requestData.pregnancies.data[key]);
+
+		logger.debug(
+			{ requestNumber },
+			`Checking if requestData.pregnancies.data[${key}] is a number...`,
+		);
+		if (Number.isNaN(requestNumber)) {
+			return true;
 		}
 
-		return Object.keys(dbData[field].data).some(
-			(key) => dbData[field].data[key] !== requestData[field]?.data[key],
+		const requestIsLessThanDB = requestNumber < dbNumber;
+		logger.debug(
+			`Comparing: ${requestNumber} < ${dbNumber}: ${requestIsLessThanDB}`,
 		);
+		return requestIsLessThanDB;
 	});
 
-	if (dotDataObjectFieldsModified) {
+	if (modifiesData) {
 		return true;
 	}
 
-	// Comparing fields that have inside the `.data` arrays and objects!
-	const someArraysFieldsModified = ["diagnosedIllnesses", "hasSurgeries"].some(
-		(field) => {
-			const dbDataContainsField = Object.hasOwn(dbData, field);
-			if (!dbDataContainsField) {
-				return false;
+	const dotDataFields = ["firstMenstrualPeriod"];
+	logger.debug({ dotDataFields }, "Comparing fields with .data!");
+
+	const dotDataObjectFieldsModified = dotDataFields.some((field) => {
+		const dbDataContainsField = Object.hasOwn(dbData, field);
+		if (!dbDataContainsField) {
+			logger.debug(`The DB doesn't contain ${field}!`);
+			return false;
+		}
+		logger.debug(`The DB contains ${field}! Checking for value...`);
+
+		return Object.keys(dbData[field].data).some((key) => {
+			const dbValue = dbData[field].data[key];
+			const requestValue = requestData[field]?.data[key];
+			const comparison = dbValue !== requestValue;
+
+			logger.debug(`Comparing ${dbValue} !== ${requestValue} => ${comparison}`);
+			return comparison;
+		});
+	});
+
+	if (dotDataObjectFieldsModified) {
+		logger.debug("Some .data field is modified!");
+		return true;
+	}
+	logger.debug("All fields with .data are equal or just add more data!");
+
+	logger.debug("Checking diagnosedIllnesses...");
+	const dbDataContainsField = Object.hasOwn(dbData, "diagnosedIllnesses");
+	if (!dbDataContainsField) {
+		logger.debug(
+			"The DB doesn't contain a diagnosedIllnesses key, safe to proceed!",
+		);
+		return false;
+	}
+	logger.debug("The DB contains a diagnosedIllnesses key, checking values...");
+
+	const diagnosedIllnesesChanges = Object.keys(
+		dbData.diagnosedIllnesses?.data ?? {},
+	).some((key) => {
+		const dataFieldKeys = Object.keys(
+			dbData.diagnosedIllnesses?.data[key]?.medication ?? {},
+		);
+		if (dataFieldKeys.length === 0) {
+			logger.debug(
+				`The dbData.diagnosedIllnesses.data[${key}].medication has 0 keys inside!`,
+			);
+			return false;
+		}
+
+		return dataFieldKeys.some((subKey) => {
+			const dbValue = dbData.diagnosedIllnesses.data[key].medication[subKey];
+			const requestValue =
+				requestData.diagnosedIllnesses?.data[key]?.medication[subKey];
+			const comparison = dbValue !== requestValue;
+
+			logger.debug(`Comparing ${dbValue} !== ${requestValue} => ${comparison}`);
+			return comparison;
+		});
+	});
+
+	if (diagnosedIllnesesChanges) {
+		logger.debug("The request modifies diagnosedIllnesses!");
+		return true;
+	}
+	logger.debug("The request doesn't modifies diagnosedIllnesses!");
+
+	logger.debug("Checking hasSurgeries...");
+	if (!Object.hasOwn(dbData, "hasSurgeries")) {
+		logger.debug(
+			"The DB doesn't contain a `hasSurgeries` key, safe to proceed!",
+		);
+		return false;
+	}
+	logger.debug("The DB contains a `hasSurgeries` key, checking values...");
+
+	const hasSurgeriesChanges = Object.keys(dbData.hasSurgeries?.data ?? {}).some(
+		(key) => {
+			if (key === "ovarianCystsSurgery") {
+				logger.debug(`Skipping changes check for key ${key}`);
+				return false; // Ignore changes for 'ovarianCystsSurgery'
 			}
 
-			return Object.keys(dbData[field].data).some((key) => {
-				if (Array.isArray(dbData[field].data[key])) {
-					return !requestIsSubset(
-						dbData[field].data[key],
-						requestData[field]?.data[key],
-					);
-				}
+			logger.debug(
+				`Checking if dbData.hasSurgeries.data[${key}] is an array...`,
+			);
+			if (Array.isArray(dbData.hasSurgeries.data[key])) {
+				const dbValue = dbData.hasSurgeries.data[key];
+				const requestValue = requestData.hasSurgeries?.data[key];
+				logger.debug(
+					{ dbValue, requestValue },
+					`dbData.hasSurgeries.data[${key}] is an array! Checking if is subset...`,
+				);
+				return !requestIsSubset(dbValue, requestValue, logger);
+			}
 
-				if (typeof dbData[field].data[key] === "object") {
-					return Object.keys(dbData[field].data[key]).some(
-						(subKey) =>
-							dbData[field].data[key][subKey] !==
-							requestData[field]?.data[key][subKey],
+			logger.debug(
+				`Checking if dbData.hasSurgeries.data[${key}] is an object...`,
+			);
+			if (typeof dbData.hasSurgeries.data[key] === "object") {
+				logger.debug(
+					`dbData.hasSurgeries.data[${key}] is an object! Checking keys...`,
+				);
+				const dataFieldKeys = Object.keys(dbData.hasSurgeries.data[key]);
+				if (dataFieldKeys.length === 0) {
+					logger.debug(
+						`dbData.hasSurgeries.data[${key}] has no keys! Safe to proceed!`,
 					);
+					return false;
 				}
+				logger.debug(
+					`dbData.hasSurgeries.data[${key}] has keys! Checking values...`,
+				);
 
-				return dbData[field].data[key] !== requestData[field].data[key];
-			});
+				return dataFieldKeys.some((subKey) => {
+					const dbValue = dbData.hasSurgeries.data[key][subKey];
+					const requestValue = requestData.hasSurgeries?.data[key][subKey];
+					const comparison = dbValue !== requestValue;
+
+					logger.debug(
+						`Comparing ${dbValue} !== ${requestValue} => ${comparison}`,
+					);
+					return comparison;
+				});
+			}
+
+			logger.debug(
+				`Assuming dbData.hasSurgeries.data[${key}] is an ordinary value! Checking keys...`,
+			);
+			const dbValue = dbData.hasSurgeries.data[key];
+			const requestValue = requestData.hasSurgeries.data[key];
+			const comparison = dbValue !== requestValue;
+
+			logger.debug(`Comparing ${dbValue} !== ${requestValue} => ${comparison}`);
+			return comparison;
 		},
 	);
 
-	return someArraysFieldsModified;
+	if (hasSurgeriesChanges) {
+		logger.debug("hasSurgeries has changed!");
+	} else {
+		logger.debug("hasSurgeries didn't change!");
+	}
+	return hasSurgeriesChanges;
 }
 
 /**@type {import("src/commonTypes.mjs").AWSHandler} */

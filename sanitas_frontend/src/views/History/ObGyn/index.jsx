@@ -127,6 +127,8 @@ export function ObGynHistory({
 								obgynHistoryResource={obgynHistoryResource}
 								updateObGynHistory={updateObGynHistory}
 								triggerReload={triggerReload}
+								reload={reload}
+								key={reload}
 							/>
 						</Suspense>
 					</div>
@@ -661,6 +663,7 @@ function ObGynView({
 	obgynHistoryResource,
 	updateObGynHistory,
 	triggerReload,
+	reload,
 }) {
 	const gynecologicalHistoryResult = obgynHistoryResource.read();
 
@@ -1653,30 +1656,35 @@ function ObGynView({
 									Operaciones del Paciente:{" "}
 								</p>
 
-								{operations.map((operation, index) => (
-									<div key={operation.key}>
-										<OperationSection
-											title={operation.title}
-											operationKey={operation.key}
-											editable={!isEditable}
-											birthdayResource={birthdayResource}
-											operationDetailsResource={mapOperationDetails(
-												operation.key,
-											)}
-											updateGlobalOperations={updateGlobalOperations}
-											handlePerformedChange={handlePerformedChange}
-											isFirstTime={isFirstTime}
-										/>
-										{index < operations.length - 1 && (
-											<div // BORDER
-												style={{
-													padding: "1rem",
-													borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-												}}
+								{operations.map((operation, index) => {
+									const key = `${operation.key}-${reload}`;
+
+									return (
+										<div key={operation.key}>
+											<OperationSection
+												key={key}
+												title={operation.title}
+												operationKey={operation.key}
+												editable={!isEditable}
+												birthdayResource={birthdayResource}
+												operationDetailsResource={mapOperationDetails(
+													operation.key,
+												)}
+												updateGlobalOperations={updateGlobalOperations}
+												handlePerformedChange={handlePerformedChange}
+												isFirstTime={isFirstTime}
 											/>
-										)}
-									</div>
-								))}
+											{index < operations.length - 1 && (
+												<div // BORDER
+													style={{
+														padding: "1rem",
+														borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+													}}
+												/>
+											)}
+										</div>
+									);
+								})}
 								<div
 									style={{
 										padding: "1rem",
