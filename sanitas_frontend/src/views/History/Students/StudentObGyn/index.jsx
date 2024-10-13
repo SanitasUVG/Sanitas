@@ -795,6 +795,8 @@ function ObGynView({
 			: "",
 	);
 
+	const isAgeReadOnly = firstMenstrualPeriod.data.age != null;
+
 	const [isRegular, setIsRegular] = useState(
 		regularCycles.data.isRegular != null ? regularCycles.data.isRegular : false,
 	);
@@ -1351,7 +1353,7 @@ function ObGynView({
 							min="1"
 							value={age}
 							onChange={(e) => setAge(e.target.value)}
-							readOnly={!isEditable}
+							readOnly={isAgeReadOnly}
 							placeholder="Ingrese la edad (Ej. 15, 16...)"
 							style={{
 								width: isMobile ? "100%" : "60%",
