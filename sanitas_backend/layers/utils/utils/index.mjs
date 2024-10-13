@@ -913,7 +913,7 @@ export function requestIsSubset(
 
 		for (let i = 0; i < reqArray.length; i++) {
 			const requestValue = reqArray[i];
-			logger.info({ requestValue, savedValue }, "Comparing values...");
+			logger.debug({ requestValue, savedValue }, "Comparing values...");
 			if (
 				properties.every((prop) =>
 					comparator(requestValue[prop], savedValue[prop]),
