@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import IconButton from "src/components/Button/Icon";
 import { DateInput } from "src/components/Input/index";
+import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 
 export function StudentAppointments({
 	getAppointment,
@@ -124,29 +125,29 @@ function StudentAppointmentsView({
 	const [isEditable, setIsEditable] = useState(false);
 
 	// Read the data from the resource and handle any potential errors
-	const appointmentResult = appointmentResource.read();
-	let errorMessage = "";
-	if (appointmentResult.error) {
-		const error = appointmentResult.error;
-		if (error?.response) {
-			const { status } = error.response;
-			if (status < 500) {
-				errorMessage =
-					"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
-			} else {
-				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-			}
-		} else {
-			errorMessage =
-				"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
-		}
-	}
+	// const appointmentResult = appointmentResource.read();
+	// let errorMessage = "";
+	// if (appointmentResult.error) {
+	// 	const error = appointmentResult.error;
+	// 	if (error?.response) {
+	// 		const { status } = error.response;
+	// 		if (status < 500) {
+	// 			errorMessage =
+	// 				"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+	// 		} else {
+	// 			errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+	// 		}
+	// 	} else {
+	// 		errorMessage =
+	// 			"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
+	// 	}
+	// }
 
-	// No appointment data in API
-	const noAppointmentData = Object.keys(familiarHistory).every(
-		(key) =>
-			familiarHistory[key]?.data && familiarHistory[key].data.length === 0,
-	);
+	// // No appointment data in API
+	// const noAppointmentData = Object.keys(familiarHistory).every(
+	// 	(key) =>
+	// 		familiarHistory[key]?.data && familiarHistory[key].data.length === 0,
+	// );
 
 	// Handlers for different actions within the component
 	const handleOpenNewForm = () => {
@@ -159,6 +160,13 @@ function StudentAppointmentsView({
 		setAddingNew(false);
 		setIsEditable(false);
 	};
+
+	const today = new Date();
+	const formattedDate = today.toLocaleDateString("es", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 
 	const updateAppointmentState = async (newEntry) => {};
 
@@ -196,7 +204,7 @@ function StudentAppointmentsView({
 					/>
 				</div>
 
-				{errorMessage && (
+				{/* {errorMessage && (
 					<div
 						style={{
 							color: "red",
@@ -209,6 +217,7 @@ function StudentAppointmentsView({
 						{errorMessage}
 					</div>
 				)}
+				*/}
 
 				{/* {noAppointmentData && !errorMessage ? (
                     <p style={{ textAlign: "center", paddingTop: "20px" }}>
@@ -248,24 +257,34 @@ function StudentAppointmentsView({
 						overflowY: "auto",
 					}}
 				>
-					<p
+					<div
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-							fontWeight: "bold",
+							padding: "1rem 0 0 0",
 						}}
 					>
-						Fecha de cita:{" "}
-					</p>
-
-					<DateInput />
+						<span
+							style={{
+								fontWeight: "bold",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Fecha de cita:{" "}
+						</span>
+						<span
+							style={{
+								fontWeight: "normal",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							{formattedDate}
+						</span>
+					</div>
 
 					<p
 						style={{
-							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
+							paddingTop: "1rem",
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 							fontWeight: "bold",
@@ -274,51 +293,275 @@ function StudentAppointmentsView({
 						Evaluador:{" "}
 					</p>
 
-					{/* Colocar quien evalua con lo que dijo Flavio igual al Sidebar */}
-
 					<div
 						style={{
-							padding: "1rem",
-							borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+							paddingTop: "1rem",
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 						}}
 					/>
 
-					<p>Motivo de consulta:</p>
-					<BaseInput />
-					<p>Diagnóstico: </p>
-					<BaseInput />
+					<div
+						style={{
+							padding: "1rem 0rem 0rem 0rem",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								paddingBottom: "0.5rem",
+							}}
+						>
+							Motivo de consulta:
+						</p>
+						<ExpandingBaseInput
+							style={{
+								width: "95%",
+								height: "3rem",
+								fontSize: "1rem",
+								fontFamily: fonts.textFont,
+							}}
+							placeholder="Escribe aquí el motivo de consulta del paciente..."
+						/>
 
-					<div>
-						<p>Examen físico: </p>
-						<BaseInput />
-						<div>
-							<p>Temperatura: </p>
-							<BaseInput />
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								paddingBottom: "0.5rem",
+								paddingTop: "1rem",
+							}}
+						>
+							Diagnóstico:
+						</p>
+						<ExpandingBaseInput
+							style={{
+								width: "95%",
+								height: "3rem",
+								fontSize: "1rem",
+								fontFamily: fonts.textFont,
+							}}
+							placeholder="Escribe aquí el diagnósitco del paciente..."
+						/>
+
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+							}}
+						/>
+
+						<div
+							style={{
+								padding: "1rem 0rem 0rem 0rem",
+							}}
+						>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "row",
+								}}
+							>
+								<div
+									style={{
+										flex: 1,
+										paddingRight: "2rem",
+									}}
+								>
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										Examen físico:
+									</p>
+
+									<ExpandingBaseInput
+										style={{
+											width: "100%",
+											height: "3rem",
+											fontSize: "1rem",
+											fontFamily: fonts.textFont,
+										}}
+										placeholder="Escribe aquí el examen físico realizado..."
+									/>
+								</div>
+								<div
+									style={{
+										flex: 1,
+										display: "flex",
+										flexDirection: "column",
+									}}
+								>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Temperatura:
+										</p>
+										<BaseInput style={{ width: "95%", height: "2rem" }} />
+									</div>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Presión Arterial:
+										</p>
+										<BaseInput style={{ width: "100%" }} />
+									</div>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Saturación:
+										</p>
+										<BaseInput style={{ width: "100%" }} />
+									</div>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Frecuencia Respiratoria:
+										</p>
+										<BaseInput style={{ width: "100%" }} />
+									</div>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Frecuencia Cardiaca:
+										</p>
+										<BaseInput style={{ width: "100%" }} />
+									</div>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											padding: "0.5rem 0 0.5rem 0",
+										}}
+									>
+										<p
+											style={{
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+											}}
+										>
+											Glucometría:
+										</p>
+										<BaseInput style={{ width: "100%" }} />
+									</div>
+								</div>
+							</div>
 						</div>
-						<div>
-							<p>Presión Arterial: </p>
-							<BaseInput />
-						</div>
-						<div>
-							<p>Saturación: </p>
-							<BaseInput />
-						</div>
-						<div>
-							<p>Frecuencia Respiratoria: </p>
-							<BaseInput />
-						</div>
-						<div>
-							<p>Frecuencia Cardiaca: </p>
-							<BaseInput />
-						</div>
-						<div>
-							<p>Glucometría: </p>
-							<BaseInput />
-						</div>
+
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+							}}
+						/>
+
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								paddingBottom: "0.5rem",
+								paddingTop: "1rem",
+							}}
+						>
+							Notas:
+						</p>
+						<ExpandingBaseInput
+							style={{
+								width: "95%",
+								height: "3rem",
+								fontSize: "1rem",
+								fontFamily: fonts.textFont,
+							}}
+							placeholder="Escribe aquí notas extras de la cita..."
+						/>
 					</div>
 
-					<p>Notas: </p>
-					<BaseInput />
+					<div
+						style={{
+							paddingTop: "1rem",
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+						}}
+					/>
+
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							paddingTop: "2rem",
+							gap: "1rem",
+						}}
+					>
+						<BaseButton
+							text="Guardar"
+							//onClick={handleSaveNewFamiliar}
+							style={{ width: "30%", height: "3rem" }}
+						/>
+						<BaseButton
+							text="Cancelar"
+							onClick={handleCancel}
+							style={{
+								width: "30%",
+								height: "3rem",
+								backgroundColor: "#fff",
+								color: colors.primaryBackground,
+								border: `1.5px solid ${colors.primaryBackground}`,
+							}}
+						/>
+					</div>
 				</div>
 			) : null}
 		</div>
