@@ -86,7 +86,7 @@ export default function LoginView({
 				}
 				return;
 			}
-			console.log("Revisando si eres doctor");
+			console.log("Revisando si eres doctor: ", roleResponse.result);
 			if (roleResponse.result === "DOCTOR") {
 				console.log("Entraste al iF del doctor");
 				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
@@ -94,12 +94,12 @@ export default function LoginView({
 			}
 			console.log("no eres doctor");
 			const linkedPatientResponse = getLinkedPatientResource.read();
+			console.log("Linked Patient Resource: ", linkedPatientResponse);
 			if (linkedPatientResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 				return;
 			}
 
-			console.log("Linked Patient Resource: ", linkedPatientResponse);
 			const { linkedPatientId } = linkedPatientResponse.result;
 			if (!linkedPatientId) {
 				navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
