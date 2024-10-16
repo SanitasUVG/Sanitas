@@ -11,6 +11,8 @@ import WrapPromise from "src/utils/promiseWrapper";
 import IconButton from "src/components/Button/Icon";
 import { DateInput } from "src/components/Input/index";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
+import { use } from "chai";
+import { useSourceProps } from "@storybook/blocks";
 
 export function StudentAppointments({
 	getAppointment,
@@ -105,6 +107,7 @@ export function StudentAppointments({
 								id={id}
 								appointmentResource={appointmentResource}
 								updateAppointment={updateAppointment}
+								useStore={useStore}
 							/>
 						</Suspense>
 					</div>
@@ -119,10 +122,12 @@ function StudentAppointmentsView({
 	id,
 	appointmentResource,
 	updateAppointment,
+	useStore,
 }) {
 	const [selectedAppointment, setselectedAppointment] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
+	const displayName = useStore((s) => s.displayName);
 
 	// Read the data from the resource and handle any potential errors
 	// const appointmentResult = appointmentResource.read();
@@ -282,16 +287,30 @@ function StudentAppointmentsView({
 						</span>
 					</div>
 
-					<p
+					<div
 						style={{
-							paddingTop: "1rem",
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-							fontWeight: "bold",
+							padding: "0.3rem 0 0 0",
 						}}
 					>
-						Evaluador:{" "}
-					</p>
+						<span
+							style={{
+								fontWeight: "bold",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Evaluador:{" "}
+						</span>
+						<span
+							style={{
+								fontWeight: "normal",
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							{displayName}
+						</span>
+					</div>
 
 					<div
 						style={{
@@ -316,10 +335,10 @@ function StudentAppointmentsView({
 						</p>
 						<ExpandingBaseInput
 							style={{
-								width: "95%",
-								height: "3rem",
 								fontSize: "1rem",
 								fontFamily: fonts.textFont,
+								width: "95%",
+								height: "3rem",
 							}}
 							placeholder="Escribe aquí el motivo de consulta del paciente..."
 						/>
@@ -343,171 +362,6 @@ function StudentAppointmentsView({
 							}}
 							placeholder="Escribe aquí el diagnósitco del paciente..."
 						/>
-
-						<div
-							style={{
-								paddingTop: "1rem",
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-							}}
-						/>
-
-						<div
-							style={{
-								padding: "1rem 0rem 0rem 0rem",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "row",
-								}}
-							>
-								<div
-									style={{
-										flex: 1,
-										paddingRight: "2rem",
-									}}
-								>
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										Examen físico:
-									</p>
-
-									<ExpandingBaseInput
-										style={{
-											width: "100%",
-											height: "3rem",
-											fontSize: "1rem",
-											fontFamily: fonts.textFont,
-										}}
-										placeholder="Escribe aquí el examen físico realizado..."
-									/>
-								</div>
-								<div
-									style={{
-										flex: 1,
-										display: "flex",
-										flexDirection: "column",
-									}}
-								>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Temperatura:
-										</p>
-										<BaseInput style={{ width: "95%", height: "2rem" }} />
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Presión Arterial:
-										</p>
-										<BaseInput style={{ width: "100%" }} />
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Saturación:
-										</p>
-										<BaseInput style={{ width: "100%" }} />
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Frecuencia Respiratoria:
-										</p>
-										<BaseInput style={{ width: "100%" }} />
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Frecuencia Cardiaca:
-										</p>
-										<BaseInput style={{ width: "100%" }} />
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											padding: "0.5rem 0 0.5rem 0",
-										}}
-									>
-										<p
-											style={{
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-											}}
-										>
-											Glucometría:
-										</p>
-										<BaseInput style={{ width: "100%" }} />
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div
-							style={{
-								paddingTop: "1rem",
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-							}}
-						/>
-
 						<p
 							style={{
 								fontFamily: fonts.textFont,
@@ -516,22 +370,180 @@ function StudentAppointmentsView({
 								paddingTop: "1rem",
 							}}
 						>
-							Notas:
+							Examen físico:
 						</p>
+
 						<ExpandingBaseInput
 							style={{
-								width: "95%",
-								height: "3rem",
+								width: "100%",
+
 								fontSize: "1rem",
 								fontFamily: fonts.textFont,
+								overflowY: "auto",
 							}}
-							placeholder="Escribe aquí notas extras de la cita..."
+							placeholder="Escribe aquí el examen físico realizado..."
 						/>
 					</div>
 
 					<div
 						style={{
 							paddingTop: "1rem",
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+						}}
+					/>
+
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Temperatura:
+						</p>
+						<BaseInput style={{ width: "95%", height: "2rem" }} />
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Presión Sistólica:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Presión Diastólica:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Saturación:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Frecuencia Respiratoria:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Frecuencia Cardiaca:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							padding: "0.5rem 0 0.5rem 0",
+						}}
+					>
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+							}}
+						>
+							Glucometría:
+						</p>
+						<BaseInput style={{ width: "100%" }} />
+					</div>
+
+					<div
+						style={{
+							padding: "1.5rem 0 1rem 0",
+							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+						}}
+					/>
+
+					<p
+						style={{
+							fontFamily: fonts.textFont,
+							fontSize: fontSize.textSize,
+							paddingBottom: "0.5rem",
+							paddingTop: "1rem",
+						}}
+					>
+						Notas:
+					</p>
+					<ExpandingBaseInput
+						style={{
+							width: "95%",
+							height: "3rem",
+							fontSize: "1rem",
+							fontFamily: fonts.textFont,
+						}}
+						placeholder="Escribe aquí notas extras de la cita..."
+					/>
+
+					<div
+						style={{
+							paddingTop: "1.5rem",
 							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 						}}
 					/>
