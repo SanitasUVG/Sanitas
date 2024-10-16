@@ -62,7 +62,7 @@ export default function LoginView({
 					handleLoginError(loginResponse.error);
 					return;
 				}
-
+        
 				const roleResponse = await getRole();
 				if (roleResponse.error) {
 					throw new Error("Error al obtener el rol del usuario");
@@ -87,6 +87,7 @@ export default function LoginView({
 				}
 			} catch (error) {
 				console.error("Error durante el inicio de sesión:", error);
+
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 			} finally {
 				setIsLoading(false);
@@ -102,6 +103,7 @@ export default function LoginView({
 					break;
 				default:
 					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+
 			}
 		};
 
