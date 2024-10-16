@@ -1,14 +1,13 @@
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import logoSanitas from "src/assets/images/logoSanitas.png";
 import backgroundImage from "src/assets/images/UVGBackground.jpg";
 import uvgLogo from "src/assets/images/uvgLogo.jpg";
 import BaseButton from "src/components/Button/Base";
 import { BaseInput } from "src/components/Input";
-import Throbber from "src/components/Throbber";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
 
 /**
@@ -40,86 +39,73 @@ export default function LoginView({
 
 	const isMobile = width < 768;
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
-	const Child = () => {
+	const LoginForm = () => {
 		const navigate = useNavigate();
 		const [username, setUsername] = useState("");
 		const [password, setPassword] = useState("");
 		const [errorMessage, setErrorMessage] = useState("");
-		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
-		const [loginResource, setLoginResource] = useState(null);
-		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
-		const [roleResource, setGetRoleResource] = useState(null);
-		/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
-		const [getLinkedPatientResource, setLinkedPatientResource] = useState(null);
-
-		const handleLogin = () => {
+		const [isLoading, setIsLoading] = useState(false);
+		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
+		const handleLogin = async () => {
 			if (!(username && password)) {
 				setErrorMessage("Por favor, complete todos los campos.");
 				return;
 			}
 
-			setLoginResource(WrapPromise(loginUser(username, password)));
-			setGetRoleResource(WrapPromise(getRole()));
-			setLinkedPatientResource(WrapPromise(getLinkedPatient()));
-		};
+			setIsLoading(true);
+			setErrorMessage("");
+			toast.info("Intentando iniciar sesión...", { autoClose: false });
 
-		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
-		const handleSuspenseLogin = () => {
-			const loginResponse = loginResource.read();
-			const roleResponse = roleResource.read();
-
-			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
-			// Sino, entonces si es clavo del usuario.
-			console.log("Login Response: ", loginResponse);
-			if (loginResponse.error) {
-				console.log("Entraste al iF del error");
-				const errorType = loginResponse.error?.code;
-				switch (errorType) {
-					case "NotAuthorizedException":
-						setErrorMessage("Revise el correo o la contraseña por favor.");
-						break;
-					case "UserNotFoundException":
-						setErrorMessage("Revise el correo o la contraseña por favor.");
-						break;
-					default:
-						setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+			try {
+				const loginResponse = await loginUser(username, password);
+				if (loginResponse.error) {
+					handleLoginError(loginResponse.error);
+					return;
 				}
-				return;
-			}
-			console.log("Revisando si eres doctor: ", roleResponse.result);
-			if (roleResponse.result === "DOCTOR") {
-				console.log("Entraste al iF del doctor");
-				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
-				return;
-			}
-			console.log("no eres doctor");
-			const linkedPatientResponse = getLinkedPatientResource.read();
-			console.log("Linked Patient Resource: ", linkedPatientResponse);
-			if (linkedPatientResponse.error) {
-				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
-				return;
-			}
+        
+				const roleResponse = await getRole();
+				if (roleResponse.error) {
+					throw new Error("Error al obtener el rol del usuario");
+				}
 
-			const { linkedPatientId } = linkedPatientResponse.result;
-			if (!linkedPatientId) {
-				navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
-			} else {
-				setSelectedPatientId(linkedPatientId);
-				navigate(NAV_PATHS.PATIENT_FORM, { replace: true });
+				if (roleResponse.result === "DOCTOR") {
+					navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
+					return;
+				}
+
+				const linkedPatientResponse = await getLinkedPatient();
+				if (linkedPatientResponse.error) {
+					throw new Error("Error al obtener el paciente vinculado");
+				}
+
+				const { linkedPatientId } = linkedPatientResponse.result;
+				if (!linkedPatientId) {
+					navigate(NAV_PATHS.PATIENT_WELCOME, { replace: true });
+				} else {
+					setSelectedPatientId(linkedPatientId);
+					navigate(NAV_PATHS.PATIENT_FORM, { replace: true });
+				}
+			} catch (error) {
+				console.error("Error durante el inicio de sesión:", error);
+
+				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+			} finally {
+				setIsLoading(false);
+				toast.dismiss();
 			}
 		};
 
-		if (
-			loginResource !== null &&
-			roleResource !== null &&
-			getLinkedPatientResource !== null
-		) {
-			setLoginResource(null);
-			setGetRoleResource(null);
-			setLinkedPatientResource(null);
+		const handleLoginError = (error) => {
+			switch (error.code) {
+				case "NotAuthorizedException":
+				case "UserNotFoundException":
+					setErrorMessage("Revise el correo o la contraseña por favor.");
+					break;
+				default:
+					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 
-			handleSuspenseLogin();
-		}
+			}
+		};
 
 		return (
 			<div
@@ -240,12 +226,13 @@ export default function LoginView({
 						}}
 					>
 						<BaseButton
-							text="Ingresar"
+							text={isLoading ? "Iniciando sesión..." : "Ingresar"}
 							style={{
 								alignSelf: "center",
 								width: "75%",
 							}}
 							onClick={handleLogin}
+							disabled={isLoading}
 						/>
 						<p
 							style={{
@@ -311,21 +298,6 @@ export default function LoginView({
 			</div>
 		);
 	};
-	const LoadingView = () => {
-		return (
-			<div
-				style={{
-					height: "100vh",
-				}}
-			>
-				<Throbber loadingMessage="Iniciando sesión..." />
-			</div>
-		);
-	};
 
-	return (
-		<Suspense fallback={<LoadingView />}>
-			<Child />
-		</Suspense>
-	);
+	return <LoginForm />;
 }
