@@ -11,8 +11,6 @@ import WrapPromise from "src/utils/promiseWrapper";
 import IconButton from "src/components/Button/Icon";
 import { DateInput } from "src/components/Input/index";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
-import { use } from "chai";
-import { useSourceProps } from "@storybook/blocks";
 
 export function StudentAppointments({
 	getAppointment,
@@ -22,6 +20,7 @@ export function StudentAppointments({
 }) {
 	const id = useStore((s) => s.selectedPatientId);
 	const appointmentResource = WrapPromise(getAppointment(id));
+	const displayName = useStore((s) => s.displayName);
 
 	const LoadingView = () => {
 		return (
@@ -107,7 +106,7 @@ export function StudentAppointments({
 								id={id}
 								appointmentResource={appointmentResource}
 								updateAppointment={updateAppointment}
-								useStore={useStore}
+								displayName={displayName}
 							/>
 						</Suspense>
 					</div>
@@ -122,12 +121,32 @@ function StudentAppointmentsView({
 	id,
 	appointmentResource,
 	updateAppointment,
-	useStore,
+	displayName,
 }) {
 	const [selectedAppointment, setselectedAppointment] = useState({});
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
-	const displayName = useStore((s) => s.displayName);
+
+	// Identificador de medicamentos
+
+	const [medications, setMedications] = useState([]);
+
+	const addMedication = () => {
+		setMedications([
+			...medications,
+			{
+				id: medications.length + 1,
+				diagnosis: "",
+				medication: "",
+				quantity: 0,
+			},
+		]);
+	};
+
+	const removeMedication = (index) => {
+		const newMedications = medications.filter((_, i) => i !== index);
+		setMedications(newMedications);
+	};
 
 	// Read the data from the resource and handle any potential errors
 	// const appointmentResult = appointmentResource.read();
@@ -289,7 +308,7 @@ function StudentAppointmentsView({
 
 					<div
 						style={{
-							padding: "0.3rem 0 0 0",
+							padding: "1rem 0 0 0",
 						}}
 					>
 						<span
@@ -335,10 +354,10 @@ function StudentAppointmentsView({
 						</p>
 						<ExpandingBaseInput
 							style={{
-								fontSize: "1rem",
-								fontFamily: fonts.textFont,
 								width: "95%",
 								height: "3rem",
+								fontSize: "1rem",
+								fontFamily: fonts.textFont,
 							}}
 							placeholder="Escribe aquí el motivo de consulta del paciente..."
 						/>
@@ -362,6 +381,7 @@ function StudentAppointmentsView({
 							}}
 							placeholder="Escribe aquí el diagnósitco del paciente..."
 						/>
+
 						<p
 							style={{
 								fontFamily: fonts.textFont,
@@ -375,175 +395,349 @@ function StudentAppointmentsView({
 
 						<ExpandingBaseInput
 							style={{
-								width: "100%",
-
+								width: "95%",
+								height: "3rem",
 								fontSize: "1rem",
 								fontFamily: fonts.textFont,
-								overflowY: "auto",
 							}}
 							placeholder="Escribe aquí el examen físico realizado..."
+						/>
+
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+							}}
+						/>
+
+						<div
+							style={{
+								padding: "1rem 0rem 0rem 0rem",
+							}}
+						>
+							<div
+								style={{
+									display: "grid",
+									gridTemplateColumns: "1fr 2fr", // 1 fracción para etiquetas, 2 fracciones para inputs
+									gap: "10px", // Espacio entre filas y columnas
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+								}}
+							>
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Temperatura:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="°C"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Presión sistólica:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="N"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Presión diastólica:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="N"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Saturación:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="%"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Frecuencia Respiratoria:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="rpm"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Frecuencia Cardiaca:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="lpm"
+								/>
+
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+								>
+									Glucometría:
+								</p>
+								<BaseInput
+									type="number"
+									step="0.01"
+									min="0.01"
+									style={{
+										width: "90%",
+										height: "2rem",
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+									}}
+									placeholder="mg/dL"
+								/>
+							</div>
+						</div>
+
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+							}}
+						/>
+
+						{medications.map((medication, index) => (
+							<div key={medication.id}>
+								<div
+									style={{
+										padding: "1rem 0 1rem 0",
+									}}
+								>
+									<p
+										style={{
+											padding: "0 0 0.5rem 0",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											fontWeight: "bold",
+										}}
+									>
+										Medicamento Administrado {index + 1}
+									</p>
+
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											padding: "0 0 0.5rem 0",
+										}}
+									>
+										Diagnóstico:
+									</p>
+									<ExpandingBaseInput
+										style={{
+											width: "95%",
+											height: "3rem",
+											fontSize: "1rem",
+											fontFamily: fonts.textFont,
+										}}
+										placeholder="Ingrese el diagnóstico por el cuál receta el medicamento..."
+									/>
+
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											padding: "1rem 0 0.5rem 0",
+										}}
+									>
+										Medicamento:
+									</p>
+									<ExpandingBaseInput
+										style={{
+											width: "95%",
+											height: "3rem",
+											fontSize: "1rem",
+											fontFamily: fonts.textFont,
+										}}
+										placeholder="Ingrese el medicamento administrado..."
+									/>
+
+									<p
+										style={{
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											padding: "1rem 0 0.5rem 0",
+										}}
+									>
+										Cantidad:
+									</p>
+									<ExpandingBaseInput
+										style={{
+											width: "95%",
+											height: "3rem",
+											fontSize: "1rem",
+											fontFamily: fonts.textFont,
+										}}
+										placeholder="Ingrese la cantidad administrada..."
+									/>
+								</div>
+
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										width: "100%",
+										paddingTop: "1rem",
+									}}
+								>
+									<BaseButton
+										text="Cancelar nuevo medicamento"
+										onClick={() => removeMedication(index)}
+										style={{
+											width: "40%",
+											height: "3rem",
+											backgroundColor: "#fff",
+											color: colors.primaryBackground,
+											border: `1.5px solid ${colors.primaryBackground}`,
+										}}
+									/>
+								</div>
+
+								<div
+									style={{
+										paddingTop: "1rem",
+										borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+									}}
+								/>
+							</div>
+						))}
+
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								width: "100%",
+								paddingTop: "1rem",
+							}}
+						>
+							<BaseButton
+								text="Agregar medicamento administrado"
+								onClick={addMedication}
+								style={{
+									width: "50%",
+									height: "3rem",
+									border: `1.5px solid ${colors.primaryBackground}`,
+								}}
+							/>
+						</div>
+
+						<div
+							style={{
+								paddingTop: "1rem",
+								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+							}}
+						/>
+
+						<p
+							style={{
+								fontFamily: fonts.textFont,
+								fontSize: fontSize.textSize,
+								paddingBottom: "0.5rem",
+								paddingTop: "1rem",
+							}}
+						>
+							Notas:
+						</p>
+						<ExpandingBaseInput
+							style={{
+								width: "95%",
+								height: "10rem",
+								fontSize: "1rem",
+								fontFamily: fonts.textFont,
+							}}
+							placeholder="Escribe aquí notas extras de la cita..."
 						/>
 					</div>
 
 					<div
 						style={{
 							paddingTop: "1rem",
-							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-						}}
-					/>
-
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Temperatura:
-						</p>
-						<BaseInput style={{ width: "95%", height: "2rem" }} />
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Presión Sistólica:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Presión Diastólica:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Saturación:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Frecuencia Respiratoria:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Frecuencia Cardiaca:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							padding: "0.5rem 0 0.5rem 0",
-						}}
-					>
-						<p
-							style={{
-								fontFamily: fonts.textFont,
-								fontSize: fontSize.textSize,
-							}}
-						>
-							Glucometría:
-						</p>
-						<BaseInput style={{ width: "100%" }} />
-					</div>
-
-					<div
-						style={{
-							padding: "1.5rem 0 1rem 0",
-							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-						}}
-					/>
-
-					<p
-						style={{
-							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
-							paddingBottom: "0.5rem",
-							paddingTop: "1rem",
-						}}
-					>
-						Notas:
-					</p>
-					<ExpandingBaseInput
-						style={{
-							width: "95%",
-							height: "3rem",
-							fontSize: "1rem",
-							fontFamily: fonts.textFont,
-						}}
-						placeholder="Escribe aquí notas extras de la cita..."
-					/>
-
-					<div
-						style={{
-							paddingTop: "1.5rem",
 							borderBottom: `0.04rem solid ${colors.darkerGrey}`,
 						}}
 					/>

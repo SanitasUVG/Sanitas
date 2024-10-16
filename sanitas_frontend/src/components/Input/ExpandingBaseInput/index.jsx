@@ -25,6 +25,7 @@ const ExpandingTextarea = ({ onChange, placeholder, style = {}, ...props }) => {
 		padding: "6px 10px",
 		outline: "none",
 		borderRadius: "5px",
+		overflowY: "auto",
 		resize: "none",
 		...style,
 	};
