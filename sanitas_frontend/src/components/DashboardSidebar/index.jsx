@@ -13,7 +13,7 @@ import SanitasLogo from "src/assets/images/logoSanitas.png";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import TextIconButton from "../Button/TextIcon";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * @callback SidebarNavigationHandler
@@ -36,6 +36,7 @@ import { useEffect } from "react";
  * @property {SidebarNavigationHandler} onGoBack - Function that fires when the Back button is pressed.
  * @property {import("src/dataLayer.mjs").GetMedicalHistoryMetadataCallback} getMedicalHistoryMetadata - Function to get the current active medical history data.
  * @property {import("src/store.mjs").UseStoreHook} useStore
+ * @property {import("src/dataLayer.mjs").GetCurrentUserCallback} getCurrentUser - Function to get the current user data
  */
 
 /**
@@ -55,6 +56,7 @@ export default function DashboardSidebar({
 	onGoBack,
 	getMedicalHistoryMetadata,
 	useStore,
+	getCurrentUser,
 }) {
 	const navigate = useNavigate();
 	const wrapWithNavigate = (func) => {
@@ -70,6 +72,7 @@ export default function DashboardSidebar({
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
 	const displayName = useStore((s) => s.displayName);
 	const isWoman = useStore((s) => s.isWoman);
+	const [userEmail, setUserEmail] = useState("");
 
 	useEffect(() => {
 		const loadPrefixes = async () => {
@@ -86,6 +89,24 @@ export default function DashboardSidebar({
 
 		loadPrefixes();
 	}, [patientId, setPrefixesWithData, getMedicalHistoryMetadata]);
+
+	useEffect(() => {
+		const loadUserData = async () => {
+			try {
+				const user = await getCurrentUser();
+				if (user && user.email) {
+					setUserEmail(user.email);
+				} else {
+					setUserEmail("Usuario desconocido");
+				}
+			} catch (error) {
+				console.error("Error al obtener el usuario actual:", error);
+				setUserEmail("Error al cargar usuario");
+			}
+		};
+
+		loadUserData();
+	}, [getCurrentUser]);
 
 	const genStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
@@ -155,7 +176,7 @@ export default function DashboardSidebar({
 							paddingBottom: ".4rem",
 						}}
 					>
-						{displayName}
+						{userEmail}
 					</h1>
 					<h2
 						style={{
