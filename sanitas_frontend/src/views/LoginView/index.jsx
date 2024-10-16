@@ -70,7 +70,9 @@ export default function LoginView({
 
 			// Si el loginResponse o el roleResponse falla con estatus de 500 si es error interno
 			// Sino, entonces si es clavo del usuario.
+			console.log("Login Response: ", loginResponse);
 			if (loginResponse.error) {
+				console.log("Entraste al iF del error");
 				const errorType = loginResponse.error?.code;
 				switch (errorType) {
 					case "NotAuthorizedException":
@@ -84,12 +86,13 @@ export default function LoginView({
 				}
 				return;
 			}
-
+			console.log("Revisando si eres doctor");
 			if (roleResponse.result === "DOCTOR") {
+				console.log("Entraste al iF del doctor");
 				navigate(NAV_PATHS.SEARCH_PATIENT, { replace: true });
 				return;
 			}
-
+			console.log("no eres doctor");
 			const linkedPatientResponse = getLinkedPatientResource.read();
 			if (linkedPatientResponse.error) {
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
