@@ -70,7 +70,6 @@ export default function DashboardSidebar({
 	const patientId = useStore((s) => s.selectedPatientId);
 	const prefixesWithData = useStore((s) => s.prefixesWithData);
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
-	const displayName = useStore((s) => s.displayName);
 	const isWoman = useStore((s) => s.isWoman);
 	const [userEmail, setUserEmail] = useState("");
 
@@ -94,7 +93,7 @@ export default function DashboardSidebar({
 		const loadUserData = async () => {
 			try {
 				const user = await getCurrentUser();
-				if (user && user.email) {
+				if (user?.email) {
 					setUserEmail(user.email);
 				} else {
 					setUserEmail("Usuario desconocido");
