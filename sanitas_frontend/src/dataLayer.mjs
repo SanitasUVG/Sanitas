@@ -170,7 +170,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(false);
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1889,3 +1889,7 @@ export const getLinkedPatient = async () => {
 		return { error };
 	}
 };
+
+export const getAppointment = async (id) => {};
+
+export const updateAppointment = async (patientId, familyHistoryDetails) => {};
