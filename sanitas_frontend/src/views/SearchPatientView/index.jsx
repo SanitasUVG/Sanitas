@@ -428,8 +428,8 @@ export default function SearchPatientView({
 										patientsResources && (
 											<div
 												style={{
-													width: "70%",
-													height: "85%",
+													width: "100%",
+													height: "100%",
 													display: "flex",
 													alignItems: "center",
 													justifyContent: "center",
@@ -476,8 +476,8 @@ export default function SearchPatientView({
 										patientsResources && (
 											<div
 												style={{
-													width: "70%",
-													height: "85%",
+													width: "100%",
+													height: "100%",
 													display: "flex",
 													alignItems: "center",
 													justifyContent: "center",
