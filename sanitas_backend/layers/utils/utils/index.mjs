@@ -1017,3 +1017,87 @@ function areFieldsEqual(newItem, oldItem) {
 		newItem.frequency === oldItem.frequency
 	);
 }
+
+/**
+ * @typedef {Object} MedicalConsultationData
+ * @property {string} date - The ISO string of the consultation date.
+ * @property {string} evaluator - The identifier of the evaluator.
+ * @property {string} reason - The reason for the medical consultation.
+ * @property {string} diagnosis - The medical diagnosis.
+ * @property {string} physicalExam - Details of the physical examination.
+ * @property {number} temperature - The measured body temperature.
+ * @property {number} systolicPressure - Systolic blood pressure.
+ * @property {number} diastolicPressure - Diastolic blood pressure.
+ * @property {number} oxygenSaturation - Oxygen saturation percentage.
+ * @property {string} respiratoryRate - The respiratory rate.
+ * @property {number} heartRate - Heart rate.
+ * @property {number} glucometry - Glucometry value.
+ * @property {Array.<Medication>} medications - List of medications prescribed.
+ * @property {string} notes - Additional notes from the consultation.
+ */
+
+/**
+ * @typedef {Object} Medication
+ * @property {string} diagnosis - The related diagnosis for the medication.
+ * @property {string} medication - The name of the medication.
+ * @property {string} quantity - The quantity prescribed.
+ */
+
+/**
+ * @typedef {Object} MedicalConsultationApiResponse
+ * @property {number} patientId - The ID of the patient.
+ * @property {MedicalConsultationData} patientConsultation - Detailed data of the consultation.
+ */
+
+/**
+ * @typedef {Object} DatabaseConsultationRecord
+ * @property {number} id_paciente - The ID of the patient.
+ * @property {string} fecha - The ISO string of the consultation date.
+ * @property {string} evaluador - The identifier of the evaluator.
+ * @property {string} motivo - The reason for the medical consultation.
+ * @property {string} diagnostico - The medical diagnosis.
+ * @property {string} examen_fisico - Details of the physical examination.
+ * @property {number} temperatura - The measured body temperature.
+ * @property {number} presion_sistolica - Systolic blood pressure.
+ * @property {number} presion_diastolica - Diastolic blood pressure.
+ * @property {number} saturacion_oxigeno - Oxygen saturation percentage.
+ * @property {string} frecuencia_respiratoria - The respiratory rate.
+ * @property {number} frecuencia_cardiaca - Heart rate.
+ * @property {number} glucometria - Glucometry value.
+ * @property {string} medicamentos_data - JSON string containing an array of medications.
+ * @property {string} notas - Additional notes from the consultation.
+ */
+
+/**
+ * Converts the database records for a medical consultation from the raw format to a structured API response format.
+ * This function formats the consultation details for easy consumption by clients of the API.
+ *
+ * @param {DatabaseConsultationRecord} dbData - The raw database data containing fields for a medical consultation.
+ * @param {Object} logger - Logger for logging information and errors.
+ * @returns {MedicalConsultationApiResponse} A structured object containing the formatted medical consultation data.
+ */
+
+export function mapToAPIMedicalConsultation(dbData) {
+	return {
+		patientId: dbData.id_paciente,
+		patientConsultation: {
+			version: 1,
+			data: {
+				date: dbData.fecha ? new Date(dbData.fecha).toISOString() : "",
+				evaluator: dbData.evaluador || "",
+				reason: dbData.motivo || "",
+				diagnosis: dbData.diagnostico || "",
+				physicalExam: dbData.examen_fisico || "",
+				temperature: dbData.temperatura || 0.0,
+				systolicPressure: dbData.presion_sistolica || 0.0,
+				diastolicPressure: dbData.presion_diastolica || 0.0,
+				oxygenSaturation: dbData.saturacion_oxigeno || 0.0,
+				respiratoryRate: dbData.frecuencia_respiratoria || "",
+				heartRate: dbData.frecuencia_cardiaca || 0.0,
+				glucometry: dbData.glucometria || 0.0,
+				medications: dbData.medicamentos_data,
+				notes: dbData.notas || "",
+			},
+		},
+	};
+}
