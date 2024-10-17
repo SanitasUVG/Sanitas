@@ -126,12 +126,7 @@ export const updatePsychiatricHistoryHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error(
-			{
-				message: error.message,
-				stack: error.stack,
-				code: error.code || "UNKNOWN_ERROR",
-				details: JSON.stringify(error, Object.getOwnPropertyNames(error)),
-			},
+			{ error },
 			"An error occurred while updating psychiatric history!",
 		);
 
