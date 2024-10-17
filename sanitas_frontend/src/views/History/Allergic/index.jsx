@@ -489,7 +489,11 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 											icon={CheckIcon}
 											onClick={handleSaveNewAllergie}
 										/>
-										<IconButton icon={CancelIcon} onClick={handleCancel} />
+										<IconButton
+											icon={CancelIcon}
+											onClick={handleCancel}
+											style={{ filter: "contrast(0%)" }}
+										/>
 									</div>
 								) : (
 									<IconButton
