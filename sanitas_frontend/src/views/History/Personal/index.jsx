@@ -328,6 +328,17 @@ function PersonalView({
 	// Handles the saving of new or modified family medical history
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: In the future we should think to simplify this...
 	const handleSaveNewPersonal = async () => {
+		const isUpdating =
+			selectedPersonal.disease &&
+			personalHistory[selectedPersonal.disease]?.data.some(
+				(entry) => entry.id === selectedPersonal.id,
+			);
+
+		// Mensaje de toast según la acción
+		toast.info(
+			isUpdating ? "Actualizando información..." : "Guardando información...",
+		);
+
 		if (
 			!(selectedPersonal.disease && personalHistory[selectedPersonal.disease])
 		) {
@@ -382,8 +393,6 @@ function PersonalView({
 			return;
 		}
 
-		toast.info("Guardando antecedente personal...");
-
 		const existingEntryIndex = personalHistory[
 			selectedPersonal.disease
 		].data.findIndex((entry) => entry.id === selectedPersonal.id);
@@ -415,18 +424,22 @@ function PersonalView({
 
 		try {
 			const response = await updatePersonalHistory(id, updatedPersonalHistory);
-
-			if (response.error) {
-				toast.error(`Error al guardar la información: ${response.error}`);
-			} else {
-				toast.success("Antecedente personal guardado con éxito.");
+			if (!response.error) {
+				// Mensaje de éxito según la acción
+				toast.success(
+					isUpdating
+						? "¡Se ha actualizado la información con éxito!"
+						: "¡Información guardada con éxito!",
+				);
 				setPersonalHistory(updatedPersonalHistory);
 				setSelectedPersonal({});
 				setAddingNew(false);
+				setIsEditable(false);
+			} else {
+				toast.error(`Error al guardar la información: ${response.error}`);
 			}
 		} catch (error) {
-			console.error(error);
-			toast.error("Error al conectar con el servidor");
+			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
 
