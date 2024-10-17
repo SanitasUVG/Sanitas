@@ -3,6 +3,13 @@ import { MemoryRouter } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
 import { describe, expect, test, vi } from "vitest";
 import { AddPatientView } from "../AddPatientView";
+import { toast } from "react-toastify";
+
+vi.mock("react-toastify", () => ({
+	toast: {
+		error: vi.fn(),
+	},
+}));
 
 describe("AddPatientView tests", () => {
 	test("Check CUI with invalid length shows alert", () => {
@@ -23,10 +30,9 @@ describe("AddPatientView tests", () => {
 		const button = screen.getByText("Registrar información");
 		fireEvent.click(button);
 
-		const errorMessages = screen.getAllByText(
-			"El CUI debe contener exactamente 13 caracteres.",
+		expect(toast.error).toHaveBeenCalledWith(
+			"Por favor ingresar un CUI válido...",
 		);
-		expect(errorMessages.length).toBeGreaterThan(0);
 		expect(submitPatientData).not.toHaveBeenCalled();
 	});
 
@@ -61,10 +67,9 @@ describe("AddPatientView tests", () => {
 		fireEvent.click(button);
 
 		await waitFor(() => {
-			const errorMessages = screen.getAllByText(
-				`Lo sentimos! Ha ocurrido un error al enviar los datos! ${errorMessage}`,
+			expect(toast.error).toHaveBeenCalledWith(
+				"Lo sentimos! Ha ocurrido un error al enviar los datos!",
 			);
-			expect(errorMessages.length).toBeGreaterThan(0);
 		});
 	});
 
