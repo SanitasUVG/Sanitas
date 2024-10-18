@@ -198,7 +198,9 @@ export async function updatePatientSurgicalHistory(patientId, surgicalData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}/patient/surgical-history`,
 		surgicalData,
-		{ headers: createAuthorizationHeader(createDoctorJWT()) },
+		{
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		},
 	);
 
 	// Validate the response
@@ -242,7 +244,9 @@ export async function updatePatientFamilyHistory(patientId, familyHistoryData) {
 	const response = await axios.put(
 		`${LOCAL_API_URL}patient/family-history`,
 		familyHistoryData,
-		{ headers: createAuthorizationHeader(createDoctorJWT()) },
+		{
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		},
 	);
 
 	expect(response.status).toBe(200);
@@ -341,7 +345,9 @@ export async function updatePatientNonPathologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/nonpatological-history`,
 		nonPathologicalHistoryData,
-		{ headers: createAuthorizationHeader(createDoctorJWT()) },
+		{
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		},
 	);
 }
 /**
@@ -397,7 +403,9 @@ export async function updatePatientGynecologicalHistory(
 	await axios.put(
 		`${LOCAL_API_URL}patient/gyneco-history`,
 		gynecologicalHistoryData,
-		{ headers: createAuthorizationHeader(createDoctorJWT()) },
+		{
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		},
 	);
 }
 /**
@@ -450,4 +458,29 @@ export async function linkToTestAccount(accountEmail, patientCUI) {
 
 	expect(response.status).toBe(200);
 	return response.data;
+}
+
+/**
+ * Updates the medical consultation for a specific patient using a PUT request.
+ * This helper function is designed to set up test conditions by populating medical consultation data.
+ *
+ * @param {number} patientId - The unique identifier of the patient.
+ * @param {Object} consultationData - The medical consultation data to be updated.
+ * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+ */
+export async function updatePatientMedicalConsultation(
+	patientId,
+	consultationData,
+) {
+	consultationData.patientId = patientId;
+
+	const response = await axios.put(
+		`${LOCAL_API_URL}patient/consultation`,
+		consultationData,
+		{
+			headers: createAuthorizationHeader(createDoctorJWT()),
+		},
+	);
+
+	expect(response.status).toBe(200);
 }

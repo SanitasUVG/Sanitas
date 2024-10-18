@@ -349,3 +349,68 @@ export const genDefaultPsychiatricHistory = () => ({
 		data: { ill: "", medication: "", dose: "", frecuency: "", ube: false },
 	},
 });
+
+/**
+ * @typedef {Object} Medication
+ * @property {string} diagnosis - The related diagnosis for the medication.
+ * @property {string} medication - The name of the medication.
+ * @property {string} quantity - The quantity prescribed.
+ */
+
+/**
+ * @typedef {Object} MedicalConsultationData
+ * @property {string} date - The date of the consultation in ISO string format.
+ * @property {string} evaluator - The identifier of the evaluator.
+ * @property {string} reason - The reason for the medical consultation.
+ * @property {string} diagnosis - The medical diagnosis.
+ * @property {string} physicalExam - Details of the physical examination.
+ * @property {number} temperature - The measured body temperature.
+ * @property {number} systolicPressure - Systolic blood pressure.
+ * @property {number} diastolicPressure - Diastolic blood pressure.
+ * @property {number} oxygenSaturation - Oxygen saturation percentage.
+ * @property {string} respiratoryRate - The respiratory rate.
+ * @property {number} heartRate - Heart rate.
+ * @property {number} glucometry - Glucometry value.
+ * @property {Array.<Medication>} medications - List of medications prescribed.
+ * @property {string} notes - Additional notes from the consultation.
+ */
+
+/**
+ * @typedef {Object} DefaultMedicalConsultation
+ * @property {number} version - The version number of the medical consultation format.
+ * @property {MedicalConsultationData} data - Detailed data of the consultation.
+ */
+
+/**
+ * Generates default values for a medical consultation object.
+ * This function is useful for initializing forms or providing default values when no data is available.
+ *
+ * @returns {DefaultMedicalConsultation} An object containing default values for a medical consultation.
+ */
+export const genDefaultMedicalConsultation = () => ({
+	patientConsultation: {
+		version: 1,
+		data: {
+			date: "",
+			evaluator: "",
+			reason: "",
+			diagnosis: "",
+			physicalExam: "",
+			temperature: 0.0,
+			systolicPressure: 0.0,
+			diastolicPressure: 0.0,
+			oxygenSaturation: 0.0,
+			respiratoryRate: "",
+			heartRate: 0.0,
+			glucometry: 0.0,
+			medications: [
+				{
+					diagnosis: "",
+					medication: "",
+					quantity: "",
+				},
+			],
+			notes: "",
+		},
+	},
+});
