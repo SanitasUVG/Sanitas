@@ -80,7 +80,9 @@ describe("Update Medical Consultation integration tests", () => {
 
 		expect(response.status).toBe(401);
 		expect(response.data.error).toBeDefined();
-		expect(response.data.error).toBe("Unauthorized, you're not a doctor!");
+		expect(response.data.error).toBe(
+			"The email doesn't belong to the patient id!",
+		);
 	});
 
 	test("Fail to update due to invalid patient ID", async () => {
@@ -114,56 +116,38 @@ describe("Update Medical Consultation integration tests", () => {
 		});
 
 		expect(response.status).toBe(200);
-		expect(response.data).toBeDefined();
-		const responseData = response.data;
 
-		// Check top-level structure
-		expect(typeof responseData).toBe("object");
-		expect(responseData).toHaveProperty("patientId");
-		expect(responseData).toHaveProperty("patientConsultation");
+		// Define the expected JSON structure with expected types
+		const expectedResponse = {
+			patientId: expect.any(Number), // Use expect.any(Constructor) for type checking
+			patientConsultation: {
+				version: expect.any(Number),
+				data: {
+					date: expect.any(String),
+					evaluator: expect.any(String),
+					reason: expect.any(String),
+					diagnosis: expect.any(String),
+					physicalExam: expect.any(String),
+					temperature: expect.any(Number),
+					systolicPressure: expect.any(Number),
+					diastolicPressure: expect.any(Number),
+					oxygenSaturation: expect.any(Number),
+					respiratoryRate: expect.any(String),
+					heartRate: expect.any(Number),
+					glucometry: expect.any(Number),
+					medications: expect.arrayContaining([
+						expect.objectContaining({
+							diagnosis: expect.any(String),
+							medication: expect.any(String),
+							quantity: expect.any(String),
+						}),
+					]),
+					notes: expect.any(String),
+				},
+			},
+		};
 
-		// Check patientConsultation structure
-		const { patientConsultation } = responseData;
-		expect(typeof patientConsultation).toBe("object");
-		expect(patientConsultation).toHaveProperty("version");
-		expect(typeof patientConsultation.version).toBe("number");
-		expect(patientConsultation).toHaveProperty("data");
-
-		// Check data structure
-		const { data } = patientConsultation;
-		expect(typeof data).toBe("object");
-		const expectedFields = [
-			"date",
-			"evaluator",
-			"reason",
-			"diagnosis",
-			"physicalExam",
-			"temperature",
-			"systolicPressure",
-			"diastolicPressure",
-			"oxygenSaturation",
-			"respiratoryRate",
-			"heartRate",
-			"glucometry",
-			"medications",
-			"notes",
-		];
-		for (let i = 0; i < expectedFields.length; i++) {
-			expect(data).toHaveProperty(expectedFields[i]);
-		}
-
-		// Verify medications is an array with correct structure
-		expect(Array.isArray(data.medications)).toBe(true);
-		expect(data.medications.length).toBeGreaterThanOrEqual(1);
-		for (let i = 0; i < data.medications.length; i++) {
-			const medication = data.medications[i];
-			expect(typeof medication).toBe("object");
-			expect(medication).toHaveProperty("diagnosis");
-			expect(medication).toHaveProperty("medication");
-			expect(medication).toHaveProperty("quantity");
-			expect(typeof medication.diagnosis).toBe("string");
-			expect(typeof medication.medication).toBe("string");
-			expect(typeof medication.quantity).toBe("string");
-		}
+		// Use toEqual to perform a deep equality check
+		expect(response.data).toEqual(expectedResponse);
 	});
 });

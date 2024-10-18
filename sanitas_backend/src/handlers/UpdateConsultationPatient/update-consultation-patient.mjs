@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction, isEmailOfPatient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
@@ -43,22 +43,6 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected!");
 
-		logger.info({ email }, "Checking if the email is a doctor...");
-		const itsDoctor = await isDoctor(client, email);
-		if (itsDoctor.error) {
-			const msg = "An error occurred while trying to check if user is doctor!";
-			logger.error({ error: itsDoctor.error }, msg);
-			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
-		}
-
-		if (!itsDoctor) {
-			const msg = "Unauthorized, you're not a doctor!";
-			const body = { error: msg };
-			logger.error(body, msg);
-			return responseBuilder.setStatusCode(401).setBody(body).build();
-		}
-		logger.info(`${email} is not a doctor!`);
-
 		const body = JSON.parse(event.body);
 		const patientId = body.patientId;
 		if (!patientId) {
@@ -69,25 +53,75 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 				.build();
 		}
 
-		const { patientConsultation } = body;
-		const {
-			date,
-			evaluator,
-			reason,
-			diagnosis,
-			physicalExam,
-			temperature,
-			systolicPressure,
-			diastolicPressure,
-			oxygenSaturation,
-			respiratoryRate,
-			heartRate,
-			glucometry,
-			medications,
-			notes,
-		} = patientConsultation.data;
+		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Checking if user is doctor...");
+			const itsDoctor = await isDoctor(client, email);
+			if (itsDoctor.error) {
+				const msg =
+					"An error occurred while trying to check if the user is a doctor!";
+				logger.error(itsDoctor, msg);
 
-		const upsertQuery = `
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
+					.build();
+				return { response };
+			}
+
+			if (!itsDoctor) {
+				logger.info("User is patient!");
+				logger.info(
+					{ email, patientId },
+					"Checking if email belongs to patient id",
+				);
+				const emailBelongs = await isEmailOfPatient(client, email, patientId);
+
+				if (emailBelongs.error) {
+					const msg =
+						"An error ocurred while trying to check if the email belongs to the patient!";
+					logger.error(emailBelongs, msg);
+
+					const response = responseBuilder
+						.setStatusCode(500)
+						.setBody(emailBelongs)
+						.build();
+					return { response };
+				}
+
+				if (!emailBelongs) {
+					const msg = "The email doesn't belong to the patient id!";
+					logger.error({ email, patientId }, msg);
+
+					const response = responseBuilder
+						.setStatusCode(401)
+						.setBody({ error: msg })
+						.build();
+					return { response };
+				}
+				logger.info("The email belongs to the patient!");
+			} else {
+				logger.info("The user is a doctor!");
+			}
+
+			const { patientConsultation } = body;
+			const {
+				date,
+				evaluator,
+				reason,
+				diagnosis,
+				physicalExam,
+				temperature,
+				systolicPressure,
+				diastolicPressure,
+				oxygenSaturation,
+				respiratoryRate,
+				heartRate,
+				glucometry,
+				medications,
+				notes,
+			} = patientConsultation.data;
+
+			const upsertQuery = `
             INSERT INTO consulta (
                 id_paciente,
                 fecha,
@@ -125,26 +159,39 @@ export const updateMedicalConsultationHandler = async (event, context) => {
             RETURNING *;
         `;
 
-		const values = [
-			patientId,
-			date,
-			reason,
-			diagnosis,
-			physicalExam,
-			respiratoryRate,
-			temperature,
-			oxygenSaturation,
-			glucometry,
-			heartRate,
-			systolicPressure,
-			diastolicPressure,
-			evaluator,
-			JSON.stringify(medications),
-			notes,
-		];
+			const values = [
+				patientId,
+				date,
+				reason,
+				diagnosis,
+				physicalExam,
+				respiratoryRate,
+				temperature,
+				oxygenSaturation,
+				glucometry,
+				heartRate,
+				systolicPressure,
+				diastolicPressure,
+				evaluator,
+				JSON.stringify(medications),
+				notes,
+			];
 
-		logger.info({ values }, "Executing upsert query with values");
-		const result = await client.query(upsertQuery, values);
+			logger.info({ values }, "Executing upsert query with values");
+			const result = await client.query(upsertQuery, values);
+			logger.info({ result }, "Done inserting/updating!");
+			return result;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+
+		if (transactionResult.response) {
+			return transactionResult.response;
+		}
+
+		const { result } = transactionResult;
 
 		if (result.rowCount === 0) {
 			logger.error("No changes were made in the DB!");
@@ -160,7 +207,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 	} catch (error) {
 		logger.error(
 			{ error },
-			"An error occurred while updating psychiatric history!",
+			"An error occurred while updating medical consultation!",
 		);
 
 		if (error.code === "23503") {
@@ -175,7 +222,6 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			.setBody({
 				error:
 					"Failed to update medical consultation due to an internal error.",
-				details: error.message,
 			})
 			.build();
 	} finally {

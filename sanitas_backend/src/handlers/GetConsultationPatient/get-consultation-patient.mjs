@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, transaction, isEmailOfPatient } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
@@ -57,24 +57,75 @@ export const getMedicalConsultationHandler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected!");
 
-		const isDoc = await isDoctor(client, email);
-		if (!isDoc) {
-			logger.error("Access denied: user is not a doctor");
-			return responseBuilder
-				.setStatusCode(403)
-				.setBody({
-					error:
-						"Access denied: user is not authorized to view this information.",
-				})
-				.build();
-		}
+		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Checking if user is doctor...");
+			const itsDoctor = await isDoctor(client, email);
+			if (itsDoctor.error) {
+				const msg =
+					"An error occurred while trying to check if the user is a doctor!";
+				logger.error(itsDoctor, msg);
 
-		const query = `
+				const response = responseBuilder
+					.setStatusCode(500)
+					.setBody(itsDoctor)
+					.build();
+				return { response };
+			}
+
+			if (!itsDoctor) {
+				logger.info("User is patient!");
+				logger.info(
+					{ email, patientId },
+					"Checking if email belongs to patient id",
+				);
+				const emailBelongs = await isEmailOfPatient(client, email, patientId);
+
+				if (emailBelongs.error) {
+					const msg =
+						"An error ocurred while trying to check if the email belongs to the patient!";
+					logger.error(emailBelongs, msg);
+
+					const response = responseBuilder
+						.setStatusCode(500)
+						.setBody(emailBelongs)
+						.build();
+					return { response };
+				}
+
+				if (!emailBelongs) {
+					const msg = "The email doesn't belong to the patient id!";
+					logger.error({ email, patientId }, msg);
+
+					const response = responseBuilder
+						.setStatusCode(401)
+						.setBody({ error: msg })
+						.build();
+					return { response };
+				}
+				logger.info("The email belongs to the patient!");
+			} else {
+				logger.info("The user is a doctor!");
+			}
+
+			const query = `
             SELECT * FROM consulta WHERE id_paciente = $1;
         `;
-		const args = [patientId];
-		logger.info({ query, args }, "Querying DB...");
-		const dbResponse = await client.query(query, args);
+			const args = [patientId];
+			logger.info({ query, args }, "Querying DB...");
+			const dbResponse = await client.query(query, args);
+			logger.info({ dbResponse }, "Query response!");
+			return dbResponse;
+		});
+
+		if (transactionResult.error) {
+			throw transactionResult.error;
+		}
+
+		if (transactionResult.response) {
+			return transactionResult.response;
+		}
+
+		const { result: dbResponse } = transactionResult;
 
 		logger.info("Query done!");
 		if (dbResponse.rowCount === 0) {
