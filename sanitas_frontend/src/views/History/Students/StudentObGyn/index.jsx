@@ -1306,7 +1306,7 @@ function ObGynView({
 					</div>
 				) : (
 					<>
-						{isFirstTime && (
+						{!isAgeReadOnly && (
 							<div
 								style={{
 									padding: "1rem 0 1rem 0",
@@ -1534,7 +1534,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									// paddingTop: isMobile ? 0 : "3.5rem",
+									paddingTop: isMobile ? 0 : "1.5rem",
 									paddingRight: "1rem",
 								}}
 							>
@@ -1580,7 +1580,7 @@ function ObGynView({
 								style={{
 									fontWeight: "bold",
 									fontSize: fonts.titleFont,
-									// paddingTop: isMobile ? 0 : "3.5rem",
+									paddingTop: isMobile ? 0 : "1.5rem",
 									paddingRight: "1rem",
 								}}
 							>
