@@ -1210,8 +1210,10 @@ function ObGynView({
 		>
 			<div
 				style={{
-					padding: "1rem",
+					padding: "1rem 1rem 1rem 2rem",
 					height: "65vh",
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
 					flex: 1.5,
 					overflowY: "auto",
 					width: "100%",
