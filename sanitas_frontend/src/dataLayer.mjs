@@ -1889,3 +1889,7 @@ export const getLinkedPatient = async () => {
 		return { error };
 	}
 };
+
+export const getAppointment = async (id) => {};
+
+export const updateAppointment = async (patientId, familyHistoryDetails) => {};
