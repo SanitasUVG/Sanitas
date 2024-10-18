@@ -57,8 +57,7 @@ export default function SearchInput({
 			border: "1px solid #5B6670",
 			padding: "5px",
 			borderRadius: "4px",
-			maxWidth: "600px",
-			minWidth: "300px",
+			width: "100%",
 			...style.container,
 		},
 		input: {

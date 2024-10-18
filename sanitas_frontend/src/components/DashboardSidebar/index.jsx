@@ -90,7 +90,7 @@ export default function DashboardSidebar({
 	const genStyleWithPrefix = (prefix) => {
 		return !prefixesWithData.includes(prefix)
 			? {
-					color: colors.darkerGrey,
+					color: "#808080",
 				}
 			: {};
 	};
@@ -182,12 +182,12 @@ export default function DashboardSidebar({
 
 			<h3
 				style={{
-					color: colors.darkerGrey,
+					color: "#808080",
 					fontSize: fontSize.textSize,
 					fontWeight: "normal",
 					paddingBottom: "1rem",
 					paddingTop: "1rem",
-					borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+					borderBottom: "0.04rem solid #808080",
 				}}
 			>
 				Antecedentes
