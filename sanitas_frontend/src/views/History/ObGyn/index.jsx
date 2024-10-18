@@ -1128,10 +1128,19 @@ function ObGynView({
 		}, {}),
 	};
 
+	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: It's the function to update the arrays and objects in JSON.
 	const handleSaveGynecologicalHistory = async () => {
 		if (!validateGynecologicalHistory()) {
 			return;
 		}
+
+		// Agregar lógica para mostrar el toast según si se está guardando o actualizando
+		const isUpdating = isEditable; // Asumiendo que isEditable indica si se está actualizando
+		toast.info(
+			isUpdating
+				? "Actualizando antecedentes ginecoobstétricos..."
+				: "Guardando antecedentes ginecoobstétricos...",
+		);
 
 		const medicalHistory = {
 			firstMenstrualPeriod: {
@@ -1174,11 +1183,13 @@ function ObGynView({
 			},
 		};
 
-		toast.info("Guardando antecedente ginecoobstétrico...");
-
 		const result = await updateObGynHistory(id, medicalHistory);
 		if (!result.error) {
-			toast.success("Antecedentes ginecoobstétricos actualizados con éxito.");
+			toast.success(
+				isUpdating
+					? "Antecedentes ginecoobstétricos actualizados con éxito."
+					: "Antecedentes ginecoobstétricos guardados con éxito.",
+			);
 			triggerReload();
 			setIsEditable(false);
 		} else {
@@ -1199,8 +1210,10 @@ function ObGynView({
 		>
 			<div
 				style={{
-					padding: "1rem",
+					padding: "1rem 1rem 1rem 2rem",
 					height: "65vh",
+					border: `1px solid ${colors.primaryBackground}`,
+					borderRadius: "10px",
 					flex: 1.5,
 					overflowY: "auto",
 					width: "100%",

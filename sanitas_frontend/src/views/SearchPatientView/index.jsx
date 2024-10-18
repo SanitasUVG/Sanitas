@@ -178,6 +178,7 @@ export default function SearchPatientView({
 						backgroundColor: "#FFFFFF",
 						width: "100%",
 						height: "100%",
+						overflow: "auto",
 					}}
 				>
 					{defaultView ? (
@@ -254,8 +255,7 @@ export default function SearchPatientView({
 										placeholder="Ingrese su búsqueda..."
 										style={{
 											input: {
-												width: adjustWidth(width, "30rem"),
-												height: adjustHeight(height, "1.75rem"),
+												height: adjustHeight(height, "2rem"),
 												fontSize: adjustWidth(width, "1.10rem"),
 											},
 										}}
@@ -294,8 +294,8 @@ export default function SearchPatientView({
 											disabled={emptyQuery}
 											style={{
 												fontSize: adjustWidth(width, "1.10rem"),
-												height: "2.65rem",
-												width: adjustWidth(width, "14rem"),
+												height: "3rem",
+												width: adjustWidth(width, "15rem"),
 											}}
 										/>
 									</div>
@@ -338,7 +338,7 @@ export default function SearchPatientView({
 							>
 								<img
 									style={{
-										width: adjustWidth(width, "17rem"),
+										width: adjustWidth(width, "15rem"),
 										height: "auto",
 										paddingTop: adjustHeight(height, "2rem"),
 										paddingLeft: adjustWidth(width, "2rem"),
@@ -364,21 +364,28 @@ export default function SearchPatientView({
 										flexDirection: "row",
 										alignItems: "center",
 										gap: adjustHeight(height, "2rem"),
+										width: "100%",
 									}}
 								>
-									<SearchInput
-										type="text"
-										value={query}
-										onChange={handleInputChange}
-										placeholder="Ingrese su búsqueda..."
+									<div
 										style={{
-											input: {
-												width: adjustWidth(width, "30rem"),
-												height: adjustHeight(height, "1.75rem"),
-												fontSize: adjustWidth(width, "1.10rem"),
-											},
+											width: "66%",
 										}}
-									/>
+									>
+										<SearchInput
+											type="text"
+											value={query}
+											onChange={handleInputChange}
+											placeholder="Ingrese su búsqueda..."
+											style={{
+												input: {
+													height: adjustHeight(height, "2rem"),
+													fontSize: adjustWidth(width, "1.10rem"),
+												},
+											}}
+										/>
+									</div>
+
 									<DropdownMenu
 										value={type}
 										onChange={(e) => setSearchQuery(query, e.target.value)}
@@ -400,7 +407,7 @@ export default function SearchPatientView({
 										disabled={emptyQuery}
 										style={{
 											fontSize: adjustWidth(width, "1.10rem"),
-											height: "2.65rem",
+											height: "3rem",
 											width: adjustWidth(width, "14rem"),
 										}}
 									/>
@@ -409,7 +416,7 @@ export default function SearchPatientView({
 									<h1
 										style={{
 											fontSize: adjustWidth(width, "2rem"),
-											paddingBottom: adjustHeight(height, "1.5rem"),
+											paddingBottom: adjustHeight(height, "2rem"),
 											paddingTop: adjustHeight(height, "2rem"),
 											color: colors.titleText,
 										}}
@@ -421,8 +428,8 @@ export default function SearchPatientView({
 										patientsResources && (
 											<div
 												style={{
-													width: "70%",
-													height: "85%",
+													width: "100%",
+													height: "100%",
 													display: "flex",
 													alignItems: "center",
 													justifyContent: "center",
@@ -469,8 +476,8 @@ export default function SearchPatientView({
 										patientsResources && (
 											<div
 												style={{
-													width: "70%",
-													height: "85%",
+													width: "100%",
+													height: "100%",
 													display: "flex",
 													alignItems: "center",
 													justifyContent: "center",
@@ -516,7 +523,7 @@ export default function SearchPatientView({
 														onClick={onAddNewPatientClick}
 														style={{
 															fontSize: adjustWidth(width, "1.10rem"),
-															height: "2.65rem",
+															height: "3rem",
 															width: adjustWidth(width, "25rem"),
 														}}
 													/>
@@ -583,11 +590,10 @@ export default function SearchPatientView({
 					style={{
 						mainContainer: {
 							borderRadius: adjustWidth(width, "1rem"),
-							gap: adjustHeight(height, "2rem"),
 						},
 						secondaryContainer: {
 							paddingLeft: adjustWidth(width, "3rem"),
-							gap: adjustHeight(height, "1rem"),
+							gap: adjustHeight(height, "0.5rem"),
 						},
 						cardsContainer: {
 							minHeight: adjustHeight(height, "10rem"),
