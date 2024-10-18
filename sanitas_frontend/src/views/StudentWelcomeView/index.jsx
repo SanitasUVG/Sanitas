@@ -216,11 +216,11 @@ export default function StudentWelcomeView() {
 						<p
 							style={{
 								fontFamily: "Lora",
-								fontSize: "14.7px",
+								fontSize: "18px",
 								fontWeight: "400",
 								lineHeight: "22.05px",
 								textAlign: "center",
-								marginBottom: "1.5em",
+								marginBottom: "1em",
 							}}
 						>
 							Para conocer más información de la clínica médica presiona aquí:
@@ -228,7 +228,7 @@ export default function StudentWelcomeView() {
 						<p
 							style={{
 								fontFamily: "Lora",
-								fontSize: "14.7px",
+								fontSize: "18px",
 								fontWeight: "700",
 								lineHeight: "22.05px",
 								textAlign: "center",
