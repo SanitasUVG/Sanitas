@@ -197,6 +197,13 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 
 	// Save the new Allergic record to the database
 	const handleSaveNewAllergie = async () => {
+		const isUpdating = !isFirstTime; // Determina si es una actualización
+		toast.info(
+			isUpdating
+				? "Actualizando antecedente alérgico..."
+				: "Guardando nuevo antecedente alérgico...",
+		); // Mensaje de inicio
+
 		if (
 			!(
 				selectedAllergie.selectedMed &&
@@ -207,8 +214,6 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 			toast.error("Complete todos los campos requeridos.");
 			return;
 		}
-
-		toast.info("Guardando antecedente alérgico...");
 
 		const updatedAllergy = {
 			name: selectedAllergie.whichAllergie,
@@ -248,16 +253,20 @@ function AllergicView({ id, allergicHistoryResource, updateAllergicHistory }) {
 		try {
 			const response = await updateAllergicHistory(id, updatedMedicalHistory);
 			if (!response.error) {
+				toast.success(
+					isUpdating
+						? "Antecedente alérgico actualizado con éxito." // Mensaje de éxito para actualización
+						: "Antecedente alérgico guardado con éxito.", // Mensaje de éxito para nuevo antecedente
+				);
 				setAllergicHistory(updatedMedicalHistory);
 				setAddingNew(false);
 				setSelectedAllergie(null);
 				setIsEditable(false);
-				toast.success("Antecedente alérgico guardado con éxito.");
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(`Error al guardar: ${response.error}`); // Mensaje de error
 			}
 		} catch (error) {
-			toast.error(`Error en la operación: ${error.message}`);
+			toast.error(`Error en la operación: ${error.message}`); // Mensaje de error
 		}
 	};
 
