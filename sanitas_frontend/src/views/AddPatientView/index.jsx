@@ -8,6 +8,7 @@ import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import { cuiIsValid } from "src/utils/cui";
 import WrapPromise from "src/utils/promiseWrapper";
+import { toast } from "react-toastify";
 
 /**
  * @typedef {Object} PatientData
@@ -72,20 +73,20 @@ export function AddPatientView({ submitPatientData, useStore }) {
 			const fields = ["names", "surnames", "birthDate"];
 			const isValidCUI = cuiIsValid(patientData.cui);
 			if (isValidCUI.error) {
-				setUpdateError("CUI inválido...");
+				toast.error("Por favor ingresar un CUI válido...");
 				return false;
 			}
 
 			for (const field of fields) {
 				if (!patientData[field]) {
-					setUpdateError(
+					toast.error(
 						`El campo ${field} es obligatorio y no puede estar vacío.`,
 					);
 					return false;
 				}
 			}
 			if (patientData.sex === null) {
-				setUpdateError("El campo de género es obligatorio.");
+				toast.error("El campo de género es obligatorio.");
 				return false;
 			}
 			return true;
@@ -119,9 +120,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 			const response = resourceUpdate.read();
 			setUpdateError("");
 			if (response.error) {
-				setUpdateError(
-					`Lo sentimos! Ha ocurrido un error al enviar los datos! ${response.error.toString()}`,
-				);
+				toast.error("Lo sentimos! Ha ocurrido un error al enviar los datos!");
 			} else {
 				const id = response.result;
 				setSelectedPatientId(id);
@@ -145,16 +144,17 @@ export function AddPatientView({ submitPatientData, useStore }) {
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "3.125rem",
+						padding: "4rem",
 						width: "95%",
 						height: "95%",
 						textAlign: "left",
+						borderRadius: "10px",
 					}}
 				>
 					<img
 						style={{
-							width: "9.06rem",
-							height: "4.375rem",
+							width: "10rem",
+							height: "auto",
 						}}
 						src={SanitasLogo}
 						alt="Logo Sanitas"
@@ -165,15 +165,15 @@ export function AddPatientView({ submitPatientData, useStore }) {
 							flexDirection: "column",
 							justifyContent: "center",
 							alignItems: "right",
-							paddingLeft: "7.5rem",
+							paddingLeft: "10rem",
 						}}
 					>
 						<h1
 							style={{
 								color: colors.titleText,
 								fontSize: fontSize.titleSize,
-								paddingBottom: "0.625rem",
-								paddingTop: "1.25rem",
+								paddingBottom: "0.5rem",
+								paddingTop: "1rem",
 							}}
 						>
 							Información del paciente
@@ -183,7 +183,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 								fontFamily: fonts.textFont,
 								fontWeight: "normal",
 								fontSize: fontSize.subtitleSize,
-								paddingBottom: "2.307rem",
+								paddingBottom: "2rem",
 							}}
 						>
 							Por favor, registre al paciente
@@ -202,7 +202,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
-										paddingBottom: "0.625rem",
+										paddingBottom: "0.5rem",
 									}}
 								>
 									CUI del paciente:
@@ -215,6 +215,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									}
 									placeholder="CUI"
 									style={{
+										height: "2.5rem",
 										borderColor:
 											patientData.cui.length === 13
 												? colors.statusApproved
@@ -222,7 +223,9 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									}}
 								/>
 								{patientData.cui.length !== 13 && (
-									<div style={{ color: colors.statusDenied }}>
+									<div
+										style={{ color: colors.statusDenied, fontSize: "0.8rem" }}
+									>
 										El CUI debe contener exactamente 13 caracteres.
 									</div>
 								)}
@@ -231,7 +234,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
-										paddingBottom: "0.625rem",
+										paddingBottom: "0.5rem",
 										paddingTop: "1.25rem",
 									}}
 								>
@@ -244,25 +247,33 @@ export function AddPatientView({ submitPatientData, useStore }) {
 										value={patientData.names}
 										onChange={(e) => handleChange("names", e.target.value)}
 										placeholder="Nombres"
-										style={{ flex: 1 }}
+										style={{ flex: 1, height: "2.5rem" }}
 									/>
 									<BaseInput
 										type="text"
 										value={patientData.surnames}
 										onChange={(e) => handleChange("surnames", e.target.value)}
 										placeholder="Apellidos"
-										style={{ flex: 1 }}
+										style={{ flex: 1, height: "2.5rem" }}
 									/>
 								</div>
 
+								<p
+									style={{
+										fontFamily: fonts.textFont,
+										fontSize: fontSize.textSize,
+										paddingTop: "1.25rem",
+										paddingBottom: "0.5rem",
+									}}
+								>
+									Sexo del paciente:
+								</p>
 								<div
 									style={{
 										display: "flex",
 										flexDirection: "row",
 										justifyContent: "left",
 										alignItems: "left",
-										paddingTop: "1.25rem",
-										paddingBottom: "1.25rem",
 									}}
 								>
 									<div style={{ paddingRight: "1.25rem" }}>
@@ -290,7 +301,8 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
-										paddingBottom: "0.625rem",
+										paddingBottom: "0.5rem",
+										paddingTop: "1.25rem",
 									}}
 								>
 									Ingrese la fecha de nacimiento del paciente:
@@ -299,6 +311,9 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									value={patientData.birthDate}
 									onChange={(e) => handleChange("birthDate", e.target.value)}
 									placeholder="Fecha de nacimiento"
+									style={{
+										height: "2.5rem",
+									}}
 								/>
 							</div>
 							<p style={errorPStyles}>{updateError}</p>
@@ -314,6 +329,10 @@ export function AddPatientView({ submitPatientData, useStore }) {
 								<BaseButton
 									text="Registrar información"
 									onClick={handleSubmit}
+									style={{
+										width: "20%",
+										height: "3rem",
+									}}
 								/>
 							</div>
 						</div>

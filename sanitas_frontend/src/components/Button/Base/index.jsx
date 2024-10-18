@@ -18,9 +18,11 @@ export default function BaseButton({ text, onClick, style = {} }) {
 	const [isHovered, setIsHovered] = useState(false);
 	const [canClick, setCanClick] = useState(true);
 
+	const backgroundColor = style.backgroundColor || "#0F6838"; // Fondo por defecto verde
+
 	const defaultStyle = {
-		backgroundColor: "#0F6838",
-		color: "#FFFFFF",
+		backgroundColor: backgroundColor,
+		color: style.color || "#FFFFFF",
 		borderRadius: "0.313rem",
 		padding: "0.625rem 1.25rem",
 		border: "none",
@@ -48,7 +50,10 @@ export default function BaseButton({ text, onClick, style = {} }) {
 	};
 
 	const iconStyle = {
-		filter: "invert(100%)",
+		filter:
+			backgroundColor === "#fff" || backgroundColor === "#FFFFFF"
+				? "brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(1000%) hue-rotate(110deg) brightness(90%)"
+				: "invert(100%)",
 		opacity: isHovered ? 1 : 0,
 		transform: isHovered ? "scale(1)" : "scale(0)",
 		transition: "opacity 0.3s, transform 0.3s",
