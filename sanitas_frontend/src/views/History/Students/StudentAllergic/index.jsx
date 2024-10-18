@@ -67,7 +67,7 @@ export function StudentAllergicHistory({
 				style={{
 					backgroundColor: colors.secondaryBackground,
 					padding: "2rem",
-					borderRadius: "0.625rem",
+					borderRadius: "10px",
 					overflow: "auto",
 					flex: "1",
 					display: "flex",
@@ -97,12 +97,13 @@ export function StudentAllergicHistory({
 							fontFamily: fonts.textFont,
 							fontWeight: "normal",
 							fontSize: fontSize.subtitleSize,
-							paddingTop: "0.7rem",
+							paddingTop: "0.5rem",
 							paddingBottom: "0.2rem",
 							textAlign: "center",
 						}}
 					>
-						¿Es alérgico a alguno de los siguientes?
+						Por favor, ingrese un elemento por alergia, a menos que todas las
+						alergias provoquen la misma reacción.
 					</h3>
 					<h3
 						style={{
@@ -113,7 +114,8 @@ export function StudentAllergicHistory({
 							textAlign: "center",
 						}}
 					>
-						Por favor ingrese un elemento por alergia.
+						En ese caso, puede agruparlas si son del mismo tipo (por ejemplo,
+						medicamentos).
 					</h3>
 				</div>
 
@@ -299,9 +301,11 @@ function AllergicView({
 	const buttonStyles = isMobile
 		? {
 				height: "3rem",
+				width: "12rem",
 			}
 		: {
 				height: "3rem",
+				width: "12rem",
 			};
 
 	return (
@@ -379,8 +383,8 @@ function AllergicView({
 					style={{
 						border: `1px solid ${colors.primaryBackground}`,
 						borderRadius: "10px",
-						padding: "1rem",
-						height: "65vh",
+						padding: isMobile ? "1rem" : "2rem",
+						height: isMobile ? "auto" : "65vh",
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
@@ -389,7 +393,6 @@ function AllergicView({
 					<p
 						style={{
 							paddingBottom: "0.5rem",
-							paddingTop: "1.5rem",
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -487,10 +490,11 @@ function AllergicView({
 					</div>
 					<div
 						style={{
-							paddingTop: "5rem",
 							display: "flex",
 							flexDirection: isMobile ? "column" : "row",
+							alignItems: "center",
 							justifyContent: "center",
+							paddingTop: "2rem",
 						}}
 					>
 						{addingNew && (
