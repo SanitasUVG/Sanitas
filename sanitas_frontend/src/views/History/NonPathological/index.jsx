@@ -353,6 +353,13 @@ function NonPathologicalView({
 	// Function to handle saving the changes to the server.
 	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: Save non pathological data
 	const handleSaveNonPathological = async () => {
+		const isUpdating = !!nonPathologicalHistoryData?.medicalHistory; // Determina si se está actualizando
+		toast.info(
+			isUpdating
+				? "Actualizando antecedentes no patológicos..."
+				: "Guardando antecedentes no patológicos...",
+		); // Mensaje de inicio
+
 		if (!validateSmokingDetails()) return;
 		if (!validateAlcoholConsumption()) return;
 		if (!validateDrugUse()) return;
@@ -387,8 +394,6 @@ function NonPathologicalView({
 				},
 			},
 		};
-
-		toast.info("Guardando antecedente no patológico...");
 
 		const result = await updateNonPathologicalHistory(id, updateDetails);
 		if (!result.error) {

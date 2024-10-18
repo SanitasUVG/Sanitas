@@ -143,7 +143,7 @@ export function CreatePatientView({
 			style={{
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: "2rem 3rem",
+				padding: "3rem",
 			}}
 		>
 			<div
@@ -174,7 +174,7 @@ export function CreatePatientView({
 					>
 						Creación del Paciente
 					</h1>
-					<img src={logoSanitas} style={{ height: "6vw" }} alt="Sanitas Logo" />
+					<img src={logoSanitas} style={{ height: "5vw" }} alt="Sanitas Logo" />
 				</div>
 
 				{/* SUBTITLE */}
@@ -199,6 +199,7 @@ export function CreatePatientView({
 						display: "flex",
 						flexDirection: "column",
 						paddingTop: "3rem",
+						paddingBottom: "3rem",
 					}}
 				>
 					<h2
@@ -315,7 +316,7 @@ export function CreatePatientView({
 						style={{
 							alignSelf: "center",
 							width: "30%",
-							height: "2.5rem",
+							height: "3rem",
 						}}
 					/>
 				</div>
