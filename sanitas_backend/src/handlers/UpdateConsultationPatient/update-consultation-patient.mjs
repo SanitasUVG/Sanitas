@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction, isEmailOfPatient } from "db-conn";
+import { getPgClient, isDoctor, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
@@ -74,33 +74,15 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 					{ email, patientId },
 					"Checking if email belongs to patient id",
 				);
-				const emailBelongs = await isEmailOfPatient(client, email, patientId);
 
-				if (emailBelongs.error) {
-					const msg =
-						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+				const msg = "Unauthorized, you're not a doctor!";
+				logger.error({ email, patientId }, msg);
 
-					const response = responseBuilder
-						.setStatusCode(500)
-						.setBody(emailBelongs)
-						.build();
-					return { response };
-				}
-
-				if (!emailBelongs) {
-					const msg = "The email doesn't belong to the patient id!";
-					logger.error({ email, patientId }, msg);
-
-					const response = responseBuilder
-						.setStatusCode(401)
-						.setBody({ error: msg })
-						.build();
-					return { response };
-				}
-				logger.info("The email belongs to the patient!");
-			} else {
-				logger.info("The user is a doctor!");
+				const response = responseBuilder
+					.setStatusCode(401)
+					.setBody({ error: msg })
+					.build();
+				return { response };
 			}
 
 			const { patientConsultation } = body;

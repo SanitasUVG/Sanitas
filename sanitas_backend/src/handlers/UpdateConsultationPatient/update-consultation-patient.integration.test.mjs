@@ -80,9 +80,7 @@ describe("Update Medical Consultation integration tests", () => {
 
 		expect(response.status).toBe(401);
 		expect(response.data.error).toBeDefined();
-		expect(response.data.error).toBe(
-			"The email doesn't belong to the patient id!",
-		);
+		expect(response.data.error).toBe("Unauthorized, you're not a doctor!");
 	});
 
 	test("Fail to update due to invalid patient ID", async () => {

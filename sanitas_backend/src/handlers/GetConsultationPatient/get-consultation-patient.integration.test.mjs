@@ -101,9 +101,7 @@ describe("Get Medical Consultation integration tests", () => {
 
 		expect(response).toBeDefined();
 		expect(response.status).toBe(401);
-		expect(response.data.error).toBe(
-			"The email doesn't belong to the patient id!",
-		);
+		expect(response.data.error).toBe("Unauthorized, you're not a doctor!");
 	});
 
 	test("Fail because of invalid JWT", async () => {
