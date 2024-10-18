@@ -65,7 +65,6 @@ export function StudentObGynHistory({
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				padding: "2rem",
-				gap: "1rem",
 			}}
 		>
 			<div>
@@ -85,11 +84,13 @@ export function StudentObGynHistory({
 
 			<div
 				style={{
-					width: "100%",
-					height: "100%",
 					backgroundColor: colors.secondaryBackground,
-					padding: "3.125rem",
-					borderRadius: "10px",
+					padding: "2rem",
+					borderRadius: "0.625rem",
+					overflow: "auto",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
@@ -1284,7 +1285,7 @@ function ObGynView({
 		>
 			<div
 				style={{
-					padding: "1rem",
+					padding: "2rem",
 					height: "65vh",
 					flex: 1.5,
 					overflowY: "auto",

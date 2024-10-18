@@ -9,7 +9,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import InformationCard from "src/components/InformationCard";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
-import { adjustWidth, adjustHeight } from "src/utils/measureScaling";
+import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
 
 /**
@@ -32,8 +32,6 @@ export function StudentTraumatologicalHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	const { height, width } = useWindowSize();
-
 	const id = useStore((s) => s.selectedPatientId);
 	//   const id = 1;
 	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
@@ -50,18 +48,14 @@ export function StudentTraumatologicalHistory({
 				flexDirection: "column",
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: adjustHeight(height, "2rem"),
-				overflow: width < 768 ? "auto" : "hidden", //Menor a 768px el overflow se oculta
+				padding: "2rem",
 			}}
 		>
 			<div
 				style={{
 					width: "100%",
 					height: "100%",
-					paddingTop: adjustHeight(height, "0rem"),
-					paddingBottom: adjustHeight(height, "1rem"),
-					paddingLeft: adjustWidth(width, "0rem"),
-					paddingRight: adjustWidth(width, "0rem"),
+					padding: "0 0 1rem 0",
 					flex: "0 0 20%",
 				}}
 			>
@@ -73,82 +67,62 @@ export function StudentTraumatologicalHistory({
 
 			<div
 				style={{
-					height: "100%",
-					width: "100%",
+					backgroundColor: colors.secondaryBackground,
+					padding: "2rem",
+					borderRadius: "10px",
+					flex: "1",
+					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<div
 					style={{
-						backgroundColor: colors.secondaryBackground,
-						padding: adjustHeight(height, "2rem"),
-						borderRadius: "0.625rem",
-						flex: "1",
-						minHeight: "80vh",
-						overflow: "auto",
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						textAlign: "center",
 					}}
 				>
-					<div
+					<h1
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
-							textAlign: "center",
+							color: colors.titleText,
+							fontFamily: fonts.titleFont,
+							fontSize: fontSize.titleSize,
 						}}
 					>
-						<h1
-							style={{
-								color: colors.titleText,
-								fontFamily: fonts.titleFont,
-								fontSize: fontSize.titleSize,
-							}}
-						>
-							Antecedentes Traumatológicos
-						</h1>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingTop: adjustHeight(height, "0.5rem"),
-								paddingBottom: adjustHeight(height, "0.2rem"),
-							}}
-						>
-							¿Se ha fracturado algún hueso?
-						</h3>
-						<h3
-							style={{
-								fontFamily: fonts.textFont,
-								fontWeight: "normal",
-								fontSize: fontSize.subtitleSize,
-								paddingBottom: "1.5rem",
-							}}
-						>
-							Por favor ingrese un elemento por fractura.
-						</h3>
-					</div>
-
-					<div
+						Antecedentes Traumatológicos
+					</h1>
+					<h3
 						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-between",
-							alignItems: "space-between",
-							width: "100%",
-							height: "30vh",
-							gap: adjustHeight(height, "2rem"),
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingTop: "0.5rem",
+							paddingBottom: "0.2rem",
 						}}
 					>
-						<Suspense fallback={<LoadingView />}>
-							<StudentTraumatologicalView
-								id={id}
-								birthdayResource={birthdayResource}
-								traumatologicHistoryResource={traumatologicHistoryResource}
-								updateTraumatologicalHistory={updateTraumatologicalHistory}
-							/>
-						</Suspense>
-					</div>
+						¿Se ha fracturado algún hueso?
+					</h3>
+					<h3
+						style={{
+							fontFamily: fonts.textFont,
+							fontWeight: "normal",
+							fontSize: fontSize.subtitleSize,
+							paddingBottom: "1.5rem",
+						}}
+					>
+						Por favor ingrese un elemento por fractura.
+					</h3>
 				</div>
+				<Suspense fallback={<LoadingView />}>
+					<StudentTraumatologicalView
+						id={id}
+						birthdayResource={birthdayResource}
+						traumatologicHistoryResource={traumatologicHistoryResource}
+						updateTraumatologicalHistory={updateTraumatologicalHistory}
+					/>
+				</Suspense>
 			</div>
 		</div>
 	);
@@ -326,29 +300,29 @@ function StudentTraumatologicalView({
 				display: "flex",
 				flexDirection: width < 768 ? "column-reverse" : "row",
 				width: "100%",
-				height: "165%",
-				gap: adjustHeight(height, "1.5rem"),
+				flexGrow: 1,
+				gap: "1.5rem",
 			}}
 		>
 			<div
 				style={{
 					border: `1px solid ${colors.primaryBackground}`,
 					borderRadius: "10px",
-					padding: adjustHeight(height, "0.625rem"),
-					height: width < 768 ? "85vh" : "61vh",
+					padding: "1rem",
+					height: "65vh",
 					flex: 1,
 					overflowY: "auto",
 				}}
 			>
 				<div
 					style={{
-						paddingBottom: adjustHeight(height, "0.5rem"),
+						paddingBottom: "0.5rem",
 					}}
 				>
 					<BaseButton
 						text="Agregar antecedente traumatológico"
 						onClick={handleOpenNewForm}
-						style={{ width: "100%", height: adjustHeight(height, "3rem") }}
+						style={{ width: "100%", height: "3rem" }}
 					/>
 				</div>
 
@@ -356,7 +330,7 @@ function StudentTraumatologicalView({
 					<div
 						style={{
 							color: "red",
-							paddingTop: adjustHeight(height, "1rem"),
+							paddingTop: "1rem",
 							textAlign: "center",
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.textSize,
@@ -370,7 +344,7 @@ function StudentTraumatologicalView({
 					<p
 						style={{
 							textAlign: "center",
-							paddingTop: adjustHeight(height, "1.25rem"),
+							paddingTop: "20px",
 						}}
 					>
 						¡Parece que no hay antecedentes traumatológicos! Agrega uno en el
@@ -393,19 +367,17 @@ function StudentTraumatologicalView({
 				<div
 					style={{
 						border: `1px solid ${colors.primaryBackground}`,
-						borderRadius: adjustWidth(width, "0.625rem"),
-						padding: adjustWidth(width, "1rem"),
-						height: width < 768 ? "85vh" : "61vh",
+						borderRadius: "10px",
+						padding: width < 768 ? "1rem" : "2rem",
+						height: width < 768 ? "auto" : "65vh",
 						flex: 1.5,
 						overflowY: "auto",
 						width: "100%",
-						paddingLeft: adjustWidth(width, "2rem"),
 					}}
 				>
 					<p
 						style={{
-							paddingBottom: adjustHeight(height, "0.5rem"),
-							paddingTop: adjustHeight(height, "1rem"),
+							paddingBottom: "0.5rem",
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -425,15 +397,15 @@ function StudentTraumatologicalView({
 							width: "90%",
 							height: "3rem",
 							fontFamily: fonts.textFont,
-							fontSize: adjustHeight(height, "1.10rem"),
+							fontSize: "1rem",
 						}}
 						disabled={!isEditable}
 					/>
 
 					<p
 						style={{
-							paddingBottom: adjustHeight(height, "0.5rem"),
-							paddingTop: adjustHeight(height, "1.5rem"),
+							paddingBottom: "0.5rem",
+							paddingTop: "2rem",
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
 						}}
@@ -473,8 +445,8 @@ function StudentTraumatologicalView({
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							gap: adjustHeight(height, "0.5rem"),
-							paddingLeft: adjustWidth(width, "1.5rem"),
+							gap: "0.5rem",
+							paddingLeft: "1.5rem",
 						}}
 					>
 						<RadioInput
@@ -508,10 +480,11 @@ function StudentTraumatologicalView({
 					<div
 						style={{
 							display: "flex",
+							flexDirection: width < 768 ? "column" : "row",
+							alignItems: "center",
 							justifyContent: "center",
-							paddingTop: width < 768 ? "2.5rem" : "5rem", //Cambia el padding top si es menor a 768px
-							paddingBottom: width < 768 ? "2.5rem" : "0rem", //Cambia el padding bottom si es menor a 768px
-							gap: adjustHeight(height, "0.5rem"),
+							paddingTop: "2rem",
+							gap: "0.5rem",
 						}}
 					>
 						{addingNew && (
@@ -519,15 +492,14 @@ function StudentTraumatologicalView({
 								<BaseButton
 									text="Guardar"
 									onClick={handleSaveNewTrauma}
-									style={{ width: "30%", height: adjustHeight(height, "3rem") }}
+									style={{ width: "12rem", height: "3rem" }}
 								/>
-								<div style={{ width: adjustWidth(width, "1rem") }} />
 								<BaseButton
 									text="Cancelar"
 									onClick={handleCancel}
 									style={{
-										width: "30%",
-										height: adjustHeight(height, "3rem"),
+										width: "12rem",
+										height: "3rem",
 										backgroundColor: "#fff",
 										color: colors.primaryBackground,
 										border: `1.5px solid ${colors.primaryBackground}`,

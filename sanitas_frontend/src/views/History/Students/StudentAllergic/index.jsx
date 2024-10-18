@@ -97,7 +97,7 @@ export function StudentAllergicHistory({
 							fontFamily: fonts.textFont,
 							fontWeight: "normal",
 							fontSize: fontSize.subtitleSize,
-							paddingTop: "0.7rem",
+							paddingTop: "0.5rem",
 							paddingBottom: "0.2rem",
 							textAlign: "center",
 						}}
