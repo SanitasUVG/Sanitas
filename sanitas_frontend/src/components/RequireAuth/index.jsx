@@ -38,7 +38,20 @@ export default function RequireAuth({ children, getSession, path, useStore }) {
 			}, 4000);
 		} else {
 			setIsRedirecting(false);
+			console.log("-----------LOGS-----------");
 			console.log("Session: ", session);
+			console.log("----------------------");
+			console.log("Session Id token: ", session.getIdToken);
+			console.log("----------------------");
+			console.log("Session Id token payload: ", session.getIdToken.payload);
+			console.log("----------------------");
+			console.log(
+				"Session Id token payload email: ",
+				session.getIdToken.payload.email,
+			);
+			console.log("----------------------");
+			console.log("Random Test: ", session.idToken.payload.email);
+			console.log("-----------END-----------");
 
 			setDisplayName(session.getIdToken.payload.email ?? "no-username-found");
 		}
