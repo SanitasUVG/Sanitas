@@ -45,15 +45,10 @@ export default function RequireAuth({ children, getSession, path, useStore }) {
 			console.log("----------------------");
 			console.log("Session Id token payload: ", session.getIdToken.payload);
 			console.log("----------------------");
-			console.log(
-				"Session Id token payload email: ",
-				session.getIdToken.payload.email,
-			);
-			console.log("----------------------");
 			console.log("Random Test: ", session.idToken.payload.email);
 			console.log("-----------END-----------");
 
-			setDisplayName(session.getIdToken.payload.email ?? "no-username-found");
+			setDisplayName(session.idToken.payload.email ?? "no-username-found");
 		}
 
 		return !sessionIsValid ? (
