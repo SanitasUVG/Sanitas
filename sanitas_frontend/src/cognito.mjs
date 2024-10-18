@@ -133,8 +133,7 @@ export async function mockGetSession(isDoctor = true) {
 	return {
 		result: {
 			isValid: () => true,
-			idToken: { jwtToken },
-			getAccessToken: () => ({ payload: { email: "emailrandom@gmail.com" } }),
+			idToken: { jwtToken, payload: { email: "emailrandom@gmail.com" } },
 		},
 	};
 }

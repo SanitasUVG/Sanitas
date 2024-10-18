@@ -54,8 +54,8 @@ export function StudentPersonalHistory({
 				fontFamily: fonts.textFont,
 				fontWeight: "normal",
 				fontSize: fontSize.subtitleSize,
-				paddingTop: "1rem", // Incrementar el espaciado superior
-				paddingBottom: "1.5rem", // Incrementar el espaciado inferior
+				paddingTop: "0.5rem",
+				paddingBottom: "1.5rem",
 				textAlign: isMobile ? "center" : "left",
 			},
 
@@ -65,15 +65,14 @@ export function StudentPersonalHistory({
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
 				overflow: isMobile ? "auto" : "none",
-				padding: "1rem",
+				padding: "2rem",
 			},
 			innerContent: {
 				backgroundColor: colors.secondaryBackground,
-				padding: "1rem",
+				padding: "2rem",
 				borderRadius: "0.625rem",
 				overflow: "auto",
 				minHeight: "84vh",
-				flex: 1,
 			},
 			innerContainer: {
 				border: `1px solid ${colors.primaryBackground}`,
@@ -306,7 +305,6 @@ function PersonalView({
 	const handleCancel = () => {
 		setSelectedPersonal({});
 		setAddingNew(false);
-		toast.info("Edición cancelada");
 	};
 
 	// Changes the disease selection from the dropdown, resetting other fields
@@ -476,7 +474,20 @@ function PersonalView({
 				borderRadius: "10px",
 				padding: "1rem",
 				paddingLeft: isMobile ? "1rem" : "2rem",
-				height: "65vh",
+				height: isMobile ? "60vh" : "65vh",
+				overflowY: "auto",
+				display: "flex",
+				flexDirection: "column",
+				"& button": {
+					height: "3rem",
+					fontSize: isMobile ? "0.875rem" : "1rem",
+				},
+			},
+			addDiseaseContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "1rem" : "2rem",
+				height: isMobile ? "auto" : "65vh",
 				overflowY: "auto",
 				display: "flex",
 				flexDirection: "column",
@@ -503,17 +514,17 @@ function PersonalView({
 				alignItems: "center",
 				justifyContent: "center",
 				gap: isMobile ? "1rem" : "1rem",
-				paddingTop: "2rem",
+				paddingTop: "3rem",
 			},
 			button: {
 				width: isMobile ? "100%" : "12rem",
+				height: "3rem",
 			},
 			addButton: {
 				width: "100%",
 				height: "3rem",
 			},
 			formContent: {
-				flex: 1,
 				display: "flex",
 				flexDirection: "column",
 			},
@@ -601,7 +612,7 @@ function PersonalView({
 
 			<div style={styles.rightContainer}>
 				{(addingNew || selectedPersonal.disease) && (
-					<div style={styles.innerContainer}>
+					<div style={styles.addDiseaseContainer}>
 						<div style={styles.formContent}>
 							<div style={styles.dropdownContainer}>
 								<p
@@ -654,7 +665,7 @@ function PersonalView({
 													})
 												}
 												disabled={!isEditable}
-												placeholder="Ingrese el tipo de cáncer"
+												placeholder="Especifique un único tipo de cáncer"
 												style={styles.baseInput}
 											/>
 
@@ -709,11 +720,10 @@ function PersonalView({
 														surgeryYear: e.target.value,
 													})
 												}
-												styles={{
-													container: { width: "90%" },
-													select: {},
-													option: {},
-													indicator: {},
+												style={{
+													container: {
+														minWidth: "90%",
+													},
 												}}
 											/>
 										</React.Fragment>

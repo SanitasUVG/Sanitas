@@ -216,6 +216,9 @@
           {
             packages =
               [
+                # Load and Stress testing
+                pkgs.k6
+
                 # General
                 pkgs.nodePackages.jsdoc
 

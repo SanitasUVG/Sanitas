@@ -49,11 +49,13 @@ export default function DropdownMenu({
 	const defaultStyles = {
 		container: {
 			position: "relative",
-			width: style.container?.width || "11.875rem",
+			width: style.container?.width || "15rem",
+			height: style.container?.height || "3rem",
 			...style.container,
 		},
 		select: {
 			width: "100%",
+			height: "100%",
 			backgroundColor: "#FFFFFF",
 			color: "#0F6838",
 			borderRadius: "5px",

@@ -56,7 +56,7 @@ export function StudentFamiliarHistory({
 				fontWeight: "normal",
 				fontSize: fontSize.subtitleSize,
 				paddingTop: "0.5rem",
-				paddingBottom: "3rem",
+				paddingBottom: "2rem",
 				textAlign: "center",
 			},
 			container: {
@@ -112,8 +112,8 @@ export function StudentFamiliarHistory({
 					>
 						<h1 style={styles.title}>Antecedentes Familiares</h1>
 						<h3 style={styles.subtitle}>
-							¿Alguien en su familia (padres, abuelos, hermanos, tíos) padece
-							alguna de las siguientes enfermedades?
+							¿Alguien en su familia (padres, abuelos, hermanos, tíos, etc...)
+							padece alguna de las siguientes enfermedades?
 						</h3>
 					</div>
 
@@ -527,7 +527,21 @@ function FamiliarView({
 				borderRadius: "10px",
 				padding: "1rem",
 				paddingLeft: isMobile ? "1rem" : "2rem",
-				height: isMobile ? "40vh" : "65vh", // Ajustamos la altura para móvil
+				height: isMobile ? "60vh" : "65vh",
+				overflowY: "auto",
+				display: isMobile ? "flex" : "block",
+				flexDirection: "column",
+				//especificaciones del botón
+				"& button": {
+					height: "3rem",
+					fontSize: isMobile ? "0.875rem" : "1rem",
+				},
+			},
+			addDiseaseContainer: {
+				border: `1px solid ${colors.primaryBackground}`,
+				borderRadius: "10px",
+				padding: isMobile ? "1rem" : "2rem",
+				height: isMobile ? "auto" : "65vh",
 				overflowY: "auto",
 				display: isMobile ? "flex" : "block",
 				flexDirection: "column",
@@ -559,9 +573,11 @@ function FamiliarView({
 			},
 			button: {
 				width: isMobile ? "100%" : "12rem",
+				height: "3rem",
 			},
 			addButton: {
 				width: "100%",
+				height: "3rem",
 			},
 		};
 	};
@@ -665,7 +681,7 @@ function FamiliarView({
 
 			{(addingNew || selectedFamiliar.disease) && (
 				<div style={styles.rightContainer}>
-					<div style={styles.innerContainer}>
+					<div style={styles.addDiseaseContainer}>
 						<div style={styles.dropdownContainer}>
 							<p
 								style={{
@@ -680,9 +696,10 @@ function FamiliarView({
 							<DropdownMenu
 								options={diseaseOptions}
 								value={selectedFamiliar.disease || ""}
+								disabled={!addingNew}
 								onChange={handleDiseaseChange}
 								style={{
-									container: { width: "100%" },
+									container: { width: "100%", height: "3rem" },
 									select: styles.dropdownSelect,
 									option: {},
 									indicator: {},
@@ -750,7 +767,7 @@ function FamiliarView({
 											}
 											placeholder={
 												selectedFamiliar.disease === "cancer"
-													? "Especifique el tipo de cáncer"
+													? "Especifique un único tipo de cáncer"
 													: selectedFamiliar.disease === "others"
 														? "Escriba la enfermedad"
 														: "Especifique el tipo de enfermedad (no obligatorio)"
@@ -771,7 +788,7 @@ function FamiliarView({
 												paddingBottom: "0.5rem",
 											}}
 										>
-											¿Quién?
+											¿Quién la padece?
 										</p>
 										<BaseInput
 											value={selectedFamiliar.relative || ""}
