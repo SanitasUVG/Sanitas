@@ -33,7 +33,7 @@ export function StudentNonPathologicalHistory({
 
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	//const id = 2;
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
@@ -182,12 +182,14 @@ function NonPathologicalView({
 		smoker.data ? smoker.data.smokes : false,
 	);
 	const [cigarettesPerDay, setCigarettesPerDay] = useState(
-		smoker.data && smoker.data.cigarettesPerDay != null
+		smoker.data &&
+			smoker.data.cigarettesPerDay != null &&
+			smoker.data.cigarettesPerDay !== 0
 			? smoker.data.cigarettesPerDay.toString()
 			: "",
 	);
 	const [smokingYears, setSmokingYears] = useState(
-		smoker.data && smoker.data.years != null
+		smoker.data && smoker.data.years != null && smoker.data.years !== 0
 			? smoker.data.years.toString()
 			: "",
 	);
@@ -196,7 +198,9 @@ function NonPathologicalView({
 		drink.data ? drink.data.drinks : false,
 	);
 	const [drinksPerMonth, setDrinksPerMonth] = useState(
-		drink.data && drink.data.drinksPerMonth != null
+		drink.data &&
+			drink.data.drinksPerMonth != null &&
+			drink.data.drinksPerMonth !== 0
 			? drink.data.drinksPerMonth.toString()
 			: "",
 	);
@@ -372,59 +376,47 @@ function NonPathologicalView({
 		const drinkData = nonPathologicalHistoryResult.result?.medicalHistory.drink;
 		const drugsData = nonPathologicalHistoryResult.result?.medicalHistory.drugs;
 
-		const initSmokingEditable =
-			(smokerData?.data?.cigarettesPerDay ?? 0) === 0 &&
-			(smokerData?.data?.years ?? 0) === 0;
-		const initAlcoholEditable = (drinkData?.data?.drinksPerMonth ?? 0) === 0;
-		const initDrugUseEditable =
-			(drugsData?.data?.drugType ?? "") === "" &&
-			(drugsData?.data?.frequency ?? "") === "";
-
 		setSmokingStatus(smokerData?.data?.smokes ?? false);
-		setCigarettesPerDay((smokerData?.data?.cigarettesPerDay ?? 0).toString());
-		setSmokingYears((smokerData?.data?.years ?? 0).toString());
-		setIsSmokingEditable(initSmokingEditable);
+		setCigarettesPerDay(
+			smokerData?.data?.cigarettesPerDay > 0
+				? smokerData.data.cigarettesPerDay.toString()
+				: "",
+		);
+		setSmokingYears(
+			smokerData?.data?.years > 0 ? smokerData.data.years.toString() : "",
+		);
+		setIsSmokingEditable(true);
 
 		setAlcoholConsumption(drinkData?.data?.drinks ?? false);
-		setDrinksPerMonth((drinkData?.data?.drinksPerMonth ?? 0).toString());
-		setIsAlcoholEditable(initAlcoholEditable);
+		setDrinksPerMonth(
+			drinkData?.data?.drinksPerMonth > 0
+				? drinkData.data.drinksPerMonth.toString()
+				: "",
+		);
+		setIsAlcoholEditable(true);
 
 		setDrugUse(drugsData?.data?.usesDrugs ?? false);
 		setDrugType(drugsData?.data?.drugType ?? "");
-		setDrugFrequency((drugsData?.data?.frequency ?? "").toString());
-		setIsDrugUseEditable(initDrugUseEditable);
+		setDrugFrequency(
+			drugsData?.data?.frequency ? drugsData.data.frequency.toString() : "",
+		);
+		setIsDrugUseEditable(true);
 	}, [nonPathologicalHistoryResult]);
 
-	// Ajustes en los manejadores para controlar la editabilidad correctamente
+	// Modifica estas funciones para permitir siempre cambiar entre Sí y No
 	const handleSmokingChange = (newStatus) => {
 		setSmokingStatus(newStatus);
-		if (
-			!newStatus ||
-			(Number.parseInt(cigarettesPerDay) === 0 &&
-				Number.parseInt(smokingYears) === 0)
-		) {
-			setIsSmokingEditable(true);
-		} else {
-			setIsSmokingEditable(false);
-		}
+		setIsSmokingEditable(true);
 	};
 
 	const handleAlcoholChange = (newStatus) => {
 		setAlcoholConsumption(newStatus);
-		if (!newStatus || Number.parseInt(drinksPerMonth) === 0) {
-			setIsAlcoholEditable(true);
-		} else {
-			setIsAlcoholEditable(false);
-		}
+		setIsAlcoholEditable(true);
 	};
 
 	const handleDrugUseChange = (newStatus) => {
 		setDrugUse(newStatus);
-		if (!newStatus || (drugType === "" && drugFrequency === "")) {
-			setIsDrugUseEditable(true);
-		} else {
-			setIsDrugUseEditable(false);
-		}
+		setIsDrugUseEditable(true);
 	};
 
 	const areAllFieldsPreFilled = () => {
@@ -486,6 +478,14 @@ function NonPathologicalView({
 				fontFamily: fonts.textFont,
 				fontSize: "1rem",
 			};
+
+	// Agrega esta función de utilidad en algún lugar apropiado de tu componente
+	const handleNumericInput = (value, setter) => {
+		// Permite solo dígitos y vacío
+		if (value === "" || /^[0-9]+$/.test(value)) {
+			setter(value);
+		}
+	};
 
 	return (
 		<div
@@ -563,18 +563,34 @@ function NonPathologicalView({
 								>
 									Tipo de sangre:
 								</p>
-								<BaseInput
-									type="text"
-									value={bloodTypeResult?.result?.bloodType ?? ""}
-									readOnly
-									placeholder="Tipo de sangre:"
-									style={{
-										width: isMobile ? "13rem" : "20rem",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
-								/>
+								<div style={{ display: "flex", alignItems: "center" }}>
+									<BaseInput
+										type="text"
+										value={bloodTypeResult?.result?.bloodType ?? ""}
+										readOnly
+										placeholder="Tipo de sangre:"
+										style={{
+											width: isMobile ? "13rem" : "20rem",
+											height: "2.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: "1rem",
+										}}
+									/>
+									{(!bloodTypeResult?.result?.bloodType ||
+										bloodTypeResult?.result?.bloodType === "") && (
+										<span
+											style={{
+												marginLeft: "1rem",
+												color: colors.warning,
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.smallText,
+											}}
+										>
+											Por favor completar la información de tipo de sangre en la
+											sección de generales
+										</span>
+									)}
+								</div>
 							</div>
 						</div>
 						<div
@@ -632,10 +648,24 @@ function NonPathologicalView({
 											<BaseInput
 												type="number"
 												value={cigarettesPerDay}
-												onChange={(e) => setCigarettesPerDay(e.target.value)}
+												onChange={(e) =>
+													handleNumericInput(
+														e.target.value,
+														setCigarettesPerDay,
+													)
+												}
+												onKeyDown={(e) => {
+													if (
+														!/[0-9]/.test(e.key) &&
+														e.key !== "Backspace" &&
+														e.key !== "Delete" &&
+														e.key !== "ArrowLeft" &&
+														e.key !== "ArrowRight"
+													) {
+														e.preventDefault();
+													}
+												}}
 												placeholder="Ingrese cuántos cigarrillos al día"
-												min="1"
-												readOnly={!isSmokingEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -646,10 +676,21 @@ function NonPathologicalView({
 											<BaseInput
 												type="number"
 												value={smokingYears}
-												onChange={(e) => setSmokingYears(e.target.value)}
+												onChange={(e) =>
+													handleNumericInput(e.target.value, setSmokingYears)
+												}
+												onKeyDown={(e) => {
+													if (
+														!/[0-9]/.test(e.key) &&
+														e.key !== "Backspace" &&
+														e.key !== "Delete" &&
+														e.key !== "ArrowLeft" &&
+														e.key !== "ArrowRight"
+													) {
+														e.preventDefault();
+													}
+												}}
 												placeholder="Ingrese desde hace cuántos años"
-												min="1"
-												readOnly={!isSmokingEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -719,10 +760,21 @@ function NonPathologicalView({
 											<BaseInput
 												type="number"
 												value={drinksPerMonth}
-												onChange={(e) => setDrinksPerMonth(e.target.value)}
+												onChange={(e) =>
+													handleNumericInput(e.target.value, setDrinksPerMonth)
+												}
+												onKeyDown={(e) => {
+													if (
+														!/[0-9]/.test(e.key) &&
+														e.key !== "Backspace" &&
+														e.key !== "Delete" &&
+														e.key !== "ArrowLeft" &&
+														e.key !== "ArrowRight"
+													) {
+														e.preventDefault();
+													}
+												}}
 												placeholder="Ingrese cuántas bebidas al mes"
-												min="1"
-												readOnly={!isAlcoholEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -759,14 +811,12 @@ function NonPathologicalView({
 									checked={drugUse}
 									onChange={() => handleDrugUseChange(true)}
 									label="Sí"
-									disabled={!isDrugUseEditable}
 								/>
 								<RadioInput
 									name="drugUse"
 									checked={!drugUse}
 									onChange={() => handleDrugUseChange(false)}
 									label="No"
-									disabled={!isDrugUseEditable}
 								/>
 							</div>
 							{drugUse && (
