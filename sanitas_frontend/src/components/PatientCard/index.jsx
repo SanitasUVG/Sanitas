@@ -48,16 +48,15 @@ export default function PatientCard({
 		mainContainer: {
 			display: "flex",
 			flexDirection: "column",
-			width: "80%",
+			width: "84.5%",
 			height: "85%",
-			overflowX: "hidden",
-			overflowY: "auto",
+			gap: "1.5rem",
 			...style.mainContainer,
 		},
 		secondaryContainer: {
 			display: "flex",
 			flexDirection: "column",
-			width: "80%",
+			width: "100%",
 			justifyContent: "center",
 			...style.secondaryContainer,
 		},
@@ -106,8 +105,6 @@ export default function PatientCard({
 		return (
 			<div
 				style={{
-					width: "70%",
-					height: "85%",
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
@@ -154,6 +151,10 @@ export default function PatientCard({
 						<BaseButton
 							text="Ver"
 							onClick={genViewPatientBtnClick(patient.id)}
+							style={{
+								width: "60%",
+								height: "2.5rem",
+							}}
 						/>
 					</div>
 				</div>

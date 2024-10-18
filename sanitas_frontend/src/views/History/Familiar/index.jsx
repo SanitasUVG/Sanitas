@@ -632,7 +632,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										}
 										readOnly={!isEditable}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
-										style={{ width: "90%", height: "2.5rem" }}
+										style={{ width: "90%", height: "3rem" }}
 									/>
 								</>
 							)}
@@ -673,7 +673,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 													: "Especifique el tipo de enfermedad (no obligatorio)"
 										}
 										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
+										style={{ width: "90%", height: "3rem" }}
 									/>
 								</>
 							)}
@@ -700,7 +700,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										}
 										placeholder="Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)"
 										readOnly={!isEditable}
-										style={{ width: "90%", height: "2.5rem" }}
+										style={{ width: "90%", height: "3rem" }}
 									/>
 								</>
 							)}
@@ -741,7 +741,7 @@ function FamiliarView({ id, familiarHistoryResource, updateFamiliarHistory }) {
 										display: "flex",
 										justifyContent: "center",
 										alignItems: "center",
-										paddingTop: "2rem",
+
 										gap: "1rem",
 									}}
 								>
