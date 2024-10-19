@@ -250,31 +250,74 @@ describe("Update Allergic Medical History integration tests", () => {
 			medicalHistory: {
 				medication: {
 					version: 1,
-					data: [{ name: "Penicillin", severity: "high" }],
+					data: [
+						{
+							name: "Medicación 1",
+							severity: "Cutánea",
+						},
+						{
+							name: "Medicación 2",
+							severity: "Respiratoria",
+						},
+						{
+							name: "Medicación 3",
+							severity: "Ambos",
+						},
+					],
 				},
 				food: {
 					version: 1,
-					data: [],
+					data: [
+						{
+							name: "Comida 1",
+							severity: "Cutánea",
+						},
+					],
 				},
 				dust: {
 					version: 1,
-					data: [{ source: "Dust" }],
+					data: [
+						{
+							name: "Polvo 1",
+							severity: "Cutánea",
+						},
+					],
 				},
 				pollen: {
 					version: 1,
-					data: [],
+					data: [
+						{
+							name: "Pollen 1",
+							severity: "Respiratoria",
+						},
+					],
 				},
 				climateChange: {
 					version: 1,
-					data: [{ region: "High Altitude" }],
+					data: [
+						{
+							name: "Clima 1",
+							severity: "Cutánea",
+						},
+					],
 				},
 				animals: {
 					version: 1,
-					data: [{ type: "Cats" }],
+					data: [
+						{
+							name: "Animales 1",
+							severity: "Respiratoria",
+						},
+					],
 				},
 				others: {
 					version: 1,
-					data: [],
+					data: [
+						{
+							name: "Otros 1",
+							severity: "Ambos",
+						},
+					],
 				},
 			},
 		};
