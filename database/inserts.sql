@@ -30,7 +30,7 @@ INSERT INTO PACIENTE (
     'juan.perez@example.com',
     FALSE,
     'Juan',
-    'Pérez',
+    'López Pérez',
     'Maria Pérez',
     'Madre',
     '987654321',
