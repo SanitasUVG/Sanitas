@@ -1263,7 +1263,7 @@ objeto JSON que lista los datos requeridos.
     "firstMenstrualPeriod": {
       "version": 1,
       "data": {
-        "age": "13"
+        "age": 13
       }
     },
     "regularCycles": {
@@ -1327,39 +1327,37 @@ objeto JSON que lista los datos requeridos.
     "hasSurgeries": {
       "version": 1,
       "data": {
-        "hysterectomy": [
-          {
-            "year": "1993",
-            "complications": true
-          }
-        ],
-        "sterilizationSurgery": [
-          {
-            "year": "2005",
-            "complications": true
-          }
-        ],
+        "hysterectomy": {
+          "year": 1993,
+          "complications": true
+        },
+
+        "sterilizationSurgery": {
+          "year": 2005,
+          "complications": true
+        },
+
         "ovarianCystsSurgery": [
           {
-            "year": "2006",
+            "year": 2006,
             "complications": true
           },
           {
-            "year": "2010",
+            "year": 2010,
             "complications": true
           },
           {
-            "year": "2011",
+            "year": 2011,
             "complications": true
           }
         ],
         "breastMassResection": [
           {
-            "year": "2007",
+            "year": 2007,
             "complications": true
           },
           {
-            "year": "2008",
+            "year": 2008,
             "complications": true
           }
         ]
@@ -1382,7 +1380,7 @@ objeto JSON que lista los datos requeridos.
     "firstMenstrualPeriod": {
       "version": 1,
       "data": {
-        "age": "13"
+        "age": 13
       }
     },
     "regularCycles": {
@@ -1446,39 +1444,37 @@ objeto JSON que lista los datos requeridos.
     "hasSurgeries": {
       "version": 1,
       "data": {
-        "hysterectomy": [
-          {
-            "year": "1993",
-            "complications": true
-          }
-        ],
-        "sterilizationSurgery": [
-          {
-            "year": "2005",
-            "complications": true
-          }
-        ],
+        "hysterectomy": {
+          "year": 1993,
+          "complications": true
+        },
+
+        "sterilizationSurgery": {
+          "year": 2005,
+          "complications": true
+        },
+
         "ovarianCystsSurgery": [
           {
-            "year": "2006",
+            "year": 2006,
             "complications": true
           },
           {
-            "year": "2010",
+            "year": 2010,
             "complications": true
           },
           {
-            "year": "2011",
+            "year": 2011,
             "complications": true
           }
         ],
         "breastMassResection": [
           {
-            "year": "2007",
+            "year": 2007,
             "complications": true
           },
           {
-            "year": "2008",
+            "year": 2008,
             "complications": true
           }
         ]
