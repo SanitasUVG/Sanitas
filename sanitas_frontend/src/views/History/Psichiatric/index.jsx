@@ -562,12 +562,18 @@ function PsichiatricView({
 	};
 
 	// Save the new Allergic record to the database
+	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: It's the function to update the arrays and objects in JSON.
 	const handleSaveNewHistory = async () => {
 		// Validación de entradas antes de intentar guardar
 		if (!validateInputs()) return;
 
 		// Mostrar mensaje de carga
-		toast.info("Guardando antecedentes psiquiátricos...");
+		const isUpdating = isEditable; // Determina si se está actualizando
+		toast.info(
+			isUpdating
+				? "Actualizando antecedentes psiquiátricos..."
+				: "Guardando antecedentes psiquiátricos...",
+		);
 
 		// Construir el objeto newHistoryData usando los estados actuales
 		const newHistoryData = {
@@ -631,14 +637,18 @@ function PsichiatricView({
 		try {
 			const result = await updatePsichiatricHistory(id, newHistoryData);
 			if (!result.error) {
-				toast.success("Antecedentes psiquiátricos guardados con éxito.");
+				toast.success(
+					isUpdating
+						? "Antecedente psiquiátrico actualizado con éxito."
+						: "Antecedente psiquiátrico guardado con éxito.",
+				); // Mensaje de éxito
 				setIsEditable(false);
 				triggerReload();
 			} else {
-				toast.error(`Error al guardar los antecedentes: ${result.error}`);
+				toast.error(`Error al guardar los antecedentes: ${result.error}`); // Mensaje de error
 			}
 		} catch (error) {
-			toast.error(`Error en la operación: ${error.message}`);
+			toast.error(`Error en la operación: ${error.message}`); // Mensaje de error
 		}
 	};
 

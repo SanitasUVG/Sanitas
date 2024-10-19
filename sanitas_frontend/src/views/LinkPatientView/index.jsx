@@ -86,7 +86,7 @@ export function LinkPatientView({ linkAccount }) {
 				<img
 					src={logoSanitas}
 					style={{
-						width: "40%",
+						width: "35%",
 						alignSelf: "center",
 					}}
 					alt="Logo Sanitas"
@@ -119,7 +119,7 @@ export function LinkPatientView({ linkAccount }) {
 					<label
 						style={{
 							fontFamily: fonts.textFont,
-							fontSize: fontSize.textSize,
+							fontSize: "1.2rem",
 							color: colors.primaryText,
 						}}
 					>
@@ -133,7 +133,7 @@ export function LinkPatientView({ linkAccount }) {
 					>
 						<BaseInput
 							type="number"
-							placeholder="2834723615201"
+							placeholder="0297303412106"
 							value={cui}
 							onChange={(e) => setCui(e.target.value)}
 							style={{
