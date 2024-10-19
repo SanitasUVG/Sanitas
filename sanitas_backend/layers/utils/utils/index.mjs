@@ -1079,7 +1079,6 @@ function areFieldsEqual(newItem, oldItem) {
 
 export function mapToAPIMedicalConsultation(dbData) {
 	return {
-		patientId: dbData.id_paciente,
 		patientConsultation: {
 			version: 1,
 			data: {
