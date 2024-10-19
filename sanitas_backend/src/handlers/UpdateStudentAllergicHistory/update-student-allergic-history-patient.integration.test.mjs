@@ -175,4 +175,69 @@ describe("Update Allergic History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient medical history", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				medication: {
+					version: 1,
+					data: [{ name: "Penicillin", severity: "high" }],
+				},
+				food: {
+					version: 1,
+					data: [],
+				},
+				dust: {
+					version: 1,
+					data: [{ source: "Dust" }],
+				},
+				pollen: {
+					version: 1,
+					data: [],
+				},
+				climateChange: {
+					version: 1,
+					data: [{ region: "High Altitude" }],
+				},
+				animals: {
+					version: 1,
+					data: [{ type: "Cats" }],
+				},
+				others: {
+					version: 1,
+					data: [],
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				medication: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							name: expect.any(String),
+							severity: expect.any(String),
+						}),
+					]),
+				},
+				food: expect.any(Object),
+				dust: expect.any(Object),
+				pollen: expect.any(Object),
+				climateChange: expect.any(Object),
+				animals: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });
