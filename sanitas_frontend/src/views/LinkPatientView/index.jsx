@@ -119,6 +119,7 @@ export function LinkPatientView({ linkAccount }) {
 						flexDirection: "column", // Cambiar a columna para que el label esté arriba
 						gap: ".5rem",
 						width: "80%",
+						alignItems: isMobile ? "center" : "flex-start", // Centrar solo en móvil
 					}}
 				>
 					<label
@@ -126,11 +127,19 @@ export function LinkPatientView({ linkAccount }) {
 							fontFamily: fonts.textFont,
 							fontSize: "1.2rem",
 							color: colors.primaryText,
+							textAlign: isMobile ? "center" : "left", // Centrar el texto solo en móvil
 						}}
 					>
 						Ingrese su CUI:
 					</label>
-					<div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							width: "100%",
+							justifyContent: isMobile ? "center" : "flex-start",
+						}}
+					>
 						<BaseInput
 							type="number"
 							placeholder="0297303412106"
