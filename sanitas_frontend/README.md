@@ -25,34 +25,30 @@ Para correr el storybook de forma local puedes ejecutar el siguiente comando:
 yarn run storybook
 ```
 
-Para probar las distintas funcionalidades del proyecto, que son:
+Para probar la aplicaciones de forma local en develop se necesita levantar todos
+los servicios:
 
 - Backend
-- frontend
-- postgres
+- Frontend
+- DB
+
+El siguiente comando de Nix levanta estos servicios de forma autónoma:
+
+```bash
+# /Sanitas - La carpeta root del repositorio
+nix run .#restartServices
+```
+
+El comando anterior borra la base de datos y la reinicia desde 0, si te gustaría
+mantener la data creada con anterioridad, entra a la consola de desarrollo con
+`nix develop --impure` y ejecuta:
+
+```bash
+devenv up
+```
 
 Revisar siempre cada una de las tabs, en especial las de backend y frontend
 para poder ver los logs de los distintos servicios.
-
-Para levantar estos servicios se utiliza en primera instancia
-(no es 100% requerido):
-
-```bash
-nix develop --impure
-```
-
-Una vez dentro del `devenv` ahora utiliza el comando:
-
-```bash
-nix run .#restarServices
-```
-
-Una vez dentro de la consola de servicios recuerda siempre reiniciar el
-servicio de `postgres` con `CTRL + R`.
-
-Luego puedes abrir otra instancia de tu consola para trabajar en el `devenv`.
-
-// TODO: Explicar cómo añadir compomentes/vistas
 
 ### Testeo de componentes
 
