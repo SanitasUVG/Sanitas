@@ -185,7 +185,13 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 
 		const updatedRecord = mapToAPIMedicalConsultation(result.rows[0]);
 		logger.info({ updatedRecord }, "Successfully updated medical consultation");
-		return responseBuilder.setStatusCode(200).setBody(updatedRecord).build();
+		return responseBuilder
+			.setStatusCode(200)
+			.setBody({
+				patientId: patientId,
+				patientConsultation: updatedRecord.patientConsultation,
+			})
+			.build();
 	} catch (error) {
 		logger.error(
 			{ error },

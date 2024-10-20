@@ -27,7 +27,7 @@ function generateValidUpdate(patientId) {
 				systolicPressure: 120,
 				diastolicPressure: 80,
 				oxygenSaturation: 98,
-				respiratoryRate: "15JASDJK",
+				respiratoryRate: 15,
 				heartRate: 70,
 				glucometry: 90,
 				medications: [
@@ -64,6 +64,8 @@ describe("Update Medical Consultation integration tests", () => {
 		const response = await axios.put(API_URL, updateData, {
 			headers: validHeaders,
 		});
+
+		console.log(response.data);
 
 		expect(response.status).toBe(200);
 		expect(response.data).toBeDefined();
@@ -130,7 +132,7 @@ describe("Update Medical Consultation integration tests", () => {
 					systolicPressure: expect.any(Number),
 					diastolicPressure: expect.any(Number),
 					oxygenSaturation: expect.any(Number),
-					respiratoryRate: expect.any(String),
+					respiratoryRate: expect.any(Number),
 					heartRate: expect.any(Number),
 					glucometry: expect.any(Number),
 					medications: expect.arrayContaining([

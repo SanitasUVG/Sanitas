@@ -402,7 +402,7 @@ export const genDefaultMedicalConsultation = () => ({
 					systolicPressure: 0.0,
 					diastolicPressure: 0.0,
 					oxygenSaturation: 0.0,
-					respiratoryRate: "",
+					respiratoryRate: 0.0,
 					heartRate: 0.0,
 					glucometry: 0.0,
 					medications: [

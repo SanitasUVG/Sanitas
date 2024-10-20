@@ -1091,7 +1091,7 @@ export function mapToAPIMedicalConsultation(dbData) {
 				systolicPressure: dbData.presion_sistolica || 0.0,
 				diastolicPressure: dbData.presion_diastolica || 0.0,
 				oxygenSaturation: dbData.saturacion_oxigeno || 0.0,
-				respiratoryRate: dbData.frecuencia_respiratoria || "",
+				respiratoryRate: dbData.frecuencia_respiratoria || 0.0,
 				heartRate: dbData.frecuencia_cardiaca || 0.0,
 				glucometry: dbData.glucometria || 0.0,
 				medications: dbData.medicamentos_data,
