@@ -8,8 +8,6 @@ import { BaseInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import IconButton from "src/components/Button/Icon";
-import { DateInput } from "src/components/Input/index";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 
 export function StudentAppointments({
@@ -123,12 +121,116 @@ function StudentAppointmentsView({
 	updateAppointment,
 	displayName,
 }) {
-	const [selectedAppointment, setselectedAppointment] = useState({});
+	const appointmentResult = appointmentResource.read();
+	console.log("Resultado de la información que viene: ", appointmentResult);
+
+	const [selectedAppointment, setselectedAppointment] = useState(null);
+	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
 
-	// Identificador de medicamentos
+	//Read the data from the resource and handle any potential errors
+	let errorMessage = "";
+	if (appointmentResult.error) {
+		const error = appointmentResult.error;
+		if (error?.response) {
+			const { status } = error.response;
+			if (status < 500) {
+				errorMessage =
+					"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
+			} else {
+				errorMessage = "Ha ocurrido un error interno, lo sentimos.";
+			}
+		} else {
+			errorMessage =
+				"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
+		}
+	}
 
+	// Handlers for different actions within the component
+	const handleOpenNewForm = () => {
+		const newAppointmentDate = getFormattedDateTime();
+		setAddingNew(true);
+		setIsEditable(true);
+
+		setCurrentAppointment({
+			date: newAppointmentDate,
+			formattedDate: newAppointmentDate,
+			evaluator: displayName,
+		});
+	};
+
+	const handleCancel = () => {
+		setselectedAppointment(null);
+		setAddingNew(false);
+		setIsEditable(false);
+	};
+
+	function getFormattedDateTime(dateString = null) {
+		const date = dateString ? new Date(dateString) : new Date();
+		return date.toLocaleString("es-ES", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: false,
+		});
+	}
+
+	let appointData = appointmentResult.result?.consultations || [];
+
+	const [appointmentHistory, setAppointmentHistory] = useState({
+		data: appointData,
+		version:
+			appointmentResult?.consultations?.[0]?.patientConsultation?.version || 1,
+	});
+
+	const handleSelectAppointment = (appointment, index) => {
+		const formattedDate = getFormattedDateTime(
+			appointment.patientConsultation.data.date,
+		);
+
+		setselectedAppointment({
+			...appointment,
+			index: index,
+			formattedDate: formattedDate, // Guarda la fecha formateada en el estado
+		});
+
+		setCurrentAppointment({
+			date: appointment.patientConsultation.data.date,
+			formattedDate: formattedDate, // Formato de la fecha existente
+			evaluator: appointment.patientConsultation.data.evaluator, // Evaluador existente
+			reason: appointment.patientConsultation.data.reason || "", // Motivo de consulta
+			diagnosis: appointment.patientConsultation.data.diagnosis || "", // Diagnóstico
+			physicalExam: appointment.patientConsultation.data.physicalExam || "", // Examen físico
+			temperature: appointment.patientConsultation.data.temperature || "", // Temperatura
+			systolicPressure:
+				appointment.patientConsultation.data.systolicPressure || "", // Presión sistólica
+			diastolicPressure:
+				appointment.patientConsultation.data.diastolicPressure || "", // Presión diastólica
+			oxygenSaturation:
+				appointment.patientConsultation.data.oxygenSaturation || "", // Saturación de oxígeno
+			respiratoryRate:
+				appointment.patientConsultation.data.respiratoryRate || "", // Frecuencia respiratoria
+			heartRate: appointment.patientConsultation.data.heartRate || "", // Frecuencia cardiaca
+			glucometry: appointment.patientConsultation.data.glucometry || "", // Glucometría
+			medications: appointment.patientConsultation.data.medications || [], // Medicamentos
+			notes: appointment.patientConsultation.data.notes || "", // Notas adicionales
+		});
+
+		setMedications(appointment.patientConsultation.data.medications || []);
+		setAddingNew(false);
+		setIsEditable(false);
+	};
+
+	const noAppointmentData =
+		appointmentHistory.data.length === 0 ||
+		appointmentHistory.data.every(
+			(appointment) => !appointment.patientConsultation.data.date,
+		);
+
+	// Identificador de medicamentos
 	const [medications, setMedications] = useState([]);
 
 	const addMedication = () => {
@@ -138,59 +240,15 @@ function StudentAppointmentsView({
 				id: medications.length + 1,
 				diagnosis: "",
 				medication: "",
-				quantity: 0,
+				quantity: "",
 			},
 		]);
 	};
-
+	// Botón de cancelar medicamento
 	const removeMedication = (index) => {
 		const newMedications = medications.filter((_, i) => i !== index);
 		setMedications(newMedications);
 	};
-
-	// Read the data from the resource and handle any potential errors
-	// const appointmentResult = appointmentResource.read();
-	// let errorMessage = "";
-	// if (appointmentResult.error) {
-	// 	const error = appointmentResult.error;
-	// 	if (error?.response) {
-	// 		const { status } = error.response;
-	// 		if (status < 500) {
-	// 			errorMessage =
-	// 				"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
-	// 		} else {
-	// 			errorMessage = "Ha ocurrido un error interno, lo sentimos.";
-	// 		}
-	// 	} else {
-	// 		errorMessage =
-	// 			"Ha ocurrido un error procesando tu solicitud, por favor vuelve a intentarlo.";
-	// 	}
-	// }
-
-	// // No appointment data in API
-	// const noAppointmentData = Object.keys(familiarHistory).every(
-	// 	(key) =>
-	// 		familiarHistory[key]?.data && familiarHistory[key].data.length === 0,
-	// );
-
-	// Handlers for different actions within the component
-	const handleOpenNewForm = () => {
-		setAddingNew(true);
-		setIsEditable(true);
-	};
-
-	const handleCancel = () => {
-		setselectedAppointment({});
-		setAddingNew(false);
-		setIsEditable(false);
-	};
-
-	const today = new Date();
-	const formattedDate = today.toLocaleDateString("es", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
 
 	const updateAppointmentState = async (newEntry) => {};
 
@@ -228,7 +286,7 @@ function StudentAppointmentsView({
 					/>
 				</div>
 
-				{/* {errorMessage && (
+				{errorMessage && (
 					<div
 						style={{
 							color: "red",
@@ -241,36 +299,35 @@ function StudentAppointmentsView({
 						{errorMessage}
 					</div>
 				)}
-				*/}
 
-				{/* {noAppointmentData && !errorMessage ? (
-                    <p style={{ textAlign: "center", paddingTop: "20px" }}>
-                        ¡Parece que no hay citas registradas! Agrega una en el botón de
-                        arriba.
-                    </p>
-                ) : (
-                    Object.keys(AllergicHistory || {}).map((category) => {
-                        return AllergicHistory[category]?.data?.map((allergy) => {
-                            return (
-                                <InformationCard
-                                    key={`${category}-${allergy.name || allergy.id}`}
-                                    type="appointment"
-                                    date={allergy.name || "Sin Nombre"}
-                                    reasonAppointment={allergy.severity || "Sin Severidad"}
-                                    onClick={() =>
-                                        handleSelectAllergie({ ...allergy, selectedMed: category })
-                                    }
-                                />
-                            );
-                        });
-                    })
-                )} */}
+				{noAppointmentData && !errorMessage ? (
+					<p style={{ textAlign: "center", paddingTop: "20px" }}>
+						¡Parece que no hay citas registradas! Agrega una en el botón de
+						arriba.
+					</p>
+				) : (
+					appointmentHistory.data.map((appointment, index) => (
+						<InformationCard
+							key={`appointment-${index}`}
+							type="appointment"
+							date={
+								getFormattedDateTime(
+									appointment.patientConsultation.data.date,
+								) || "Sin Fecha"
+							}
+							reasonAppointment={
+								appointment.patientConsultation.data.reason || "Sin Motivo"
+							}
+							onClick={() => handleSelectAppointment(appointment, index)}
+						/>
+					))
+				)}
 			</div>
 
-			{addingNew || selectedAppointment.disease ? (
+			{addingNew || selectedAppointment ? (
 				<div
 					style={{
-						border: `0.063rem solid ${colors.primaryBackground}`,
+						border: `1px solid ${colors.primaryBackground}`,
 						borderRadius: "0.625rem",
 						padding: "1rem",
 						height: "65vh",
@@ -302,7 +359,7 @@ function StudentAppointmentsView({
 								fontSize: fontSize.textSize,
 							}}
 						>
-							{formattedDate}
+							{currentAppointment?.formattedDate || "No disponible"}
 						</span>
 					</div>
 
@@ -327,7 +384,7 @@ function StudentAppointmentsView({
 								fontSize: fontSize.textSize,
 							}}
 						>
-							{displayName}
+							{currentAppointment?.evaluator || displayName}
 						</span>
 					</div>
 
@@ -353,6 +410,14 @@ function StudentAppointmentsView({
 							Motivo de consulta:
 						</p>
 						<ExpandingBaseInput
+							value={currentAppointment?.reason || ""}
+							onChange={(e) =>
+								setCurrentAppointment({
+									...currentAppointment,
+									reason: e.target.value,
+								})
+							}
+							disabled={!isEditable}
 							style={{
 								width: "95%",
 								height: "3rem",
@@ -373,6 +438,14 @@ function StudentAppointmentsView({
 							Diagnóstico:
 						</p>
 						<ExpandingBaseInput
+							value={currentAppointment?.diagnosis || ""}
+							onChange={(e) =>
+								setCurrentAppointment({
+									...currentAppointment,
+									diagnosis: e.target.value,
+								})
+							}
+							disabled={!isEditable}
 							style={{
 								width: "95%",
 								height: "3rem",
@@ -394,6 +467,14 @@ function StudentAppointmentsView({
 						</p>
 
 						<ExpandingBaseInput
+							value={currentAppointment?.physicalExam || ""}
+							onChange={(e) =>
+								setCurrentAppointment({
+									...currentAppointment,
+									physicalExam: e.target.value,
+								})
+							}
+							disabled={!isEditable}
 							style={{
 								width: "95%",
 								height: "3rem",
@@ -428,11 +509,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Temperatura:
 								</p>
 								<BaseInput
+									value={currentAppointment?.temperature || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											temperature: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -449,11 +539,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Presión sistólica:
 								</p>
 								<BaseInput
+									value={currentAppointment?.systolicPressure || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											systolicPressure: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -470,11 +569,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Presión diastólica:
 								</p>
 								<BaseInput
+									value={currentAppointment?.diastolicPressure || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											diastolicPressure: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -491,11 +599,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Saturación:
 								</p>
 								<BaseInput
+									value={currentAppointment?.oxygenSaturation || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											oxygenSaturation: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -512,11 +629,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Frecuencia Respiratoria:
 								</p>
 								<BaseInput
+									value={currentAppointment?.respiratoryRate || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											respiratoryRate: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -533,11 +659,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Frecuencia Cardiaca:
 								</p>
 								<BaseInput
+									value={currentAppointment?.heartRate || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											heartRate: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -554,11 +689,20 @@ function StudentAppointmentsView({
 									style={{
 										fontFamily: fonts.textFont,
 										fontSize: fontSize.textSize,
+										paddingTop: "0.4rem",
 									}}
 								>
 									Glucometría:
 								</p>
 								<BaseInput
+									value={currentAppointment?.glucometry || ""}
+									onChange={(e) =>
+										setCurrentAppointment({
+											...currentAppointment,
+											glucometry: e.target.value,
+										})
+									}
+									disabled={!isEditable}
 									type="number"
 									step="0.01"
 									min="0.01"
@@ -581,7 +725,7 @@ function StudentAppointmentsView({
 						/>
 
 						{medications.map((medication, index) => (
-							<div key={medication.id}>
+							<div key={index}>
 								<div
 									style={{
 										padding: "1rem 0 1rem 0",
@@ -608,6 +752,17 @@ function StudentAppointmentsView({
 										Diagnóstico:
 									</p>
 									<ExpandingBaseInput
+										value={medication.diagnosis || ""}
+										onChange={(e) => {
+											const newMedications = [...medications];
+											newMedications[index].diagnosis = e.target.value;
+											setMedications(newMedications);
+											setCurrentAppointment({
+												...currentAppointment,
+												medications: newMedications,
+											});
+										}}
+										disabled={!isEditable}
 										style={{
 											width: "95%",
 											height: "3rem",
@@ -627,6 +782,17 @@ function StudentAppointmentsView({
 										Medicamento:
 									</p>
 									<ExpandingBaseInput
+										value={medication.medication || ""}
+										onChange={(e) => {
+											const newMedications = [...medications];
+											newMedications[index].medication = e.target.value;
+											setMedications(newMedications);
+											setCurrentAppointment({
+												...currentAppointment,
+												medications: newMedications,
+											});
+										}}
+										disabled={!isEditable}
 										style={{
 											width: "95%",
 											height: "3rem",
@@ -646,6 +812,17 @@ function StudentAppointmentsView({
 										Cantidad:
 									</p>
 									<ExpandingBaseInput
+										value={medication.quantity || ""}
+										onChange={(e) => {
+											const newMedications = [...medications];
+											newMedications[index].quantity = e.target.value;
+											setMedications(newMedications);
+											setCurrentAppointment({
+												...currentAppointment,
+												medications: newMedications,
+											});
+										}}
+										disabled={!isEditable}
 										style={{
 											width: "95%",
 											height: "3rem",
@@ -656,56 +833,62 @@ function StudentAppointmentsView({
 									/>
 								</div>
 
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										width: "100%",
-										paddingTop: "1rem",
-									}}
-								>
-									<BaseButton
-										text="Cancelar nuevo medicamento"
-										onClick={() => removeMedication(index)}
-										style={{
-											width: "40%",
-											height: "3rem",
-											backgroundColor: "#fff",
-											color: colors.primaryBackground,
-											border: `1.5px solid ${colors.primaryBackground}`,
-										}}
-									/>
-								</div>
+								{isEditable && (
+									<div>
+										<div
+											style={{
+												display: "flex",
+												justifyContent: "center",
+												alignItems: "center",
+												width: "100%",
+												paddingTop: "1rem",
+											}}
+										>
+											<BaseButton
+												text="Cancelar nuevo medicamento"
+												onClick={() => removeMedication(index)}
+												style={{
+													width: "40%",
+													height: "3rem",
+													backgroundColor: "#fff",
+													color: colors.primaryBackground,
+													border: `1.5px solid ${colors.primaryBackground}`,
+												}}
+											/>
+										</div>
 
-								<div
-									style={{
-										paddingTop: "1rem",
-										borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-									}}
-								/>
+										<div
+											style={{
+												paddingTop: "1rem",
+												borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+											}}
+										/>
+									</div>
+								)}
 							</div>
 						))}
 
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								width: "100%",
-								paddingTop: "1rem",
-							}}
-						>
-							<BaseButton
-								text="Agregar medicamento administrado"
-								onClick={addMedication}
+						{isEditable && (
+							<div
 								style={{
-									width: "50%",
-									height: "3rem",
-									border: `1.5px solid ${colors.primaryBackground}`,
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									width: "100%",
+									paddingTop: "1rem",
 								}}
-							/>
-						</div>
+							>
+								<BaseButton
+									text="Agregar medicamento administrado"
+									onClick={addMedication}
+									style={{
+										width: "50%",
+										height: "3rem",
+										border: `1.5px solid ${colors.primaryBackground}`,
+									}}
+								/>
+							</div>
+						)}
 
 						<div
 							style={{
@@ -725,6 +908,14 @@ function StudentAppointmentsView({
 							Notas:
 						</p>
 						<ExpandingBaseInput
+							value={currentAppointment?.notes || ""}
+							onChange={(e) =>
+								setCurrentAppointment({
+									...currentAppointment,
+									notes: e.target.value,
+								})
+							}
+							disabled={!isEditable}
 							style={{
 								width: "95%",
 								height: "10rem",
@@ -742,32 +933,34 @@ function StudentAppointmentsView({
 						}}
 					/>
 
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							paddingTop: "2rem",
-							gap: "1rem",
-						}}
-					>
-						<BaseButton
-							text="Guardar"
-							//onClick={handleSaveNewFamiliar}
-							style={{ width: "30%", height: "3rem" }}
-						/>
-						<BaseButton
-							text="Cancelar"
-							onClick={handleCancel}
+					{isEditable && (
+						<div
 							style={{
-								width: "30%",
-								height: "3rem",
-								backgroundColor: "#fff",
-								color: colors.primaryBackground,
-								border: `1.5px solid ${colors.primaryBackground}`,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								paddingTop: "2rem",
+								gap: "1rem",
 							}}
-						/>
-					</div>
+						>
+							<BaseButton
+								text="Guardar"
+								//onClick={handleSaveNewFamiliar}
+								style={{ width: "30%", height: "3rem" }}
+							/>
+							<BaseButton
+								text="Cancelar"
+								onClick={handleCancel}
+								style={{
+									width: "30%",
+									height: "3rem",
+									backgroundColor: "#fff",
+									color: colors.primaryBackground,
+									border: `1.5px solid ${colors.primaryBackground}`,
+								}}
+							/>
+						</div>
+					)}
 				</div>
 			) : null}
 		</div>
