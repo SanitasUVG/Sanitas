@@ -9,6 +9,7 @@ import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
+import { IS_PRODUCTION } from "src/constants.mjs";
 
 export function StudentAppointments({
 	getAppointment,
@@ -122,7 +123,6 @@ function StudentAppointmentsView({
 	displayName,
 }) {
 	const appointmentResult = appointmentResource.read();
-	console.log("Resultado de la información que viene: ", appointmentResult);
 
 	const [selectedAppointment, setselectedAppointment] = useState(null);
 	const [currentAppointment, setCurrentAppointment] = useState(null);
@@ -149,15 +149,34 @@ function StudentAppointmentsView({
 
 	// Handlers for different actions within the component
 	const handleOpenNewForm = () => {
-		const newAppointmentDate = getFormattedDateTime();
+		// Desestructura el objeto retornado por getFormattedDateTime()
+		const { date, formattedDate } = getFormattedDateTime();
+
 		setAddingNew(true);
 		setIsEditable(true);
 
+		const evaluatorEmail = IS_PRODUCTION ? displayName : "doctor1@example.com";
+
+		// Limpia el estado de los medicamentos y la cita actual
 		setCurrentAppointment({
-			date: newAppointmentDate,
-			formattedDate: newAppointmentDate,
-			evaluator: displayName,
+			date: date,
+			formattedDate: formattedDate,
+			evaluator: evaluatorEmail,
+			reason: "", // Limpiar campos para nueva cita
+			diagnosis: "", // Limpiar campos para nueva cita
+			physicalExam: "", // Limpiar campos para nueva cita
+			temperature: "", // Limpiar campos para nueva cita
+			systolicPressure: "", // Limpiar campos para nueva cita
+			diastolicPressure: "", // Limpiar campos para nueva cita
+			oxygenSaturation: "", // Limpiar campos para nueva cita
+			respiratoryRate: "", // Limpiar campos para nueva cita
+			heartRate: "", // Limpiar campos para nueva cita
+			glucometry: "", // Limpiar campos para nueva cita
+			notes: "", // Limpiar campos para nueva cita
 		});
+
+		// Limpia el estado de los medicamentos para la nueva cita
+		setMedications([]);
 	};
 
 	const handleCancel = () => {
@@ -167,15 +186,24 @@ function StudentAppointmentsView({
 	};
 
 	function getFormattedDateTime(dateString = null) {
-		const date = dateString ? new Date(dateString) : new Date();
-		return date.toLocaleString("es-ES", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: false,
-		});
+		const date = dateString ? new Date(dateString) : new Date(); // Si no hay dateString, usa la fecha actual
+
+		// Validar si la fecha es válida
+		if (isNaN(date.getTime())) {
+			return { date: null, formattedDate: "No disponible" }; // Si no es una fecha válida
+		}
+
+		return {
+			date: date.toISOString(), // Retorna la fecha en formato ISO para guardarla
+			formattedDate: date.toLocaleString("es-ES", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: false,
+			}),
+		};
 	}
 
 	let appointData = appointmentResult.result?.consultations || [];
@@ -187,7 +215,7 @@ function StudentAppointmentsView({
 	});
 
 	const handleSelectAppointment = (appointment, index) => {
-		const formattedDate = getFormattedDateTime(
+		const { formattedDate } = getFormattedDateTime(
 			appointment.patientConsultation.data.date,
 		);
 
@@ -225,9 +253,10 @@ function StudentAppointmentsView({
 	};
 
 	const noAppointmentData =
+		!Array.isArray(appointmentHistory.data) || // Verifica que sea un array
 		appointmentHistory.data.length === 0 ||
 		appointmentHistory.data.every(
-			(appointment) => !appointment.patientConsultation.data.date,
+			(appointment) => !appointment.patientConsultation?.data?.date,
 		);
 
 	// Identificador de medicamentos
@@ -250,12 +279,99 @@ function StudentAppointmentsView({
 		setMedications(newMedications);
 	};
 
-	const updateAppointmentState = async (newEntry) => {};
-
 	// Handles the saving of new or modified family medical history
 	const handleSaveNewAppointment = async () => {
-		const newEntry = prepareNewEntry();
-		await updateAppointmentState(newEntry);
+		if (!currentAppointment.diagnosis) {
+			toast.error("El diagnóstico es obligatorio.");
+		}
+
+		if (!currentAppointment.physicalExam) {
+			toast.error("El examen físico es obligatorio.");
+		}
+
+		if (!currentAppointment.reason) {
+			toast.error("El motivo de la consulta es obligatorio.");
+		}
+
+		toast.info("Guardando información de la cita...");
+
+		let formattedDate;
+
+		// Verifica si la fecha es una cadena de texto formateada
+		if (typeof currentAppointment.date === "string") {
+			// Intenta crear una nueva fecha a partir del string
+			const parsedDate = new Date(Date.parse(currentAppointment.date));
+
+			// Verifica si el parsing es válido
+			if (!isNaN(parsedDate.getTime())) {
+				formattedDate = parsedDate.toISOString();
+			} else {
+				toast.error("La fecha de la cita es inválida.");
+				return;
+			}
+		} else if (currentAppointment.date instanceof Date) {
+			// Si ya es un objeto Date, simplemente formateamos
+			formattedDate = currentAppointment.date.toISOString();
+		} else {
+			toast.error("La fecha de la cita es inválida.");
+			return;
+		}
+
+		const appointmentDetails = {
+			version: appointmentHistory.version,
+			data: {
+				date: formattedDate,
+				evaluator: currentAppointment.evaluator,
+				reason: currentAppointment.reason,
+				diagnosis: currentAppointment.diagnosis,
+				physicalExam: currentAppointment.physicalExam,
+				temperature: parseFloat(currentAppointment.temperature),
+				systolicPressure: parseFloat(currentAppointment.systolicPressure),
+				diastolicPressure: parseFloat(currentAppointment.diastolicPressure),
+				oxygenSaturation: parseFloat(currentAppointment.oxygenSaturation),
+				respiratoryRate: parseFloat(currentAppointment.respiratoryRate),
+				heartRate: parseFloat(currentAppointment.heartRate),
+				glucometry: parseFloat(currentAppointment.glucometry),
+				medications: medications.map((med) => ({
+					diagnosis: med.diagnosis,
+					medication: med.medication,
+					quantity: med.quantity,
+				})),
+				notes: currentAppointment.notes,
+			},
+		};
+
+		// Enviar los datos al servidor o API
+		try {
+			const response = await updateAppointment(id, {
+				patientConsultation: appointmentDetails,
+			});
+
+			if (!response.error) {
+				toast.success("¡Cita guardada con éxito!");
+
+				// Agregar la nueva cita a las citas existentes
+				const updatedAppointments = [
+					...appointmentHistory.data, // Mantén las citas existentes
+					{ patientConsultation: appointmentDetails }, // Agrega la nueva cita
+				];
+
+				// Actualiza el estado con todas las citas
+				setAppointmentHistory({
+					...appointmentHistory,
+					data: updatedAppointments, // Actualiza solo las citas, manteniendo otros campos
+				});
+
+				setselectedAppointment(null);
+				setAddingNew(false);
+				setIsEditable(false);
+			} else {
+				toast.error(`Error al guardar: ${response.error}`);
+			}
+		} catch (error) {
+			console.error("Error en la operación:", error);
+			toast.error(`Error en la operación: ${error.message}`); // Manejo de errores
+		}
 	};
 
 	return (
@@ -306,21 +422,23 @@ function StudentAppointmentsView({
 						arriba.
 					</p>
 				) : (
-					appointmentHistory.data.map((appointment, index) => (
-						<InformationCard
-							key={`appointment-${index}`}
-							type="appointment"
-							date={
-								getFormattedDateTime(
-									appointment.patientConsultation.data.date,
-								) || "Sin Fecha"
-							}
-							reasonAppointment={
-								appointment.patientConsultation.data.reason || "Sin Motivo"
-							}
-							onClick={() => handleSelectAppointment(appointment, index)}
-						/>
-					))
+					appointmentHistory.data.map((appointment, index) => {
+						return (
+							<InformationCard
+								key={`appointment-${index}`}
+								type="appointment"
+								date={
+									getFormattedDateTime(
+										appointment.patientConsultation.data.date,
+									).formattedDate
+								}
+								reasonAppointment={
+									appointment.patientConsultation.data.reason || "Sin Motivo"
+								}
+								onClick={() => handleSelectAppointment(appointment, index)}
+							/>
+						);
+					})
 				)}
 			</div>
 
@@ -945,7 +1063,7 @@ function StudentAppointmentsView({
 						>
 							<BaseButton
 								text="Guardar"
-								//onClick={handleSaveNewFamiliar}
+								onClick={handleSaveNewAppointment}
 								style={{ width: "30%", height: "3rem" }}
 							/>
 							<BaseButton
