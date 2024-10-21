@@ -289,8 +289,19 @@ export function CreatePatientView({
 									style={inputStyles}
 								/>
 							</div>
+						</div>
 
-							{/* Campo de Apellidos para pantallas grandes */}
+						{/* SECOND COLUMN */}
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								gap: "1rem",
+								paddingTop: isMobile ? "1.5rem" : "0",
+								paddingLeft: isMobile ? "0" : "1rem", // Ajustar padding
+							}}
+						>
+							{/* Campo de Apellidos solo para pantallas grandes */}
 							{!isMobile && (
 								<div style={inputContainerStyles}>
 									<label style={labelStyles}>Apellidos del paciente:</label>
@@ -304,7 +315,7 @@ export function CreatePatientView({
 								</div>
 							)}
 
-							{/* Campo de Sexo */}
+							{/* Campo de Sexo, visible en ambas vistas */}
 							<div style={inputContainerStyles}>
 								<label style={labelStyles}>Sexo:</label>
 								<div
@@ -335,58 +346,6 @@ export function CreatePatientView({
 								</div>
 							</div>
 						</div>
-
-						{/* SECOND COLUMN */}
-						{!isMobile && (
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									gap: "1rem",
-									paddingLeft: "1rem",
-								}}
-							>
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Apellidos del paciente:</label>
-									<BaseInput
-										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Apellidos:"
-										style={inputStyles}
-									/>
-								</div>
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Sexo:</label>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "2rem",
-										}}
-									>
-										<RadioInput
-											name="gender"
-											checked={!patientData.sex}
-											onChange={() => handleChange("sex", false)}
-											label="Masculino"
-											style={{ fontFamily: fonts.textFont }}
-										/>
-										<RadioInput
-											name="gender"
-											checked={patientData.sex}
-											onChange={() => handleChange("sex", true)}
-											label="Femenino"
-											style={{
-												fontFamily: fonts.textFont,
-												display: "flex",
-												alignItems: "center",
-											}}
-										/>
-									</div>
-								</div>
-							</div>
-						)}
 					</div>
 
 					<BaseButton
