@@ -54,6 +54,7 @@ import {
 	patientUpdateStudentInformation,
 	patientUpdateCollaboratorInformation,
 	updateStudentGynecologialHistory,
+	exportData,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -554,6 +555,7 @@ export const ROUTES = [
 					logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
 					getRole={getRole}
 					getLinkedPatient={getLinkedPatient}
+					exportData={exportData}
 				/>
 			</RequireAuth>
 		),
