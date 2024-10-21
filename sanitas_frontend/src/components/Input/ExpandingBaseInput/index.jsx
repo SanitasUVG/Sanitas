@@ -1,22 +1,35 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const ExpandingTextarea = ({ onChange, placeholder, style = {}, ...props }) => {
-	const [value, setValue] = useState("");
+const ExpandingTextarea = ({
+	id,
+	onChange,
+	placeholder,
+	style = {},
+	value = "",
+	...props
+}) => {
 	const textareaRef = useRef(null);
 
-	const handleInputChange = (event) => {
-		setValue(event.target.value);
+	useEffect(() => {
+		const adjustHeight = () => {
+			if (textareaRef.current) {
+				textareaRef.current.style.height = "auto";
+				textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+			}
+		};
+
+		adjustHeight();
+
+		if (value && textareaRef.current) {
+			adjustHeight();
+		}
+	}, [value]);
+
+	const handleChange = (event) => {
 		if (onChange) {
 			onChange(event);
 		}
 	};
-
-	useEffect(() => {
-		if (textareaRef.current) {
-			textareaRef.current.style.height = "inherit";
-			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-		}
-	}, [value]);
 
 	const defaultStyle = {
 		backgroundColor: "#FFFFFF",
@@ -25,16 +38,18 @@ const ExpandingTextarea = ({ onChange, placeholder, style = {}, ...props }) => {
 		padding: "6px 10px",
 		outline: "none",
 		borderRadius: "5px",
-		overflowY: "auto",
+		overflowY: "hidden",
 		resize: "none",
+		width: "100%",
 		...style,
 	};
 
 	return (
 		<textarea
+			id={id}
 			ref={textareaRef}
 			value={value}
-			onChange={handleInputChange}
+			onChange={handleChange}
 			placeholder={placeholder}
 			style={defaultStyle}
 			{...props}
