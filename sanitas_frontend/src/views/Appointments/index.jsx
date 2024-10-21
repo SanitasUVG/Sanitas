@@ -149,33 +149,27 @@ function StudentAppointmentsView({
 
 	// Handlers for different actions within the component
 	const handleOpenNewForm = () => {
-		// Desestructura el objeto retornado por getFormattedDateTime()
 		const { date, formattedDate } = getFormattedDateTime();
-
 		setAddingNew(true);
 		setIsEditable(true);
 
 		const evaluatorEmail = IS_PRODUCTION ? displayName : "doctor1@example.com";
-
-		// Limpia el estado de los medicamentos y la cita actual
 		setCurrentAppointment({
 			date: date,
 			formattedDate: formattedDate,
 			evaluator: evaluatorEmail,
-			reason: "", // Limpiar campos para nueva cita
-			diagnosis: "", // Limpiar campos para nueva cita
-			physicalExam: "", // Limpiar campos para nueva cita
-			temperature: "", // Limpiar campos para nueva cita
-			systolicPressure: "", // Limpiar campos para nueva cita
-			diastolicPressure: "", // Limpiar campos para nueva cita
-			oxygenSaturation: "", // Limpiar campos para nueva cita
-			respiratoryRate: "", // Limpiar campos para nueva cita
-			heartRate: "", // Limpiar campos para nueva cita
-			glucometry: "", // Limpiar campos para nueva cita
-			notes: "", // Limpiar campos para nueva cita
+			reason: "",
+			diagnosis: "",
+			physicalExam: "",
+			temperature: "",
+			systolicPressure: "",
+			diastolicPressure: "",
+			oxygenSaturation: "",
+			respiratoryRate: "",
+			heartRate: "",
+			glucometry: "",
+			notes: "",
 		});
-
-		// Limpia el estado de los medicamentos para la nueva cita
 		setMedications([]);
 	};
 
@@ -186,15 +180,14 @@ function StudentAppointmentsView({
 	};
 
 	function getFormattedDateTime(dateString = null) {
-		const date = dateString ? new Date(dateString) : new Date(); // Si no hay dateString, usa la fecha actual
+		const date = dateString ? new Date(dateString) : new Date();
 
-		// Validar si la fecha es válida
-		if (isNaN(date.getTime())) {
-			return { date: null, formattedDate: "No disponible" }; // Si no es una fecha válida
+		if (Number.isNaN(date.getTime())) {
+			return { date: null, formattedDate: "No disponible" };
 		}
 
 		return {
-			date: date.toISOString(), // Retorna la fecha en formato ISO para guardarla
+			date: date.toISOString(),
 			formattedDate: date.toLocaleString("es-ES", {
 				year: "numeric",
 				month: "long",
@@ -206,7 +199,7 @@ function StudentAppointmentsView({
 		};
 	}
 
-	let appointData = appointmentResult.result?.consultations || [];
+	const appointData = appointmentResult.result?.consultations || [];
 
 	const [appointmentHistory, setAppointmentHistory] = useState({
 		data: appointData,
@@ -222,7 +215,7 @@ function StudentAppointmentsView({
 		setselectedAppointment({
 			...appointment,
 			index: index,
-			formattedDate: formattedDate, // Guarda la fecha formateada en el estado
+			formattedDate: formattedDate,
 		});
 
 		setCurrentAppointment({
@@ -253,7 +246,7 @@ function StudentAppointmentsView({
 	};
 
 	const noAppointmentData =
-		!Array.isArray(appointmentHistory.data) || // Verifica que sea un array
+		!Array.isArray(appointmentHistory.data) ||
 		appointmentHistory.data.length === 0 ||
 		appointmentHistory.data.every(
 			(appointment) => !appointment.patientConsultation?.data?.date,
@@ -280,37 +273,42 @@ function StudentAppointmentsView({
 	};
 
 	// Handles the saving of new or modified family medical history
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity:  Function to save the appointments
 	const handleSaveNewAppointment = async () => {
+		let hasErrors = false;
+
+		// Validación de los campos necesarios
 		if (!currentAppointment.diagnosis) {
 			toast.error("El diagnóstico es obligatorio.");
+			hasErrors = true;
 		}
 
 		if (!currentAppointment.physicalExam) {
 			toast.error("El examen físico es obligatorio.");
+			hasErrors = true;
 		}
 
 		if (!currentAppointment.reason) {
 			toast.error("El motivo de la consulta es obligatorio.");
+			hasErrors = true;
 		}
+
+		if (hasErrors) return;
 
 		toast.info("Guardando información de la cita...");
 
 		let formattedDate;
 
-		// Verifica si la fecha es una cadena de texto formateada
 		if (typeof currentAppointment.date === "string") {
-			// Intenta crear una nueva fecha a partir del string
 			const parsedDate = new Date(Date.parse(currentAppointment.date));
 
-			// Verifica si el parsing es válido
-			if (!isNaN(parsedDate.getTime())) {
+			if (!Number.isNaN(parsedDate.getTime())) {
 				formattedDate = parsedDate.toISOString();
 			} else {
 				toast.error("La fecha de la cita es inválida.");
 				return;
 			}
 		} else if (currentAppointment.date instanceof Date) {
-			// Si ya es un objeto Date, simplemente formateamos
 			formattedDate = currentAppointment.date.toISOString();
 		} else {
 			toast.error("La fecha de la cita es inválida.");
@@ -325,13 +323,19 @@ function StudentAppointmentsView({
 				reason: currentAppointment.reason,
 				diagnosis: currentAppointment.diagnosis,
 				physicalExam: currentAppointment.physicalExam,
-				temperature: parseFloat(currentAppointment.temperature),
-				systolicPressure: parseFloat(currentAppointment.systolicPressure),
-				diastolicPressure: parseFloat(currentAppointment.diastolicPressure),
-				oxygenSaturation: parseFloat(currentAppointment.oxygenSaturation),
-				respiratoryRate: parseFloat(currentAppointment.respiratoryRate),
-				heartRate: parseFloat(currentAppointment.heartRate),
-				glucometry: parseFloat(currentAppointment.glucometry),
+				temperature: Number.parseFloat(currentAppointment.temperature),
+				systolicPressure: Number.parseFloat(
+					currentAppointment.systolicPressure,
+				),
+				diastolicPressure: Number.parseFloat(
+					currentAppointment.diastolicPressure,
+				),
+				oxygenSaturation: Number.parseFloat(
+					currentAppointment.oxygenSaturation,
+				),
+				respiratoryRate: Number.parseFloat(currentAppointment.respiratoryRate),
+				heartRate: Number.parseFloat(currentAppointment.heartRate),
+				glucometry: Number.parseFloat(currentAppointment.glucometry),
 				medications: medications.map((med) => ({
 					diagnosis: med.diagnosis,
 					medication: med.medication,
@@ -341,7 +345,6 @@ function StudentAppointmentsView({
 			},
 		};
 
-		// Enviar los datos al servidor o API
 		try {
 			const response = await updateAppointment(id, {
 				patientConsultation: appointmentDetails,
@@ -350,16 +353,28 @@ function StudentAppointmentsView({
 			if (!response.error) {
 				toast.success("¡Cita guardada con éxito!");
 
-				// Agregar la nueva cita a las citas existentes
 				const updatedAppointments = [
-					...appointmentHistory.data, // Mantén las citas existentes
-					{ patientConsultation: appointmentDetails }, // Agrega la nueva cita
-				];
+					...appointmentHistory.data,
+					{ patientConsultation: appointmentDetails },
+				].sort((a, b) => {
+					if (
+						!(
+							a.patientConsultation?.data?.date &&
+							b.patientConsultation &&
+							b.patientConsultation.data &&
+							b.patientConsultation.data.date
+						)
+					) {
+						return 0;
+					}
+					const dateA = new Date(a.patientConsultation.data.date);
+					const dateB = new Date(b.patientConsultation.data.date);
+					return dateB - dateA;
+				});
 
-				// Actualiza el estado con todas las citas
 				setAppointmentHistory({
 					...appointmentHistory,
-					data: updatedAppointments, // Actualiza solo las citas, manteniendo otros campos
+					data: updatedAppointments,
 				});
 
 				setselectedAppointment(null);
@@ -370,7 +385,7 @@ function StudentAppointmentsView({
 			}
 		} catch (error) {
 			console.error("Error en la operación:", error);
-			toast.error(`Error en la operación: ${error.message}`); // Manejo de errores
+			toast.error(`Error en la operación: ${error.message}`);
 		}
 	};
 
@@ -422,10 +437,10 @@ function StudentAppointmentsView({
 						arriba.
 					</p>
 				) : (
-					appointmentHistory.data.map((appointment, index) => {
+					appointmentHistory.data.map((appointment) => {
 						return (
 							<InformationCard
-								key={`appointment-${index}`}
+								key={`appointment-${appointment.patientConsultation.id}`}
 								type="appointment"
 								date={
 									getFormattedDateTime(
@@ -435,7 +450,7 @@ function StudentAppointmentsView({
 								reasonAppointment={
 									appointment.patientConsultation.data.reason || "Sin Motivo"
 								}
-								onClick={() => handleSelectAppointment(appointment, index)}
+								onClick={() => handleSelectAppointment(appointment)}
 							/>
 						);
 					})
@@ -528,6 +543,7 @@ function StudentAppointmentsView({
 							Motivo de consulta:
 						</p>
 						<ExpandingBaseInput
+							id={`appointment-reason-${currentAppointment?.index}`}
 							value={currentAppointment?.reason || ""}
 							onChange={(e) =>
 								setCurrentAppointment({
@@ -556,6 +572,7 @@ function StudentAppointmentsView({
 							Diagnóstico:
 						</p>
 						<ExpandingBaseInput
+							id={`appointment-diagnosis-${currentAppointment?.index}`}
 							value={currentAppointment?.diagnosis || ""}
 							onChange={(e) =>
 								setCurrentAppointment({
@@ -585,6 +602,7 @@ function StudentAppointmentsView({
 						</p>
 
 						<ExpandingBaseInput
+							id={`appointment-physicalExam-${currentAppointment?.index}`}
 							value={currentAppointment?.physicalExam || ""}
 							onChange={(e) =>
 								setCurrentAppointment({
@@ -842,149 +860,165 @@ function StudentAppointmentsView({
 							}}
 						/>
 
-						{medications.map((medication, index) => (
-							<div key={index}>
-								<div
-									style={{
-										padding: "1rem 0 1rem 0",
-									}}
-								>
-									<p
-										style={{
-											padding: "0 0 0.5rem 0",
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											fontWeight: "bold",
-										}}
-									>
-										Medicamento Administrado {index + 1}
-									</p>
+						<div>
+							{medications.length > 0
+								? medications.map((medication, index) => (
+										<div key={medication.index}>
+											<div
+												style={{
+													padding: "1rem 0 1rem 0",
+												}}
+											>
+												<p
+													style={{
+														padding: "0 0 0.5rem 0",
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+														fontWeight: "bold",
+													}}
+												>
+													Medicamento Administrado {index + 1}
+												</p>
 
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											padding: "0 0 0.5rem 0",
-										}}
-									>
-										Diagnóstico:
-									</p>
-									<ExpandingBaseInput
-										value={medication.diagnosis || ""}
-										onChange={(e) => {
-											const newMedications = [...medications];
-											newMedications[index].diagnosis = e.target.value;
-											setMedications(newMedications);
-											setCurrentAppointment({
-												...currentAppointment,
-												medications: newMedications,
-											});
-										}}
-										disabled={!isEditable}
-										style={{
-											width: "95%",
-											height: "3rem",
-											fontSize: "1rem",
-											fontFamily: fonts.textFont,
-										}}
-										placeholder="Ingrese el diagnóstico por el cuál receta el medicamento..."
-									/>
+												<p
+													style={{
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+														padding: "0 0 0.5rem 0",
+													}}
+												>
+													Diagnóstico:
+												</p>
+												<ExpandingBaseInput
+													value={medication.diagnosis || ""}
+													onChange={(e) => {
+														const newMedications = [...medications];
+														newMedications[index].diagnosis = e.target.value;
+														setMedications(newMedications);
+														setCurrentAppointment({
+															...currentAppointment,
+															medications: newMedications,
+														});
+													}}
+													disabled={!isEditable}
+													style={{
+														width: "95%",
+														height: "3rem",
+														fontSize: "1rem",
+														fontFamily: fonts.textFont,
+													}}
+													placeholder="Ingrese el diagnóstico por el cuál receta el medicamento..."
+												/>
 
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											padding: "1rem 0 0.5rem 0",
-										}}
-									>
-										Medicamento:
-									</p>
-									<ExpandingBaseInput
-										value={medication.medication || ""}
-										onChange={(e) => {
-											const newMedications = [...medications];
-											newMedications[index].medication = e.target.value;
-											setMedications(newMedications);
-											setCurrentAppointment({
-												...currentAppointment,
-												medications: newMedications,
-											});
-										}}
-										disabled={!isEditable}
-										style={{
-											width: "95%",
-											height: "3rem",
-											fontSize: "1rem",
-											fontFamily: fonts.textFont,
-										}}
-										placeholder="Ingrese el medicamento administrado..."
-									/>
+												<p
+													style={{
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+														padding: "1rem 0 0.5rem 0",
+													}}
+												>
+													Medicamento:
+												</p>
+												<ExpandingBaseInput
+													value={medication.medication || ""}
+													onChange={(e) => {
+														const newMedications = [...medications];
+														newMedications[index].medication = e.target.value;
+														setMedications(newMedications);
+														setCurrentAppointment({
+															...currentAppointment,
+															medications: newMedications,
+														});
+													}}
+													disabled={!isEditable}
+													style={{
+														width: "95%",
+														height: "3rem",
+														fontSize: "1rem",
+														fontFamily: fonts.textFont,
+													}}
+													placeholder="Ingrese el medicamento administrado..."
+												/>
 
-									<p
-										style={{
-											fontFamily: fonts.textFont,
-											fontSize: fontSize.textSize,
-											padding: "1rem 0 0.5rem 0",
-										}}
-									>
-										Cantidad:
-									</p>
-									<ExpandingBaseInput
-										value={medication.quantity || ""}
-										onChange={(e) => {
-											const newMedications = [...medications];
-											newMedications[index].quantity = e.target.value;
-											setMedications(newMedications);
-											setCurrentAppointment({
-												...currentAppointment,
-												medications: newMedications,
-											});
-										}}
-										disabled={!isEditable}
-										style={{
-											width: "95%",
-											height: "3rem",
-											fontSize: "1rem",
-											fontFamily: fonts.textFont,
-										}}
-										placeholder="Ingrese la cantidad administrada..."
-									/>
-								</div>
+												<p
+													style={{
+														fontFamily: fonts.textFont,
+														fontSize: fontSize.textSize,
+														padding: "1rem 0 0.5rem 0",
+													}}
+												>
+													Cantidad:
+												</p>
+												<ExpandingBaseInput
+													value={medication.quantity || ""}
+													onChange={(e) => {
+														const newMedications = [...medications];
+														newMedications[index].quantity = e.target.value;
+														setMedications(newMedications);
+														setCurrentAppointment({
+															...currentAppointment,
+															medications: newMedications,
+														});
+													}}
+													disabled={!isEditable}
+													style={{
+														width: "95%",
+														height: "3rem",
+														fontSize: "1rem",
+														fontFamily: fonts.textFont,
+													}}
+													placeholder="Ingrese la cantidad administrada..."
+												/>
+											</div>
 
-								{isEditable && (
-									<div>
+											{isEditable && (
+												<div>
+													<div
+														style={{
+															display: "flex",
+															justifyContent: "center",
+															alignItems: "center",
+															width: "100%",
+															paddingTop: "1rem",
+														}}
+													>
+														<BaseButton
+															text="Cancelar nuevo medicamento"
+															onClick={() => removeMedication(index)}
+															style={{
+																width: "40%",
+																height: "3rem",
+																backgroundColor: "#fff",
+																color: colors.primaryBackground,
+																border: `1.5px solid ${colors.primaryBackground}`,
+															}}
+														/>
+													</div>
+
+													<div
+														style={{
+															paddingTop: "1rem",
+															borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+														}}
+													/>
+												</div>
+											)}
+										</div>
+									))
+								: !addingNew && (
 										<div
 											style={{
-												display: "flex",
-												justifyContent: "center",
-												alignItems: "center",
-												width: "100%",
+												textAlign: "center",
 												paddingTop: "1rem",
+												fontFamily: fonts.textFont,
+												fontSize: fontSize.textSize,
+												fontWeight: "bold",
 											}}
 										>
-											<BaseButton
-												text="Cancelar nuevo medicamento"
-												onClick={() => removeMedication(index)}
-												style={{
-													width: "40%",
-													height: "3rem",
-													backgroundColor: "#fff",
-													color: colors.primaryBackground,
-													border: `1.5px solid ${colors.primaryBackground}`,
-												}}
-											/>
+											No hay medicamentos registrados en esta cita.
 										</div>
-
-										<div
-											style={{
-												paddingTop: "1rem",
-												borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-											}}
-										/>
-									</div>
-								)}
-							</div>
-						))}
+									)}
+						</div>
 
 						{isEditable && (
 							<div
