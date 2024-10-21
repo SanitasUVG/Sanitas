@@ -112,7 +112,8 @@ export function ExportDataView({ exportData, logoutUser }) {
 						position: "absolute",
 						bottom: "0",
 						right: "0",
-						width: "30%",
+						width: "25.43rem",
+						height: "auto",
 					}}
 				/>
 				<img
@@ -121,7 +122,8 @@ export function ExportDataView({ exportData, logoutUser }) {
 						position: "absolute",
 						top: "0",
 						left: "0",
-						width: "30%",
+						width: "25.43rem",
+						height: "auto",
 					}}
 				/>
 

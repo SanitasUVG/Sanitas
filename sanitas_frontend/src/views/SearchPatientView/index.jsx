@@ -30,7 +30,6 @@ import { downloadBlob } from "src/utils";
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
  * @property {import("src/dataLayer.mjs").GetLinkedPatientCallback} getLinkedPatient
  * @property {import("src/dataLayer.mjs").GetRoleCallback} getRole
- * @property {import("src/dataLayer.mjs").ExportDataCallback} exportData
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
@@ -44,7 +43,6 @@ export default function SearchPatientView({
 	logoutUser,
 	getRole,
 	getLinkedPatient,
-	exportData,
 }) {
 	const resourceA = WrapPromise(getRole());
 	const resourceB = WrapPromise(getLinkedPatient());
@@ -89,27 +87,8 @@ export default function SearchPatientView({
 			return false;
 		};
 
-		const handleDataExport = async () => {
-			try {
-				const response = await toast.promise(
-					async () => {
-						const response = await exportData();
-						if (response.error) {
-							throw response.error;
-						}
-						return response.result;
-					},
-					{
-						pending: "Exportando datos de visita...",
-						success: "Datos exportados!",
-						error: "No se pudo exportar los datos por el momento!",
-					},
-				);
-
-				downloadBlob(response, "visitas.csv", "text/csv;charset=utf-8;");
-			} catch (_error) {
-				// console.error(error)
-			}
+		const handleDataExport = () => {
+			navigate(NAV_PATHS.EXPORT_DATA);
 		};
 
 		const handlePatientResult = () => {
