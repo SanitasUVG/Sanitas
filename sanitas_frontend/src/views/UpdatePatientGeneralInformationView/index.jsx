@@ -14,6 +14,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import Collapsable from "src/components/Collapsable";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { createRefreshSignal } from "src/utils/refreshHook";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -68,9 +69,9 @@ export default function UpdatePatientInfoView({
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
 }) {
-	const id = useStore((s) => s.selectedPatientId);
 	const setIsWoman = useStore((s) => s.setIsWoman);
-	// const id = 1;
+	//const id = useStore((s) => s.selectedPatientId);
+	const id = 1;
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
 	const [generalResource, collaboratorResource, studentResource] = useMemo(
@@ -89,6 +90,9 @@ export default function UpdatePatientInfoView({
 		],
 	);
 
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
+
 	return (
 		<div
 			style={{
@@ -98,6 +102,7 @@ export default function UpdatePatientInfoView({
 				gap: "1rem",
 				background: colors.primaryBackground,
 				minHeight: "100vh",
+				maxWidth: isMobile ? "100%" : "100%",
 			}}
 		>
 			<div
@@ -118,7 +123,7 @@ export default function UpdatePatientInfoView({
 					background: colors.secondaryBackground,
 					borderRadius: "0.625rem",
 					width: "100%",
-					padding: "1rem 6rem",
+					padding: isMobile ? "1rem" : "1rem 6rem",
 					flexGrow: 1,
 				}}
 			>
@@ -141,28 +146,38 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.subtitleSize,
 							textAlign: "center",
-							padding: "0 20%",
+							padding: isMobile ? "0 1rem" : "0 20%",
 						}}
 					>
 						Por favor, ayúdanos completando la siguiente información para poder
 						conocerte mejor y brindarte la atención que mereces.
 					</p>
-					<UpdateGeneralInformationSection
-						getData={generalResource}
-						updateData={updateGeneralPatientInformation}
-						triggerRefresh={triggerRefresh}
-						setIsWoman={setIsWoman}
-					/>
-					<UpdateColaboratorInformationSection
-						getData={collaboratorResource}
-						updateData={updateCollaboratorInformation}
-						triggerRefresh={triggerRefresh}
-					/>
-					<UpdateStudentInformationSection
-						getData={studentResource}
-						updateData={updateStudentPatientInformation}
-						triggerRefresh={triggerRefresh}
-					/>
+					<div
+						style={{
+							display: isMobile ? "block" : "grid",
+							gap: isMobile ? "1rem" : "0",
+						}}
+					>
+						<UpdateGeneralInformationSection
+							getData={generalResource}
+							updateData={updateGeneralPatientInformation}
+							triggerRefresh={triggerRefresh}
+							setIsWoman={setIsWoman}
+							isMobile={isMobile} // Pasar la prop isMobile
+						/>
+						<UpdateColaboratorInformationSection
+							getData={collaboratorResource}
+							updateData={updateCollaboratorInformation}
+							triggerRefresh={triggerRefresh}
+							isMobile={isMobile} // Pasar la prop isMobile
+						/>
+						<UpdateStudentInformationSection
+							getData={studentResource}
+							updateData={updateStudentPatientInformation}
+							triggerRefresh={triggerRefresh}
+							isMobile={isMobile} // Pasar la prop isMobile
+						/>
+					</div>
 				</Suspense>
 			</div>
 		</div>
@@ -183,6 +198,7 @@ function UpdateColaboratorInformationSection({
 	getData,
 	updateData,
 	triggerRefresh,
+	isMobile,
 }) {
 	const styles = {
 		form: {
@@ -238,7 +254,7 @@ function UpdateColaboratorInformationSection({
 
 	/**@type {React.CSSProperties} */
 	const inputStyles = {
-		width: "90%",
+		width: isMobile ? "100%" : "90%",
 		height: "3rem",
 	};
 
@@ -278,14 +294,22 @@ function UpdateColaboratorInformationSection({
 			<div
 				style={{
 					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "start",
+					flexDirection: isMobile ? "column" : "row",
+					justifyContent: isMobile ? "center" : "space-between",
+					alignItems: "center",
 					paddingRight: "1rem",
 				}}
 			>
 				<h1 style={styles.h1}>Datos de Colaborador:</h1>
 				{editMode ? (
-					<div>
+					<div
+						style={{
+							display: "flex",
+							gap: "0.5rem",
+							justifyContent: "center",
+							paddingTop: isMobile ? "0.5rem" : "0",
+						}}
+					>
 						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
 						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
 					</div>
@@ -296,7 +320,8 @@ function UpdateColaboratorInformationSection({
 			<div
 				style={{
 					display: "grid",
-					gridTemplateColumns: "50% 50%",
+					gridTemplateColumns: isMobile ? "1fr" : "50% 50%",
+					gap: "1rem",
 				}}
 			>
 				<div
@@ -304,7 +329,7 @@ function UpdateColaboratorInformationSection({
 						display: "flex",
 						flexDirection: "column",
 						gap: ".5rem",
-						paddingRight: "1rem",
+						paddingRight: isMobile ? "0" : "1rem",
 					}}
 				>
 					<label style={styles.label}>Código:</label>
@@ -327,7 +352,7 @@ function UpdateColaboratorInformationSection({
 						display: "flex",
 						flexDirection: "column",
 						gap: ".5rem",
-						paddingLeft: "1rem",
+						paddingLeft: isMobile ? "0" : "1rem",
 					}}
 				>
 					<label style={styles.label}>Área:</label>
@@ -366,6 +391,7 @@ function UpdateGeneralInformationSection({
 	updateData,
 	triggerRefresh,
 	setIsWoman,
+	isMobile,
 }) {
 	const dropdownOptions = [
 		{ value: "", label: "Selecciona un tipo de sangre" },
@@ -436,7 +462,7 @@ function UpdateGeneralInformationSection({
 		border: `.1rem solid ${colors.primaryBackground}`,
 		borderRadius: "0 0 5% 5%",
 		transform: "translateY(-1%)",
-		width: "30vw",
+		width: isMobile ? "100%" : "30vw",
 	};
 
 	const response = getData.read();
@@ -503,7 +529,7 @@ function UpdateGeneralInformationSection({
 	/**@type {React.CSSProperties} */
 	const inputStyles = {
 		height: "3rem",
-		width: "90%",
+		width: isMobile ? "100%" : "90%",
 	};
 	/**@type {React.CSSProperties} */
 	const columnStyles = {
@@ -514,23 +540,26 @@ function UpdateGeneralInformationSection({
 	};
 
 	return (
-		<div
-			style={{
-				padding: "2rem",
-				borderBottom: "1px solid #ddd",
-			}}
-		>
+		<div style={{ padding: "2rem", borderBottom: "1px solid #ddd" }}>
 			{/* HEADER */}
 			<div
 				style={{
 					display: "flex",
-					justifyContent: "space-between",
+					flexDirection: isMobile ? "column" : "row",
+					justifyContent: isMobile ? "center" : "space-between",
 					alignItems: "center",
 				}}
 			>
 				<h2 style={styles.h1}>Información del paciente:</h2>
 				{editMode ? (
-					<div>
+					<div
+						style={{
+							display: "flex",
+							gap: "0.5rem",
+							justifyContent: "center",
+							paddingTop: isMobile ? "0.5rem" : "0",
+						}}
+					>
 						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
 						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
 					</div>
@@ -540,9 +569,16 @@ function UpdateGeneralInformationSection({
 			</div>
 
 			{/* BODY */}
-			<div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: isMobile ? "1fr" : "50% 50%",
+					gap: "1.5rem",
+					padding: isMobile ? "0" : "0 1rem",
+				}}
+			>
 				{/* FIRST COLUMN*/}
-				<div style={{ ...columnStyles, paddingLeft: "0" }}>
+				<div style={{ ...columnStyles, paddingLeft: "0", paddingRight: "0" }}>
 					<div style={inputContainerStyles}>
 						<label style={styles.label}>Nombres:</label>
 						<BaseInput
@@ -573,13 +609,7 @@ function UpdateGeneralInformationSection({
 
 					<div style={inputContainerStyles}>
 						<label style={styles.label}>Sexo:</label>
-						<div
-							style={{
-								display: "flex",
-								gap: "2rem",
-								height: "3rem",
-							}}
-						>
+						<div style={{ display: "flex", gap: "2rem", height: "3rem" }}>
 							<RadioInput
 								type="radio"
 								name="gender"
@@ -617,6 +647,7 @@ function UpdateGeneralInformationSection({
 							disabled={true}
 						/>
 					</div>
+
 					<div style={inputContainerStyles}>
 						<label style={styles.label}>Tipo de sangre:</label>
 						<DropdownMenu
@@ -626,7 +657,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, bloodType: e.target.value })
 							}
 							style={{
-								container: { width: "90%" },
+								container: { width: isMobile ? "100%" : "90%" },
 								select: { height: "3rem" },
 							}}
 							disabled={
@@ -637,7 +668,7 @@ function UpdateGeneralInformationSection({
 				</div>
 
 				{/* SECOND COLUMN*/}
-				<div style={columnStyles}>
+				<div style={{ ...columnStyles, paddingLeft: "0", paddingRight: "0" }}>
 					<div style={inputContainerStyles}>
 						<label style={styles.label}>Apellidos:</label>
 						<BaseInput
@@ -718,7 +749,7 @@ function UpdateGeneralInformationSection({
 				<div
 					style={{
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: isMobile ? "column" : "row",
 						gap: "2rem",
 						width: "100%",
 						paddingTop: "2rem",
@@ -781,6 +812,7 @@ function UpdateGeneralInformationSection({
 							/>
 						</div>
 					</Collapsable>
+
 					<Collapsable
 						title="Contacto 2"
 						isCollapsed={!patientData.contactPhone2}
@@ -858,6 +890,7 @@ function UpdateStudentInformationSection({
 	getData,
 	updateData,
 	triggerRefresh,
+	isMobile,
 }) {
 	const styles = {
 		form: {
@@ -925,7 +958,7 @@ function UpdateStudentInformationSection({
 
 	/**@type {React.CSSProperties} */
 	const inputStyles = {
-		width: "90%",
+		width: isMobile ? "100%" : "90%",
 		height: "3rem",
 	};
 
@@ -934,14 +967,22 @@ function UpdateStudentInformationSection({
 			<div
 				style={{
 					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "start",
+					flexDirection: isMobile ? "column" : "row",
+					justifyContent: isMobile ? "center" : "space-between",
+					alignItems: "center",
 					paddingRight: "1rem",
 				}}
 			>
 				<h1 style={styles.h1}>Datos de Estudiante:</h1>
 				{editMode ? (
-					<div>
+					<div
+						style={{
+							display: "flex",
+							gap: "0.5rem",
+							justifyContent: "center",
+							paddingTop: isMobile ? "0.5rem" : "0",
+						}}
+					>
 						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
 						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
 					</div>
@@ -952,14 +993,15 @@ function UpdateStudentInformationSection({
 			<div
 				style={{
 					display: "grid",
-					gridTemplateColumns: "50% 50%",
+					gridTemplateColumns: isMobile ? "1fr" : "50% 50%",
+					gap: "1rem",
 				}}
 			>
 				<div
 					style={{
 						display: "flex",
 						flexDirection: "column",
-						paddingRight: "1rem",
+						paddingRight: isMobile ? "0" : "1rem",
 						gap: ".5rem",
 					}}
 				>
@@ -982,7 +1024,7 @@ function UpdateStudentInformationSection({
 					style={{
 						display: "flex",
 						flexDirection: "column",
-						paddingLeft: "1rem",
+						paddingLeft: isMobile ? "0" : "1rem",
 						gap: ".5rem",
 					}}
 				>
