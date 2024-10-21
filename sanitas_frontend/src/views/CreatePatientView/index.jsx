@@ -7,6 +7,7 @@ import BaseButton from "src/components/Button/Base/index";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
+import useWindowSize from "src/utils/useWindowSize";
 
 /**
  * @typedef {Object} PatientData
@@ -36,6 +37,8 @@ export function CreatePatientView({
 	useStore,
 	linkAccount,
 }) {
+	const { width } = useWindowSize();
+	const isMobile = width < 768;
 	const setSelectedPatientId = useStore((s) => s.setSelectedPatientId);
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -143,14 +146,14 @@ export function CreatePatientView({
 			style={{
 				backgroundColor: colors.primaryBackground,
 				minHeight: "100vh",
-				padding: "3rem",
+				padding: isMobile ? "1rem" : "3rem",
 			}}
 		>
 			<div
 				style={{
 					display: "flex",
 					flexDirection: "column",
-					gap: "2rem",
+					gap: isMobile ? "1rem" : "2rem",
 				}}
 			>
 				{/* HEADER */}
@@ -158,12 +161,17 @@ export function CreatePatientView({
 					style={{
 						...commonWhiteBubbleStyles,
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: isMobile ? "column" : "row",
 						justifyContent: "space-between",
 						alignItems: "center",
 					}}
 				>
-					<img src={uvgLogo} style={{ height: "6vw" }} alt="UVG Logo" />
+					<img
+						src={uvgLogo}
+						style={{ height: isMobile ? "15vw" : "6vw" }}
+						alt="UVG Logo"
+					/>{" "}
+					{/* Aumentar tamaño para móviles */}
 					<h1
 						style={{
 							fontSize: fontSize.titleSize,
@@ -174,7 +182,14 @@ export function CreatePatientView({
 					>
 						Creación del Paciente
 					</h1>
-					<img src={logoSanitas} style={{ height: "5vw" }} alt="Sanitas Logo" />
+					{/* Eliminar logoSanitas solo para móviles */}
+					{!isMobile && (
+						<img
+							src={logoSanitas}
+							style={{ height: isMobile ? "8vw" : "5vw" }}
+							alt="Sanitas Logo"
+						/>
+					)}
 				</div>
 
 				{/* SUBTITLE */}
@@ -182,7 +197,9 @@ export function CreatePatientView({
 					<p
 						style={{
 							fontFamily: fonts.textFont,
-							fontSize: fontSize.subtitleSize,
+							fontSize: isMobile
+								? fontSize.subtitleSize * 0.9
+								: fontSize.subtitleSize, // Ajustar tamaño de fuente
 							textAlign: "center",
 							color: colors.primaryText,
 						}}
@@ -215,7 +232,7 @@ export function CreatePatientView({
 					<div
 						style={{
 							display: "grid",
-							gridTemplateColumns: "50% 50%",
+							gridTemplateColumns: isMobile ? "100%" : "50% 50%", // Cambiar a una columna en móviles
 							paddingTop: "1.5rem",
 							paddingBottom: "3rem",
 						}}
@@ -226,7 +243,7 @@ export function CreatePatientView({
 								display: "flex",
 								flexDirection: "column",
 								gap: "1rem",
-								paddingRight: "1rem",
+								paddingRight: isMobile ? "0" : "1rem", // Ajustar padding
 							}}
 						>
 							<div style={inputContainerStyles}>
@@ -239,6 +256,21 @@ export function CreatePatientView({
 									style={inputStyles}
 								/>
 							</div>
+
+							{/* Campo de Apellidos solo para móviles */}
+							{isMobile && (
+								<div style={inputContainerStyles}>
+									<label style={labelStyles}>Apellidos del paciente:</label>
+									<BaseInput
+										type="text"
+										value={patientData.surnames}
+										onChange={(e) => handleChange("surnames", e.target.value)}
+										placeholder="Apellidos:"
+										style={inputStyles}
+									/>
+								</div>
+							)}
+
 							<div style={inputContainerStyles}>
 								<label style={labelStyles}>CUI del Paciente:</label>
 								<BaseInput
@@ -257,27 +289,22 @@ export function CreatePatientView({
 									style={inputStyles}
 								/>
 							</div>
-						</div>
 
-						{/* SECOND COLUMN */}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "1rem",
-								paddingLeft: "1rem",
-							}}
-						>
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Apellidos del paciente:</label>
-								<BaseInput
-									type="text"
-									value={patientData.surnames}
-									onChange={(e) => handleChange("surnames", e.target.value)}
-									placeholder="Apellidos:"
-									style={inputStyles}
-								/>
-							</div>
+							{/* Campo de Apellidos para pantallas grandes */}
+							{!isMobile && (
+								<div style={inputContainerStyles}>
+									<label style={labelStyles}>Apellidos del paciente:</label>
+									<BaseInput
+										type="text"
+										value={patientData.surnames}
+										onChange={(e) => handleChange("surnames", e.target.value)}
+										placeholder="Apellidos:"
+										style={inputStyles}
+									/>
+								</div>
+							)}
+
+							{/* Campo de Sexo */}
 							<div style={inputContainerStyles}>
 								<label style={labelStyles}>Sexo:</label>
 								<div
@@ -308,6 +335,58 @@ export function CreatePatientView({
 								</div>
 							</div>
 						</div>
+
+						{/* SECOND COLUMN */}
+						{!isMobile && (
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "1rem",
+									paddingLeft: "1rem",
+								}}
+							>
+								<div style={inputContainerStyles}>
+									<label style={labelStyles}>Apellidos del paciente:</label>
+									<BaseInput
+										type="text"
+										value={patientData.surnames}
+										onChange={(e) => handleChange("surnames", e.target.value)}
+										placeholder="Apellidos:"
+										style={inputStyles}
+									/>
+								</div>
+								<div style={inputContainerStyles}>
+									<label style={labelStyles}>Sexo:</label>
+									<div
+										style={{
+											display: "flex",
+											alignItems: "center",
+											gap: "2rem",
+										}}
+									>
+										<RadioInput
+											name="gender"
+											checked={!patientData.sex}
+											onChange={() => handleChange("sex", false)}
+											label="Masculino"
+											style={{ fontFamily: fonts.textFont }}
+										/>
+										<RadioInput
+											name="gender"
+											checked={patientData.sex}
+											onChange={() => handleChange("sex", true)}
+											label="Femenino"
+											style={{
+												fontFamily: fonts.textFont,
+												display: "flex",
+												alignItems: "center",
+											}}
+										/>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					<BaseButton
@@ -315,7 +394,7 @@ export function CreatePatientView({
 						onClick={handleSubmit}
 						style={{
 							alignSelf: "center",
-							width: "30%",
+							width: isMobile ? "80%" : "30%",
 							height: "3rem",
 						}}
 					/>

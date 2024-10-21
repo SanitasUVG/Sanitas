@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
 import { cuiIsValid } from "src/utils/cui";
+import useWindowSize from "src/utils/useWindowSize"; // Importar el hook
 
 /**
  * @typedef {Object} LinkPatientViewProps
@@ -20,6 +21,9 @@ import { cuiIsValid } from "src/utils/cui";
 export function LinkPatientView({ linkAccount }) {
 	const navigate = useNavigate();
 	const [cui, setCui] = useState("");
+	const { width } = useWindowSize(); // Obtener el ancho de la ventana
+
+	const isMobile = width < 768; // Determinar si es móvil
 
 	const isValidCUI = (cui) => {
 		if (cuiIsValid(cui).error) {
@@ -77,16 +81,17 @@ export function LinkPatientView({ linkAccount }) {
 				style={{
 					backgroundColor: colors.secondaryBackground,
 					borderRadius: "1.5rem",
-					padding: "5rem",
+					padding: isMobile ? "2rem" : "5rem", // Cambiar padding en móvil
 					display: "flex",
 					flexDirection: "column",
-					width: "50%",
+					width: isMobile ? "90%" : "50%", // Cambiar ancho en móvil
 				}}
 			>
+				{/* Logo */}
 				<img
 					src={logoSanitas}
 					style={{
-						width: "35%",
+						width: isMobile ? "60%" : "35%", // Aumentar tamaño del logo en móvil
 						alignSelf: "center",
 					}}
 					alt="Logo Sanitas"
@@ -111,9 +116,10 @@ export function LinkPatientView({ linkAccount }) {
 					style={{
 						alignSelf: "center",
 						display: "flex",
-						flexDirection: "column",
+						flexDirection: "column", // Cambiar a columna para que el label esté arriba
 						gap: ".5rem",
 						width: "80%",
+						alignItems: isMobile ? "center" : "flex-start", // Centrar solo en móvil
 					}}
 				>
 					<label
@@ -121,6 +127,7 @@ export function LinkPatientView({ linkAccount }) {
 							fontFamily: fonts.textFont,
 							fontSize: "1.2rem",
 							color: colors.primaryText,
+							textAlign: isMobile ? "center" : "left", // Centrar el texto solo en móvil
 						}}
 					>
 						Ingrese su CUI:
@@ -128,7 +135,9 @@ export function LinkPatientView({ linkAccount }) {
 					<div
 						style={{
 							display: "flex",
-							gap: ".5rem",
+							alignItems: "center",
+							width: "100%",
+							justifyContent: isMobile ? "center" : "flex-start",
 						}}
 					>
 						<BaseInput
@@ -144,12 +153,23 @@ export function LinkPatientView({ linkAccount }) {
 									: colors.statusDenied,
 							}}
 						/>
+						{/* Mostrar el botón en la misma fila en pantallas grandes */}
+						{!isMobile && (
+							<BaseButton
+								text="Buscar"
+								style={{ height: "3rem", marginLeft: "1rem" }} // Margen izquierdo para separación
+								onClick={handleLinking}
+							/>
+						)}
+					</div>
+					{/* Botón en su propia fila solo en móviles */}
+					{isMobile && (
 						<BaseButton
 							text="Buscar"
-							style={{ height: "3rem" }}
+							style={{ height: "3rem", marginTop: "1rem", alignSelf: "center" }} // Alinear al centro
 							onClick={handleLinking}
 						/>
-					</div>
+					)}
 				</div>
 			</div>
 		</div>
