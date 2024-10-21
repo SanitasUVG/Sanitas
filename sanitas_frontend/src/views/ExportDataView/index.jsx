@@ -108,6 +108,7 @@ export function ExportDataView({ exportData, logoutUser }) {
 				{/* DECORATIONS */}
 				<img
 					src={BorderDecoLower}
+					alt="Bottom border decoration"
 					style={{
 						position: "absolute",
 						bottom: "0",
@@ -118,6 +119,7 @@ export function ExportDataView({ exportData, logoutUser }) {
 				/>
 				<img
 					src={BorderDecoUpper}
+					alt="Top border decoration"
 					style={{
 						position: "absolute",
 						top: "0",
@@ -140,7 +142,7 @@ export function ExportDataView({ exportData, logoutUser }) {
 					<IconButton icon={logoutIcon} onClick={handleLogout} />
 				</div>
 
-				<img src={SanitasLogo} style={{ width: "16rem" }} />
+				<img src={SanitasLogo} style={{ width: "16rem" }} alt="Sanitas Logo" />
 
 				{/* TITLES */}
 				<h1
@@ -187,7 +189,11 @@ export function ExportDataView({ exportData, logoutUser }) {
 							}
 						/>
 					</div>
-					<img src={rightArrow} style={{ paddingBottom: ".3rem" }} />
+					<img
+						src={rightArrow}
+						style={{ paddingBottom: ".3rem" }}
+						alt="Decorative arrow"
+					/>
 					<div
 						style={{
 							display: "flex",

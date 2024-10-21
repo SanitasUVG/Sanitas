@@ -16,8 +16,6 @@ import { colors, fonts } from "src/theme.mjs";
 import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
-import { toast } from "react-toastify";
-import { downloadBlob } from "src/utils";
 
 /**
  * @typedef {Object} PatientPreview
