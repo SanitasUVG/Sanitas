@@ -11,6 +11,19 @@ import WrapPromise from "src/utils/promiseWrapper";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 import { IS_PRODUCTION } from "src/constants.mjs";
 
+/**
+ * Provides a view for managing student appointments. This component is responsible for displaying
+ * the student appointments management interface, allowing for actions such as viewing, adding, and
+ * editing appointments. It integrates components like DashboardSidebar, InformationCard, and inputs
+ * for a cohesive user experience.
+ *
+ * @param {Object} props - The properties passed to the StudentAppointments component.
+ * @param {function} props.getAppointment - Function to fetch appointments data.
+ * @param {function} props.updateAppointment - Function to update appointment data.
+ * @param {Object} props.sidebarConfig - Configuration for the DashboardSidebar component.
+ * @param {function} props.useStore - A custom hook for state management, typically provided by Zustand.
+ * @returns {JSX.Element} The rendered component.
+ */
 export function StudentAppointments({
 	getAppointment,
 	updateAppointment,
@@ -115,6 +128,18 @@ export function StudentAppointments({
 	);
 }
 
+/**
+ * Handles the display and interaction logic for individual appointments within the student
+ * appointments management view. It provides functionality for selecting, adding, and modifying
+ * appointments, as well as handling errors and state updates.
+ *
+ * @param {Object} props - The properties passed to the StudentAppointmentsView component.
+ * @param {string} props.id - The identifier of the student whose appointments are being managed.
+ * @param {Object} props.appointmentResource - Wrapped promise representing the student's appointments data.
+ * @param {function} props.updateAppointment - Function to update appointment data.
+ * @param {string} props.displayName - The display name of the current user, used for default values.
+ * @returns {JSX.Element} The rendered component with the ability to interact with appointments.
+ */
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity:  Is the main function of the view
 function StudentAppointmentsView({
 	id,
@@ -128,6 +153,7 @@ function StudentAppointmentsView({
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [addingNew, setAddingNew] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
+	const [medications, setMedications] = useState([]);
 
 	//Read the data from the resource and handle any potential errors
 	let errorMessage = "";
@@ -147,7 +173,9 @@ function StudentAppointmentsView({
 		}
 	}
 
-	// Handlers for different actions within the component
+	/**
+	 * Initializes the process to add a new appointment. Sets up default values and state for a new appointment entry.
+	 */
 	const handleOpenNewForm = () => {
 		const { date, formattedDate } = getFormattedDateTime();
 		setAddingNew(true);
@@ -173,11 +201,23 @@ function StudentAppointmentsView({
 		setMedications([]);
 	};
 
+	/**
+	 * Cancels the current appointment editing or creation process and resets relevant states.
+	 */
+
 	const handleCancel = () => {
 		setselectedAppointment(null);
 		setAddingNew(false);
 		setIsEditable(false);
 	};
+
+	/**
+	 * Gets the current date and time, formatted for display and structured to interface with backend APIs.
+	 * If a specific date string is provided, it formats that date; otherwise, it uses the current date and time.
+	 *
+	 * @param {string|null} dateString - Optional specific date string to format.
+	 * @returns {Object} An object containing the date in ISO format and a human-readable formatted date string.
+	 */
 
 	function getFormattedDateTime(dateString = null) {
 		const date = dateString ? new Date(dateString) : new Date();
@@ -207,6 +247,12 @@ function StudentAppointmentsView({
 			appointmentResult?.consultations?.[0]?.patientConsultation?.version || 1,
 	});
 
+	/**
+	 * Selects an appointment from the list to view or edit, setting it as the current appointment and adjusting the state accordingly.
+	 *
+	 * @param {Object} appointment - The appointment object selected by the user.
+	 * @param {number} index - The index of the appointment in the list, used for tracking and operations.
+	 */
 	const handleSelectAppointment = (appointment, index) => {
 		const { formattedDate } = getFormattedDateTime(
 			appointment.patientConsultation.data.date,
@@ -220,24 +266,24 @@ function StudentAppointmentsView({
 
 		setCurrentAppointment({
 			date: appointment.patientConsultation.data.date,
-			formattedDate: formattedDate, // Formato de la fecha existente
-			evaluator: appointment.patientConsultation.data.evaluator, // Evaluador existente
-			reason: appointment.patientConsultation.data.reason || "", // Motivo de consulta
-			diagnosis: appointment.patientConsultation.data.diagnosis || "", // Diagnóstico
-			physicalExam: appointment.patientConsultation.data.physicalExam || "", // Examen físico
-			temperature: appointment.patientConsultation.data.temperature || "", // Temperatura
+			formattedDate: formattedDate,
+			evaluator: appointment.patientConsultation.data.evaluator,
+			reason: appointment.patientConsultation.data.reason || "",
+			diagnosis: appointment.patientConsultation.data.diagnosis || "",
+			physicalExam: appointment.patientConsultation.data.physicalExam || "",
+			temperature: appointment.patientConsultation.data.temperature || "",
 			systolicPressure:
-				appointment.patientConsultation.data.systolicPressure || "", // Presión sistólica
+				appointment.patientConsultation.data.systolicPressure || "",
 			diastolicPressure:
-				appointment.patientConsultation.data.diastolicPressure || "", // Presión diastólica
+				appointment.patientConsultation.data.diastolicPressure || "",
 			oxygenSaturation:
-				appointment.patientConsultation.data.oxygenSaturation || "", // Saturación de oxígeno
+				appointment.patientConsultation.data.oxygenSaturation || "",
 			respiratoryRate:
-				appointment.patientConsultation.data.respiratoryRate || "", // Frecuencia respiratoria
-			heartRate: appointment.patientConsultation.data.heartRate || "", // Frecuencia cardiaca
-			glucometry: appointment.patientConsultation.data.glucometry || "", // Glucometría
-			medications: appointment.patientConsultation.data.medications || [], // Medicamentos
-			notes: appointment.patientConsultation.data.notes || "", // Notas adicionales
+				appointment.patientConsultation.data.respiratoryRate || "",
+			heartRate: appointment.patientConsultation.data.heartRate || "",
+			glucometry: appointment.patientConsultation.data.glucometry || "",
+			medications: appointment.patientConsultation.data.medications || [],
+			notes: appointment.patientConsultation.data.notes || "",
 		});
 
 		setMedications(appointment.patientConsultation.data.medications || []);
@@ -252,9 +298,9 @@ function StudentAppointmentsView({
 			(appointment) => !appointment.patientConsultation?.data?.date,
 		);
 
-	// Identificador de medicamentos
-	const [medications, setMedications] = useState([]);
-
+	/**
+	 * Adds a new medication record to the current appointment, setting up default editable fields.
+	 */
 	const addMedication = () => {
 		setMedications([
 			...medications,
@@ -266,13 +312,21 @@ function StudentAppointmentsView({
 			},
 		]);
 	};
-	// Botón de cancelar medicamento
+
+	/**
+	 * Removes a medication record from the current appointment based on its index.
+	 *
+	 * @param {number} index - The index of the medication record to remove.
+	 */
 	const removeMedication = (index) => {
 		const newMedications = medications.filter((_, i) => i !== index);
 		setMedications(newMedications);
 	};
 
-	// Handles the saving of new or modified family medical history
+	/**
+	 * Attempts to save the current appointment to the database, validating necessary fields and handling the API response.
+	 * Provides user feedback through toast notifications based on the outcome of the save operation.
+	 */
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity:  Function to save the appointments
 	const handleSaveNewAppointment = async () => {
 		let hasErrors = false;
