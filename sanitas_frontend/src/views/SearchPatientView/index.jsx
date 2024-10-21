@@ -1,4 +1,5 @@
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
+import exportIcon from "@tabler/icons/outline/database-export.svg";
 import { Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
@@ -15,6 +16,8 @@ import { colors, fonts } from "src/theme.mjs";
 import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
 import WrapPromise from "src/utils/promiseWrapper";
 import useWindowSize from "src/utils/useWindowSize";
+import { toast } from "react-toastify";
+import { downloadBlob } from "src/utils";
 
 /**
  * @typedef {Object} PatientPreview
@@ -25,6 +28,9 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @typedef {Object} SearchPatientViewProps
  * @property {import("src/dataLayer.mjs").SearchPatientApiFunction} searchPatientsApiCall
+ * @property {import("src/dataLayer.mjs").GetLinkedPatientCallback} getLinkedPatient
+ * @property {import("src/dataLayer.mjs").GetRoleCallback} getRole
+ * @property {import("src/dataLayer.mjs").ExportDataCallback} exportData
  * @property {import("src/store.mjs").UseStoreHook} useStore
  * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
@@ -38,6 +44,7 @@ export default function SearchPatientView({
 	logoutUser,
 	getRole,
 	getLinkedPatient,
+	exportData,
 }) {
 	const resourceA = WrapPromise(getRole());
 	const resourceB = WrapPromise(getLinkedPatient());
@@ -80,6 +87,29 @@ export default function SearchPatientView({
 				return true;
 			}
 			return false;
+		};
+
+		const handleDataExport = async () => {
+			try {
+				const response = await toast.promise(
+					async () => {
+						const response = await exportData();
+						if (response.error) {
+							throw response.error;
+						}
+						return response.result;
+					},
+					{
+						pending: "Exportando datos de visita...",
+						success: "Datos exportados!",
+						error: "No se pudo exportar los datos por el momento!",
+					},
+				);
+
+				downloadBlob(response, "visitas.csv", "text/csv;charset=utf-8;");
+			} catch (_error) {
+				// console.error(error)
+			}
 		};
 
 		const handlePatientResult = () => {
@@ -301,18 +331,23 @@ export default function SearchPatientView({
 									</div>
 								</div>
 							</div>
-							<IconButton
-								icon={logoutIcon}
-								onClick={() => {
-									logoutUser();
-									navigate(NAV_PATHS.LOGIN_USER, { replace: true });
-								}}
+							<div
 								style={{
 									position: "absolute",
 									top: "2rem",
 									right: "2rem",
+									display: "flex",
 								}}
-							/>
+							>
+								<IconButton icon={exportIcon} onClick={handleDataExport} />
+								<IconButton
+									icon={logoutIcon}
+									onClick={() => {
+										logoutUser();
+										navigate(NAV_PATHS.LOGIN_USER, { replace: true });
+									}}
+								/>
+							</div>
 							<img
 								style={{
 									width: adjustWidth(width, "25.43rem"),
