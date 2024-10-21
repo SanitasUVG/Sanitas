@@ -57,7 +57,7 @@ export default function InformationCard({
 		fontFamily: fonts.textFont,
 	};
 
-	const truncateText = (text, maxLength = 30) => {
+	const truncateText = (text, maxLength = 35) => {
 		if (text && text.length > maxLength) {
 			return `${text.substring(0, maxLength)}...`;
 		}
