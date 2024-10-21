@@ -158,8 +158,8 @@ export function ExportDataView({ exportData }) {
 							}
 						/>
 					</div>
+					<BaseButton text="Descargar" style={{ height: "100%" }} />
 				</div>
-				<BaseButton text="Descargar" />
 			</div>
 		</div>
 	);
