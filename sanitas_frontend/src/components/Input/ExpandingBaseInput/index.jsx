@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const ExpandingTextarea = ({
+const ExpandingBaseInput = ({
 	id,
 	onChange,
 	placeholder,
@@ -57,4 +57,4 @@ const ExpandingTextarea = ({
 	);
 };
 
-export default ExpandingTextarea;
+export default ExpandingBaseInput;
