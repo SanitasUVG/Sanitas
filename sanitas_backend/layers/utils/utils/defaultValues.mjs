@@ -388,29 +388,33 @@ export const genDefaultPsychiatricHistory = () => ({
  * @returns {DefaultMedicalConsultation} An object containing default values for a medical consultation.
  */
 export const genDefaultMedicalConsultation = () => ({
-	patientConsultation: {
-		version: 1,
-		data: {
-			date: "",
-			evaluator: "",
-			reason: "",
-			diagnosis: "",
-			physicalExam: "",
-			temperature: 0.0,
-			systolicPressure: 0.0,
-			diastolicPressure: 0.0,
-			oxygenSaturation: 0.0,
-			respiratoryRate: "",
-			heartRate: 0.0,
-			glucometry: 0.0,
-			medications: [
-				{
+	consultations: [
+		{
+			patientConsultation: {
+				version: 1,
+				data: {
+					date: "",
+					evaluator: "",
+					reason: "",
 					diagnosis: "",
-					medication: "",
-					quantity: "",
+					physicalExam: "",
+					temperature: 0.0,
+					systolicPressure: 0.0,
+					diastolicPressure: 0.0,
+					oxygenSaturation: 0.0,
+					respiratoryRate: 0.0,
+					heartRate: 0.0,
+					glucometry: 0.0,
+					medications: [
+						{
+							diagnosis: "",
+							medication: "",
+							quantity: "",
+						},
+					],
+					notes: "",
 				},
-			],
-			notes: "",
+			},
 		},
-	},
+	],
 });

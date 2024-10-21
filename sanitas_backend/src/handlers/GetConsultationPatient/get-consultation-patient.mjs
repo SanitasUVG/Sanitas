@@ -89,9 +89,9 @@ export const getMedicalConsultationHandler = async (event, context) => {
 				return { response };
 			}
 
-			const query = `
-            SELECT * FROM consulta WHERE id_paciente = $1;
-        `;
+			const query = `SELECT * FROM consulta WHERE id_paciente = $1 ORDER BY fecha DESC;
+			`;
+
 			const args = [patientId];
 			logger.info({ query, args }, "Querying DB...");
 			const dbResponse = await client.query(query, args);
@@ -118,10 +118,12 @@ export const getMedicalConsultationHandler = async (event, context) => {
 				.build();
 		}
 
-		const medicalConsultation = mapToAPIMedicalConsultation(dbResponse.rows[0]);
+		const medicalConsultation = dbResponse.rows.map((row) =>
+			mapToAPIMedicalConsultation(row),
+		);
 		return responseBuilder
 			.setStatusCode(200)
-			.setBody(medicalConsultation)
+			.setBody({ patientId: patientId, consultations: medicalConsultation })
 			.build();
 	} catch (error) {
 		logger.error(
