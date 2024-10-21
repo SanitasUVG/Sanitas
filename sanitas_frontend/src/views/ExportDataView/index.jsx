@@ -11,34 +11,77 @@ import BaseButton from "src/components/Button/Base";
 import { useState } from "react";
 import { formatDate } from "@storybook/blocks";
 import { toast } from "react-toastify";
+import { downloadBlob } from "src/utils";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
+import { IS_PRODUCTION } from "src/constants.mjs";
 
 /**
  * @typedef {Object} ExportDataViewProps
  * @property {import("src/dataLayer.mjs").ExportDataCallback} exportData
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
  * @param {ExportDataViewProps} props
  */
-export function ExportDataView({ exportData }) {
+export function ExportDataView({ exportData, logoutUser }) {
+	const navigate = useNavigate();
 	const today = new Date();
-	const [finalDate, setFinalDate] = useState(today);
+	const [endDate, setEndDate] = useState(today);
 	const [startDate, setStartDate] = useState(
 		new Date(today.getFullYear(), today.getMonth(), 1),
 	);
+
+	const handleLogout = () => {
+		logoutUser();
+		navigate(NAV_PATHS.LOGIN_USER);
+	};
+	const handleGoBack = () => {
+		navigate(NAV_PATHS.SEARCH_PATIENT);
+	};
 
 	const validateDates = (startDate, finalDate) => {
 		return startDate.getTime() < finalDate.getTime();
 	};
 
-	const handleChange = (newStart, newfinal) => {
+	const handleDateChange = (newStart, newfinal) => {
 		if (!validateDates(newStart, newfinal)) {
 			toast.error("¡La fecha de inicio debe ser anterior a la final!");
 			return;
 		}
 
-		setFinalDate(newfinal);
+		setEndDate(newfinal);
 		setStartDate(newStart);
+	};
+
+	const handleDataExport = async () => {
+		try {
+			const response = await toast.promise(
+				async () => {
+					const response = await exportData(startDate, endDate);
+					if (response.error) {
+						throw response.error;
+					}
+					return response.result;
+				},
+				{
+					pending: "Exportando datos de visita...",
+					success: "Datos exportados!",
+					error: "No se pudo exportar los datos por el momento!",
+				},
+			);
+
+			downloadBlob(
+				response,
+				`visitas_de_${formatDate(startDate)}_a_${formatDate(endDate)}`,
+				"text/csv;charset=utf-8;",
+			);
+		} catch (error) {
+			if (!IS_PRODUCTION) {
+				console.log(error);
+			}
+		}
 	};
 
 	return (
@@ -91,8 +134,8 @@ export function ExportDataView({ exportData }) {
 						right: "2rem",
 					}}
 				>
-					<IconButton icon={goBackIcon} />
-					<IconButton icon={logoutIcon} />
+					<IconButton icon={goBackIcon} onClick={handleGoBack} />
+					<IconButton icon={logoutIcon} onClick={handleLogout} />
 				</div>
 
 				<img src={SanitasLogo} style={{ width: "16rem" }} />
@@ -138,7 +181,7 @@ export function ExportDataView({ exportData }) {
 							type="date"
 							value={formatDate(startDate)}
 							onChange={(ev) =>
-								handleChange(new Date(ev.target.value), finalDate)
+								handleDateChange(new Date(ev.target.value), endDate)
 							}
 						/>
 					</div>
@@ -152,13 +195,17 @@ export function ExportDataView({ exportData }) {
 						<label>Final:</label>
 						<BaseInput
 							type="date"
-							value={formatDate(finalDate)}
+							value={formatDate(endDate)}
 							onChange={(ev) =>
-								handleChange(startDate, new Date(ev.target.value))
+								handleDateChange(startDate, new Date(ev.target.value))
 							}
 						/>
 					</div>
-					<BaseButton text="Descargar" style={{ height: "100%" }} />
+					<BaseButton
+						text="Descargar"
+						style={{ height: "100%" }}
+						onClick={handleDataExport}
+					/>
 				</div>
 			</div>
 		</div>

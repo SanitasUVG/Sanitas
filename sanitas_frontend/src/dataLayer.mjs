@@ -2,6 +2,7 @@ import axios from "axios";
 import { getSession, mockGetSession } from "./cognito.mjs";
 import { IS_PRODUCTION } from "./constants.mjs";
 import { calculateYearsBetween } from "./utils/date";
+import { formatDate } from "@storybook/blocks";
 
 const DEV_URL = "http://localhost:3000";
 const _BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
@@ -1897,11 +1898,13 @@ export const getLinkedPatient = async () => {
 
 /**
  * @callback ExportDataCallback
+ * @param {Date} startDate
+ * @param {Date} endDate
  * @returns {Promise<Result<string, *>>} If the promise is successfull the result will contain the CSV contents.
  */
 
 /**@type {ExportDataCallback}  */
-export const exportData = async () => {
+export const exportData = async (startDate, endDate) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
 		: await mockGetSession(true);
@@ -1915,10 +1918,15 @@ export const exportData = async () => {
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	const url = `${PROTECTED_URL}/consultations/export`;
+	const params = {
+		startDate: formatDate(startDate),
+		endDate: formatDate(endDate),
+	};
 
 	try {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
+			params,
 		});
 
 		return { result };
