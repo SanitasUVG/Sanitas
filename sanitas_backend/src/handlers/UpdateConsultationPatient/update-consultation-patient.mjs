@@ -201,7 +201,9 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 		if (error.code === "23503") {
 			return responseBuilder
 				.setStatusCode(404)
-				.setBody({ error: "Patient or evaluator not found with the provided ID." })
+				.setBody({
+					error: "Patient or evaluator not found with the provided ID.",
+				})
 				.build();
 		}
 
