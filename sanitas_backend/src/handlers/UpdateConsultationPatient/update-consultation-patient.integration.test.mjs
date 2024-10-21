@@ -94,7 +94,7 @@ describe("Update Medical Consultation integration tests", () => {
 
 		expect(response.status).toBe(404);
 		expect(response.data.error).toBeDefined();
-		expect(response.data.error).toBe("Patient not found with the provided ID.");
+		expect(response.data.error).toBe("Patient or evaluator not found with the provided ID.");
 	});
 
 	test("Fail due to invalid JWT", async () => {
