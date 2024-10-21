@@ -65,17 +65,24 @@ export const handler = async (event, context) => {
 				const msg =
 					"An error occurred while trying to check if user is doctor!";
 				logger.error({ error: itsDoctor.error }, msg);
-				return responseBuilder
+
+				const response = responseBuilder
 					.setStatusCode(500)
 					.setBody({ error: msg })
 					.build();
+				return { response };
 			}
 
 			if (!itsDoctor) {
 				const msg = "Unauthorized, you're not a doctor!";
 				const body = { error: msg };
 				logger.error(body, msg);
-				return responseBuilder.setStatusCode(401).setBody(body).build();
+
+				const response = responseBuilder
+					.setStatusCode(403)
+					.setBody(body)
+					.build();
+				return { response };
 			}
 			logger.info(`${email} is a doctor!`);
 
@@ -105,29 +112,16 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).setBody(csv).build();
 	} catch (error) {
-		logger.error(
-			{ error },
-			"An error occurred while updating traumatologic history!",
-		);
-
-		if (error.code === "23503") {
-			return responseBuilder
-				.setStatusCode(404)
-				.setBody({ error: "Patient not found with the provided ID." })
-				.build();
-		}
+		logger.error({ error }, "An error occurred while exporting data!");
 
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({
-				error:
-					"Failed to update traumatological history due to an internal error.",
+				error: "Failed to retrieve stats because of an internal error",
 				details: error.message,
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
