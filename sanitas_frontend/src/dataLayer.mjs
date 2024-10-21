@@ -161,11 +161,16 @@ export const checkCui = async (cui) => {
 };
 
 /**
+ * @callback GetRoleCallback
  * Asynchronously checks if a CUI (Unique Identity Code) exists in the system by making a GET request to the server.
  *
  * @param {string} cui - The CUI to be checked.
  * @returns {Promise<Object>} A promise that resolves to an object containing a boolean `exists` indicating if the CUI is found, and the `cui` itself.
  * @throws {Error} Throws an error if the request fails or if the server response is not OK.
+ */
+
+/**
+ * @typedef {GetRoleCallback}
  */
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
@@ -1884,6 +1889,38 @@ export const getLinkedPatient = async () => {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
 		});
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
+ * @callback ExportDataCallback
+ * @returns {Promise<Result<string, *>>} If the promise is successfull the result will contain the CSV contents.
+ */
+
+/**@type {ExportDataCallback}  */
+export const exportData = async () => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/consultations/export`;
+
+	try {
+		const { data: result } = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+
 		return { result };
 	} catch (error) {
 		return { error };

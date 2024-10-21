@@ -91,6 +91,8 @@ Resources:
     Properties:
       Handler: src/handlers/CheckCui/check-cui.handler
       Description: Verifies if a CUI exists in the PostgreSQL database.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -112,6 +114,8 @@ Resources:
         Searches for a patient in the database by Carnet, Código de
         Trabajador, Nombre-Apellido or CUI.
 
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -130,6 +134,8 @@ Resources:
     Properties:
       Handler: src/handlers/CreatePatient/create-patient.createPatientHandler
       Description: Function to create a new patient
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -147,6 +153,8 @@ Resources:
     Properties:
       Handler: src/handlers/HealthCheck/health-check.handler
       Description: Health check endpoint to verify the service status
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -161,6 +169,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/GetGeneralPatientInfo/get-general-patient-info.handler
       Description: Gets the general information regarding a patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -175,6 +185,8 @@ Resources:
     Properties:
       Handler: src/handlers/UpdatePatient/update-patient.updatePatientHandler
       Description: Function to update patient data
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -188,6 +200,8 @@ Resources:
     Properties:
       Handler: ./src/handlers/UpdateStudentData/update-student-data.handler
       Description: Function to update student patient data
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -204,6 +218,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/UpdateCollaborator/update-collaborator.updateCollaboratorHandler
       Description: Function to update collaborator data
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -223,6 +239,8 @@ Resources:
       Handler: src/handlers/GetSurgicalHistory/get-surgical-history-patient.getSurgicalHistoryHandler
       Description: Retrieves surgical history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -240,6 +258,8 @@ Resources:
       Handler: src/handlers/UpdateSurgicalHistory/update-surgical-history-patient.updateSurgicalHistoryHandler
       Description: Updates the surgical history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -257,6 +277,8 @@ Resources:
       Handler: src/handlers/UpdateStudentSurgicalHistory/update-student-surgical-history-patient.updateStudentSurgicalHistoryHandler
       Description: Updates the surgical history for a specific patient
         from the student view by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -274,6 +296,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentTraumatologicalHistory/index.handler
       Description: Updates the traumatological history for a specific
         patient from the student view by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -290,6 +314,8 @@ Resources:
       Handler: src/handlers/UpdateStudentAllergicHistory/update-student-allergic-history-patient.updateStudentAllergicHistoryHandler
       Description: Updates the allergic history for a specific patient
         from the student view by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -307,6 +333,8 @@ Resources:
       Handler: src/handlers/UpdateStudentPersonalHistory/update-student-personal-history-patient.updateStudentPersonalHistoryHandler
       Description: Function to update personal medical history data
         for a patient from the student POV.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -324,6 +352,8 @@ Resources:
       Handler: src/handlers/GetFamilyHistory/get-family-history-patient.getFamilyHistoryHandler
       Description: Retrieves family history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -341,6 +371,8 @@ Resources:
       Handler: ./src/handlers/GetPersonalHistory/get-personal-history-patient.getPersonalHistoryHandler
       Description: Retrieves the personal history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -358,6 +390,8 @@ Resources:
       Handler: ./src/handlers/UpdateFamilyHistory/update-family-history-patient.updateFamilyHistoryHandler
       Description: Updates the family history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -375,6 +409,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentFamiliarHistory/update-student-familiar-history-patient.updateStudentFamilyHistoryHandler
       Description: Function to update family medical history data for
         a patient from the student POV.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -392,6 +428,8 @@ Resources:
       Handler: ./src/handlers/UpdatePersonalHistory/update-personal-history-patient.updatePersonalHistoryHandler
       Description: Updates the personal history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -409,6 +447,8 @@ Resources:
       Handler: src/handlers/GetTraumatologicalHistory/get-traumatological-history-patient.getTraumatologicalHistoryHandler
       Description: Retrieves traumatological history for a specific
         patient by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -426,6 +466,8 @@ Resources:
       Handler: src/handlers/UpdateTraumatologicalHistory/update-traumatological-history-patient.updateTraumatologicalHistoryHandler
       Description: Updates the traumatological history for a specific
         patient by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -442,6 +484,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/GetGeneralStudentInfo/get-general-student-info.handler
       Description: Gets the general information regarding a Student.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -460,6 +504,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/GetGeneralCollaboratorInfo/get-collaborator.getCollaboratorHandler
       Description: Function to get collaborator data
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -479,6 +525,8 @@ Resources:
       Handler: ./src/handlers/GetNonPatologicalHistory/index.handler
       Description: Function to get non patological history data from.
         patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -498,6 +546,8 @@ Resources:
       Handler: ./src/handlers/UpdateNonPatologicalHistory/index.handler
       Description: Function to put non patological history data from.
         patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -516,6 +566,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentNonPatologicalHistory/index.handler
       Description: Updates the non patological history for a specific
         patient from the student view by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -536,6 +588,8 @@ Resources:
       Handler: src/handlers/UpdateAllergicHistory/update-allergic-history-patient.updateAllergicHistoryHandler
       Description: Updates the allergic history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -555,6 +609,8 @@ Resources:
       Handler: src/handlers/GetAllergicHistory/get-allergic-history-patient.getAllergicHistoryHandler
       Description: Retrieves the allergic history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -574,6 +630,8 @@ Resources:
       Handler: src/handlers/GetPsychiatricHistory/get-psychiatric-history-patient.getPsychiatricHistoryHandler
       Description: Retrieves the psychiatric history for a specific
         patient by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -593,6 +651,8 @@ Resources:
       Handler: src/handlers/UpdatePsychiatricHistory/update-psychiatric-history-patient.updatePsychiatricHistoryHandler
       Description: Updates the psychiatric history for a specific patient
         by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -612,6 +672,8 @@ Resources:
       Handler: src/handlers/UpdateStudentPsychiatricHistory/update-student-psychiatric-history-patient.updateStudentPsychiatricHistoryHandler
       Description: Updates the psychiatric history for a specific patient
         from the student view by ID.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -629,6 +691,8 @@ Resources:
       Handler: src/handlers/GetGynecoObstetricHistory/get-gynecoobstetric-history-patient.getGynecologicalHistoryHandler
       Description: Function to get gyneco-obstetric history data from.
         patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -646,6 +710,8 @@ Resources:
       Handler: src/handlers/UpdateGynecoObstetricHistory/update-gynecoobstetric-history-patient.updateGynecologicalHistoryHandler
       Description: Function to put gyneco-obstetric history data from.
         patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -661,6 +727,8 @@ Resources:
     Properties:
       Handler: ./src/handlers/GetRole/get-role.handler
       Description: Retrieves the role of the provided JWT.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -677,6 +745,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: ./src/handlers/LinkAccountToPatient/link-account-to-patient.handler
       Description: Links a cognito account to an existing patient.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -692,6 +762,8 @@ Resources:
       Handler: ./src/handlers/GetLinkedPatient/get-linked-patient.handler
       Description: Retrieves the linked patient id (if any) for the
         given account.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -707,6 +779,8 @@ Resources:
       Handler: ./src/handlers/GetMedicalHistoryMetadata/get-medical-history-metadata.handler
       Description: Retrieves which properties from the medical history
         contains data.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -722,6 +796,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentGeneralInformation/update-student-general-information.handler
       Description: Update the patient information but not modify already
         saved information.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -737,6 +813,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentCollaboratorInformation/update-student-collaborator-information.handler
       Description: Update the patient collaborator information but
         not modify already saved information.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -752,6 +830,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentStudentInformation/update-student-student-information.handler
       Description: Update the patient student information but not modify
         already saved information.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -767,6 +847,8 @@ Resources:
       Handler: ./src/handlers/UpdateStudentGynecoObstetricHistory/update-student-gyneco-obstetric-history.handler
       Description: Update the patient gynecoobstetric information but
         not modify already saved information.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -783,6 +865,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/GetConsultationPatient/get-consultation-patient.getMedicalConsultationHandler
       Description: Function to get consultation patient data from.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -801,6 +885,8 @@ Resources:
       # yamllint disable-line rule:line-length
       Handler: src/handlers/UpdateConsultationPatient/update-consultation-patient.updateMedicalConsultationHandler
       Description: Function to get consultation patient data from.
+      Tags:
+        Project: Sanitas
       Events:
         Api:
           Type: Api
@@ -811,11 +897,50 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
+  # This is a Lambda function config associated with the source code:
+  # get-consultation-patient.mjs
+  exportDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/ExportData/export-data.handler
+      Description: Function to get consultation patient data from.
+      Tags:
+        Project: Sanitas
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /consultations/export
+            Method: GET
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # get-consultation-patient.mjs
+  refreshStatsForConsultations:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/RefreshExportData/refresh-export-data.handler
+      Description: Function that refreshes the stats materialized view.
+      Tags:
+        Project: Sanitas
+      Events:
+        Schedule:
+          Type: ScheduleV2
+          Properties:
+            # Which means every day at 1am
+            ScheduleExpression: cron(0 1 * * * *)
+
   SanitasAPI:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
       TracingEnabled: true
+      Tags:
+        Project: Sanitas
       Cors:
         AllowMethods: "'OPTIONS,POST,GET,PUT'"
         AllowHeaders: "'*'"
