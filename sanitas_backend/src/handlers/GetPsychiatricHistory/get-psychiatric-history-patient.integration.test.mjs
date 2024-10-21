@@ -23,37 +23,76 @@ describe("Get Psychiatric Medical History integration tests", () => {
 			medicalHistory: {
 				depression: {
 					version: 1,
-					data: {
-						medication: "MEDICINE 1",
-						dose: "1gm",
-						frecuency: "1 by day",
-						ube: false,
-					},
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 				anxiety: {
 					version: 1,
-					data: {
-						medication: "MEDICINE 2",
-						dose: "2gmr",
-						frecuency: "2 by day",
-						ube: true,
-					},
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 				ocd: {
 					version: 1,
-					data: {},
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 				adhd: {
 					version: 1,
-					data: {},
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 				bipolar: {
 					version: 1,
-					data: {},
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frencuencia 1",
+							ube: false,
+						},
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 				other: {
 					version: 1,
-					data: {},
+					data: [
+						{
+							illness: "Illness 1",
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
 				},
 			},
 		});
@@ -126,5 +165,62 @@ describe("Get Psychiatric Medical History integration tests", () => {
 
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
+	});
+
+	test("Verify JSON structure and data types of patient mental health history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				depression: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							medication: expect.any(String),
+							dose: expect.any(String),
+							frequency: expect.any(String),
+							ube: expect.any(Boolean),
+						}),
+					]),
+				},
+				anxiety: expect.any(Object),
+				ocd: expect.any(Object),
+				adhd: expect.any(Object),
+				bipolar: expect.any(Object),
+				other: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							illness: expect.any(String),
+							medication: expect.any(String),
+							dose: expect.any(String),
+							frequency: expect.any(String),
+							ube: expect.any(Boolean),
+						}),
+					]),
+				},
+			},
+		};
+
+		for (const [key, value] of Object.entries(response.data.medicalHistory)) {
+			expect(
+				Array.isArray(value.data) &&
+					value.data.every((item) => {
+						const requiredKeys = ["medication", "dose", "frequency", "ube"];
+						if (key === "other") requiredKeys.unshift("illness");
+						return (
+							Object.keys(item).length === requiredKeys.length &&
+							requiredKeys.every((k) => k in item)
+						);
+					}),
+			).toBe(true);
+		}
+
+		expect(response.data).toEqual(expectedResponse);
 	});
 });

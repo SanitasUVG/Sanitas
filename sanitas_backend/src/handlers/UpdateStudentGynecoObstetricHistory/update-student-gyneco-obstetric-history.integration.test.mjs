@@ -259,4 +259,186 @@ describe("Update Patient Gynecological Medical History integration tests", () =>
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient gynecological medical history for PUT", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				firstMenstrualPeriod: {
+					version: 1,
+					data: {
+						age: 13,
+					},
+				},
+				regularCycles: {
+					version: 1,
+					data: {
+						isRegular: true,
+					},
+				},
+				painfulMenstruation: {
+					version: 1,
+					data: {
+						isPainful: true,
+						medication: "Medicamento 1",
+					},
+				},
+				pregnancies: {
+					version: 1,
+					data: {
+						totalPregnancies: 3,
+						vaginalDeliveries: 1,
+						cesareanSections: 1,
+						abortions: 1,
+					},
+				},
+				diagnosedIllnesses: {
+					version: 1,
+					data: {
+						ovarianCysts: {
+							medication: {
+								medication: "Medicamento 1",
+								dosage: "Dosis 1",
+								frequency: "Frecuencia 1",
+							},
+						},
+						uterineMyomatosis: {
+							medication: {
+								medication: "Medicamento 1",
+								dosage: "Dosis 1",
+								frequency: "Frecuencia 1",
+							},
+						},
+						endometriosis: {
+							medication: {
+								medication: "Medicamento 1",
+								dosage: "Dosis 1",
+								frequency: "Frecuencia 1",
+							},
+						},
+						otherCondition: [
+							{
+								medication: {
+									illness: "Otro Diagnóstico 1",
+									medication: "Medicament 1",
+									dosage: "Dosis 1",
+									frequency: "Frecuencia 1",
+								},
+							},
+						],
+					},
+				},
+				hasSurgeries: {
+					version: 1,
+					data: {
+						hysterectomy: {
+							year: 1993,
+							complications: true,
+						},
+
+						sterilizationSurgery: {
+							year: 2005,
+							complications: true,
+						},
+
+						ovarianCystsSurgery: [
+							{
+								year: 2006,
+								complications: true,
+							},
+							{
+								year: 2010,
+								complications: true,
+							},
+							{
+								year: 2011,
+								complications: true,
+							},
+						],
+						breastMassResection: [
+							{
+								year: 2007,
+								complications: true,
+							},
+							{
+								year: 2008,
+								complications: true,
+							},
+						],
+					},
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				firstMenstrualPeriod: {
+					version: expect.any(Number),
+					data: {
+						age: expect.any(Number),
+					},
+				},
+				regularCycles: {
+					version: expect.any(Number),
+					data: {
+						isRegular: expect.any(Boolean),
+					},
+				},
+				painfulMenstruation: {
+					version: expect.any(Number),
+					data: {
+						isPainful: expect.any(Boolean),
+						medication: expect.any(String),
+					},
+				},
+				pregnancies: {
+					version: expect.any(Number),
+					data: {
+						totalPregnancies: expect.any(Number),
+						vaginalDeliveries: expect.any(Number),
+						cesareanSections: expect.any(Number),
+						abortions: expect.any(Number),
+					},
+				},
+				diagnosedIllnesses: {
+					version: expect.any(Number),
+					data: expect.any(Object),
+				},
+				hasSurgeries: {
+					version: expect.any(Number),
+					data: {
+						hysterectomy: expect.objectContaining({
+							year: expect.any(Number),
+							complications: expect.any(Boolean),
+						}),
+						sterilizationSurgery: expect.objectContaining({
+							year: expect.any(Number),
+							complications: expect.any(Boolean),
+						}),
+						ovarianCystsSurgery: expect.arrayContaining([
+							expect.objectContaining({
+								year: expect.any(Number),
+								complications: expect.any(Boolean),
+							}),
+						]),
+						breastMassResection: expect.arrayContaining([
+							expect.objectContaining({
+								year: expect.any(Number),
+								complications: expect.any(Boolean),
+							}),
+						]),
+					},
+				},
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

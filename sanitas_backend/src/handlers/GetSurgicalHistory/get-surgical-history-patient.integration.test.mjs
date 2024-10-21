@@ -23,9 +23,14 @@ async function createPatient() {
 				version: 1,
 				data: [
 					{
-						surgeryType: "Appendectomy",
-						surgeryYear: "2023",
-						complications: "None",
+						surgeryType: "Motivo 2",
+						surgeryYear: "2015",
+						complications: "Complicación 2",
+					},
+					{
+						surgeryType: "Motivo 1",
+						surgeryYear: "2007",
+						complications: "Complicación 1",
 					},
 				],
 			},
@@ -57,9 +62,9 @@ describe("Get Surgical History integration tests", () => {
 
 		expect(surgicalHistory).toBeDefined();
 		expect(surgicalHistory.patientId).toBe(patientId);
-		expect(surgicalHistory.medicalHistory.surgeries.data.length).toBe(1);
+		expect(surgicalHistory.medicalHistory.surgeries.data.length).toBe(2);
 		expect(surgicalHistory.medicalHistory.surgeries.data[0].surgeryType).toBe(
-			"Appendectomy",
+			"Motivo 2",
 		);
 	});
 
@@ -116,5 +121,31 @@ describe("Get Surgical History integration tests", () => {
 
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
+	});
+
+	test("Verify JSON structure and data types of patient surgery history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				surgeries: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							surgeryType: expect.any(String),
+							surgeryYear: expect.any(String),
+							complications: expect.any(String),
+						}),
+					]),
+				},
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
 	});
 });

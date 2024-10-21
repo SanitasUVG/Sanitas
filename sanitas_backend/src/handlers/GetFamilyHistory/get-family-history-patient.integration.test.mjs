@@ -168,4 +168,65 @@ describe("Get Family Medical History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
 	});
+
+	test("Verify JSON structure and data types of patient family medical history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				hypertension: expect.objectContaining({
+					version: expect.any(Number),
+					data: expect.arrayContaining([expect.any(String)]),
+				}),
+				diabetesMellitus: expect.any(Object),
+				hypothyroidism: expect.any(Object),
+				asthma: expect.any(Object),
+				convulsions: expect.any(Object),
+				myocardialInfarction: expect.any(Object),
+				cancer: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							who: expect.any(String),
+							typeOfCancer: expect.any(String),
+						}),
+					]),
+				},
+				cardiacDiseases: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							who: expect.any(String),
+							typeOfDisease: expect.any(String),
+						}),
+					]),
+				},
+				renalDiseases: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							who: expect.any(String),
+							typeOfDisease: expect.any(String),
+						}),
+					]),
+				},
+				others: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							who: expect.any(String),
+							disease: expect.any(String),
+						}),
+					]),
+				},
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

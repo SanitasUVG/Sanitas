@@ -241,7 +241,9 @@ erDiagram
     USUARIO ||--|{ CONSULTA: ""
 ```
 
-## Registro de Antecedentes
+<!-- markdownlint-disable MD025 -->
+
+# Registro de Antecedentes
 
 Como se puede ver en el diagrama de arriba los antecedentes tienen varios tipos,
 cada tipo es una tabla y cada columna de la tabla representa una subsección que se
@@ -255,14 +257,19 @@ guardarlos en formato JSON. Cada registro JSON tiene una propiedad JSON dentro
 de sí que detalla qué versión de la estructura es, la documentación de cada
 versión se encuentra a continuación.
 
-### Antecedentes Familiares
+## Antecedentes Familiares
 
 Los antecedentes familiares se organizan por tipo de condición médica. Cada
 condición se almacena en un objeto JSON que lista los familiares afectados,
 permitiendo una rápida actualización y mantenimiento de los datos.
 
+<!-- markdownlint-disable MD026 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
+  "patientId": 1,
   "medicalHistory": {
     "hypertension": {
       "version": 1,
@@ -278,7 +285,7 @@ permitiendo una rápida actualización y mantenimiento de los datos.
     },
     "asthma": {
       "version": 1,
-      "data": []
+      "data": ["Mother"]
     },
     "convulsions": {
       "version": 1,
@@ -286,11 +293,79 @@ permitiendo una rápida actualización y mantenimiento de los datos.
     },
     "myocardialInfarction": {
       "version": 1,
+      "data": ["Mother"]
+    },
+    "cancer": {
+      "version": 1,
       "data": [
         {
-          "surgeryYear": "1993"
+          "who": "Mother",
+          "typeOfCancer": "Breast"
         }
-        ]
+      ]
+    },
+    "cardiacDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Father",
+          "typeOfDisease": "Hypertrophy"
+        }
+      ]
+    },
+    "renalDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Grandfather",
+          "typeOfDisease": "Renal Failure"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "who": "Brother",
+          "disease": "Psoriasis"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 1,
+  "medicalHistory": {
+    "hypertension": {
+      "version": 1,
+      "data": ["Father", "Mother"]
+    },
+    "diabetesMellitus": {
+      "version": 1,
+      "data": ["Mother", "Brother"]
+    },
+    "hypothyroidism": {
+      "version": 1,
+      "data": ["Grandmother"]
+    },
+    "asthma": {
+      "version": 1,
+      "data": ["Mother"]
+    },
+    "convulsions": {
+      "version": 1,
+      "data": ["Uncle"]
+    },
+    "myocardialInfarction": {
+      "version": 1,
+      "data": ["Mother"]
     },
     "cancer": {
       "version": 1,
@@ -360,15 +435,21 @@ son arrays de la forma:
   ]
   ```
 
-### Antecedentes Personales
+## Antecedentes Personales
 
 Los antecedentes personales se organizan por tipo de condición médica. Al igual
 que los antecedentes familiares cada condición se almacena en un objeto JSON que
 lista los datos requeridos según la condición.
 
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
-  "patientId": "1",
+  "patientId": 1,
   "medicalHistory": {
     "hypertension": {
       "version": 1,
@@ -431,7 +512,136 @@ lista los datos requeridos según la condición.
         {
           "surgeryYear": "1993"
         }
-        ]
+      ]
+    },
+    "cancer": {
+      "version": 1,
+      "data": [
+        {
+          "typeOfCancer": "Breast",
+          "treatment": "Operation"
+        }
+      ]
+    },
+    "cardiacDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "typeOfDisease": "Hypertrophy",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        },
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        }
+      ]
+    },
+    "renalDiseases": {
+      "version": 1,
+      "data": [
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        },
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "typeOfDisease": "Hypertrophy 2",
+          "medicine": "Medicina random 5",
+          "dose": "5ml",
+          "frequency": "1 vez al día"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 1,
+  "medicalHistory": {
+    "hypertension": {
+      "version": 1,
+      "data": [
+        {
+          "medicine": "Medicina random 1",
+          "dose": "5ml",
+          "frequency": "3 veces al día"
+        },
+        {
+          "medicine": "Medicina random 2",
+          "dose": "10ml",
+          "frequency": "Una vez al día"
+        }
+      ]
+    },
+    "diabetesMellitus": {
+      "version": 1,
+      "data": [
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
+      ]
+    },
+    "hypothyroidism": {
+      "version": 1,
+      "data": [
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
+      ]
+    },
+    "asthma": {
+      "version": 1,
+      "data": [
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
+      ]
+    },
+    "convulsions": {
+      "version": 1,
+      "data": [
+        {
+          "medicine": "Medicina random 4",
+          "dose": "2 pastillas",
+          "frequency": "Cada 8 horas"
+        }
+      ]
+    },
+    "myocardialInfarction": {
+      "version": 1,
+      "data": [
+        {
+          "surgeryYear": "1993"
+        }
+      ]
     },
     "cancer": {
       "version": 1,
@@ -523,9 +733,9 @@ lista los datos requeridos según la condición.
   - El infarto agudo de miocardio tiene la forma:
 
   ```json
-        {
-          "surgeryYear": "1993"
-        }
+  {
+    "surgeryYear": "1993"
+  }
   ```
 
   - Por último enfermedades cardíacas, enfermedades renales y otros tienen la
@@ -540,15 +750,22 @@ lista los datos requeridos según la condición.
   }
   ```
 
-### Antecedentes Traumatológicos
+## Antecedentes Traumatológicos
 
 Los registros de antecedentes traumatológicos se almacenan en formato JSON.
 Cada registro detalla el tipo de trauma, el año de ocurrencia y el
 tratamiento administrado, lo que facilita la actualización y el mantenimiento
 de los datos.
 
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
+  "patientId": 1,
   "medicalHistory": {
     "traumas": {
       "version": 1,
@@ -557,6 +774,40 @@ de los datos.
           "whichBone": "Femur",
           "year": "2023",
           "treatment": "Surgery"
+        },
+        {
+          "whichBone": "Radius",
+          "year": "2022",
+          "treatment": "Casting"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 1,
+  "medicalHistory": {
+    "traumas": {
+      "version": 1,
+      "data": [
+        {
+          "whichBone": "Femur",
+          "year": "2023",
+          "treatment": "Surgery"
+        },
+        {
+          "whichBone": "Radius",
+          "year": "2022",
+          "treatment": "Casting"
         }
       ]
     }
@@ -587,22 +838,36 @@ de los datos.
   ]
   ```
 
-### Antecedentes Alérgicos
+## Antecedentes Alérgicos
 
 Los antecedentes alérgicos se organizan por tipo de alergia.
 Cada tipo de alergia se almacena en un objeto JSON que lista
 los datos requeridos según la alergia.
 
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
+  "patientId": 1,
   "medicalHistory": {
     "medication": {
       "version": 1,
       "data": [
         {
-          "allergy": "Penicillin",
-          "reaction": "Rash",
-          "severity": "Mild"
+          "name": "Medicación 1",
+          "severity": "Cutánea"
+        },
+        {
+          "name": "Medicación 2",
+          "severity": "Respiratoria"
+        },
+        {
+          "name": "Medicación 3",
+          "severity": "Ambos"
         }
       ]
     },
@@ -610,9 +875,8 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "allergy": "Peanuts",
-          "reaction": "Anaphylaxis",
-          "severity": "Severe"
+          "name": "Comida 1",
+          "severity": "Cutánea"
         }
       ]
     },
@@ -620,8 +884,8 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "reaction": "Sneezing",
-          "severity": "Mild"
+          "name": "Polvo 1",
+          "severity": "Cutánea"
         }
       ]
     },
@@ -629,8 +893,8 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "reaction": "Itchy eyes",
-          "severity": "Moderate"
+          "name": "Pollen 1",
+          "severity": "Respiratoria"
         }
       ]
     },
@@ -638,8 +902,8 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "reaction": "Asthma attack",
-          "severity": "Severe"
+          "name": "Clima 1",
+          "severity": "Cutánea"
         }
       ]
     },
@@ -647,9 +911,8 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "allergy": "Cat dander",
-          "reaction": "Hives",
-          "severity": "Moderate"
+          "name": "Animales 1",
+          "severity": "Respiratoria"
         }
       ]
     },
@@ -657,9 +920,93 @@ los datos requeridos según la alergia.
       "version": 1,
       "data": [
         {
-          "allergy": "Latex",
-          "reaction": "Contact dermatitis",
-          "severity": "Mild"
+          "name": "Otros 1",
+          "severity": "Ambos"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 1,
+  "medicalHistory": {
+    "medication": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Medicación 1",
+          "severity": "Cutánea"
+        },
+        {
+          "name": "Medicación 2",
+          "severity": "Respiratoria"
+        },
+        {
+          "name": "Medicación 3",
+          "severity": "Ambos"
+        }
+      ]
+    },
+    "food": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Comida 1",
+          "severity": "Cutánea"
+        }
+      ]
+    },
+    "dust": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Polvo 1",
+          "severity": "Cutánea"
+        }
+      ]
+    },
+    "pollen": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Pollen 1",
+          "severity": "Respiratoria"
+        }
+      ]
+    },
+    "climateChange": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Clima 1",
+          "severity": "Cutánea"
+        }
+      ]
+    },
+    "animals": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Animales 1",
+          "severity": "Respiratoria"
+        }
+      ]
+    },
+    "others": {
+      "version": 1,
+      "data": [
+        {
+          "name": "Otros 1",
+          "severity": "Ambos"
         }
       ]
     }
@@ -680,78 +1027,188 @@ los datos requeridos según la alergia.
 
   ```json
   {
-    "allergy": "String",
-    "reaction": "String",
+    "name": "String",
     "severity": "String"
   }
   ```
 
-### Antecedentes Psiquiátricos
+## Antecedentes Psiquiátricos
 
 Los antecedentes psiquiátricos se organizan por tipo de condición psiquiátrica.
 Cada tipo de condición se almacena en un objeto JSON
 que lista los datos requeridos según la condición.
 
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
-
-    "medicalHistory": {
-        "depression": {
-            "version": 1,
-            "data": {
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
-        },
-        "anxiety": {
-            "version": 1,
-            "data": {
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
-        },
-        "ocd": {
-            "version": 1,
-            "data": {
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
-        },
-        "adhd": {
-            "version": 1,
-            "data": {
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
-        },
-        "bipolar": {
-            "version": 1,
-            "data": {
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
-        },
-        "other": {
-            "version": 1,
-            "data": {
-                "ill": "",
-                "medication": "",
-                "dose": "",
-                "frecuency": "",
-                "ube": false
-            }
+  "patientId": 1,
+  "medicalHistory": {
+    "depression": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
         }
+      ]
+    },
+    "anxiety": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "ocd": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "adhd": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "bipolar": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frencuencia 1",
+          "ube": false
+        },
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "other": {
+      "version": 1,
+      "data": [
+        {
+          "illness": "Illness 1",
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
     }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 1,
+  "medicalHistory": {
+    "depression": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "anxiety": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "ocd": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "adhd": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "bipolar": {
+      "version": 1,
+      "data": [
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frencuencia 1",
+          "ube": false
+        },
+        {
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    },
+    "other": {
+      "version": 1,
+      "data": [
+        {
+          "illness": "Illness 1",
+          "medication": "Medicación 1",
+          "dose": "Dosis 1",
+          "frequency": "Frecuencia 1",
+          "ube": false
+        }
+      ]
+    }
+  }
 }
 ```
 
@@ -779,42 +1236,56 @@ que lista los datos requeridos según la condición.
 
 ```json
 {
-    "ill": "String",
-    "medication": "String",
-    "dose": "String",
-    "frecuency": "String",
-    "ube": false
+  "illness": "String",
+  "medication": "String",
+  "dose": "String",
+  "frecuency": "String",
+  "ube": false
 }
 ```
 
-### Antecedentes Ginecoobstétricos
+## Antecedentes Ginecoobstétricos
 
 Los antecedentes ginecoobstétricos se organizan por
 tipo de condición. Cada tipo de condición se almacena en un
 objeto JSON que lista los datos requeridos.
 
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
 ```json
 {
+  "patientId": 2,
   "medicalHistory": {
     "firstMenstrualPeriod": {
       "version": 1,
-      "data": { "age": 13 }
+      "data": {
+        "age": 13
+      }
     },
     "regularCycles": {
       "version": 1,
-      "data": { "isRegular": true }
+      "data": {
+        "isRegular": true
+      }
     },
     "painfulMenstruation": {
       "version": 1,
-      "data": { "isPainful": true, "medication": "Ibuprofen" }
+      "data": {
+        "isPainful": true,
+        "medication": "Medicamento 1"
+      }
     },
     "pregnancies": {
       "version": 1,
       "data": {
-        "totalPregnancies": 2,
+        "totalPregnancies": 3,
         "vaginalDeliveries": 1,
         "cesareanSections": 1,
-        "abortions": 0
+        "abortions": 1
       }
     },
     "diagnosedIllnesses": {
@@ -822,30 +1293,32 @@ objeto JSON que lista los datos requeridos.
       "data": {
         "ovarianCysts": {
           "medication": {
-            "medication": "Med B",
-            "dosage": "250mg",
-            "frequency": "Twice a day"
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
           }
         },
         "uterineMyomatosis": {
           "medication": {
-            "medication": "Med C",
-            "dosage": "100mg",
-            "frequency": "Once a day"
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
           }
         },
         "endometriosis": {
-          "medication": { "medication": "", 
-          "dosage": "", 
-          "frequency": "" }
+          "medication": {
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
+          }
         },
         "otherCondition": [
           {
             "medication": {
-              "illness": "illness A",
-              "medication": "Med D",
-              "dosage": "500mg",
-              "frequency": "Once a day"
+              "illness": "Otro Diagnóstico 1",
+              "medication": "Medicament 1",
+              "dosage": "Dosis 1",
+              "frequency": "Frecuencia 1"
             }
           }
         ]
@@ -854,10 +1327,341 @@ objeto JSON que lista los datos requeridos.
     "hasSurgeries": {
       "version": 1,
       "data": {
-        "ovarianCystsSurgery": [{ "year": 2018, "complications": false }],
-        "hysterectomy": { "year": 2019, "complications": true },
-        "sterilizationSurgery": { "year": 2021, "complications": false },
-        "breastMassResection": [{ "year": 2020, "complications": true }]
+        "hysterectomy": {
+          "year": 1993,
+          "complications": true
+        },
+
+        "sterilizationSurgery": {
+          "year": 2005,
+          "complications": true
+        },
+
+        "ovarianCystsSurgery": [
+          {
+            "year": 2006,
+            "complications": true
+          },
+          {
+            "year": 2010,
+            "complications": true
+          },
+          {
+            "year": 2011,
+            "complications": true
+          }
+        ],
+        "breastMassResection": [
+          {
+            "year": 2007,
+            "complications": true
+          },
+          {
+            "year": 2008,
+            "complications": true
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 2,
+  "medicalHistory": {
+    "firstMenstrualPeriod": {
+      "version": 1,
+      "data": {
+        "age": 13
+      }
+    },
+    "regularCycles": {
+      "version": 1,
+      "data": {
+        "isRegular": true
+      }
+    },
+    "painfulMenstruation": {
+      "version": 1,
+      "data": {
+        "isPainful": true,
+        "medication": "Medicamento 1"
+      }
+    },
+    "pregnancies": {
+      "version": 1,
+      "data": {
+        "totalPregnancies": 3,
+        "vaginalDeliveries": 1,
+        "cesareanSections": 1,
+        "abortions": 1
+      }
+    },
+    "diagnosedIllnesses": {
+      "version": 1,
+      "data": {
+        "ovarianCysts": {
+          "medication": {
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
+          }
+        },
+        "uterineMyomatosis": {
+          "medication": {
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
+          }
+        },
+        "endometriosis": {
+          "medication": {
+            "medication": "Medicamento 1",
+            "dosage": "Dosis 1",
+            "frequency": "Frecuencia 1"
+          }
+        },
+        "otherCondition": [
+          {
+            "medication": {
+              "illness": "Otro Diagnóstico 1",
+              "medication": "Medicament 1",
+              "dosage": "Dosis 1",
+              "frequency": "Frecuencia 1"
+            }
+          }
+        ]
+      }
+    },
+    "hasSurgeries": {
+      "version": 1,
+      "data": {
+        "hysterectomy": {
+          "year": 1993,
+          "complications": true
+        },
+
+        "sterilizationSurgery": {
+          "year": 2005,
+          "complications": true
+        },
+
+        "ovarianCystsSurgery": [
+          {
+            "year": 2006,
+            "complications": true
+          },
+          {
+            "year": 2010,
+            "complications": true
+          },
+          {
+            "year": 2011,
+            "complications": true
+          }
+        ],
+        "breastMassResection": [
+          {
+            "year": 2007,
+            "complications": true
+          },
+          {
+            "year": 2008,
+            "complications": true
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD024 -->
+
+#### Versiones
+
+<!-- markdownlint-enable MD024 -->
+
+- **Versión 1**: La versión 1 incluye una estructura detallada bajo la
+  propiedad `data` para cada categoría del historial médico.
+
+#### Detalles de las Propiedades
+
+- **firstMenstrualPeriod**:
+
+  ```json
+  {
+    "age": "Number"
+  }
+  ```
+
+- **regularCycles**:
+
+  ```json
+  {
+    "isRegular": "Boolean"
+  }
+  ```
+
+- **painfulMenstruation**:
+
+  ```json
+  {
+    "isPainful": "Boolean",
+    "medication": "String"
+  }
+  ```
+
+- **pregnancies**:
+
+  ```json
+  {
+    "totalPregnancies": "Number",
+    "vaginalDeliveries": "Number",
+    "cesareanSections": "Number",
+    "abortions": "Number"
+  }
+  ```
+
+- **diagnosedIllnesses**:
+
+  - **ovarianCysts, uterineMyomatosis, endometriosis**:
+
+  ```json
+  {
+    "medication": {
+      "medication": "String",
+      "dosage": "String",
+      "frequency": "String"
+    }
+  }
+  ```
+
+  - **otherCondition**:
+
+  ```json
+  {
+    "medication": {
+      "illness": "String",
+      "medication": "String",
+      "dosage": "String",
+      "frequency": "String"
+    }
+  }
+  ```
+
+- **hasSurgeries**, cada cirugía se representa con una lista de
+  objetos que detallan las cirugías individuales:
+
+  - **hysterectomy, sterilizationSurgery**:
+
+    - Estos solo pueden tener una inserción.
+
+    ```json
+    {
+      "year": "String",
+      "complications": "Boolean"
+    }
+    ```
+
+  - **ovarianCystsSurgery, breastMassResection**, estos se listan
+    por aparte por tener características especiales:
+
+    - **ovarianCystsSurgery** puede tener más de 2 inserciones,
+      en el frontend solo se visualizarán 2.
+    - **breastMassResection** puede tener únicamente 2 inserciones.
+
+    ```json
+    {
+      "year": "String",
+      "complications": "Boolean"
+    }
+    ```
+
+## Antecedentes no Patológicos
+
+Los antecedentes no patológicos se organizan por
+tipo de condición. Cada tipo de condición se almacena en
+un objeto JSON que lista los datos requeridos.
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
+```json
+{
+  "patientId": 2,
+  "medicalHistory": {
+    "bloodType": "A-",
+    "smoker": {
+      "version": 1,
+      "data": {
+        "smokes": true,
+        "cigarettesPerDay": 1,
+        "years": 1
+      }
+    },
+    "drink": {
+      "version": 1,
+      "data": {
+        "drinks": true,
+        "drinksPerMonth": 2
+      }
+    },
+    "drugs": {
+      "version": 1,
+      "data": {
+        "usesDrugs": true,
+        "drugType": "Droga 1",
+        "frequency": "2 veces a la semana"
+      }
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 2,
+  "medicalHistory": {
+    "bloodType": "A-",
+    "smoker": {
+      "version": 1,
+      "data": {
+        "smokes": true,
+        "cigarettesPerDay": 1,
+        "years": 1
+      }
+    },
+    "drink": {
+      "version": 1,
+      "data": {
+        "drinks": true,
+        "drinksPerMonth": 2
+      }
+    },
+    "drugs": {
+      "version": 1,
+      "data": {
+        "usesDrugs": true,
+        "drugType": "Droga 1",
+        "frequency": "2 veces a la semana"
       }
     }
   }
@@ -873,103 +1677,98 @@ objeto JSON que lista los datos requeridos.
 - **Versión 1**: La versión 1 contiene una propiedad `data`
   que es un objeto con la siguiente forma:
 
-- firstMenstrualPeriod:
-
-````json
-{
-  "age": "Number",
-}
-
-- regularCycles:
-
-```json
-{
-  "isRegular": "Boolean",
-}
-````
-
-- painfulMenstruation:
-
-```json
-{
-    "isPainful": "Boolean",
-    "medication": "String",
-}
-```
-
-- pregnancies:
-
-```json
-{
-  "totalPregnancies": "Number",
-  "vaginalDeliveries": "Number",
-  "cesareanSections": "Number",
-  "abortions": "Number"
-}
-
-```
-
-- ovarianCystsSurgery, hysterectomy, sterilizationSurgery, breastMassResection:
-
-```json
-{
-  "medication": {
-    "medication": "String",
-    "dosage": "String",
-    "frequency": "String"
-  }
-}
-```
-
-### Antecedentes no Patológicos
-
-Los antecedentes no patológicos se organizan por
-tipo de condición. Cada tipo de condición se almacena en
-un objeto JSON que lista los datos requeridos.
-
-```json
-{
-  "medicalHistory": {
-    "bloodType": "O+",
-    "smoker": { "status": "Former", "years": 5 },
-    "drink": { "frequency": "Moderate" },
-    "drugs": { "usage": "None" }
-  }
-}
-
-```
-
-<!-- markdownlint-disable MD024 -->
-
-#### Versiones
-
-<!-- markdownlint-enable MD024 -->
-
-- **Versión 1**: La versión 1 contiene una propiedad `data`
-  que es un objeto con la siguiente forma:
-
 ```json
 {
   "bloodType": "String",
   "smoker": {
-    "status": "String",
-    "years": "Number"
+    "version": "Number",
+    "data:" {
+      "smokes": "Boolean",
+      "cigarettesPerDay": "Number",
+      "years": "Number"
+    }
   },
   "drink": {
-    "frequency": "String"
+    "version": "Number",
+    "data:" {
+      "drinks": "Boolean",
+      "drinksPerMonth": "Number"
+    }
   },
   "drugs": {
-    "usage": "String"
+    "version": "Number",
+    "data:" {
+      "usesDrugs": "Boolean",
+      "drugType": "String",
+      "frequency": "String"
+    }
   }
 }
-
 ```
 
-### Antecedentes Quirúrgicos
+## Antecedentes Quirúrgicos
 
 Los antecedentes quirúrgicos se organizan por
 tipo de condición. Cada tipo de condición se almacena en
 un objeto JSON que lista los datos requeridos.
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un PUT es:
+
+```json
+{
+  "patientId": 2,
+  "medicalHistory": {
+    "surgeries": {
+      "version": 1,
+      "data": [
+        {
+          "surgeryType": "Motivo 2",
+          "surgeryYear": "2015",
+          "complications": "Complicación 2"
+        },
+        {
+          "surgeryType": "Motivo 1",
+          "surgeryYear": "2007",
+          "complications": "Complicación 1"
+        }
+      ]
+    }
+  }
+}
+```
+
+<!-- markdownlint-disable MD026 -->
+
+<!-- markdownlint-disable MD024 -->
+
+### Este es un ejemplo de cómo debería de verse un GET con sus datos llenos:
+
+```json
+{
+  "patientId": 2,
+  "medicalHistory": {
+    "surgeries": {
+      "version": 1,
+      "data": [
+        {
+          "surgeryType": "Motivo 2",
+          "surgeryYear": "2015",
+          "complications": "Complicación 2"
+        },
+        {
+          "surgeryType": "Motivo 1",
+          "surgeryYear": "2007",
+          "complications": "Complicación 1"
+        }
+      ]
+    }
+  }
+}
+```
 
 <!-- markdownlint-disable MD024 -->
 

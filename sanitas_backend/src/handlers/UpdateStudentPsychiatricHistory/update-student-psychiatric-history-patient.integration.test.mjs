@@ -113,4 +113,114 @@ describe("Submit Psychiatric History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient mental health history for PUT", async () => {
+		// Ejemplo de datos de actualización
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				depression: {
+					version: 1,
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+				anxiety: {
+					version: 1,
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+				ocd: {
+					version: 1,
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+				adhd: {
+					version: 1,
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+				bipolar: {
+					version: 1,
+					data: [
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frencuencia 1",
+							ube: false,
+						},
+						{
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+				other: {
+					version: 1,
+					data: [
+						{
+							illness: "Illness 1",
+							medication: "Medicación 1",
+							dose: "Dosis 1",
+							frequency: "Frecuencia 1",
+							ube: false,
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		// Verificamos que cada objeto en 'data' de cada sección cumpla con la estructura requerida
+		for (const key in response.data.medicalHistory) {
+			if (Object.hasOwn(response.data.medicalHistory, key)) {
+				const value = response.data.medicalHistory[key];
+				const isValid = value.data.every((item) => {
+					const requiredKeys = ["medication", "dose", "frequency", "ube"];
+					if (key === "other") requiredKeys.push("illness");
+					return (
+						Object.keys(item).sort().toString() ===
+						requiredKeys.sort().toString()
+					);
+				});
+				expect(isValid).toBe(true);
+			}
+		}
+
+		// Verificar si la estructura y los tipos de datos son correctos después de la actualización
+		expect(response.data).toEqual({
+			patientId: expect.any(Number),
+			medicalHistory: expect.any(Object), // Asumimos que la estructura de respuesta es correcta según los datos de prueba
+		});
+	});
 });
