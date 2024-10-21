@@ -126,4 +126,35 @@ describe("Get Allergic Medical History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
 	});
+
+	test("Verify JSON structure and data types of patient medical history", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				medication: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							name: expect.any(String),
+							severity: expect.any(String),
+						}),
+					]),
+				},
+				food: expect.any(Object),
+				dust: expect.any(Object),
+				pollen: expect.any(Object),
+				climateChange: expect.any(Object),
+				animals: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

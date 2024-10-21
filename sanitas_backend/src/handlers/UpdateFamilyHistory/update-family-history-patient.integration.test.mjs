@@ -380,4 +380,99 @@ describe("Update Family Medical History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient family medical history for PUT", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				hypertension: {
+					version: 1,
+					data: ["Father", "Mother"],
+				},
+				diabetesMellitus: {
+					version: 1,
+					data: ["Mother", "Brother"],
+				},
+				hypothyroidism: {
+					version: 1,
+					data: ["Grandmother"],
+				},
+				asthma: {
+					version: 1,
+					data: ["Mother"],
+				},
+				convulsions: {
+					version: 1,
+					data: ["Uncle"],
+				},
+				myocardialInfarction: {
+					version: 1,
+					data: ["Mother"],
+				},
+				cancer: {
+					version: 1,
+					data: [
+						{
+							who: "Mother",
+							typeOfCancer: "Breast",
+						},
+					],
+				},
+				cardiacDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Father",
+							typeOfDisease: "Hypertrophy",
+						},
+					],
+				},
+				renalDiseases: {
+					version: 1,
+					data: [
+						{
+							who: "Grandfather",
+							typeOfDisease: "Renal Failure",
+						},
+					],
+				},
+				others: {
+					version: 1,
+					data: [
+						{
+							who: "Brother",
+							disease: "Psoriasis",
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.put(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				hypertension: expect.objectContaining({
+					version: expect.any(Number),
+					data: expect.arrayContaining([expect.any(String)]),
+				}),
+				diabetesMellitus: expect.any(Object),
+				hypothyroidism: expect.any(Object),
+				asthma: expect.any(Object),
+				convulsions: expect.any(Object),
+				myocardialInfarction: expect.any(Object),
+				cancer: expect.any(Object),
+				cardiacDiseases: expect.any(Object),
+				renalDiseases: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

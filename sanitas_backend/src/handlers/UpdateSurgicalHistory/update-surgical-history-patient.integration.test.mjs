@@ -131,4 +131,59 @@ describe("Update Surgical History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient surgery history for PUT", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				surgeries: {
+					version: 1,
+					data: [
+						{
+							surgeryType: "Motivo 2",
+							surgeryYear: "2015",
+							complications: "Complicación 2",
+						},
+						{
+							surgeryType: "Motivo 1",
+							surgeryYear: "2007",
+							complications: "Complicación 1",
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.put(`${API_URL}`, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		expect(
+			response.data.medicalHistory.surgeries.data.every(
+				(item) =>
+					Object.keys(item).length === 3 &&
+					"surgeryType" in item &&
+					"surgeryYear" in item &&
+					"complications" in item,
+			),
+		).toBe(true);
+
+		expect(response.data).toEqual({
+			patientId: expect.any(Number),
+			medicalHistory: {
+				surgeries: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							surgeryType: expect.any(String),
+							surgeryYear: expect.any(String),
+							complications: expect.any(String),
+						}),
+					]),
+				},
+			},
+		});
+	});
 });

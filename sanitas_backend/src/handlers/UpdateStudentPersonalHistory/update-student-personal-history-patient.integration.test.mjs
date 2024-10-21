@@ -258,4 +258,162 @@ describe("Update Personal History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient comprehensive medical history for PUT", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				hypertension: {
+					version: 1,
+					data: [
+						{
+							medicine: "Medicina random 1",
+							dose: "5ml",
+							frequency: "3 veces al día",
+						},
+						{
+							medicine: "Medicina random 2",
+							dose: "10ml",
+							frequency: "Una vez al día",
+						},
+					],
+				},
+				diabetesMellitus: {
+					version: 1,
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
+				},
+				hypothyroidism: {
+					version: 1,
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
+				},
+				asthma: {
+					version: 1,
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
+				},
+				convulsions: {
+					version: 1,
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
+				},
+				myocardialInfarction: {
+					version: 1,
+					data: [
+						{
+							surgeryYear: "1993",
+						},
+					],
+				},
+				cancer: {
+					version: 1,
+					data: [
+						{
+							typeOfCancer: "Breast",
+							treatment: "Operation",
+						},
+					],
+				},
+				cardiacDiseases: {
+					version: 1,
+					data: [
+						{
+							typeOfDisease: "Hypertrophy",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+					],
+				},
+				renalDiseases: {
+					version: 1,
+					data: [
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+					],
+				},
+				others: {
+					version: 1,
+					data: [
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				hypertension: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							medicine: expect.any(String),
+							dose: expect.any(String),
+							frequency: expect.any(String),
+						}),
+					]),
+				},
+				diabetesMellitus: expect.any(Object),
+				hypothyroidism: expect.any(Object),
+				asthma: expect.any(Object),
+				convulsions: expect.any(Object),
+				myocardialInfarction: expect.any(Object),
+				cancer: expect.any(Object),
+				cardiacDiseases: expect.any(Object),
+				renalDiseases: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

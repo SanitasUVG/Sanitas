@@ -23,34 +23,73 @@ describe("Get Personal Medical History integration tests", () => {
 			medicalHistory: {
 				hypertension: {
 					version: 1,
-					data: ["Father", "Mother"],
+					data: [
+						{
+							medicine: "Medicina random 1",
+							dose: "5ml",
+							frequency: "3 veces al día",
+						},
+						{
+							medicine: "Medicina random 2",
+							dose: "10ml",
+							frequency: "Una vez al día",
+						},
+					],
 				},
 				diabetesMellitus: {
 					version: 1,
-					data: ["Mother", "Brother"],
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
 				},
 				hypothyroidism: {
 					version: 1,
-					data: ["Grandmother"],
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
 				},
 				asthma: {
 					version: 1,
-					data: [],
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
 				},
 				convulsions: {
 					version: 1,
-					data: ["Uncle"],
+					data: [
+						{
+							medicine: "Medicina random 4",
+							dose: "2 pastillas",
+							frequency: "Cada 8 horas",
+						},
+					],
 				},
 				myocardialInfarction: {
 					version: 1,
-					data: [],
+					data: [
+						{
+							surgeryYear: "1993",
+						},
+					],
 				},
 				cancer: {
 					version: 1,
 					data: [
 						{
-							who: "Mother",
 							typeOfCancer: "Breast",
+							treatment: "Operation",
 						},
 					],
 				},
@@ -58,8 +97,16 @@ describe("Get Personal Medical History integration tests", () => {
 					version: 1,
 					data: [
 						{
-							who: "Father",
 							typeOfDisease: "Hypertrophy",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
 						},
 					],
 				},
@@ -67,8 +114,16 @@ describe("Get Personal Medical History integration tests", () => {
 					version: 1,
 					data: [
 						{
-							who: "Grandfather",
-							typeOfDisease: "Renal Failure",
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
+						},
+						{
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
 						},
 					],
 				},
@@ -76,8 +131,10 @@ describe("Get Personal Medical History integration tests", () => {
 					version: 1,
 					data: [
 						{
-							who: "Brother",
-							disease: "Psoriasis",
+							typeOfDisease: "Hypertrophy 2",
+							medicine: "Medicina random 5",
+							dose: "5ml",
+							frequency: "1 vez al día",
 						},
 					],
 				},
@@ -162,5 +219,64 @@ describe("Get Personal Medical History integration tests", () => {
 
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
+	});
+
+	test("Verify JSON structure and data types of patient comprehensive medical history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				hypertension: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							medicine: expect.any(String),
+							dose: expect.any(String),
+							frequency: expect.any(String),
+						}),
+					]),
+				},
+				diabetesMellitus: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							medicine: expect.any(String),
+							dose: expect.any(String),
+							frequency: expect.any(String),
+						}),
+					]),
+				},
+				hypothyroidism: expect.any(Object),
+				asthma: expect.any(Object),
+				convulsions: expect.any(Object),
+				myocardialInfarction: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							surgeryYear: expect.any(String),
+						}),
+					]),
+				},
+				cancer: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							typeOfCancer: expect.any(String),
+							treatment: expect.any(String),
+						}),
+					]),
+				},
+				cardiacDiseases: expect.any(Object),
+				renalDiseases: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
 	});
 });

@@ -25,6 +25,11 @@ async function createPatient() {
 						year: "2023",
 						treatment: "Surgery",
 					},
+					{
+						whichBone: "Radius",
+						year: "2022",
+						treatment: "Casting",
+					},
 				],
 			},
 		},
@@ -54,7 +59,7 @@ describe("Get Traumatologic History integration tests", () => {
 
 		expect(traumatologicHistory).toBeDefined();
 		expect(traumatologicHistory.patientId).toBe(patientId);
-		expect(traumatologicHistory.medicalHistory.traumas.data.length).toBe(1);
+		expect(traumatologicHistory.medicalHistory.traumas.data.length).toBe(2);
 		expect(traumatologicHistory.medicalHistory.traumas.data[0].whichBone).toBe(
 			"Femur",
 		);
@@ -112,5 +117,41 @@ describe("Get Traumatologic History integration tests", () => {
 
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
+	});
+
+	test("Verify JSON structure and data types of patient trauma history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				traumas: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						{
+							whichBone: expect.any(String),
+							year: expect.any(String),
+							treatment: expect.any(String),
+						},
+					]),
+				},
+			},
+		};
+
+		expect(
+			response.data.medicalHistory.traumas.data.every(
+				(item) =>
+					Object.keys(item).length === 3 &&
+					"whichBone" in item &&
+					"year" in item &&
+					"treatment" in item,
+			),
+		).toBe(true);
+
+		expect(response.data).toEqual(expectedResponse);
 	});
 });
