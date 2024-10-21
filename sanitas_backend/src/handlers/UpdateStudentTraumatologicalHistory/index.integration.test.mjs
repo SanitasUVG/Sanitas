@@ -161,4 +161,58 @@ describe("Update Traumatologic History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient trauma history for PUT", async () => {
+		// Datos de actualización con estructura variable basada en un input genérico o generado dinámicamente
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				traumas: {
+					version: 1,
+					data: [
+						{
+							whichBone: "Femur",
+							year: "2023",
+							treatment: "Surgery",
+						},
+						{
+							whichBone: "Radius",
+							year: "2022",
+							treatment: "Casting",
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		expect(
+			response.data.medicalHistory.traumas.data.every(
+				(item) =>
+					Object.keys(item).sort().toString() ===
+					["whichBone", "year", "treatment"].sort().toString(),
+			),
+		).toBe(true);
+
+		expect(response.data).toEqual({
+			patientId: expect.any(Number),
+			medicalHistory: {
+				traumas: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							whichBone: expect.any(String),
+							year: expect.any(String),
+							treatment: expect.any(String),
+						}),
+					]),
+				},
+			},
+		});
+	});
 });

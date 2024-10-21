@@ -99,4 +99,61 @@ describe("Update Non-Pathological Medical History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient lifestyle medical history for PUT", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				bloodType: "A-",
+				smoker: {
+					version: 1,
+					data: {
+						smokes: true,
+						cigarettesPerDay: 1,
+						years: 1,
+					},
+				},
+				drink: {
+					version: 1,
+					data: {
+						drinks: true,
+						drinksPerMonth: 2,
+					},
+				},
+				drugs: {
+					version: 1,
+					data: {
+						usesDrugs: true,
+						drugType: "Droga 1",
+						frequency: "2 veces a la semana",
+					},
+				},
+			},
+		};
+
+		const response = await axios.post(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				bloodType: expect.any(String), // Asumiendo que el tipo de sangre permanece sin cambios
+				smoker: {
+					version: expect.any(Number),
+					data: {
+						smokes: expect.any(Boolean),
+						cigarettesPerDay: expect.any(Number),
+						years: expect.any(Number),
+					},
+				},
+				drink: expect.any(Object), // Asumiendo que el resto de datos permanecen sin cambios
+				drugs: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

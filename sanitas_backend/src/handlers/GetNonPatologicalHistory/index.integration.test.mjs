@@ -17,10 +17,30 @@ async function createPatientWithNonPathologicalHistory() {
 
 	await updatePatientNonPathologicalHistory(patientId, {
 		medicalHistory: {
-			bloodType: "O+",
-			smoker: { status: "Former", years: 5 },
-			drink: { frequency: "Moderate" },
-			drugs: { usage: "None" },
+			bloodType: "A-",
+			smoker: {
+				version: 1,
+				data: {
+					smokes: true,
+					cigarettesPerDay: 1,
+					years: 1,
+				},
+			},
+			drink: {
+				version: 1,
+				data: {
+					drinks: true,
+					drinksPerMonth: 2,
+				},
+			},
+			drugs: {
+				version: 1,
+				data: {
+					usesDrugs: true,
+					drugType: "Droga 1",
+					frequency: "2 veces a la semana",
+				},
+			},
 		},
 	});
 
@@ -48,8 +68,8 @@ describe("Get Non-Pathological History integration tests", () => {
 
 		expect(nonPathologicalHistory).toBeDefined();
 		expect(nonPathologicalHistory.patientId).toBe(patientId);
-		expect(nonPathologicalHistory.medicalHistory.bloodType).toBe("O+");
-		expect(nonPathologicalHistory.medicalHistory.smoker.status).toBe("Former");
+		expect(nonPathologicalHistory.medicalHistory.bloodType).toBe("A-");
+		expect(nonPathologicalHistory.medicalHistory.smoker.data.smokes).toBe(true);
 	});
 
 	test("Retrieve default non-pathological history for non-existent patient", async () => {
@@ -104,5 +124,45 @@ describe("Get Non-Pathological History integration tests", () => {
 
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
+	});
+
+	test("Verify JSON structure and data types of patient lifestyle medical history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				bloodType: expect.any(String),
+				smoker: {
+					version: expect.any(Number),
+					data: {
+						smokes: expect.any(Boolean),
+						cigarettesPerDay: expect.any(Number),
+						years: expect.any(Number),
+					},
+				},
+				drink: {
+					version: expect.any(Number),
+					data: {
+						drinks: expect.any(Boolean),
+						drinksPerMonth: expect.any(Number),
+					},
+				},
+				drugs: {
+					version: expect.any(Number),
+					data: {
+						usesDrugs: expect.any(Boolean),
+						drugType: expect.any(String),
+						frequency: expect.any(String),
+					},
+				},
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
 	});
 });

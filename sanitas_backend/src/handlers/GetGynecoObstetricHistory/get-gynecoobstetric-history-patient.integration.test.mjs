@@ -172,4 +172,77 @@ describe("Get Gynecological History integration tests", () => {
 		expect(response.status).toBe(400);
 		expect(response.data.error).toBe("JWT couldn't be parsed");
 	});
+
+	test("Verify JSON structure and data types of patient gynecological medical history for GET", async () => {
+		const response = await axios.get(`${API_URL}${patientId}`, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				firstMenstrualPeriod: {
+					version: expect.any(Number),
+					data: {
+						age: expect.any(Number),
+					},
+				},
+				regularCycles: {
+					version: expect.any(Number),
+					data: {
+						isRegular: expect.any(Boolean),
+					},
+				},
+				painfulMenstruation: {
+					version: expect.any(Number),
+					data: {
+						isPainful: expect.any(Boolean),
+						medication: expect.any(String),
+					},
+				},
+				pregnancies: {
+					version: expect.any(Number),
+					data: {
+						totalPregnancies: expect.any(Number),
+						vaginalDeliveries: expect.any(Number),
+						cesareanSections: expect.any(Number),
+						abortions: expect.any(Number),
+					},
+				},
+				diagnosedIllnesses: {
+					version: expect.any(Number),
+					data: expect.any(Object),
+				},
+				hasSurgeries: {
+					version: expect.any(Number),
+					data: {
+						hysterectomy: expect.objectContaining({
+							year: expect.any(Number),
+							complications: expect.any(Boolean),
+						}),
+						sterilizationSurgery: expect.objectContaining({
+							year: expect.any(Number),
+							complications: expect.any(Boolean),
+						}),
+						ovarianCystsSurgery: expect.arrayContaining([
+							expect.objectContaining({
+								year: expect.any(Number),
+								complications: expect.any(Boolean),
+							}),
+						]),
+						breastMassResection: expect.arrayContaining([
+							expect.objectContaining({
+								year: expect.any(Number),
+								complications: expect.any(Boolean),
+							}),
+						]),
+					},
+				},
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

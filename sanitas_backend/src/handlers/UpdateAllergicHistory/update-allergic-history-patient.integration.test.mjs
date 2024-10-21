@@ -243,4 +243,112 @@ describe("Update Allergic Medical History integration tests", () => {
 		expect(response.status).toEqual(400);
 		expect(response.data).toEqual({ error: "JWT couldn't be parsed" });
 	});
+
+	test("Verify JSON structure after updating patient medical history", async () => {
+		const updateData = {
+			patientId: patientId,
+			medicalHistory: {
+				medication: {
+					version: 1,
+					data: [
+						{
+							name: "Medicación 1",
+							severity: "Cutánea",
+						},
+						{
+							name: "Medicación 2",
+							severity: "Respiratoria",
+						},
+						{
+							name: "Medicación 3",
+							severity: "Ambos",
+						},
+					],
+				},
+				food: {
+					version: 1,
+					data: [
+						{
+							name: "Comida 1",
+							severity: "Cutánea",
+						},
+					],
+				},
+				dust: {
+					version: 1,
+					data: [
+						{
+							name: "Polvo 1",
+							severity: "Cutánea",
+						},
+					],
+				},
+				pollen: {
+					version: 1,
+					data: [
+						{
+							name: "Pollen 1",
+							severity: "Respiratoria",
+						},
+					],
+				},
+				climateChange: {
+					version: 1,
+					data: [
+						{
+							name: "Clima 1",
+							severity: "Cutánea",
+						},
+					],
+				},
+				animals: {
+					version: 1,
+					data: [
+						{
+							name: "Animales 1",
+							severity: "Respiratoria",
+						},
+					],
+				},
+				others: {
+					version: 1,
+					data: [
+						{
+							name: "Otros 1",
+							severity: "Ambos",
+						},
+					],
+				},
+			},
+		};
+
+		const response = await axios.put(API_URL, updateData, {
+			headers: validHeaders,
+		});
+
+		expect(response.status).toBe(200);
+
+		const expectedResponse = {
+			patientId: expect.any(Number),
+			medicalHistory: {
+				medication: {
+					version: expect.any(Number),
+					data: expect.arrayContaining([
+						expect.objectContaining({
+							name: expect.any(String),
+							severity: expect.any(String),
+						}),
+					]),
+				},
+				food: expect.any(Object),
+				dust: expect.any(Object),
+				pollen: expect.any(Object),
+				climateChange: expect.any(Object),
+				animals: expect.any(Object),
+				others: expect.any(Object),
+			},
+		};
+
+		expect(response.data).toEqual(expectedResponse);
+	});
 });

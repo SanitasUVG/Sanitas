@@ -156,11 +156,17 @@ export const searchPatientHandler = async (event, context) => {
 						.replace(/[\u0300-\u036f]/g, "")
 						.toLowerCase();
 
-					sqlQuery = `
-                SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO 
-                FROM PACIENTE 
-                WHERE TRANSLATE(NOMBRES, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1 
-                OR TRANSLATE(APELLIDOS, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') ILIKE $1`;
+					sqlQuery = `SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO
+FROM PACIENTE
+WHERE (
+    SELECT bool_and(match)
+    FROM unnest(string_to_array($1, ' ')) as word,
+         LATERAL (
+             SELECT 
+                 TRANSLATE(NOMBRES || ' ' || APELLIDOS, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') 
+                 ILIKE '%' || TRANSLATE(word, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') || '%' as match
+         ) as matches
+)`;
 					queryParams.push(`%${request_search_processed}%`);
 					logger.info(
 						{ sqlQuery, queryParams },
