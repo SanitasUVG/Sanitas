@@ -60,7 +60,7 @@ export const createEmptyStore = (defaultStoreValues) => {
 			set({ selectedPatientId: newId });
 		},
 
-		isWoman: true,
+		isWoman: false,
 		setIsWoman: (isWoman) => {
 			set({ isWoman });
 		},
