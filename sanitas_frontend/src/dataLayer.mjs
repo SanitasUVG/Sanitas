@@ -1926,3 +1926,100 @@ export const exportData = async () => {
 		return { error };
 	}
 };
+
+/**
+ * Fetches the appointment details for a specific patient by sending a GET request to the server.
+ * This function retrieves the appointment details using the patient's ID and an authorization token.
+ *
+ * @callback GetAppointmentCallback
+ * @param {string} id - The unique identifier of the patient for whom the appointment details are being fetched.
+ * @returns {Promise<Object>} - A promise that resolves to the appointment details if the request is successful,
+ * or an error object containing the error message or error response from the server if the request fails.
+ */
+
+/**
+ * @type {GetAppointmentCallback}
+ */
+export const getAppointment = async (id) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/consultation/${id}`;
+
+	try {
+		const response = await axios.get(url, {
+			headers: { Authorization: token },
+		});
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};
+
+/**
+ * Updates the appointment details of a specific patient by sending a PUT request to the server.
+ * This function constructs a payload from the appointment details and sends it to the server for updating.
+ *
+ * @callback UpdateAppointmentCallback
+ * @param {string} id - The unique identifier of the patient whose appointment details are being updated.
+ * @param {Object} appointmentDetails - An object containing details about the patient's appointment, including date, diagnosis, medications, etc.
+ * @returns {Promise<Object>} - A promise that resolves to the updated appointment data if the request is successful,
+ * or an error object containing the error message or error response from the server if the request fails.
+ */
+
+/**
+ * @type {UpdateAppointmentCallback}
+ */
+export const updateAppointment = async (id, appointmentDetails) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(true);
+
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	const url = `${PROTECTED_URL}/patient/consultation`;
+
+	const payload = {
+		patientId: id,
+		patientConsultation: appointmentDetails.patientConsultation,
+	};
+
+	console.log("Payload", payload);
+	try {
+		const response = await axios.put(url, payload, {
+			headers: { Authorization: token },
+		});
+
+		if (response.status === 200) {
+			return { result: response.data };
+		}
+
+		return { error: `Unexpected status code: ${response.status}` };
+	} catch (error) {
+		if (error.response) {
+			return { error: error.response.data };
+		}
+		return { error: error.message };
+	}
+};

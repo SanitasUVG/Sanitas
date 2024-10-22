@@ -66,6 +66,8 @@ INSERT INTO CONSULTA (
     ID_PACIENTE,
     FECHA,
     MOTIVO,
+    DIAGNOSTICO,
+    EXAMEN_FISICO,
     FRECUENCIA_RESPIRATORIA,
     TEMPERATURA,
     SATURACION_OXIGENO,
@@ -73,42 +75,58 @@ INSERT INTO CONSULTA (
     FRECUENCIA_CARDIACA,
     PRESION_SISTOLICA,
     PRESION_DIASTOLICA,
-    EVALUADOR
+    EVALUADOR,
+    MEDICAMENTOS_DATA,
+    NOTAS
 ) VALUES
 (
     1,
     NOW(),
     'Chequeo anual',
-    '16',
+    'Hipertensión leve',
+    'Examen físico normal, con excepción de presión arterial elevada',
+    16,
     36.5,
     98.5,
     5.6,
     70,
     120,
     80,
-    'doctor1@example.com'
+    'doctor1@example.com',
+    '[
+        {
+            "diagnosis": "Hipertensión leve",
+            "medication": "Lisinopril",
+            "quantity": "30"
+        }
+    ]',
+    'El paciente debe realizar un seguimiento en 3 meses.'
 ),
 (
     2,
     NOW() - interval '2 days',
     'Consulta de seguimiento',
-    '18',
+    'Diabetes tipo 2 controlada',
+    'Paciente estable, sin signos de complicaciones',
+    18,
     37.2,
     97.5,
     4.8,
     75,
     130,
     85,
-    'doctor2@example.com'
+    'doctor2@example.com',
+    '[
+        {
+            "diagnosis": "Diabetes tipo 2 controlada",
+            "medication": "Metformina",
+            "quantity": "30"
+        }
+    ]',
+    'Se ajustó la dosis de insulina y se recomienda seguir con el tratamiento
+     actual.'
 );
 
-INSERT INTO DIAGNOSTICO (ID_CONSULTA, NOMBRE, TRATAMIENTO) VALUES
-(1, 'Hipertensión leve', 'Medicación antihipertensiva'),
-(2, 'Diabetes tipo 2 controlada', 'Ajuste de dosis de insulina');
-
-INSERT INTO MEDICAMENTO (NOMBRE, CANTIDAD, ID_CONSULTA) VALUES
-('Metformina', 30, 2),
-('Lisinopril', 30, 1);
 
 INSERT INTO ESTUDIANTE (CARNET, CARRERA, ID_PACIENTE) VALUES
 ('A01234567', 'Ingeniería en CC y TI', 1);
