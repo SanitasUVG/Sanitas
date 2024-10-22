@@ -70,6 +70,7 @@ export default function DashboardSidebar({
 	const setPrefixesWithData = useStore((s) => s.setPrefixesWithData);
 	const displayName = useStore((s) => s.displayName);
 	const isWoman = useStore((s) => s.isWoman);
+	const setIsWoman = useStore((s) => s.setIsWoman);
 
 	useEffect(() => {
 		const loadPrefixes = async () => {
@@ -130,8 +131,14 @@ export default function DashboardSidebar({
 						flexGrow: 0,
 					}}
 					src={SanitasLogo}
-					onClick={wrapWithNavigate(onGoBack)}
-					onKeyDown={wrapWithNavigate(onGoBack)}
+					onClick={(e) => {
+						wrapWithNavigate(onGoBack)(e);
+						setIsWoman(false);
+					}}
+					onKeyDown={(e) => {
+						wrapWithNavigate(onGoBack)(e);
+						setIsWoman(false);
+					}}
 					alt="Logo Sanitas"
 				/>
 			</div>
@@ -239,13 +246,19 @@ export default function DashboardSidebar({
 					style={genStyleWithPrefix("ap2")}
 					iconStyle={genIconStyleWithPrefix("ap2")}
 				/>
-				<TextIconButton
-					icon={womanicon}
-					text="Ginecoobstétricos"
-					onClick={isWoman ? wrapWithNavigate(navigateToObstetrics) : () => {}}
-					style={genStyleWithPrefix("ag")}
-					iconStyle={genIconStyleWithPrefix("ag")}
-				/>
+
+				{isWoman && (
+					<TextIconButton
+						icon={womanicon}
+						text="Ginecoobstétricos"
+						onClick={
+							isWoman ? wrapWithNavigate(navigateToObstetrics) : () => {}
+						}
+						style={genStyleWithPrefix("ag")}
+						iconStyle={genIconStyleWithPrefix("ag")}
+					/>
+				)}
+
 				<TextIconButton
 					icon={glassicon}
 					text="No patológicos"
