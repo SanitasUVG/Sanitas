@@ -188,7 +188,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 		return responseBuilder.setStatusCode(200).setBody(updatedRecord).build();
 	} catch (error) {
 		logger.error(
-			{ error },
+			{ details: error.details, error },
 			"An error occurred while updating medical consultation!",
 		);
 
