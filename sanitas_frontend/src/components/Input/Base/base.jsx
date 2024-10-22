@@ -35,12 +35,36 @@ export default function BaseInput({
 		...style,
 	};
 
+	// Manejar cambios en el valor del input
+	const handleChange = (event) => {
+		if (type === "number") {
+			const newValue = event.target.value;
+			if (/^[0-9]*\.?[0-9]*$/.test(newValue) || newValue === "") {
+				onChange(event); // Llama al manejador onChange original si la entrada es válida
+			}
+		} else {
+			onChange(event); // Para otros tipos, permite cualquier entrada
+		}
+	};
+
+	// Bloquear caracteres no numéricos para inputs de tipo 'number'
+	const handleKeyPress = (event) => {
+		if (
+			type === "number" &&
+			!/^[0-9.]+$/.test(event.key) &&
+			event.key !== "Backspace"
+		) {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<input
 			type={type}
 			value={value}
 			readOnly={readOnly}
-			onChange={onChange}
+			onChange={handleChange}
+			onKeyDown={handleKeyPress}
 			onClick={onClick}
 			placeholder={placeholder}
 			style={defaultStyle}

@@ -31,7 +31,7 @@ describe("Get Medical Consultation integration tests", () => {
 					systolicPressure: 120,
 					diastolicPressure: 80,
 					oxygenSaturation: 98,
-					respiratoryRate: "15 bpm",
+					respiratoryRate: 15,
 					heartRate: 70,
 					glucometry: 90,
 					medications: [
@@ -62,7 +62,9 @@ describe("Get Medical Consultation integration tests", () => {
 
 		const medicalConsultation = response.data;
 		expect(medicalConsultation).toBeDefined();
-		expect(medicalConsultation.patientConsultation).toBeDefined();
+		expect(
+			medicalConsultation.consultations[0].patientConsultation,
+		).toBeDefined();
 	}, 10000);
 
 	test("Retrieve default medical consultation for non-existent patient", async () => {
@@ -76,7 +78,9 @@ describe("Get Medical Consultation integration tests", () => {
 		expect(response.status).toBe(200);
 
 		const medicalConsultation = response.data;
-		expect(medicalConsultation.patientConsultation.data.reason).toBe("");
+		expect(
+			medicalConsultation.consultations[0].patientConsultation.data.reason,
+		).toBe("");
 	});
 
 	test("Fail to retrieve medical consultation due to missing patient ID in the request", async () => {
@@ -124,31 +128,35 @@ describe("Get Medical Consultation integration tests", () => {
 		// Define the expected JSON structure with expected types
 		const expectedResponse = {
 			patientId: expect.any(Number), // Use expect.any(Constructor) for type checking
-			patientConsultation: {
-				version: expect.any(Number),
-				data: {
-					date: expect.any(String),
-					evaluator: expect.any(String),
-					reason: expect.any(String),
-					diagnosis: expect.any(String),
-					physicalExam: expect.any(String),
-					temperature: expect.any(Number),
-					systolicPressure: expect.any(Number),
-					diastolicPressure: expect.any(Number),
-					oxygenSaturation: expect.any(Number),
-					respiratoryRate: expect.any(String),
-					heartRate: expect.any(Number),
-					glucometry: expect.any(Number),
-					medications: expect.arrayContaining([
-						expect.objectContaining({
+			consultations: expect.arrayContaining([
+				// Use expect.arrayContaining to check for an array of objects
+				expect.objectContaining({
+					patientConsultation: expect.objectContaining({
+						data: expect.objectContaining({
+							date: expect.any(String),
+							evaluator: expect.any(String),
+							reason: expect.any(String),
 							diagnosis: expect.any(String),
-							medication: expect.any(String),
-							quantity: expect.any(String),
+							physicalExam: expect.any(String),
+							temperature: expect.any(Number),
+							systolicPressure: expect.any(Number),
+							diastolicPressure: expect.any(Number),
+							oxygenSaturation: expect.any(Number),
+							respiratoryRate: expect.any(Number),
+							heartRate: expect.any(Number),
+							glucometry: expect.any(Number),
+							medications: expect.arrayContaining([
+								expect.objectContaining({
+									diagnosis: expect.any(String),
+									medication: expect.any(String),
+									quantity: expect.any(String),
+								}),
+							]),
+							notes: expect.any(String),
 						}),
-					]),
-					notes: expect.any(String),
-				},
-			},
+					}),
+				}),
+			]),
 		};
 
 		// Use toEqual to perform a deep equality check
