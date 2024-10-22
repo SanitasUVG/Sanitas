@@ -110,6 +110,7 @@ export const handler = async (event, context) => {
 		logger.info("Connected!");
 
 		const transactionResult = await transaction(client, logger, async () => {
+			logger.info("Checking if email is doctor...");
 			const itsDoctor = await isDoctor(client, email);
 			if (itsDoctor.error) {
 				const msg =
@@ -154,17 +155,24 @@ export const handler = async (event, context) => {
 		}
 
 		const { result } = transactionResult;
-		/**@type *[] */
+		/**@type string[] */
 		const fields = result.fields.map((f) => f.name);
-		/**@type *[] */
-		const rows = result.rows;
+		/**@type *[][] */
+		const rows = result.rows.map((r) =>
+			fields.map((f) => {
+				if (f.includes("fecha")) {
+					return new Date(r[f]).toISOString();
+				}
+				return r[f];
+			}),
+		);
 
 		const csv = arrayToCsv([fields].concat(rows));
 
 		return responseBuilder.setStatusCode(200).setBody(csv).build();
 	} catch (error) {
 		logger.error(
-			{ details: error.details },
+			{ details: error.message },
 			"An error occurred while exporting data!",
 		);
 
