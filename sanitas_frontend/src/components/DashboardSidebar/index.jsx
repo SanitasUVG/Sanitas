@@ -135,7 +135,10 @@ export default function DashboardSidebar({
 						wrapWithNavigate(onGoBack)(e);
 						setIsWoman(false);
 					}}
-					onKeyDown={wrapWithNavigate(onGoBack)}
+					onKeyDown={(e) => {
+						wrapWithNavigate(onGoBack)(e);
+						setIsWoman(false);
+					}}
 					alt="Logo Sanitas"
 				/>
 			</div>
