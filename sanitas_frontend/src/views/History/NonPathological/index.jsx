@@ -189,12 +189,14 @@ function NonPathologicalView({
 		smoker.data ? smoker.data.smokes : false,
 	);
 	const [cigarettesPerDay, setCigarettesPerDay] = useState(
-		smoker.data && smoker.data.cigarettesPerDay != null
+		smoker.data &&
+			smoker.data.cigarettesPerDay != null &&
+			smoker.data.cigarettesPerDay !== 0
 			? smoker.data.cigarettesPerDay.toString()
 			: "",
 	);
 	const [smokingYears, setSmokingYears] = useState(
-		smoker.data && smoker.data.years != null
+		smoker.data && smoker.data.years != null && smoker.data.howManyYears !== 0
 			? smoker.data.years.toString()
 			: "",
 	);
@@ -203,7 +205,9 @@ function NonPathologicalView({
 		drink.data ? drink.data.drinks : false,
 	);
 	const [drinksPerMonth, setDrinksPerMonth] = useState(
-		drink.data && drink.data.drinksPerMonth != null
+		drink.data &&
+			drink.data.drinksPerMonth != null &&
+			drink.data.drinksPerMonth !== 0
 			? drink.data.drinksPerMonth.toString()
 			: "",
 	);
@@ -215,7 +219,7 @@ function NonPathologicalView({
 		drugs.data ? drugs.data.drugType : "",
 	);
 	const [drugFrequency, setDrugFrequency] = useState(
-		drugs.data && drugs.data.frequency != null
+		drugs.data && drugs.data.frequency != null && drugs.data.frequency !== ""
 			? drugs.data.frequency.toString()
 			: "",
 	);
@@ -411,8 +415,8 @@ function NonPathologicalView({
 	const handleSmokingChange = (newStatus) => {
 		setSmokingStatus(newStatus);
 		if (!newStatus) {
-			setCigarettesPerDay("0");
-			setSmokingYears("0");
+			setCigarettesPerDay("");
+			setSmokingYears("");
 		}
 	};
 
@@ -420,7 +424,7 @@ function NonPathologicalView({
 	const handleAlcoholChange = (newStatus) => {
 		setAlcoholConsumption(newStatus);
 		if (!newStatus) {
-			setDrinksPerMonth("0");
+			setDrinksPerMonth("");
 		}
 	};
 
