@@ -37,7 +37,7 @@ describe("Get consultations data endpoint tests", () => {
 					systolicPressure: 120,
 					diastolicPressure: 80,
 					oxygenSaturation: 98,
-					respiratoryRate: "15JASDJK",
+					respiratoryRate: 15,
 					heartRate: 70,
 					glucometry: 90,
 					medications: [

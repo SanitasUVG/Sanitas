@@ -185,7 +185,13 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 
 		const updatedRecord = mapToAPIMedicalConsultation(result.rows[0]);
 		logger.info({ updatedRecord }, "Successfully updated medical consultation");
-		return responseBuilder.setStatusCode(200).setBody(updatedRecord).build();
+		return responseBuilder
+			.setStatusCode(200)
+			.setBody({
+				patientId: patientId,
+				patientConsultation: updatedRecord.patientConsultation,
+			})
+			.build();
 	} catch (error) {
 		logger.error(
 			{ details: error.details, error },
@@ -195,7 +201,9 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 		if (error.code === "23503") {
 			return responseBuilder
 				.setStatusCode(404)
-				.setBody({ error: "Patient not found with the provided ID." })
+				.setBody({
+					error: "Patient or evaluator not found with the provided ID.",
+				})
 				.build();
 		}
 
