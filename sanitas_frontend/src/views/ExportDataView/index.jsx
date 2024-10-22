@@ -9,12 +9,12 @@ import IconButton from "src/components/Button/Icon";
 import { BaseInput } from "src/components/Input";
 import BaseButton from "src/components/Button/Base";
 import { useState } from "react";
-import { formatDate } from "@storybook/blocks";
 import { toast } from "react-toastify";
 import { downloadBlob } from "src/utils";
 import { useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
 import { IS_PRODUCTION } from "src/constants.mjs";
+import { formatDate } from "src/utils/date";
 
 /**
  * @typedef {Object} ExportDataViewProps
