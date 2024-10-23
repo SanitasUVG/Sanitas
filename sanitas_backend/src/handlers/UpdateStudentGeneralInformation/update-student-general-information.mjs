@@ -11,22 +11,13 @@ function checkIfUpdatesValues(dbData, requestData) {
 	// NOTE: It's very likely some but not all properties can be changed by a patient.
 	// For now we check all.
 	const invalidPropertiesToModify = [
-		"patienId",
-		"cui",
-		"isWoman",
-		"email",
 		"names",
 		"lastNames",
-		"contactName1",
-		"contactKinkship1",
-		"contactPhone1",
-		"contactName2",
-		"contactKinkship2",
-		"contactPhone2",
+		"cui",
+		"isWoman",
 		"bloodType",
-		"address",
-		"insurance",
-		"phone",
+		"email",
+		"patienId",
 	];
 
 	// `birthdate` must be checked separately since they're Date objects.
