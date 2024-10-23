@@ -28,7 +28,9 @@ import { formatDate } from "src/utils/date";
 export function ExportDataView({ exportData, logoutUser }) {
 	const navigate = useNavigate();
 	const today = new Date();
-	const [endDate, setEndDate] = useState(today);
+	const [endDate, setEndDate] = useState(
+		new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+	);
 	const [startDate, setStartDate] = useState(
 		new Date(today.getFullYear(), today.getMonth(), 1),
 	);
@@ -180,7 +182,7 @@ export function ExportDataView({ exportData, logoutUser }) {
 							flexDirection: "column",
 						}}
 					>
-						<label>Inicio:</label>
+						<label>Inicio (inclusivo):</label>
 						<BaseInput
 							type="date"
 							value={formatDate(startDate)}
@@ -200,7 +202,7 @@ export function ExportDataView({ exportData, logoutUser }) {
 							flexDirection: "column",
 						}}
 					>
-						<label>Final:</label>
+						<label>Final (exclusivo):</label>
 						<BaseInput
 							type="date"
 							value={formatDate(endDate)}
