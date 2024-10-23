@@ -156,7 +156,6 @@ publiques tu aplicación:
 <!-- markdownlint-disable MD013 -->
 
 ```bash
-<!-- markdownlint-disable-next-line -->
 yarn && BACKEND_URL="BACKEND URL" COGNITO_POOL_ID="COGNITO POOL ID" COGNITO_CLIENT_ID="COGNITO CLIENT ID" PROTECTED_URL="PROTECTED BACKEND URL" yarn build
 ```
 
