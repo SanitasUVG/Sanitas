@@ -12,7 +12,7 @@ import {
  * @returns {boolean}
  */
 function requestUpdatesValues(savedData, newData) {
-	return Object.keys(savedData).some((key) => {
+	return ["idPatient", "carnet"].some((key) => {
 		if (!Object.hasOwn(newData, key)) {
 			return true;
 		}
