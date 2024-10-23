@@ -29,7 +29,7 @@ export function StudentPsichiatricHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	// const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
@@ -166,7 +166,7 @@ function PsichiatricView({
 	const addDepressionMedication = () => {
 		setDepressionMedications([
 			...depressionMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -207,7 +207,7 @@ function PsichiatricView({
 	const addAnxietyMedication = () => {
 		setAnxietyMedications([
 			...anxietyMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -218,7 +218,7 @@ function PsichiatricView({
 	const addTOCMedication = () => {
 		setTOCMedications([
 			...TOCMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -241,7 +241,7 @@ function PsichiatricView({
 	const addTDAHMedication = () => {
 		setTDAHMedications([
 			...TDAHMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -258,7 +258,7 @@ function PsichiatricView({
 	const addBipolarMedication = () => {
 		setBipolarMedications([
 			...bipolarMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -274,13 +274,14 @@ function PsichiatricView({
 					...med,
 					id: index,
 					illness: med.illness || "",
+					isNew: false,
 				}))
 			: [],
 	);
 	const addOtherMedication = () => {
 		setOtherMedications([
 			...otherMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -327,6 +328,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -341,6 +343,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -354,6 +357,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -367,6 +371,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -380,6 +385,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -394,6 +400,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ illness: "", medication: "", dose: "", frequency: "" }],
 		);
@@ -1547,45 +1554,46 @@ function PsichiatricView({
 													paddingTop: isMobile ? "0.5rem" : "0rem",
 												}}
 											/>
-											{section.medications.length > 1 && (
-												<BaseButton
-													text="Cancelar Medicamento"
-													onClick={() => {
-														const lastMedication =
-															section.medications[
-																section.medications.length - 1
-															];
+											{section.medications.length > 1 &&
+												section.medications.some((med) => med.isNew) && (
+													<BaseButton
+														text="Cancelar Medicamento"
+														onClick={() => {
+															const lastMedication =
+																section.medications[
+																	section.medications.length - 1
+																];
 
-														const isMedicationFromAPI =
-															!!lastMedication.medicationFromAPI ||
-															!!lastMedication.frequencyFromAPI ||
-															!!lastMedication.doseFromAPI;
+															const isMedicationFromAPI =
+																!!lastMedication.medicationFromAPI ||
+																!!lastMedication.frequencyFromAPI ||
+																!!lastMedication.doseFromAPI;
 
-														const isNewMedicationWithUserInput =
-															!isMedicationFromAPI &&
-															(!!lastMedication.medication ||
-																!!lastMedication.frequency ||
-																!!lastMedication.dose);
+															const isNewMedicationWithUserInput =
+																!isMedicationFromAPI &&
+																(!!lastMedication.medication ||
+																	!!lastMedication.frequency ||
+																	!!lastMedication.dose);
 
-														if (isMedicationFromAPI) {
-															toast.error(
-																"No puedes eliminar medicamentos ya guardados",
-															);
-														} else if (
-															isNewMedicationWithUserInput ||
-															!lastMedication.medication
-														) {
-															section.removeLastMedication();
-														}
-													}}
-													style={{
-														...buttonStyles,
-														backgroundColor: colors.secondaryBackground,
-														color: colors.primaryBackground,
-														border: `1.5px solid ${colors.primaryBackground}`,
-													}}
-												/>
-											)}
+															if (isMedicationFromAPI) {
+																toast.error(
+																	"No puedes eliminar medicamentos ya guardados",
+																);
+															} else if (
+																isNewMedicationWithUserInput ||
+																!lastMedication.medication
+															) {
+																section.removeLastMedication();
+															}
+														}}
+														style={{
+															...buttonStyles,
+															backgroundColor: colors.secondaryBackground,
+															color: colors.primaryBackground,
+															border: `1.5px solid ${colors.primaryBackground}`,
+														}}
+													/>
+												)}
 										</div>
 									</div>
 								)}
