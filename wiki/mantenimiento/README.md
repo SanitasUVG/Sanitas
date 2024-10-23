@@ -15,8 +15,8 @@ Si quieres saber cómo trabajamos consulta nuestra [Metodología de Desarrollo](
 
 Este proyecto utiliza [Nix](https://nixos.org/) para sus ambientes de desarrollo,
 Si nunca has utilizado Nix, es una herramienta para compilar software de forma
-reproducible, en este proyecto se utiliza mayormente para crear ambientes de
-desarrollo y scripts reproducibles en Linux, MacOS y WSL.
+reproducible y aislada, en este proyecto se utiliza mayormente para crear
+ambientes de desarrollo y scripts reproducibles en Linux, MacOS y WSL.
 
 Nix simplifica el manejo de dependencias entre computadoras y personas, resuelve
 el mítico problema de computación de "sirve en mi computadora".

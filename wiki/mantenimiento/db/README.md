@@ -243,7 +243,7 @@ erDiagram
 
 <!-- markdownlint-disable MD025 -->
 
-# Registro de Antecedentes
+## Registro de Antecedentes
 
 Como se puede ver en el diagrama de arriba los antecedentes tienen varios tipos,
 cada tipo es una tabla y cada columna de la tabla representa una subsección que se
