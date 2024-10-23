@@ -126,18 +126,24 @@ sam list stack-outputs --stack-name sanitas-backend --output json | jq .[0].Outp
 - **El Cognito Pool ID**: La puedes obtener del dashboard de AWS
   o puedes obtenerla usando el siguiente comando.
 
+<!-- markdownlint-disable MD013 -->
+
 ```bash
-<!-- markdownlint-disable-next-line -->
 sam list resources --stack-name sanitas-backend --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPool") | .PhysicalResourceId'
 ```
+
+<!-- markdownlint-enable MD013 -->
 
 - **El Cognito Client ID**: La puedes obtener del dashboard de AWS
   o puedes obtenerla usando el siguiente comando.
 
+<!-- markdownlint-disable MD013 -->
+
 ```bash
-<!-- markdownlint-disable-next-line -->
 sam list resources --stack-name sanitas-backend --output json | jq '.[] | select(.LogicalResourceId == "CognitoUserPoolClient") | .PhysicalResourceId'
 ```
+
+<!-- markdownlint-enable MD013 -->
 
 El siguiente paso es deployear el frontend.
 
@@ -147,10 +153,14 @@ El fronend de sanitas es una SPA que usa Vite como su bundler. Simplemente
 ejecuta el siguiente comando y sube la carpeta `dist` resultante a donde
 publiques tu aplicación:
 
+<!-- markdownlint-disable MD013 -->
+
 ```bash
 <!-- markdownlint-disable-next-line -->
 yarn && BACKEND_URL="BACKEND URL" COGNITO_POOL_ID="COGNITO POOL ID" COGNITO_CLIENT_ID="COGNITO CLIENT ID" PROTECTED_URL="PROTECTED BACKEND URL" yarn build
 ```
+
+<!-- markdownlint-enable MD013 -->
 
 Si el hosting en donde se publicará la aplicación tiene un path extra en la URL
 después del .com, reemplaza el `yarn build` de arriba por:
