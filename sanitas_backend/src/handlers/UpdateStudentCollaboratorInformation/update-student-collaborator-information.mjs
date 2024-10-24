@@ -11,9 +11,13 @@ import {
  * @param {import("utils/index.mjs").APICollaborator} requestData - The request data.
  */
 function modifiesData(savedData, requestData) {
-	return Object.keys(savedData).some(
-		(key) => savedData[key] !== requestData[key],
-	);
+	return ["idPatient", "code"].some((key) => {
+		if (!Object.hasOwn(requestData, key)) {
+			return true;
+		}
+
+		return savedData[key] !== requestData[key];
+	});
 }
 
 export const handler = async (event, context) => {

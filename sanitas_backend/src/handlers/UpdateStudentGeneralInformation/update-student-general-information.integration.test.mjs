@@ -71,7 +71,7 @@ describe("Update Patient Integration tests (Patient POV)", () => {
 			"Invalid input: Students cannot update saved info.",
 		);
 
-		// Can't modify names...
+		// Can't modify sex...
 		patientData.isWoman = false;
 		response = await axios.post(API_URL, patientData, {
 			headers: validHeaders,
