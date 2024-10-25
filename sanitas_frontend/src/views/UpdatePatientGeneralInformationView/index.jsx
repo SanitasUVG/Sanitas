@@ -492,7 +492,7 @@ function UpdateGeneralInformationSection({
 		}
 
 		triggerRefresh();
-		setPatientData(updateResponse.result || {});
+		setPatientData(getResponseFromGET() || {});
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
