@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
@@ -89,7 +89,7 @@ export const getMedicalConsultationHandler = async (event, context) => {
 				return { response };
 			}
 
-			const query = `SELECT * FROM consulta WHERE id_paciente = $1 ORDER BY fecha DESC;
+			const query = `SELECT * FROM ${SCHEMA_NAME}.consulta WHERE id_paciente = $1 ORDER BY fecha DESC;
 			`;
 
 			const args = [patientId];

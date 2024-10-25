@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
 import {
@@ -115,7 +115,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 
 			// Use ON CONFLICT to update the data, merging existing and new information
 			const insertQuery = `
-			INSERT INTO antecedentes_alergicos (
+			INSERT INTO ${SCHEMA_NAME}.antecedentes_alergicos (
 				id_paciente,
 				medicamento_data,
 				comida_data,

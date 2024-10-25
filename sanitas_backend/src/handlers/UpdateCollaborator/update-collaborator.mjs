@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -83,7 +83,7 @@ export const updateCollaboratorHandler = async (event, context) => {
 		}
 
 		const query = `
-			INSERT INTO colaborador (id_paciente, codigo, area)
+			INSERT INTO ${SCHEMA_NAME}.colaborador (id_paciente, codigo, area)
 			VALUES ($1, $2, $3)
 			ON CONFLICT (id_paciente) DO UPDATE
 			SET codigo = COALESCE(EXCLUDED.codigo, colaborador.codigo),

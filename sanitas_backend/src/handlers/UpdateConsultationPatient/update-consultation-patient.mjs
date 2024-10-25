@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
@@ -104,7 +104,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			} = patientConsultation.data;
 
 			const upsertQuery = `
-            INSERT INTO consulta (
+            INSERT INTO ${SCHEMA_NAME}.consulta (
                 id_paciente,
                 fecha,
                 motivo,

@@ -1,4 +1,10 @@
-import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
+import {
+	getPgClient,
+	isDoctor,
+	isEmailOfPatient,
+	SCHEMA_NAME,
+	transaction,
+} from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -98,8 +104,7 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 				logger.info("The user is a doctor!");
 			}
 
-			const query =
-				"SELECT * FROM antecedentes_ginecoobstetricos WHERE id_paciente = $1;";
+			const query = `SELECT * FROM ${SCHEMA_NAME}.antecedentes_ginecoobstetricos WHERE id_paciente = $1;`;
 			const args = [patientId];
 			logger.info({ query, args }, "Querying DB...");
 			const dbResponse = await client.query(query, args);

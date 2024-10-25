@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 
@@ -68,7 +68,7 @@ export const updatePatientHandler = async (event, context) => {
 		}
 
 		const query = `
-      UPDATE paciente
+      UPDATE ${SCHEMA_NAME}.paciente
       SET 
         nombres = COALESCE($2, nombres),
         apellidos = COALESCE($3, apellidos),

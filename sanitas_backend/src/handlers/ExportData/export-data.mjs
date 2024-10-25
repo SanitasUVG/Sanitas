@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -86,7 +86,7 @@ export const handler = async (event, context) => {
 			}
 			logger.info(`${email} is a doctor!`);
 
-			const query = "SELECT * FROM stats";
+			const query = `SELECT * FROM ${SCHEMA_NAME}.stats`;
 			logger.info({ query }, "Querying for information: ");
 			const result = await client.query(query);
 			logger.info({ rowCount: result.rowCount }, "DB query done!");

@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	decodeJWT,
@@ -65,7 +65,7 @@ export const handler = async (event, context) => {
 		}
 
 		const upsertQuery = `
-      INSERT INTO antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
+      INSERT INTO ${SCHEMA_NAME}.antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
       VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (id_paciente) DO UPDATE
       SET tipo_sangre = EXCLUDED.tipo_sangre,

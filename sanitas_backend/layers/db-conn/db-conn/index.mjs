@@ -2,6 +2,11 @@ import pg from "pg";
 const { Client } = pg;
 
 /**
+ * Exports the name of the schema that encapsulates the tables of the system.
+ */
+export const SCHEMA_NAME = "md_san";
+
+/**
  * Obtains a client connected to the DB by the specified connection string.
  * @param {string} connectionString
  * @returns {pg.Client} The PG client.

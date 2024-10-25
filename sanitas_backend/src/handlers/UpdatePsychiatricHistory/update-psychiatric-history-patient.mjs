@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT, mapToAPIPsychiatricHistory } from "utils/index.mjs";
@@ -74,7 +74,7 @@ export const updatePsychiatricHistoryHandler = async (event, context) => {
 		);
 
 		const upsertQuery = `
-      INSERT INTO antecedentes_psiquiatricos (
+      INSERT INTO ${SCHEMA_NAME}.antecedentes_psiquiatricos (
         id_paciente,
         depresion_data,
         ansiedad_data,

@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	decodeJWT,
@@ -65,8 +65,7 @@ export const handler = async (event, context) => {
 		}
 
 		const transactionResult = await transaction(client, logger, async () => {
-			const getPatientQuery =
-				"SELECT * FROM antecedentes_no_patologicos WHERE id_paciente = $1;";
+			const getPatientQuery = `SELECT * FROM ${SCHEMA_NAME}.antecedentes_no_patologicos WHERE id_paciente = $1;`;
 			const patientResult = await client.query(getPatientQuery, [patientId]);
 			if (patientResult.rowCount > 0) {
 				const dbData = patientResult.rows[0];
@@ -89,7 +88,7 @@ export const handler = async (event, context) => {
 			}
 
 			const upsertQuery = `
-			INSERT INTO antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
+			INSERT INTO ${SCHEMA_NAME}.antecedentes_no_patologicos (id_paciente, tipo_sangre, fuma_data, bebidas_alcoholicas_data, drogas_data)
 			VALUES ($1, $2, $3, $4, $5)
 			ON CONFLICT (id_paciente) DO UPDATE
 			SET tipo_sangre = EXCLUDED.tipo_sangre,

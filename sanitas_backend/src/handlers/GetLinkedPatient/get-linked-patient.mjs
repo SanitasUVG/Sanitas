@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { decodeJWT } from "utils/index.mjs";
@@ -41,8 +41,8 @@ export const handler = async (event, context) => {
 		logger.info("Connected!");
 
 		const query = `
-			SELECT p.id FROM paciente p
-				INNER JOIN cuenta_paciente cp ON cp.cui_paciente = p.cui
+			SELECT p.id FROM ${SCHEMA_NAME}.paciente p
+				INNER JOIN ${SCHEMA_NAME}.cuenta_paciente cp ON cp.cui_paciente = p.cui
 			WHERE email=$1 
 			LIMIT 1
     `;

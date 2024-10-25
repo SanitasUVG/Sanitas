@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils/index.mjs";
 
@@ -21,7 +21,7 @@ export const handler = async (event, context) => {
 		logger.info(url, "Connecting to DB...");
 		await client.connect();
 		logger.info("Querying DB...");
-		const query = "SELECT * FROM PACIENTE LIMIT 1";
+		const query = `SELECT * FROM ${SCHEMA_NAME}.PACIENTE LIMIT 1`;
 		await client.query(query);
 		await client.end();
 

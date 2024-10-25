@@ -1,4 +1,10 @@
-import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
+import {
+	getPgClient,
+	isDoctor,
+	isEmailOfPatient,
+	SCHEMA_NAME,
+	transaction,
+} from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPIFamilyHistory } from "utils";
@@ -107,7 +113,7 @@ export const getFamilyHistoryHandler = async (event, context) => {
 
 			const query = `
       SELECT id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data
-      FROM antecedentes_familiares
+      FROM ${SCHEMA_NAME}.antecedentes_familiares
       WHERE id_paciente = $1;
     `;
 			const args = [patientId];

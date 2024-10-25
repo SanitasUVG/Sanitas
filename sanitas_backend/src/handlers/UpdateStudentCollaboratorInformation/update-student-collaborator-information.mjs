@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -98,7 +98,7 @@ export const handler = async (event, context) => {
 		}
 
 		const transactionResult = await transaction(client, logger, async () => {
-			const selectQuery = "SELECT * FROM colaborador WHERE id_paciente = $1";
+			const selectQuery = `SELECT * FROM ${SCHEMA_NAME}.colaborador WHERE id_paciente = $1`;
 			const selectValues = [collaboratorData.idPatient];
 
 			logger.info({ selectQuery, selectValues }, "Querying DB...");
@@ -126,7 +126,7 @@ export const handler = async (event, context) => {
 			logger.info("reqData doesn't modify dbData!");
 
 			const query = `
-			INSERT INTO colaborador (id_paciente, codigo, area)
+			INSERT INTO ${SCHEMA_NAME}.colaborador (id_paciente, codigo, area)
 			VALUES ($1, $2, $3)
 			ON CONFLICT (id_paciente) DO UPDATE
 			SET codigo = COALESCE(EXCLUDED.codigo, colaborador.codigo),

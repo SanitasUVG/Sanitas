@@ -1,4 +1,4 @@
-import { getPgClient, transaction } from "db-conn";
+import { getPgClient, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { cuiIsValid } from "utils/cui.mjs";
 import { createResponse } from "utils/index.mjs";
@@ -60,7 +60,7 @@ export const createPatientHandler = async (event, context) => {
 
 		const transactionResult = await transaction(client, logger, async () => {
 			const existingPatientQuery = `
-			SELECT 1 FROM PACIENTE WHERE CUI = $1
+			SELECT 1 FROM ${SCHEMA_NAME}.paciente WHERE cui = $1
 		`;
 			const existingPatientResult = await client.query(existingPatientQuery, [
 				patientData.cui,
@@ -83,7 +83,7 @@ export const createPatientHandler = async (event, context) => {
 			);
 
 			const query = `
-			INSERT INTO PACIENTE (CUI, NOMBRES, APELLIDOS, ES_MUJER, FECHA_NACIMIENTO)
+			INSERT INTO ${SCHEMA_NAME}.paciente (cui, nombres, apellidos, es_mujer, fecha_nacimiento)
 			VALUES ($1, $2, $3, $4, $5)
 			returning *
 		`;

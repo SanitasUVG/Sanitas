@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { genDefaultPersonalHistory } from "utils/defaultValues.mjs";
 import {
@@ -78,7 +78,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 		const transactionResult = await transaction(client, logger, async () => {
 			logger.info("Fetching existing data...");
 			const currentDataResult = await client.query(
-				"SELECT * FROM antecedentes_personales WHERE id_paciente = $1",
+				`SELECT * FROM ${SCHEMA_NAME}.antecedentes_personales WHERE id_paciente = $1`,
 				[patientId],
 			);
 			logger.info(`Found ${currentDataResult.rowCount} patients...`);
@@ -133,7 +133,7 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 			];
 
 			const upsertQuery = `
-            INSERT INTO antecedentes_personales (id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data)
+            INSERT INTO ${SCHEMA_NAME}.antecedentes_personales (id_paciente, hipertension_arterial_data, diabetes_mellitus_data, hipotiroidismo_data, asma_data, convulsiones_data, infarto_agudo_miocardio_data, cancer_data, enfermedades_cardiacas_data, enfermedades_renales_data, otros_data)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             ON CONFLICT (id_paciente) DO UPDATE
             SET hipertension_arterial_data = EXCLUDED.hipertension_arterial_data,

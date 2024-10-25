@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils/index.mjs";
 
@@ -23,7 +23,7 @@ export const handler = async (event, context) => {
 		await client.connect();
 		logger.info("Querying DB...");
 
-		const query = "SELECT COUNT(*) FROM PACIENTE WHERE cui = $1";
+		const query = `SELECT COUNT(*) FROM ${SCHEMA_NAME}.paciente WHERE cui = $1`;
 		const values = [cui];
 		const response = await client.query(query, values);
 		logger.info(response.rows, "The response from the DB is:");
