@@ -1,6 +1,9 @@
 # Guía de Contribución
 
-En este documento te explico cómo contribuir a Sanitas.
+En este documento te explico cómo contribuir a Sanitas. Este repositorio es un
+monorepo, lo que significa que hay varios proyectos conviviendo en un solo
+repositorio. Las siguientes reglas son las generales para contribuir, por favor
+revisa también las guías individuales de cada proyecto en su respectivo README.
 
 Primero asegurate de haber clonado el repo por medio de [SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 También puede clonarlo usando VSCode.
@@ -22,7 +25,7 @@ ya instalados y configurados.
 Asegúrate de usar una terminal con la que hayas hecho `nix develop`
 para hacer los commits. De esta forma los pre-commit hooks pueden correr.
 
-## Iniciando PostgreSQL
+## Iniciando PostgreSQL y otros servicios
 
 Para iniciar el servicio de postgres te recomendamos utilizar el comando:
 
@@ -43,5 +46,5 @@ ya se encuentra uno dentro de tal entorno se puede utilizar el comando:
 devenv up
 ```
 
-Esto levanta de la misma manera el servicio de postgres aunque no hace ninguna
-garantía sobre iniciarlo en limpio según lo que tenga el repositorio.
+Esto levanta de la misma manera el servicio de postgres aunque no en limpio,
+lo que permite mantener los datos previamente ingresados en la DB.

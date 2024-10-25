@@ -1,31 +1,25 @@
 # Mantenimiento de Sanitas
 
 Bienvenido a la wiki para darle mantenimiento a Sanitas!
-Puedes ver un ejemplo de una request de login en el siguiente diagrama de secuencia:
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Backend
-    participant Database
+Si te gustaría conocer un overview de cómo se encuentra estructurado el proyecto
+en general y cómo el Login, por favor revisa las secciones del [Frontend de Sanitas](./frontend/README.md)
+así como la del [Backend de Sanitas](./backend/README.md)
 
-    Client ->> Backend: /login: username, password
-    Backend ->> Database: Query username
+Si quieres saber cómo desarrollar en Sanitas consulta nuestra [Guía de
+Contribución](./Guia_de_contribuci%C3%B3n.md).
 
-    Database -->> Backend: Hashed password
-    Backend ->> Database: Session token
-
-    Database -->> Backend: Date of generation
-    Backend -->> Client: session token
-```
-
-Si quieres consulta nuestra [Metodología de Desarrollo](./Metodologia_de_desarrollo.md)
+Si quieres saber cómo trabajamos consulta nuestra [Metodología de Desarrollo](./Metodologia_de_desarrollo.md).
 
 ## Nix
 
 Este proyecto utiliza [Nix](https://nixos.org/) para sus ambientes de desarrollo,
-puedes consultar la [Guía de contribución](./Guia_de_contribuci%C3%B3n.md)
-para aprender más al respecto
+Si nunca has utilizado Nix, es una herramienta para compilar software de forma
+reproducible y aislada, en este proyecto se utiliza mayormente para crear
+ambientes de desarrollo y scripts reproducibles en Linux, MacOS y WSL.
+
+Nix simplifica el manejo de dependencias entre computadoras y personas, resuelve
+el mítico problema de computación de "sirve en mi computadora".
 
 ## Base de datos
 
