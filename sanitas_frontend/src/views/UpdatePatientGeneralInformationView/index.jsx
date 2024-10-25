@@ -20,7 +20,11 @@ import BaseButton from "src/components/Button/Base";
  * @returns {boolean} True if it exists and is not null, false otherwise.
  */
 const hasPropertyAndIsValid = (object, property) => {
-	Object.hasOwn(object, property) && object[property] !== null;
+	if (object === null || object === undefined) {
+		return false;
+	}
+
+	return Object.hasOwn(object, property) && object[property] !== null;
 };
 
 /**
@@ -317,7 +321,7 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Código"
 						style={inputStyles}
-						disabled={() => hasPropertyAndIsValid(responseFromGET, "code")}
+						disabled={hasPropertyAndIsValid(responseFromGET, "code")}
 					/>
 				</div>
 
@@ -619,9 +623,7 @@ function UpdateGeneralInformationSection({
 								container: { width: isMobile ? "100%" : "90%" },
 								select: { height: "3rem" },
 							}}
-							disabled={() =>
-								hasPropertyAndIsValid(responseFromGET, "bloodType")
-							}
+							disabled={hasPropertyAndIsValid(responseFromGET, "bloodType")}
 						/>
 					</div>
 				</div>
@@ -650,7 +652,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, email: e.target.value })
 							}
 							style={inputStyles}
-							disabled={() => hasPropertyAndIsValid(responseFromGET, "email")}
+							disabled={hasPropertyAndIsValid(responseFromGET, "email")}
 						/>
 					</div>
 
@@ -722,9 +724,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactName1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactName1",
+								)}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -738,9 +741,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactKinship1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactKinship1",
+								)}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -754,9 +758,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactPhone1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactPhone1",
+								)}
 							/>
 						</div>
 					</Collapsable>
@@ -777,9 +782,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactName2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactName2",
+								)}
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -793,9 +799,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactKinship2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactKinship2",
+								)}
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -809,9 +816,10 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={() =>
-									hasPropertyAndIsValid(responseFromGET, "contactPhone2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactPhone2",
+								)}
 							/>
 						</div>
 					</Collapsable>
@@ -945,7 +953,7 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carnet"
 						style={inputStyles}
-						disabled={() => hasPropertyAndIsValid(responseFromGET, "carnet")}
+						disabled={hasPropertyAndIsValid(responseFromGET, "carnet")}
 					/>
 				</div>
 
