@@ -26,7 +26,7 @@ COMMENT ON TABLE md_san.paciente IS
 DROP TABLE IF EXISTS md_san.cuenta_paciente;
 CREATE TABLE md_san.cuenta_paciente (
     email VARCHAR(50) PRIMARY KEY,
-    cui_paciente VARCHAR(24) NOT NULL UNIQUE REFERENCES paciente (cui)
+    cui_paciente VARCHAR(24) NOT NULL UNIQUE REFERENCES md_san.paciente (cui)
 );
 COMMENT ON TABLE md_san.cuenta_paciente IS
 'Used to save the relation between a cognito account and a patient';
@@ -72,8 +72,7 @@ CREATE TABLE md_san.consulta (
     evaluador VARCHAR(50) NOT NULL,
     medicamentos_data JSON,
     notas TEXT,
-    FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id),
-    FOREIGN KEY (evaluador) REFERENCES md_san.usuario (email)
+    FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
 
 DROP TABLE IF EXISTS md_san.diagnostico;
