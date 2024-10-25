@@ -194,7 +194,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error(
-			{ error },
+			{ details: error.details, error },
 			"An error occurred while updating medical consultation!",
 		);
 
