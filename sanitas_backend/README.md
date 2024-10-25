@@ -3,6 +3,30 @@
 Para más información sobre la estructura del backend y cómo está desarrollado
 puedes ver la [wiki](../wiki/mantenimiento/backend/README.md).
 
+## Integration Tests
+
+Para correr las integration tests necesitas levantar una base de datos con los
+inserts y create tables que se encuentran en la carpeta `database`, y además
+los endpoints del backend. si tienes Nix puedes ejecutar:
+
+```bash
+nix run .#integrationTests
+```
+
+Ese comando ejecutará todo por tí y correrá las tests. Si quieres hacerlo
+manualmente, luego de tener la DB lista, levanta el backend como se guía abajo y
+ejecuta en una terminal separada
+
+```bash
+# En el ambiente nix develop --impure y carpeta sanitas_backend
+npm test -- --runInBand
+```
+
+La flag `--runInBand` es necesaria para que las tests corran sequencialmente, lo
+que permite que si las tests fallan sea fácil identificar dónde y cuál
+exactamente falló. Si esta flag no se pasa se corre el riesgo de tener varias
+test que fallaron porque otra test falló!
+
 ## Developing
 
 Para correr el backend de forma local recuerda ingresar a nix usando
