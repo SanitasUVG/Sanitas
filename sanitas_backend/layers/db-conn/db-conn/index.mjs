@@ -24,7 +24,7 @@ export function getPgClient(connectionString) {
  * @returns {Promise<boolean|{error: *}>} If successful, will return true if the user is a doctor, false otherwise. If not successful an object with an error will be returned.
  */
 export async function isDoctor(client, email) {
-	const query = "SELECT 1 FROM DOCTOR WHERE email=$1 LIMIT 1";
+	const query = `SELECT 1 FROM ${SCHEMA_NAME}.doctor WHERE email=$1 LIMIT 1`;
 	const params = [email];
 	try {
 		const result = await client.query(query, params);
@@ -42,8 +42,8 @@ export async function isDoctor(client, email) {
  */
 export async function isEmailOfPatient(client, email, id) {
 	const query = `
-	SELECT * FROM CUENTA_PACIENTE cp
-	INNER JOIN PACIENTE p ON cp.cui_paciente = p.cui
+	SELECT * FROM ${SCHEMA_NAME}.cuenta_paciente cp
+	INNER JOIN ${SCHEMA_NAME}.paciente p ON cp.cui_paciente = p.cui
 	WHERE p.id=$1 AND cp.email=$2
 `;
 	const params = [id, email];

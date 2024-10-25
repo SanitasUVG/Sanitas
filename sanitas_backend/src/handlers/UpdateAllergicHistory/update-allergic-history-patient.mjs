@@ -129,7 +129,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error(
-			{ error },
+			error,
 			"An error occurred while updating allergic history!",
 		);
 
@@ -148,8 +148,6 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
