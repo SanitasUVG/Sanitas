@@ -177,7 +177,7 @@ function PsichiatricView({
 	const addDepressionMedication = () => {
 		setDepressionMedications([
 			...depressionMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -218,7 +218,7 @@ function PsichiatricView({
 	const addAnxietyMedication = () => {
 		setAnxietyMedications([
 			...anxietyMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -229,7 +229,7 @@ function PsichiatricView({
 	const addTOCMedication = () => {
 		setTOCMedications([
 			...TOCMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -252,7 +252,7 @@ function PsichiatricView({
 	const addTDAHMedication = () => {
 		setTDAHMedications([
 			...TDAHMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -269,7 +269,7 @@ function PsichiatricView({
 	const addBipolarMedication = () => {
 		setBipolarMedications([
 			...bipolarMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -285,13 +285,14 @@ function PsichiatricView({
 					...med,
 					id: index,
 					illness: med.illness || "",
+					isNew: false,
 				}))
 			: [],
 	);
 	const addOtherMedication = () => {
 		setOtherMedications([
 			...otherMedications,
-			{ medication: "", dose: "", frequency: "" },
+			{ medication: "", dose: "", frequency: "", isNew: true },
 		]);
 	};
 
@@ -338,6 +339,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -352,6 +354,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -365,6 +368,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNEw: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -378,6 +382,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -391,6 +396,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ medication: "", dose: "", frequency: "" }],
 		);
@@ -405,6 +411,7 @@ function PsichiatricView({
 						medication: item.medication || "",
 						dose: item.dose || "",
 						frequency: item.frequency || "",
+						isNew: false,
 					}))
 				: [{ illness: "", medication: "", dose: "", frequency: "" }],
 		);
@@ -1421,19 +1428,20 @@ function PsichiatricView({
 												/>
 
 												<div style={{ width: "1rem" }} />
-												{section.medications.length > 1 && (
-													<BaseButton
-														text="Cancelar Medicamento"
-														onClick={section.removeLastMedication}
-														style={{
-															width: "20%",
-															height: "3rem",
-															backgroundColor: colors.secondaryBackground,
-															color: colors.primaryBackground,
-															border: `1.5px solid ${colors.primaryBackground}`,
-														}}
-													/>
-												)}
+												{section.medications.length > 1 &&
+													section.medications.some((med) => med.isNew) && (
+														<BaseButton
+															text="Cancelar Medicamento"
+															onClick={section.removeLastMedication}
+															style={{
+																width: "20%",
+																height: "3rem",
+																backgroundColor: colors.secondaryBackground,
+																color: colors.primaryBackground,
+																border: `1.5px solid ${colors.primaryBackground}`,
+															}}
+														/>
+													)}
 											</div>
 										)}
 									</div>
