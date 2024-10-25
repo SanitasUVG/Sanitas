@@ -182,12 +182,14 @@ function NonPathologicalView({
 		smoker.data ? smoker.data.smokes : false,
 	);
 	const [cigarettesPerDay, setCigarettesPerDay] = useState(
-		smoker.data && smoker.data.cigarettesPerDay != null
+		smoker.data &&
+			smoker.data.cigarettesPerDay != null &&
+			smoker.data.cigarettesPerDay !== 0
 			? smoker.data.cigarettesPerDay.toString()
 			: "",
 	);
 	const [smokingYears, setSmokingYears] = useState(
-		smoker.data && smoker.data.years != null
+		smoker.data && smoker.data.years != null && smoker.data.howManyYears !== 0
 			? smoker.data.years.toString()
 			: "",
 	);
@@ -196,7 +198,9 @@ function NonPathologicalView({
 		drink.data ? drink.data.drinks : false,
 	);
 	const [drinksPerMonth, setDrinksPerMonth] = useState(
-		drink.data && drink.data.drinksPerMonth != null
+		drink.data &&
+			drink.data.drinksPerMonth != null &&
+			drink.data.drinksPerMonth !== 0
 			? drink.data.drinksPerMonth.toString()
 			: "",
 	);
@@ -208,7 +212,7 @@ function NonPathologicalView({
 		drugs.data ? drugs.data.drugType : "",
 	);
 	const [drugFrequency, setDrugFrequency] = useState(
-		drugs.data && drugs.data.frequency != null
+		drugs.data && drugs.data.frequency != null && drugs.data.frequency !== ""
 			? drugs.data.frequency.toString()
 			: "",
 	);
@@ -268,49 +272,41 @@ function NonPathologicalView({
 	);
 
 	const validateSmokingDetails = () => {
-		if (
-			smokingStatus &&
-			(cigarettesPerDay === "" || Number.parseInt(cigarettesPerDay) < 1)
-		) {
-			toast.error(
-				"Por favor, ingrese la cantidad de cigarrillos al día (mayor que cero).",
-			);
-			return false;
-		}
-		if (
-			smokingStatus &&
-			(smokingYears === "" || Number.parseInt(smokingYears) < 1)
-		) {
-			toast.error("Por favor, ingrese desde hace cuántos años ha fumado.");
-			return false;
+		if (isSmokingEditable && smokingStatus) {
+			if (cigarettesPerDay === "" || Number.parseInt(cigarettesPerDay) < 1) {
+				toast.error(
+					"Por favor, ingrese la cantidad de cigarrillos al día (mayor que cero).",
+				);
+				return false;
+			}
+			if (smokingYears === "" || Number.parseInt(smokingYears) < 1) {
+				toast.error("Por favor, ingrese desde hace cuántos años ha fumado.");
+				return false;
+			}
 		}
 		return true;
 	};
 
 	const validateAlcoholConsumption = () => {
-		if (
-			alcoholConsumption &&
-			(drinksPerMonth === "" || Number.parseInt(drinksPerMonth) < 1)
-		) {
-			toast.error(
-				"Por favor, ingrese cuántas bebidas alcohólicas consume al mes (mayor que cero).",
-			);
-			return false;
+		if (isAlcoholEditable && alcoholConsumption) {
+			if (drinksPerMonth === "" || Number.parseInt(drinksPerMonth) < 1) {
+				toast.error(
+					"Por favor, ingrese cuántas bebidas alcohólicas consume al mes (mayor que cero).",
+				);
+				return false;
+			}
 		}
 		return true;
 	};
 
 	const validateDrugUse = () => {
-		if (
-			drugUse &&
-			(drugType === "" ||
-				drugFrequency === "" ||
-				Number.parseInt(drugFrequency) < 1)
-		) {
-			toast.error(
-				"Por favor, complete todos los detalles del consumo de drogas.",
-			);
-			return false;
+		if (isDrugUseEditable && drugUse) {
+			if (drugType.trim() === "" || drugFrequency.trim() === "") {
+				toast.error(
+					"Por favor, complete todos los detalles del consumo de drogas.",
+				);
+				return false;
+			}
 		}
 		return true;
 	};
@@ -328,27 +324,45 @@ function NonPathologicalView({
 				version: nonPathologicalHistoryData?.medicalHistory.smoker.version || 1,
 				data: {
 					smokes: smokingStatus,
-					cigarettesPerDay: !smokingStatus
-						? 0
-						: Number.parseInt(cigarettesPerDay) || 0,
-					years: !smokingStatus ? 0 : Number.parseInt(smokingYears) || 0,
+					cigarettesPerDay: isSmokingEditable
+						? smokingStatus
+							? Number.parseInt(cigarettesPerDay) || 0
+							: 0
+						: nonPathologicalHistoryData?.medicalHistory.smoker.data
+								.cigarettesPerDay,
+					years: isSmokingEditable
+						? smokingStatus
+							? Number.parseInt(smokingYears) || 0
+							: 0
+						: nonPathologicalHistoryData?.medicalHistory.smoker.data.years,
 				},
 			},
 			drink: {
 				version: nonPathologicalHistoryData?.medicalHistory.drink.version || 1,
 				data: {
 					drinks: alcoholConsumption,
-					drinksPerMonth: !alcoholConsumption
-						? 0
-						: Number.parseInt(drinksPerMonth) || 0,
+					drinksPerMonth: isAlcoholEditable
+						? alcoholConsumption
+							? Number.parseInt(drinksPerMonth) || 0
+							: 0
+						: nonPathologicalHistoryData?.medicalHistory.drink.data
+								.drinksPerMonth,
 				},
 			},
 			drugs: {
 				version: nonPathologicalHistoryData?.medicalHistory.drugs.version || 1,
 				data: {
 					usesDrugs: drugUse,
-					drugType: drugUse ? drugType : "",
-					frequency: drugUse ? drugFrequency : "",
+					drugType: isDrugUseEditable
+						? drugUse
+							? drugType
+							: ""
+						: nonPathologicalHistoryData?.medicalHistory.drugs.data.drugType,
+					frequency: isDrugUseEditable
+						? drugUse
+							? drugFrequency
+							: ""
+						: nonPathologicalHistoryData?.medicalHistory.drugs.data.frequency,
 				},
 			},
 		};
@@ -356,6 +370,7 @@ function NonPathologicalView({
 		toast.info("Guardando antecedente no patológico...");
 
 		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
+		console.log(updateDetails);
 		if (!result.error) {
 			toast.success("Antecedentes no patológicos guardados con éxito.");
 			triggerReload();
@@ -372,21 +387,35 @@ function NonPathologicalView({
 		const drinkData = nonPathologicalHistoryResult.result?.medicalHistory.drink;
 		const drugsData = nonPathologicalHistoryResult.result?.medicalHistory.drugs;
 
-		const initSmokingEditable =
-			(smokerData?.data?.cigarettesPerDay ?? 0) === 0 &&
-			(smokerData?.data?.years ?? 0) === 0;
-		const initAlcoholEditable = (drinkData?.data?.drinksPerMonth ?? 0) === 0;
-		const initDrugUseEditable =
-			(drugsData?.data?.drugType ?? "") === "" &&
-			(drugsData?.data?.frequency ?? "") === "";
+		const initSmokingEditable = !smokerData?.data?.smokes;
+		const initAlcoholEditable = !drinkData?.data?.drinks;
+		const initDrugUseEditable = !drugsData?.data?.usesDrugs;
+
+		setIsSmokingEditable(initSmokingEditable);
+		setIsAlcoholEditable(initAlcoholEditable);
+		setIsDrugUseEditable(initDrugUseEditable);
 
 		setSmokingStatus(smokerData?.data?.smokes ?? false);
-		setCigarettesPerDay((smokerData?.data?.cigarettesPerDay ?? 0).toString());
-		setSmokingYears((smokerData?.data?.years ?? 0).toString());
+		setCigarettesPerDay(
+			smokerData?.data?.cigarettesPerDay &&
+				smokerData?.data?.cigarettesPerDay !== 0
+				? smokerData?.data?.cigarettesPerDay.toString()
+				: "",
+		);
+		setSmokingYears(
+			smokerData?.data?.years && smokerData?.data?.years !== 0
+				? smokerData?.data?.years.toString()
+				: "",
+		);
 		setIsSmokingEditable(initSmokingEditable);
 
 		setAlcoholConsumption(drinkData?.data?.drinks ?? false);
-		setDrinksPerMonth((drinkData?.data?.drinksPerMonth ?? 0).toString());
+		setDrinksPerMonth(
+			drinkData?.data?.drinksPerMonth && drinkData?.data?.drinksPerMonth !== 0
+				? drinkData?.data?.drinksPerMonth.toString()
+				: "",
+		);
+
 		setIsAlcoholEditable(initAlcoholEditable);
 
 		setDrugUse(drugsData?.data?.usesDrugs ?? false);
@@ -398,32 +427,24 @@ function NonPathologicalView({
 	// Ajustes en los manejadores para controlar la editabilidad correctamente
 	const handleSmokingChange = (newStatus) => {
 		setSmokingStatus(newStatus);
-		if (
-			!newStatus ||
-			(Number.parseInt(cigarettesPerDay) === 0 &&
-				Number.parseInt(smokingYears) === 0)
-		) {
-			setIsSmokingEditable(true);
-		} else {
-			setIsSmokingEditable(false);
+		if (isSmokingEditable && newStatus) {
+			setCigarettesPerDay("");
+			setSmokingYears("");
 		}
 	};
 
 	const handleAlcoholChange = (newStatus) => {
 		setAlcoholConsumption(newStatus);
-		if (!newStatus || Number.parseInt(drinksPerMonth) === 0) {
-			setIsAlcoholEditable(true);
-		} else {
-			setIsAlcoholEditable(false);
+		if (isAlcoholEditable && newStatus) {
+			setDrinksPerMonth("");
 		}
 	};
 
 	const handleDrugUseChange = (newStatus) => {
 		setDrugUse(newStatus);
-		if (!newStatus || (drugType === "" && drugFrequency === "")) {
-			setIsDrugUseEditable(true);
-		} else {
-			setIsDrugUseEditable(false);
+		if (isDrugUseEditable && newStatus) {
+			setDrugType("");
+			setDrugFrequency("");
 		}
 	};
 
