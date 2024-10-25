@@ -491,8 +491,13 @@ function UpdateGeneralInformationSection({
 			return;
 		}
 
+		const getUpdatedResponse = () => ({
+			...updateResponse.result,
+			birthdate: formatDate(updateResponse.result?.birthdate),
+		});
+
 		triggerRefresh();
-		setPatientData(getResponseFromGET() || {});
+		setPatientData(getUpdatedResponse());
 		toast.success("¡Información actualizada exitosamente!");
 	};
 
