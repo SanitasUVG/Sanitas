@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getSession, mockGetSession } from "./cognito.mjs";
 import { IS_PRODUCTION } from "./constants.mjs";
-import { calculateYearsBetween } from "./utils/date";
+import { calculateYearsBetween, formatDate } from "./utils/date";
 
 const DEV_URL = "http://localhost:3000";
 const _BASE_URL = process.env.BACKEND_URL ?? DEV_URL;
@@ -175,7 +175,7 @@ export const checkCui = async (cui) => {
 export const getRole = async () => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
-		: await mockGetSession(false);
+		: await mockGetSession(true);
 	if (sessionResponse.error) {
 		return { error: sessionResponse.error };
 	}
@@ -1897,11 +1897,13 @@ export const getLinkedPatient = async () => {
 
 /**
  * @callback ExportDataCallback
+ * @param {Date} startDate
+ * @param {Date} endDate
  * @returns {Promise<Result<string, *>>} If the promise is successfull the result will contain the CSV contents.
  */
 
 /**@type {ExportDataCallback}  */
-export const exportData = async () => {
+export const exportData = async (startDate, endDate) => {
 	const sessionResponse = IS_PRODUCTION
 		? await getSession()
 		: await mockGetSession(true);
@@ -1915,10 +1917,15 @@ export const exportData = async () => {
 
 	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
 	const url = `${PROTECTED_URL}/consultations/export`;
+	const params = {
+		startDate: formatDate(startDate),
+		endDate: formatDate(endDate),
+	};
 
 	try {
 		const { data: result } = await axios.get(url, {
 			headers: { Authorization: token },
+			params,
 		});
 
 		return { result };

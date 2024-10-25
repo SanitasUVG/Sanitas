@@ -14,11 +14,15 @@ const API_URL = `${LOCAL_API_URL}consultations/export`;
 
 describe("Get consultations data endpoint tests", () => {
 	const validHeaders = createAuthorizationHeader(createDoctorJWT());
+	const validDateParams = {
+		startDate: new Date(),
+		endDate: new Date(Date.now() + 10_000 * 10_000),
+	};
 	let patientId;
 
 	beforeAll(async () => {
 		patientId = await createTestPatient();
-		updatePatientMedicalConsultation(patientId, {
+		await updatePatientMedicalConsultation(patientId, {
 			patientId,
 			patientConsultation: {
 				version: 1,
@@ -59,6 +63,7 @@ describe("Get consultations data endpoint tests", () => {
 		const response = await axios.get(API_URL, {
 			headers: validHeaders,
 			validateStatus: () => true,
+			params: validDateParams,
 		});
 
 		if (response.status !== 200) {
@@ -69,11 +74,44 @@ describe("Get consultations data endpoint tests", () => {
 		expect(response.data).toEqual(expect.any(String));
 	});
 
+	test("Endpoint fails if invalid dates are passed down", async () => {
+		const response = await axios.get(API_URL, {
+			headers: validHeaders,
+			validateStatus: () => true,
+		});
+
+		if (response.status !== 400) {
+			console.log(response.data);
+		}
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toEqual("Invalid start or end date provided!");
+	});
+
+	test("Endpoint fails if incorrect dates are passed down", async () => {
+		const response = await axios.get(API_URL, {
+			headers: validHeaders,
+			validateStatus: () => true,
+			params: {
+				startDate: new Date(Date.now()),
+				endDate: new Date(Date.now() - 1000 * 1000),
+			},
+		});
+
+		if (response.status !== 400) {
+			console.log(response.data);
+		}
+
+		expect(response.status).toBe(400);
+		expect(response.data.error).toEqual("Start date is higher than end date!");
+	});
+
 	test("Can't call endpoint if is not doctor!", async () => {
 		const patientHeaders = createAuthorizationHeader(createPatientJWT());
 		const response = await axios.get(API_URL, {
 			headers: patientHeaders,
 			validateStatus: () => true,
+			params: validDateParams,
 		});
 
 		if (response.status !== 403) {
@@ -88,6 +126,7 @@ describe("Get consultations data endpoint tests", () => {
 		const response = await axios.get(API_URL, {
 			headers: createAuthorizationHeader(createInvalidJWT()),
 			validateStatus: () => true,
+			params: validDateParams,
 		});
 
 		expect(response.status).toBe(400);

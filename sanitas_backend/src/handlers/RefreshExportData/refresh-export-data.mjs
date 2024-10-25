@@ -23,8 +23,11 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).build();
 	} catch (error) {
-		logger.error({ error }, "An error occurred refreshing `stats` view!");
-		return responseBuilder.setStatusCode(502).setBody({ error }).build();
+		logger.error(error, "An error occurred refreshing `stats` view!");
+		return responseBuilder
+			.setStatusCode(502)
+			.setBody({ error: "An error occurred refreshing stats view!" })
+			.build();
 	} finally {
 		await client?.end();
 	}

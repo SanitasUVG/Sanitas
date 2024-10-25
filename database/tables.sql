@@ -256,11 +256,9 @@ SELECT
         WHEN p.es_mujer = true THEN 'F'
         ELSE 'M'
     END AS sexo,
-    COALESCE(es.id_paciente, 0) AS es_estudiante,
-    COALESCE(co.id_paciente, 0) AS es_colaborador,
-    COALESCE(
-        es.id_paciente IS null AND co.id_paciente IS null, false
-    ) AS es_visita
+    es.id_paciente IS NOT null AS es_estudiante,
+    co.id_paciente IS NOT null AS es_colaborador,
+    es.id_paciente IS null AND co.id_paciente IS null AS es_visita
 FROM
     md_san.consulta AS c
 INNER JOIN md_san.paciente AS p

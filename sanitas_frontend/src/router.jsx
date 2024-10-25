@@ -82,6 +82,7 @@ import { CreatePatientView } from "./views/CreatePatientView";
 import { StudentNonPathologicalHistory } from "./views/History/Students/StudentNonPathological";
 import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
 import { StudentObGynHistory } from "./views/History/Students/StudentObGyn";
+import { ExportDataView } from "./views/ExportDataView";
 import { StudentAppointments } from "./views/Appointments";
 
 const useStore = createEmptyStore();
@@ -96,6 +97,7 @@ export const NAV_PATHS = {
 	PATIENT_FORM: "/form",
 	PATIENT_LINK: "/link",
 	CREATE_PATIENT: "/create",
+	EXPORT_DATA: "/export",
 };
 
 export const UPDATE_PATIENT_NAV_PATHS = {
@@ -236,6 +238,19 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 	useStore: useStore,
 	logoutUser: IS_PRODUCTION ? logoutUser : mockLogoutUser,
 };
+
+const exportDataView = (
+	<RequireAuth
+		getSession={IS_PRODUCTION ? getSession : mockGetSession}
+		path={NAV_PATHS.LOGIN_USER}
+		useStore={useStore}
+	>
+		<ExportDataView
+			exportData={exportData}
+			logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
+		/>
+	</RequireAuth>
+);
 
 const updateInfoView = (
 	<RequireAuth
@@ -559,6 +574,10 @@ export const ROUTES = [
 				/>
 			</RequireAuth>
 		),
+	},
+	{
+		path: NAV_PATHS.EXPORT_DATA,
+		element: exportDataView,
 	},
 	{
 		path: NAV_PATHS.REGISTER_USER,
