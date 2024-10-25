@@ -6,6 +6,53 @@ todo el desarrollo se llevó a cabo con nombres en inglés.
 
 A continuación mostramos una guía de la estructura del proyecto.
 
+## ¿Cómo funciona el Login?
+
+Todos los componentes dispuestos dentro de `views/` reciben por medio de props
+todas las funciones que necesitan para llevar a cabo su lógica de negocio. En
+este caso existe un componente llamado `LoginView` el cual recibe como props la
+función de cognito encargada de llevar a cabo el inicio de sesión.
+
+El proyecto tiene dos archivos de javascript grandes que se encargan de definir
+todas las funciones que interactúan con la API o con Cognito utilizando el SDK.
+Estos módulos son `datalayer.mjs` (para la API) y `cognito.mjs` (para CognitoSDK)
+respectivamente.
+
+Los componentes dentro de `views/` nunca importan estas funciones directamente,
+en su lugar son pasadas como props, lo que facilita testear y simular estas
+vistas. El lugar en donde se realiza este llenado de los props es en el archivo
+`router.jsx`.
+
+### Cognito de forma Local
+
+AWS SAM no permite simular cognito de forma local, por lo tanto el archivo de
+`cognito.mjs` tiene varios mocks que simulan ser la versión real de cognito y
+tienen varios parámetros para fingir que el usuario es doctor o paciente. En el
+ambiente de desarrollo son estas funciones las que se utilizan en lugar de las
+reales definidas en el mismo archivo. Por ejemplo el siguiente componente de
+forma local utilizará el mock pero en producción usará la versión real:
+
+```javascript
+const updateInfoView = (
+    <RequireAuth
+        getSession={IS_PRODUCTION ? getSession : mockGetSession}
+        path={NAV_PATHS.LOGIN_USER}
+        useStore={useStore}
+    >
+        <UpdateInfoView
+            getGeneralPatientInformation={getGeneralPatientInformation}
+            updateGeneralPatientInformation={updateGeneralPatientInformation}
+            getStudentPatientInformation={getStudentPatientInformation}
+            updateStudentPatientInformation={updateStudentPatientInformation}
+            getCollaboratorInformation={getCollaboratorInformation}
+            updateCollaboratorInformation={updateCollaboratorInformation}
+            sidebarConfig={DEFAULT_DASHBOARD_SIDEBAR_PROPS}
+            useStore={useStore}
+        />
+    </RequireAuth>
+);
+```
+
 ## Estructua del Frontend
 
 ```text

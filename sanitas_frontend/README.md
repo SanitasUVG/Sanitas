@@ -3,7 +3,15 @@
 Para más información respecto al frontend y cómo está desarrollado puedes ver la
 [wiki](../wiki/mantenimiento/frontend/README.md).
 
-## Developing
+## Dependencias
+
+Siempre recomendamos utilizar Nix para instalar y configurar las dependencias,
+pero en caso no se desee utilizarlo:
+
+- [nodejs v20.16.0](https://nodejs.org/en)
+- [yarn v4.4.1](https://yarnpkg.com/)
+
+## Desarrollo
 
 Recuerda que para desarrollar debes primero haber entrado al entorno de desarrollo
 , para esto usa:

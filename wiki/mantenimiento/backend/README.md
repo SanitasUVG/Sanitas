@@ -1,7 +1,7 @@
 # Sanitas Backend
 
 El backend de sanitas es una REST API que utiliza una arquitectura de microservicios,
-se utilizaron varios servicios de Amazon como lo son lambdas, api gateway,
+se utilizaron varios servicios de AWS como lo son lambdas, api gateway,
 cognito y demás. La relación entre estos servicios los ilustra el diagrama:
 
 ```mermaid
