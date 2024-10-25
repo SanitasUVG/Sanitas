@@ -128,10 +128,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			.setBody(mapToAPIAllergicHistory(updatedRecord))
 			.build();
 	} catch (error) {
-		logger.error(
-			error,
-			"An error occurred while updating allergic history!",
-		);
+		logger.error(error, "An error occurred while updating allergic history!");
 
 		if (error.code === "23503") {
 			return responseBuilder
