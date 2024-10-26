@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -252,8 +252,7 @@ export const handler = async (event, context) => {
 		}
 
 		const transactionResult = await transaction(client, logger, async () => {
-			const getInfoQuery =
-				"SELECT * FROM antecedentes_ginecoobstetricos WHERE id_paciente = $1;";
+			const getInfoQuery = `SELECT * FROM ${SCHEMA_NAME}.antecedentes_ginecoobstetricos WHERE id_paciente = $1;`;
 			const args = [patientId];
 
 			logger.info({ getInfoQuery, args }, "Querying DB...");
@@ -286,7 +285,7 @@ export const handler = async (event, context) => {
 			logger.info("Request data doesn't modify data!");
 
 			const upsertQuery = `
-    INSERT INTO antecedentes_ginecoobstetricos (
+    INSERT INTO ${SCHEMA_NAME}.antecedentes_ginecoobstetricos (
         id_paciente, 
         edad_primera_menstruacion, edad_primera_menstruacion_data, 
         ciclos_regulares, ciclos_regulares_data, 

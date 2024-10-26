@@ -1,29 +1,20 @@
-INSERT INTO USUARIO (EMAIL, TIPO) VALUES
-('admin@example.com', 'Administrador'),
-('doctor1@example.com', 'Doctor'),
-('doctor2@example.com', 'Doctor');
-
-INSERT INTO SESION (TOKEN, CREATED, EMAIL) VALUES
-('token1234', NOW(), 'admin@example.com'),
-('token2345', NOW(), 'doctor1@example.com');
-
-INSERT INTO PACIENTE (
-    CUI,
-    CORREO,
-    ES_MUJER,
-    NOMBRES,
-    APELLIDOS,
-    NOMBRE_CONTACTO1,
-    PARENTESCO_CONTACTO1,
-    TELEFONO_CONTACTO1,
-    NOMBRE_CONTACTO2,
-    PARENTESCO_CONTACTO2,
-    TELEFONO_CONTACTO2,
-    TIPO_SANGRE,
-    DIRECCION,
-    SEGURO,
-    FECHA_NACIMIENTO,
-    TELEFONO
+INSERT INTO md_san.paciente (
+    cui,
+    correo,
+    es_mujer,
+    nombres,
+    apellidos,
+    nombre_contacto1,
+    parentesco_contacto1,
+    telefono_contacto1,
+    nombre_contacto2,
+    parentesco_contacto2,
+    telefono_contacto2,
+    tipo_sangre,
+    direccion,
+    seguro,
+    fecha_nacimiento,
+    telefono
 ) VALUES
 (
     '1234567890123',
@@ -62,22 +53,22 @@ INSERT INTO PACIENTE (
     '2345678901'
 );
 
-INSERT INTO CONSULTA (
-    ID_PACIENTE,
-    FECHA,
-    MOTIVO,
-    DIAGNOSTICO,
-    EXAMEN_FISICO,
-    FRECUENCIA_RESPIRATORIA,
-    TEMPERATURA,
-    SATURACION_OXIGENO,
-    GLUCOMETRIA,
-    FRECUENCIA_CARDIACA,
-    PRESION_SISTOLICA,
-    PRESION_DIASTOLICA,
-    EVALUADOR,
-    MEDICAMENTOS_DATA,
-    NOTAS
+INSERT INTO md_san.consulta (
+    id_paciente,
+    fecha,
+    motivo,
+    diagnostico,
+    examen_fisico,
+    frecuencia_respiratoria,
+    temperatura,
+    saturacion_oxigeno,
+    glucometria,
+    frecuencia_cardiaca,
+    presion_sistolica,
+    presion_diastolica,
+    evaluador,
+    medicamentos_data,
+    notas
 ) VALUES
 (
     1,
@@ -127,11 +118,10 @@ INSERT INTO CONSULTA (
      actual.'
 );
 
-
-INSERT INTO ESTUDIANTE (CARNET, CARRERA, ID_PACIENTE) VALUES
+INSERT INTO md_san.estudiante (carnet, carrera, id_paciente) VALUES
 ('A01234567', 'Ingeniería en CC y TI', 1);
 
-INSERT INTO COLABORADOR (CODIGO, AREA, ID_PACIENTE) VALUES
+INSERT INTO md_san.colaborador (codigo, area, id_paciente) VALUES
 ('C001', 'Administración', 2);
 
-INSERT INTO DOCTOR (EMAIL) VALUES ('doctor@gmail.com');
+INSERT INTO md_san.doctor (email) VALUES ('doctor@gmail.com');

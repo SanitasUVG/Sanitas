@@ -1,4 +1,4 @@
-import { getPgClient, transaction } from "db-conn";
+import { getPgClient, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -59,9 +59,9 @@ export const handler = async (event, context) => {
 
 		const transactionResult = await transaction(client, logger, async () => {
 			let query = `
-			INSERT INTO CUENTA_PACIENTE (email, cui_paciente)
+			INSERT INTO ${SCHEMA_NAME}.cuenta_paciente (email, cui_paciente)
 			VALUES ($1, $2)
-			RETURNING (SELECT id FROM paciente WHERE cui = cui_paciente)
+			RETURNING (SELECT id FROM ${SCHEMA_NAME}.paciente WHERE cui = cui_paciente)
 		`;
 			let values = [email, cui];
 			logger.info({ query, values }, "Querying DB...");
@@ -70,7 +70,7 @@ export const handler = async (event, context) => {
 
 			const linkedPatientId = dbResponse.rows[0].id;
 			query = `
-			UPDATE PACIENTE SET
+			UPDATE ${SCHEMA_NAME}.paciente SET
 			correo = $1
 			WHERE id = $2`;
 			values = [email, linkedPatientId];

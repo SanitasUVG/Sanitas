@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
@@ -70,7 +70,7 @@ export const updateTraumatologicalHistoryHandler = async (event, context) => {
 		}
 
 		const upsertQuery = `
-        INSERT INTO antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
+        INSERT INTO ${SCHEMA_NAME}.antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
         VALUES ($1, $2, $3)
         ON CONFLICT (id_paciente) DO UPDATE
         SET antecedente_traumatologico = EXCLUDED.antecedente_traumatologico,
@@ -121,8 +121,6 @@ export const updateTraumatologicalHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };

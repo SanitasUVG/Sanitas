@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -66,7 +66,7 @@ export const updateGynecologicalHistoryHandler = async (event, context) => {
 		}
 
 		const upsertQuery = `
-    INSERT INTO antecedentes_ginecoobstetricos (
+    INSERT INTO ${SCHEMA_NAME}.antecedentes_ginecoobstetricos (
         id_paciente, 
         edad_primera_menstruacion, edad_primera_menstruacion_data, 
         ciclos_regulares, ciclos_regulares_data, 

@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
 import {
@@ -83,8 +83,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 
 		const transactionResult = await transaction(client, logger, async () => {
 			logger.info("Fetching existing data...");
-			const currentDataQuery =
-				"SELECT * FROM antecedentes_alergicos WHERE id_paciente = $1";
+			const currentDataQuery = `SELECT * FROM ${SCHEMA_NAME}.antecedentes_alergicos WHERE id_paciente = $1`;
 			const currentDataResult = await client.query(currentDataQuery, [
 				patientId,
 			]);
@@ -115,7 +114,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 
 			// Use ON CONFLICT to update the data, merging existing and new information
 			const insertQuery = `
-			INSERT INTO antecedentes_alergicos (
+			INSERT INTO ${SCHEMA_NAME}.antecedentes_alergicos (
 				id_paciente,
 				medicamento_data,
 				comida_data,
@@ -187,10 +186,7 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 		logger.info({ response }, "Done! Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(
-			{ error },
-			"An error occurred while updating allergic history!",
-		);
+		logger.error(error, "An error occurred while updating allergic history!");
 
 		let statusCode = 500;
 		let errorMessage =

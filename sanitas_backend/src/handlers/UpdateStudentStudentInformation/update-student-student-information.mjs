@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import {
 	createResponse,
@@ -101,7 +101,7 @@ export const handler = async (event, context) => {
 		logger.info(`${email} is not a doctor!`);
 
 		const transactionResult = await transaction(client, logger, async () => {
-			let sql = "SELECT * FROM estudiante WHERE id_paciente = $1";
+			let sql = `SELECT * FROM ${SCHEMA_NAME}.estudiante WHERE id_paciente = $1`;
 			const values = [idPatient];
 
 			logger.info({ sql, values }, "Querying DB for existing data...");
@@ -124,7 +124,7 @@ export const handler = async (event, context) => {
 			logger.info("Request data doesn't modify existing data!");
 
 			sql = `
-		INSERT INTO estudiante (carnet, carrera, id_paciente)
+		INSERT INTO ${SCHEMA_NAME}.estudiante (carnet, carrera, id_paciente)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (id_paciente) DO
 		UPDATE SET

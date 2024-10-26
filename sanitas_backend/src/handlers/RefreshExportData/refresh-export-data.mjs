@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils/index.mjs";
 
@@ -16,7 +16,7 @@ export const handler = async (event, context) => {
 		await client.connect();
 		logger.info("Connected!");
 
-		const query = "REFRESH MATERIALIZED VIEW stats";
+		const query = `REFRESH MATERIALIZED VIEW ${SCHEMA_NAME}.stats`;
 		logger.info({ query }, "Querying DB...");
 		const result = await client.query(query);
 		logger.info({ result }, "Done!");

@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 
@@ -132,7 +132,7 @@ export const handler = async (event, context) => {
 		const transactionResult = await transaction(client, logger, async () => {
 			const studentSearchValues = [id];
 			const getPatientQuery = `
-			SELECT * FROM paciente WHERE id = $1;
+			SELECT * FROM ${SCHEMA_NAME}.paciente WHERE id = $1;
 		`;
 
 			logger.info(
@@ -167,7 +167,7 @@ export const handler = async (event, context) => {
 			}
 
 			const upsertQuery = `
-				UPDATE paciente
+				UPDATE ${SCHEMA_NAME}.paciente
       SET 
         nombres = COALESCE($2, nombres),
         apellidos = COALESCE($3, apellidos),
