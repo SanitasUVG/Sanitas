@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils";
 import { mapToAPIAllergicHistory } from "utils/index.mjs";
@@ -74,7 +74,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 		);
 
 		const upsertQuery = `
-      INSERT INTO antecedentes_alergicos (
+      INSERT INTO ${SCHEMA_NAME}.antecedentes_alergicos (
         id_paciente,
         medicamento_data,
         comida_data,
@@ -128,10 +128,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			.setBody(mapToAPIAllergicHistory(updatedRecord))
 			.build();
 	} catch (error) {
-		logger.error(
-			{ error },
-			"An error occurred while updating allergic history!",
-		);
+		logger.error(error, "An error occurred while updating allergic history!");
 
 		if (error.code === "23503") {
 			return responseBuilder
@@ -148,8 +145,6 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };

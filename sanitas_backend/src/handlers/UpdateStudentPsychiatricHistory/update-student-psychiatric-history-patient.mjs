@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 
 import {
@@ -102,7 +102,7 @@ export const updateStudentPsychiatricHistoryHandler = async (
 		const studentSearchValues = [patientId];
 
 		const getPatientQuery = `
-            SELECT * FROM antecedentes_psiquiatricos WHERE id_paciente = $1;
+            SELECT * FROM ${SCHEMA_NAME}.antecedentes_psiquiatricos WHERE id_paciente = $1;
         `;
 
 		logger.info(
@@ -151,7 +151,7 @@ export const updateStudentPsychiatricHistoryHandler = async (
 		}
 
 		const upsertQuery = `
-            INSERT INTO antecedentes_psiquiatricos (
+            INSERT INTO ${SCHEMA_NAME}.antecedentes_psiquiatricos (
                 id_paciente,
                 depresion_data,
                 ansiedad_data,

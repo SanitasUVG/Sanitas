@@ -1,4 +1,10 @@
-import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
+import {
+	getPgClient,
+	isDoctor,
+	isEmailOfPatient,
+	SCHEMA_NAME,
+	transaction,
+} from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
@@ -109,7 +115,7 @@ export const getAllergicHistoryHandler = async (event, context) => {
 
 			const query = `
       SELECT id_paciente, medicamento_data, comida_data, polvo_data, polen_data, cambio_de_clima_data, animales_data, otros_data
-      FROM antecedentes_alergicos
+      FROM ${SCHEMA_NAME}.antecedentes_alergicos
       WHERE id_paciente = $1;
     `;
 			const args = [patientId];

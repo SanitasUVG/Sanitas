@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -137,7 +137,7 @@ export const handler = async (event, context) => {
 			}
 			logger.info(`${email} is a doctor!`);
 
-			const query = "SELECT * FROM stats WHERE fecha_visita BETWEEN $1 AND $2";
+			const query = `SELECT * FROM ${SCHEMA_NAME}.stats WHERE fecha_visita BETWEEN $1 AND $2`;
 			const values = [startDate.toISOString(), endDate.toISOString()];
 			logger.info({ query, values }, "Querying for information: ");
 			const result = await client.query(query, values);

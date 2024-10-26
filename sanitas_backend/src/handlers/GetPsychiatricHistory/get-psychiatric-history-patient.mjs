@@ -1,4 +1,10 @@
-import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
+import {
+	getPgClient,
+	isDoctor,
+	isEmailOfPatient,
+	SCHEMA_NAME,
+	transaction,
+} from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultPsychiatricHistory } from "utils/defaultValues.mjs";
@@ -106,7 +112,7 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 
 			const query = `
       SELECT id_paciente, depresion, depresion_data, ansiedad, ansiedad_data, toc, toc_data, tdah, tdah_data, bipolaridad, bipolaridad_data, otro, otro_data
-      FROM antecedentes_psiquiatricos
+      FROM ${SCHEMA_NAME}.antecedentes_psiquiatricos
       WHERE id_paciente = $1;
     `;
 			const args = [patientId];

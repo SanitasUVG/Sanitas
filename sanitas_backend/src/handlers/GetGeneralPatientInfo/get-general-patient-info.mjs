@@ -1,4 +1,10 @@
-import { getPgClient, isDoctor, isEmailOfPatient, transaction } from "db-conn";
+import {
+	getPgClient,
+	isDoctor,
+	isEmailOfPatient,
+	SCHEMA_NAME,
+	transaction,
+} from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
 
@@ -102,7 +108,7 @@ export const handler = async (event, context) => {
 
 			logger.info("Querying DB...");
 			const dbResponse = await client.query(
-				"SELECT * FROM paciente WHERE id = $1 LIMIT 1;",
+				`SELECT * FROM ${SCHEMA_NAME}.paciente WHERE id = $1 LIMIT 1;`,
 				[patientId],
 			);
 			logger.info("Query done!");

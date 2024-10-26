@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils/index.mjs";
 
@@ -132,20 +132,25 @@ export const searchPatientHandler = async (event, context) => {
 
 			switch (searchType) {
 				case "Carnet":
-					sqlQuery =
-						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN ESTUDIANTE ON PACIENTE.ID = ESTUDIANTE.ID_PACIENTE WHERE CARNET = $1";
+					sqlQuery = `SELECT id, cui, nombres, apellidos, fecha_nacimiento
+							FROM ${SCHEMA_NAME}.paciente p
+								JOIN ${SCHEMA_NAME}.estudiante e ON p.id = e.id_paciente
+							WHERE CARNET = $1`;
 					queryParams.push(requestSearch);
 					logger.info({ sqlQuery, queryParams }, "Querying by student ID");
 					break;
 				case "NumeroColaborador":
-					sqlQuery =
-						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE JOIN COLABORADOR ON PACIENTE.ID = COLABORADOR.ID_PACIENTE WHERE CODIGO = $1";
+					sqlQuery = `SELECT id, cui, nombres, apellidos, fecha_nacimiento
+					FROM ${SCHEMA_NAME}.paciente p
+						JOIN ${SCHEMA_NAME}.colaborador c ON p.id = c.id_paciente
+					WHERE codigo = $1`;
 					queryParams.push(requestSearch);
 					logger.info({ sqlQuery, queryParams }, "Querying by employee code");
 					break;
 				case "CUI":
-					sqlQuery =
-						"SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO FROM PACIENTE WHERE CUI = $1";
+					sqlQuery = `SELECT id, cui, nombres, apellidos, fecha_nacimiento
+					FROM ${SCHEMA_NAME}.paciente
+					WHERE cui = $1`;
 					queryParams.push(requestSearch);
 					logger.info({ sqlQuery, queryParams }, "Querying by CUI");
 					break;
@@ -156,14 +161,14 @@ export const searchPatientHandler = async (event, context) => {
 						.replace(/[\u0300-\u036f]/g, "")
 						.toLowerCase();
 
-					sqlQuery = `SELECT ID, CUI, NOMBRES, APELLIDOS, FECHA_NACIMIENTO
-FROM PACIENTE
+					sqlQuery = `SELECT id, cui, nombres, apellidos, fecha_nacimiento
+FROM ${SCHEMA_NAME}.paciente
 WHERE (
     SELECT bool_and(match)
     FROM unnest(string_to_array($1, ' ')) as word,
          LATERAL (
              SELECT 
-                 TRANSLATE(NOMBRES || ' ' || APELLIDOS, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') 
+                 TRANSLATE(nombres || ' ' || apellidos, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') 
                  ILIKE '%' || TRANSLATE(word, 'áàãâäéèêëíìîïóòõôöúùûüçñÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÔÖÚÙÛÜÇÑ', 'aaaaaeeeeiiiiooooouuuucnAAAAAEEEEIIIIOOOOOUUUUCN') || '%' as match
          ) as matches
 )`;

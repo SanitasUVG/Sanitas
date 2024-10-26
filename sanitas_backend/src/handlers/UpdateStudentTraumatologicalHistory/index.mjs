@@ -1,4 +1,4 @@
-import { getPgClient, isDoctor, transaction } from "db-conn";
+import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
@@ -75,7 +75,7 @@ export const handler = async (event, context) => {
 			const studentSearchValues = [id];
 
 			const getPatientQuery = `
-				SELECT * FROM antecedentes_traumatologicos WHERE id_paciente = $1;
+				SELECT * FROM ${SCHEMA_NAME}.antecedentes_traumatologicos WHERE id_paciente = $1;
 			`;
 
 			logger.info(
@@ -110,7 +110,7 @@ export const handler = async (event, context) => {
 			}
 
 			const upsertQuery = `
-					INSERT INTO antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
+					INSERT INTO ${SCHEMA_NAME}.antecedentes_traumatologicos (id_paciente, antecedente_traumatologico, antecedente_traumatologico_data)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (id_paciente) DO UPDATE
 					SET antecedente_traumatologico = EXCLUDED.antecedente_traumatologico,

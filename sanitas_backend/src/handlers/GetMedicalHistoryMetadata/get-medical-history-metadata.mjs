@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils/index.mjs";
 
@@ -153,22 +153,22 @@ select
 	aq.antecedente_quirurgico_data as aq_antecedente_quirurgico_data ,
 	at2.antecedente_traumatologico_data as at2_antecedente_traumatologico_data
 from
-	paciente p
-left join antecedentes_alergicos aa on
+	${SCHEMA_NAME}.paciente p
+left join ${SCHEMA_NAME}.antecedentes_alergicos aa on
 	aa.id_paciente = p.id
-left join antecedentes_familiares af on
+left join ${SCHEMA_NAME}.antecedentes_familiares af on
 	af.id_paciente = p.id
-left join antecedentes_ginecoobstetricos ag on
+left join ${SCHEMA_NAME}.antecedentes_ginecoobstetricos ag on
 	ag.id_paciente = p.id
-left join antecedentes_no_patologicos anp on
+left join ${SCHEMA_NAME}.antecedentes_no_patologicos anp on
 	anp.id_paciente = p.id
-left join antecedentes_personales ap on
+left join ${SCHEMA_NAME}.antecedentes_personales ap on
 	ap.id_paciente = p.id
-left join antecedentes_psiquiatricos ap2 on
+left join ${SCHEMA_NAME}.antecedentes_psiquiatricos ap2 on
 	ap2.id_paciente = p.id
-left join antecedentes_quirurgicos aq on
+left join ${SCHEMA_NAME}.antecedentes_quirurgicos aq on
 	aq.id_paciente = p.id
-left join antecedentes_traumatologicos at2 on
+left join ${SCHEMA_NAME}.antecedentes_traumatologicos at2 on
 	at2.id_paciente = p.id
 where
 	p.id = $1;

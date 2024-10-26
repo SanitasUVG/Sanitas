@@ -1,4 +1,4 @@
-import { getPgClient } from "db-conn";
+import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, mapToAPIStudentInfo } from "utils/index.mjs";
 
@@ -51,7 +51,7 @@ export const handler = async (event, context) => {
 		logger.info("Connected to DB!");
 
 		const sql = `
-		INSERT INTO estudiante (carnet, carrera, id_paciente)
+		INSERT INTO ${SCHEMA_NAME}.estudiante (carnet, carrera, id_paciente)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (id_paciente) DO
 		UPDATE SET
