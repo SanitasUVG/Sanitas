@@ -266,7 +266,7 @@ function UpdateColaboratorInformationSection({
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-
+	console.log(patientData)
 	const handleUpdatePatient = async () => {
 		toast.info("Actualizando datos de colaborador...");
 
@@ -275,7 +275,6 @@ function UpdateColaboratorInformationSection({
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
-			setPatientData({ ...response?.result });
 			return;
 		}
 
@@ -344,14 +343,13 @@ function UpdateColaboratorInformationSection({
 						style={inputStyles}
 					/>
 				</div>
-
-				<div style={{ display: "flex" }}>
+			</div>
+			<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem"	 }}>
 					<BaseButton
 						text="Guardar"
 						onClick={handleUpdatePatient}
 						style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
 					/>
-				</div>
 			</div>
 		</form>
 	);
@@ -715,7 +713,7 @@ function UpdateGeneralInformationSection({
 				>
 					<Collapsable
 						title="Contacto 1"
-						isCollapsed={!patientData.contactPhone1}
+						isCollapsed={false}
 					>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
@@ -733,6 +731,7 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactName1",
 								)}
+								placeholder="Nombre de contacto"
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -750,6 +749,7 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactKinship1",
 								)}
+								placeholder="Parentesco de contacto"
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -767,13 +767,14 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactPhone1",
 								)}
+								placeholder="Teléfono de contacto"
 							/>
 						</div>
 					</Collapsable>
 
 					<Collapsable
 						title="Contacto 2"
-						isCollapsed={!patientData.contactPhone2}
+						isCollapsed={false}
 					>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
@@ -791,6 +792,7 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactName2",
 								)}
+								placeholder="Nombre de contacto"
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -808,6 +810,7 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactKinship2",
 								)}
+								placeholder="Parentesco de contacto"
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -825,17 +828,18 @@ function UpdateGeneralInformationSection({
 									responseFromGET,
 									"contactPhone2",
 								)}
+								placeholder="Teléfono de contacto"
 							/>
 						</div>
 					</Collapsable>
 				</div>
 			</div>
 
-			<div style={{ display: "flex" }}>
+			<div style={{ display: "flex", justifyContent: "center"}}>
 				<BaseButton
 					text="Guardar"
 					onClick={handleUpdatePatient}
-					style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
+					style={{ width: isMobile ? "100%" : "15rem", height: "3rem", marginTop: "1rem" }}
 				/>
 			</div>
 		</div>
@@ -897,7 +901,7 @@ function UpdateStudentInformationSection({
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-
+	console.log(patientData)
 	const handleUpdatePatient = async () => {
 		toast.info("Actualizando datos de estudiante...");
 
@@ -906,7 +910,6 @@ function UpdateStudentInformationSection({
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
-			setPatientData({ ...response?.result });
 			return;
 		}
 
@@ -980,15 +983,14 @@ function UpdateStudentInformationSection({
 						placeholder="Carrera"
 						style={inputStyles}
 					/>
-				</div>
-
-				<div style={{ display: "flex" }}>
+				</div>				
+			</div>
+			<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
 					<BaseButton
 						text="Guardar"
 						onClick={handleUpdatePatient}
 						style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
 					/>
-				</div>
 			</div>
 		</form>
 	);
