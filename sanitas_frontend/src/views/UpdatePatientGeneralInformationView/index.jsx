@@ -266,7 +266,6 @@ function UpdateColaboratorInformationSection({
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-	console.log(patientData)
 	const handleUpdatePatient = async () => {
 		toast.info("Actualizando datos de colaborador...");
 
@@ -344,12 +343,14 @@ function UpdateColaboratorInformationSection({
 					/>
 				</div>
 			</div>
-			<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem"	 }}>
-					<BaseButton
-						text="Guardar"
-						onClick={handleUpdatePatient}
-						style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
-					/>
+			<div
+				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+			>
+				<BaseButton
+					text="Guardar"
+					onClick={handleUpdatePatient}
+					style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
+				/>
 			</div>
 		</form>
 	);
@@ -711,10 +712,7 @@ function UpdateGeneralInformationSection({
 						paddingTop: "2rem",
 					}}
 				>
-					<Collapsable
-						title="Contacto 1"
-						isCollapsed={false}
-					>
+					<Collapsable title="Contacto 1" isCollapsed={false}>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
@@ -772,10 +770,7 @@ function UpdateGeneralInformationSection({
 						</div>
 					</Collapsable>
 
-					<Collapsable
-						title="Contacto 2"
-						isCollapsed={false}
-					>
+					<Collapsable title="Contacto 2" isCollapsed={false}>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
@@ -835,11 +830,15 @@ function UpdateGeneralInformationSection({
 				</div>
 			</div>
 
-			<div style={{ display: "flex", justifyContent: "center"}}>
+			<div style={{ display: "flex", justifyContent: "center" }}>
 				<BaseButton
 					text="Guardar"
 					onClick={handleUpdatePatient}
-					style={{ width: isMobile ? "100%" : "15rem", height: "3rem", marginTop: "1rem" }}
+					style={{
+						width: isMobile ? "100%" : "15rem",
+						height: "3rem",
+						marginTop: "1rem",
+					}}
 				/>
 			</div>
 		</div>
@@ -901,7 +900,6 @@ function UpdateStudentInformationSection({
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-	console.log(patientData)
 	const handleUpdatePatient = async () => {
 		toast.info("Actualizando datos de estudiante...");
 
@@ -983,14 +981,16 @@ function UpdateStudentInformationSection({
 						placeholder="Carrera"
 						style={inputStyles}
 					/>
-				</div>				
+				</div>
 			</div>
-			<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-					<BaseButton
-						text="Guardar"
-						onClick={handleUpdatePatient}
-						style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
-					/>
+			<div
+				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+			>
+				<BaseButton
+					text="Guardar"
+					onClick={handleUpdatePatient}
+					style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
+				/>
 			</div>
 		</form>
 	);
