@@ -1,10 +1,6 @@
-import CheckIcon from "@tabler/icons/outline/check.svg";
-import EditIcon from "@tabler/icons/outline/edit.svg";
-import CancelIcon from "@tabler/icons/outline/x.svg";
 import { Suspense, useMemo, useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import IconButton from "src/components/Button/Icon";
 import DropdownMenu from "src/components/DropdownMenu";
 import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
@@ -15,6 +11,7 @@ import Collapsable from "src/components/Collapsable";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { createRefreshSignal } from "src/utils/refreshHook";
 import useWindowSize from "src/utils/useWindowSize";
+import BaseButton from "src/components/Button/Base";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -22,8 +19,13 @@ import useWindowSize from "src/utils/useWindowSize";
  * @param {string} property - The property to check inside the object
  * @returns {boolean} True if it exists and is not null, false otherwise.
  */
-const hasPropertyAndIsValid = (object, property) =>
-	Object.hasOwn(object, property) && object[property] !== null;
+const hasPropertyAndIsValid = (object, property) => {
+	if (object === null || object === undefined) {
+		return false;
+	}
+
+	return Object.hasOwn(object, property) && object[property] !== null;
+};
 
 /**
  * @typedef {Object} PatientInfo
@@ -261,13 +263,10 @@ function UpdateColaboratorInformationSection({
 	const response = getData.read();
 	const responseFromGET = response?.result;
 
-	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-
 	const handleUpdatePatient = async () => {
-		setEditMode(false);
 		toast.info("Actualizando datos de colaborador...");
 
 		const updateResponse = await updateData(patientData);
@@ -275,18 +274,12 @@ function UpdateColaboratorInformationSection({
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
-			setPatientData({ ...response?.result });
 			return;
 		}
 
 		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
-	};
-
-	const handleCancelEdit = () => {
-		setPatientData({ ...response?.result });
-		setEditMode(false);
 	};
 
 	return (
@@ -301,21 +294,6 @@ function UpdateColaboratorInformationSection({
 				}}
 			>
 				<h1 style={styles.h1}>Datos de Colaborador:</h1>
-				{editMode ? (
-					<div
-						style={{
-							display: "flex",
-							gap: "0.5rem",
-							justifyContent: "center",
-							paddingTop: isMobile ? "0.5rem" : "0",
-						}}
-					>
-						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-					</div>
-				) : (
-					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-				)}
 			</div>
 			<div
 				style={{
@@ -341,9 +319,7 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Código"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "code")
-						}
+						disabled={hasPropertyAndIsValid(responseFromGET, "code")}
 					/>
 				</div>
 
@@ -364,11 +340,17 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Área"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "area")
-						}
 					/>
 				</div>
+			</div>
+			<div
+				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+			>
+				<BaseButton
+					text="Guardar"
+					onClick={handleUpdatePatient}
+					style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
+				/>
 			</div>
 		</form>
 	);
@@ -466,7 +448,6 @@ function UpdateGeneralInformationSection({
 	};
 
 	const response = getData.read();
-	const [editMode, setEditMode] = useState(false);
 	/** @returns {PatientInfo}*/
 	const getResponseFromGET = () => ({
 		...response.result,
@@ -498,7 +479,6 @@ function UpdateGeneralInformationSection({
 			return;
 		}
 
-		setEditMode(false);
 		toast.info("Actualizando datos generales...");
 
 		const updateResponse = await updateData(patientData);
@@ -510,14 +490,14 @@ function UpdateGeneralInformationSection({
 			return;
 		}
 
-		triggerRefresh();
-		setPatientData(updateResponse.result || {});
-		toast.success("¡Información actualizada exitosamente!");
-	};
+		const getUpdatedResponse = () => ({
+			...updateResponse.result,
+			birthdate: formatDate(updateResponse.result?.birthdate),
+		});
 
-	const handleCancelEdit = () => {
-		setPatientData(getResponseFromGET());
-		setEditMode(false);
+		triggerRefresh();
+		setPatientData(getUpdatedResponse());
+		toast.success("¡Información actualizada exitosamente!");
 	};
 
 	/**@type {React.CSSProperties} */
@@ -551,21 +531,6 @@ function UpdateGeneralInformationSection({
 				}}
 			>
 				<h2 style={styles.h1}>Información del paciente:</h2>
-				{editMode ? (
-					<div
-						style={{
-							display: "flex",
-							gap: "0.5rem",
-							justifyContent: "center",
-							paddingTop: isMobile ? "0.5rem" : "0",
-						}}
-					>
-						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-					</div>
-				) : (
-					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-				)}
 			</div>
 
 			{/* BODY */}
@@ -639,7 +604,9 @@ function UpdateGeneralInformationSection({
 						<label style={styles.label}>Fecha de nacimiento:</label>
 						<DateInput
 							value={patientData.birthdate}
-							readOnly={!editMode}
+							readOnly={() =>
+								hasPropertyAndIsValid(responseFromGET, "birthdate")
+							}
 							onChange={(e) =>
 								setPatientData({ ...patientData, birthdate: e.target.value })
 							}
@@ -660,9 +627,7 @@ function UpdateGeneralInformationSection({
 								container: { width: isMobile ? "100%" : "90%" },
 								select: { height: "3rem" },
 							}}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "bloodType")
-							}
+							disabled={hasPropertyAndIsValid(responseFromGET, "bloodType")}
 						/>
 					</div>
 				</div>
@@ -691,9 +656,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, email: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "email")
-							}
+							disabled={hasPropertyAndIsValid(responseFromGET, "email")}
 						/>
 					</div>
 
@@ -706,9 +669,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, phone: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "phone")
-							}
+							placeholder="Teléfono"
 						/>
 					</div>
 
@@ -721,9 +682,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, address: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "address")
-							}
+							placeholder="Dirección"
 						/>
 					</div>
 
@@ -736,9 +695,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={inputStyles}
-							disabled={
-								!editMode || hasPropertyAndIsValid(responseFromGET, "insurance")
-							}
+							placeholder="Seguro"
 						/>
 					</div>
 				</div>
@@ -755,10 +712,7 @@ function UpdateGeneralInformationSection({
 						paddingTop: "2rem",
 					}}
 				>
-					<Collapsable
-						title="Contacto 1"
-						isCollapsed={!patientData.contactPhone1}
-					>
+					<Collapsable title="Contacto 1" isCollapsed={false}>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
@@ -771,10 +725,11 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactName1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactName1",
+								)}
+								placeholder="Nombre de contacto"
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -788,10 +743,11 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactKinship1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactKinship1",
+								)}
+								placeholder="Parentesco de contacto"
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -805,18 +761,16 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactPhone1")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactPhone1",
+								)}
+								placeholder="Teléfono de contacto"
 							/>
 						</div>
 					</Collapsable>
 
-					<Collapsable
-						title="Contacto 2"
-						isCollapsed={!patientData.contactPhone2}
-					>
+					<Collapsable title="Contacto 2" isCollapsed={false}>
 						<div style={collapsableInnerStyle}>
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
@@ -829,10 +783,11 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactName2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactName2",
+								)}
+								placeholder="Nombre de contacto"
 							/>
 
 							<label style={styles.label}>Parentesco de contacto:</label>
@@ -846,10 +801,11 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactKinship2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactKinship2",
+								)}
+								placeholder="Parentesco de contacto"
 							/>
 
 							<label style={styles.label}>Teléfono de contacto:</label>
@@ -863,14 +819,27 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={
-									!editMode ||
-									hasPropertyAndIsValid(responseFromGET, "contactPhone2")
-								}
+								disabled={hasPropertyAndIsValid(
+									responseFromGET,
+									"contactPhone2",
+								)}
+								placeholder="Teléfono de contacto"
 							/>
 						</div>
 					</Collapsable>
 				</div>
+			</div>
+
+			<div style={{ display: "flex", justifyContent: "center" }}>
+				<BaseButton
+					text="Guardar"
+					onClick={handleUpdatePatient}
+					style={{
+						width: isMobile ? "100%" : "15rem",
+						height: "3rem",
+						marginTop: "1rem",
+					}}
+				/>
 			</div>
 		</div>
 	);
@@ -928,13 +897,10 @@ function UpdateStudentInformationSection({
 	const response = getData.read();
 	const responseFromGET = response?.result;
 
-	const [editMode, setEditMode] = useState(false);
 	const [patientData, setPatientData] = useState({
 		...(response?.result || {}),
 	});
-
 	const handleUpdatePatient = async () => {
-		setEditMode(false);
 		toast.info("Actualizando datos de estudiante...");
 
 		const updateResponse = await updateData(patientData);
@@ -942,18 +908,12 @@ function UpdateStudentInformationSection({
 			toast.error(
 				`Lo sentimos! Ha ocurrido un error al actualizar los datos!\n${updateResponse.error.message}`,
 			);
-			setPatientData({ ...response?.result });
 			return;
 		}
 
 		triggerRefresh();
 		setPatientData(updateResponse.result || {});
 		toast.success("¡Información actualizada exitosamente!");
-	};
-
-	const handleCancelEdit = () => {
-		setPatientData({ ...response?.result });
-		setEditMode(false);
 	};
 
 	/**@type {React.CSSProperties} */
@@ -974,21 +934,6 @@ function UpdateStudentInformationSection({
 				}}
 			>
 				<h1 style={styles.h1}>Datos de Estudiante:</h1>
-				{editMode ? (
-					<div
-						style={{
-							display: "flex",
-							gap: "0.5rem",
-							justifyContent: "center",
-							paddingTop: isMobile ? "0.5rem" : "0",
-						}}
-					>
-						<IconButton icon={CheckIcon} onClick={handleUpdatePatient} />
-						<IconButton icon={CancelIcon} onClick={handleCancelEdit} />
-					</div>
-				) : (
-					<IconButton icon={EditIcon} onClick={() => setEditMode(true)} />
-				)}
 			</div>
 			<div
 				style={{
@@ -1014,9 +959,7 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carnet"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "carnet")
-						}
+						disabled={hasPropertyAndIsValid(responseFromGET, "carnet")}
 					/>
 				</div>
 
@@ -1037,11 +980,17 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carrera"
 						style={inputStyles}
-						disabled={
-							!editMode || hasPropertyAndIsValid(responseFromGET, "career")
-						}
 					/>
 				</div>
+			</div>
+			<div
+				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+			>
+				<BaseButton
+					text="Guardar"
+					onClick={handleUpdatePatient}
+					style={{ width: isMobile ? "100%" : "15rem", height: "3rem" }}
+				/>
 			</div>
 		</form>
 	);

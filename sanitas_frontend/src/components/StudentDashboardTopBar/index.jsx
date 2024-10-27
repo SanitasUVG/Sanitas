@@ -214,6 +214,12 @@ export default function StudentDashboardTopbar({
 					logoutUser();
 					navigateToLogin()(navigate);
 				}}
+				style={{
+					position: "absolute",
+					right: "0",
+					marginRight: "3rem",
+					marginTop: "12rem",
+				}}
 			/>
 		</div>
 	);
