@@ -98,6 +98,9 @@ export default function LoginView({
 			case "UserNotFoundException":
 				setErrorMessage("Revise el correo o la contraseña por favor.");
 				break;
+			case "UserNotConfirmedException":
+				setErrorMessage("Recuerda confirmar tu correo!");
+				break;
 			default:
 				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
 		}
