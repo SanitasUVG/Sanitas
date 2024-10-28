@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import logoSanitas from "src/assets/images/logoSanitas.png";
 import backgroundImage from "src/assets/images/UVGBackground.jpg";
 import uvgLogo from "src/assets/images/uvgLogo.jpg";
@@ -7,7 +8,6 @@ import BaseButton from "src/components/Button/Base";
 import { BaseInput } from "src/components/Input";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
-import WrapPromise from "src/utils/promiseWrapper";
 import { adjustHeight, adjustWidth } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
 
@@ -19,7 +19,6 @@ import useWindowSize from "src/utils/useWindowSize";
 /**
  * @param {RegisterViewProps} props
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 export default function RegisterView({ registerUser }) {
 	/** @type React.CSSStyleDeclaration */
 	const inputStyles = {
@@ -37,48 +36,44 @@ export default function RegisterView({ registerUser }) {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
-	/** @type {[import("src/utils/promiseWrapper").SuspenseResource<import("src/dataLayer.mjs").Result<any, any>>, Function]} */
-	const [registerResource, setRegisterResource] = useState(null);
 
-	const handleRegister = () => {
+	const handleRegister = async () => {
 		if (!(username && password)) {
 			setErrorMessage("Por favor, complete todos los campos.");
 			return;
 		}
-		setRegisterResource(WrapPromise(registerUser(username, password)));
-	};
 
-	if (registerResource !== null) {
-		const response = registerResource.read();
-		if (!response.error) {
-			setShowPopup(true); // Mostrar el popup
+		toast.info("Registrando usuario...");
+		const response = await registerUser(username, password);
+		if (response.result) {
+			setShowPopup(true);
 			setTimeout(() => {
 				navigate(NAV_PATHS.LOGIN_USER, { replace: true });
 			}, 7000);
-		} else {
-			console.log(response);
-			const errorType = response.error.code;
-			console.log(errorType);
-			switch (errorType) {
-				case "UsernameExistsException":
-					setErrorMessage(
-						"El usuario ya está registrado. Intente con otro correo.",
-					);
-					break;
-				case "InvalidParameterException":
-					setErrorMessage("Revise el correo o la contraseña por favor.");
-					break;
-				case "InvalidPasswordException":
-					setErrorMessage(
-						"La contraseña es muy débil. Intente con una más segura.",
-					);
-					break;
-				default:
-					setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
-			}
-			setRegisterResource(null);
+			return;
 		}
-	}
+
+		toast.error("Ha ocurrido un error registrando el usuario!");
+		const errorType = response.error.code;
+		console.log(errorType);
+		switch (errorType) {
+			case "UsernameExistsException":
+				setErrorMessage(
+					"El usuario ya está registrado. Intente con otro correo.",
+				);
+				break;
+			case "InvalidParameterException":
+				setErrorMessage("Revise el correo o la contraseña por favor.");
+				break;
+			case "InvalidPasswordException":
+				setErrorMessage(
+					"La contraseña es muy débil. Intente con una más segura.",
+				);
+				break;
+			default:
+				setErrorMessage("Lo sentimos! Ha ocurrido un error interno.");
+		}
+	};
 
 	return (
 		<>
