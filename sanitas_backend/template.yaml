@@ -931,8 +931,10 @@ Resources:
         Schedule:
           Type: ScheduleV2
           Properties:
-            # Which means every day at 1am
-            ScheduleExpression: cron(0 1 * * * *)
+            Description: Triggers the refresh of stats at 1am
+            # Documentation for cron expression
+            # https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-scheduled-rule-pattern.html
+            ScheduleExpression: cron(0 1 * * ? *)
 
   SanitasAPI:
     Type: AWS::Serverless::Api
