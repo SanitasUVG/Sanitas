@@ -41,7 +41,7 @@ COMMENT ON TABLE md_san.doctor IS
 DROP TABLE IF EXISTS md_san.estudiante;
 CREATE TABLE md_san.estudiante (
     carnet VARCHAR(20) PRIMARY KEY NOT NULL,
-    carrera VARCHAR(50),
+    carrera VARCHAR(100),
     id_paciente INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
@@ -49,7 +49,7 @@ CREATE TABLE md_san.estudiante (
 DROP TABLE IF EXISTS md_san.colaborador;
 CREATE TABLE md_san.colaborador (
     codigo VARCHAR(20) PRIMARY KEY NOT NULL,
-    area VARCHAR(50) NOT NULL,
+    area VARCHAR(100) NOT NULL,
     id_paciente INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
