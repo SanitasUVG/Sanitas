@@ -67,6 +67,42 @@ export function CreatePatientView({
 	};
 
 	/**
+	 * Validates the patient birthday before submission.
+	 * @returns {boolean} True if the form is valid, false otherwise.
+	 */
+	const validateBirthDate = (date) => {
+		const currentDate = new Date();
+		const minDate = new Date(
+			currentDate.getFullYear() - 150,
+			currentDate.getMonth(),
+			currentDate.getDate(),
+		);
+		const birthDate = new Date(date);
+
+		if (birthDate > currentDate || birthDate < minDate) {
+			toast.error(
+				"La fecha de nacimiento es inválida. Debe estar entre " +
+					minDate.toLocaleDateString() +
+					" y " +
+					currentDate.toLocaleDateString() +
+					".",
+			);
+			return false;
+		}
+		return true;
+	};
+
+	/**
+	 * Provides more information on the name of the empty field to the user
+	 */
+
+	const fieldLabels = {
+		names: "nombres del paciente",
+		surnames: "apellidos del paciente",
+		birthDate: "fecha de nacimiento",
+	};
+
+	/**
 	 * Validates the patient data form before submission.
 	 * Ensures all required fields are filled.
 	 * @returns {boolean} True if the form is valid, false otherwise.
@@ -79,12 +115,18 @@ export function CreatePatientView({
 		}
 		for (const field of fields) {
 			if (!patientData[field]) {
-				toast.error(`El campo ${field} es obligatorio y no puede estar vacío.`);
+				toast.error(
+					`El campo ${fieldLabels[field]} es obligatorio y no puede estar vacío.`,
+				);
 				return false;
 			}
 		}
 		if (patientData.sex === null) {
 			toast.error("El campo de género es obligatorio.");
+			return false;
+		}
+
+		if (!validateBirthDate(patientData.birthDate)) {
 			return false;
 		}
 		return true;
@@ -252,7 +294,7 @@ export function CreatePatientView({
 									type="text"
 									value={patientData.names}
 									onChange={(e) => handleChange("names", e.target.value)}
-									placeholder="Nombres:"
+									placeholder="Ingresa tu nombre"
 									style={inputStyles}
 								/>
 							</div>
@@ -265,7 +307,7 @@ export function CreatePatientView({
 										type="text"
 										value={patientData.surnames}
 										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Apellidos:"
+										placeholder="Ingresa tu apellido"
 										style={inputStyles}
 									/>
 								</div>
@@ -309,7 +351,7 @@ export function CreatePatientView({
 										type="text"
 										value={patientData.surnames}
 										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Apellidos:"
+										placeholder="Ingresa tu apellido"
 										style={inputStyles}
 									/>
 								</div>
