@@ -229,6 +229,7 @@ function UpdateColaboratorInformationSection({
 		},
 		h1: {
 			gridColumn: "1 / span 2",
+			paddingBottom: "1rem",
 			fontSize: fontSize.subtitleSize,
 		},
 		h2: {
@@ -317,7 +318,7 @@ function UpdateColaboratorInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, code: e.target.value })
 						}
-						placeholder="Código"
+						placeholder="Ingrese su código de colaborador"
 						style={inputStyles}
 						disabled={hasPropertyAndIsValid(responseFromGET, "code")}
 					/>
@@ -331,21 +332,21 @@ function UpdateColaboratorInformationSection({
 						paddingLeft: isMobile ? "0" : "1rem",
 					}}
 				>
-					<label style={styles.label}>Área:</label>
+					<label style={styles.label}>Área de trabajo:</label>
 					<BaseInput
 						type="text"
 						value={patientData.area}
 						onChange={(e) =>
 							setPatientData({ ...patientData, area: e.target.value })
 						}
-						placeholder="Área"
+						placeholder="Ingrese el nombre del área donde labora"
 						style={inputStyles}
 						maxLength={100}
 					/>
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+				style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}
 			>
 				<BaseButton
 					text="Guardar"
@@ -528,7 +529,7 @@ function UpdateGeneralInformationSection({
 					display: "flex",
 					flexDirection: isMobile ? "column" : "row",
 					justifyContent: isMobile ? "center" : "space-between",
-					alignItems: "center",
+					alignItems: "center"
 				}}
 			>
 				<h2 style={styles.h1}>Información del paciente:</h2>
@@ -670,7 +671,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, phone: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Teléfono"
+							placeholder="Ingrese su número telefónico (Ej. 5667-7877)"
 						/>
 					</div>
 
@@ -683,7 +684,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, address: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Dirección"
+							placeholder="Ingrese su dirección completa"
 						/>
 					</div>
 
@@ -696,7 +697,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Seguro"
+							placeholder="Ingrese el nombre de seguro (Ej. El Roble)"
 						/>
 					</div>
 				</div>
@@ -831,7 +832,7 @@ function UpdateGeneralInformationSection({
 				</div>
 			</div>
 
-			<div style={{ display: "flex", justifyContent: "center" }}>
+			<div style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}>
 				<BaseButton
 					text="Guardar"
 					onClick={handleUpdatePatient}
@@ -884,6 +885,7 @@ function UpdateStudentInformationSection({
 		},
 		h1: {
 			gridColumn: "1 / span 2",
+			paddingBottom: "1rem",
 			fontSize: fontSize.subtitleSize,
 		},
 		firstsectionform: {
@@ -958,7 +960,7 @@ function UpdateStudentInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, carnet: e.target.value })
 						}
-						placeholder="Carnet"
+						placeholder="Ingrese el número de su carnet"
 						style={inputStyles}
 						disabled={hasPropertyAndIsValid(responseFromGET, "carnet")}
 					/>
@@ -979,14 +981,14 @@ function UpdateStudentInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, career: e.target.value })
 						}
-						placeholder="Carrera"
+						placeholder="Ingrese el nombre completo de su carrera"
 						style={inputStyles}
 						maxLength={100}
 					/>
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+				style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}
 			>
 				<BaseButton
 					text="Guardar"
