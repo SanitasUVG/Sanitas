@@ -81,11 +81,7 @@ export function CreatePatientView({
 
 		if (birthDate > currentDate || birthDate < minDate) {
 			toast.error(
-				"La fecha de nacimiento es inválida. Debe estar entre " +
-					minDate.toLocaleDateString() +
-					" y " +
-					currentDate.toLocaleDateString() +
-					".",
+				`La fecha de nacimiento es inválida. Debe estar entre ${minDate.toLocaleDateString()} y ${currentDate.toLocaleDateString()}.`,
 			);
 			return false;
 		}

@@ -346,7 +346,11 @@ function UpdateColaboratorInformationSection({
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
 			>
 				<BaseButton
 					text="Guardar"
@@ -529,7 +533,7 @@ function UpdateGeneralInformationSection({
 					display: "flex",
 					flexDirection: isMobile ? "column" : "row",
 					justifyContent: isMobile ? "center" : "space-between",
-					alignItems: "center"
+					alignItems: "center",
 				}}
 			>
 				<h2 style={styles.h1}>Información del paciente:</h2>
@@ -832,7 +836,13 @@ function UpdateGeneralInformationSection({
 				</div>
 			</div>
 
-			<div style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
+			>
 				<BaseButton
 					text="Guardar"
 					onClick={handleUpdatePatient}
@@ -988,7 +998,11 @@ function UpdateStudentInformationSection({
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", paddingTop: "2rem" }}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
 			>
 				<BaseButton
 					text="Guardar"

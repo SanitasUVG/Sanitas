@@ -306,7 +306,7 @@ function NonPathologicalView({
 					"Por favor, complete todos los detalles del consumo de drogas.",
 				);
 				return false;
-			}	
+			}
 		}
 		return true;
 	};
@@ -314,10 +314,11 @@ function NonPathologicalView({
 	// Function to handle saving the changes to the server.
 	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: Save non pathological data
 	const handleSaveNonPathological = async () => {
-
 		if (!bloodTypeResult?.result?.bloodType) {
-			toast.error("Por favor, llena tu tipo de sangre en la sección de datos generales antes de enviar esta información.");
-			return; 
+			toast.error(
+				"Por favor, llena tu tipo de sangre en la sección de datos generales antes de enviar esta información.",
+			);
+			return;
 		}
 
 		if (!validateSmokingDetails()) return;
@@ -376,7 +377,7 @@ function NonPathologicalView({
 		toast.info("Guardando antecedente no patológico...");
 
 		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
-		
+
 		if (!result.error) {
 			toast.success("Antecedentes no patológicos guardados con éxito.");
 			triggerReload();
@@ -558,13 +559,13 @@ function NonPathologicalView({
 									fontWeight: "bold",
 									fontFamily: fonts.textFont,
 									fontSize: fontSize.textSize,
-									paddingBottom: "2rem"
+									paddingBottom: "2rem",
 								}}
 							>
 								Por favor ingrese sus datos, parece que es su primera vez aquí.
 							</div>
 						)}
-						
+
 						<div
 							style={{
 								paddingLeft: "1rem",
