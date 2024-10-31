@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo} from "react";
+import { Suspense, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -13,7 +13,6 @@ import IconButton from "src/components/Button/Icon";
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { createRefreshSignal } from 'src/utils/refreshHook';
 
 /**
  * @typedef {Object} FamiliarHistoryProps
@@ -35,9 +34,11 @@ export function FamiliarHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const refreshSignal = createRefreshSignal(); 
 
-	const familiarHistoryResource = useMemo (() => WrapPromise(familiarHistoryResource(id)), [familiarHistoryResource, id, refreshSignal]);
+	const familiarHistoryResource = useMemo(
+		() => WrapPromise(getFamiliarHistory(id)),
+		[getFamiliarHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
