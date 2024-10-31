@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -10,6 +10,7 @@ import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { createRefreshSignal } from 'src/utils/refreshHook';
 
 /**
  * @typedef {Object} StudentPersonalHistoryProps
@@ -31,9 +32,10 @@ export function StudentPersonalHistory({
 }) {
 	const { width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
+	const refreshSignal = createRefreshSignal(); 
+
+	const birthdayResource = useMemo (() => WrapPromise(getBirthdayPatientInfo(id)), [getBirthdayPatientInfo, id, refreshSignal]);
+	const personalHistoryResource = useMemo (() => WrapPromise(getStudentPersonalHistory(id)), [getBirthdayPatientInfo, id, refreshSignal]); 
 
 	const LoadingView = () => {
 		return (
