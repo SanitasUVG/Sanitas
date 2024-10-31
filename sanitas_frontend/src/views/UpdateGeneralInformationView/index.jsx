@@ -271,6 +271,7 @@ function UpdateColaboratorInformationSection({ getData, updateData }) {
 						placeholder="Área"
 						style={inputStyles}
 						disabled={!editMode}
+						maxLength={100}
 					/>
 				</div>
 			</div>
@@ -878,6 +879,7 @@ function UpdateStudentInformationSection({ getData, updateData }) {
 						placeholder="Carrera"
 						style={inputStyles}
 						disabled={!editMode}
+						maxLength={100}
 					/>
 				</div>
 			</div>
