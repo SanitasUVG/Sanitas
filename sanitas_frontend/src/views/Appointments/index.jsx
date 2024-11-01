@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -31,7 +31,11 @@ export function StudentAppointments({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const appointmentResource = WrapPromise(getAppointment(id));
+
+	const appointmentResource = useMemo(
+		() => WrapPromise(getAppointment(id)),
+		[getAppointment, id],
+	);
 	const displayName = useStore((s) => s.displayName);
 
 	const LoadingView = () => {
