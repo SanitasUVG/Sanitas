@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -34,7 +34,11 @@ export function FamiliarHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const familiarHistoryResource = WrapPromise(getFamiliarHistory(id));
+
+	const familiarHistoryResource = useMemo(
+		() => WrapPromise(getFamiliarHistory(id)),
+		[getFamiliarHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (

@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -31,9 +31,15 @@ export function StudentPersonalHistory({
 }) {
 	const { width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+	const personalHistoryResource = useMemo(
+		() => WrapPromise(getStudentPersonalHistory(id)),
+		[getStudentPersonalHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (

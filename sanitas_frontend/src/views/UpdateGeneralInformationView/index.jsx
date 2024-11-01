@@ -1,7 +1,7 @@
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import IconButton from "src/components/Button/Icon";
@@ -13,6 +13,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import { formatDate } from "src/utils/date";
 import WrapPromise from "src/utils/promiseWrapper";
 import Collapsable from "src/components/Collapsable";
+import { createRefreshSignal } from "src/utils/refreshHook";
 
 /**
  * @typedef {Object} PatientInfo
@@ -62,11 +63,23 @@ export default function UpdateInfoView({
 	const id = useStore((s) => s.selectedPatientId);
 	const setIsWoman = useStore((s) => s.setIsWoman);
 
-	const [generalResource, collaboratorResource, studentResource] = [
-		getGeneralPatientInformation(id),
-		getCollaboratorInformation(id),
-		getStudentPatientInformation(id),
-	].map((s) => WrapPromise(s));
+	const [refreshSignal, triggerRefresh] = createRefreshSignal();
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const generalResource = useMemo(
+		() => WrapPromise(getGeneralPatientInformation(id)),
+		[getGeneralPatientInformation, id, refreshSignal],
+	);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const collaboratorResource = useMemo(
+		() => WrapPromise(getCollaboratorInformation(id)),
+		[getCollaboratorInformation, id, refreshSignal],
+	);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const studentResource = useMemo(
+		() => WrapPromise(getStudentPatientInformation(id)),
+		[getStudentPatientInformation, id, refreshSignal],
+	);
 
 	return (
 		<div
@@ -94,14 +107,17 @@ export default function UpdateInfoView({
 					<UpdateGeneralInformationSection
 						getData={generalResource}
 						updateData={updateGeneralPatientInformation}
+						triggerRefresh={triggerRefresh}
 						setIsWoman={setIsWoman}
 					/>
 					<UpdateColaboratorInformationSection
 						getData={collaboratorResource}
+						triggerRefresh={triggerRefresh}
 						updateData={updateCollaboratorInformation}
 					/>
 					<UpdateStudentInformationSection
 						getData={studentResource}
+						triggerRefresh={triggerRefresh}
 						updateData={updateStudentPatientInformation}
 					/>
 				</Suspense>

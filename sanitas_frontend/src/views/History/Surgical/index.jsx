@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -35,8 +35,15 @@ export function SurgicalHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const surgicalHistoryResource = WrapPromise(getSurgicalHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+	const surgicalHistoryResource = useMemo(
+		() => WrapPromise(getSurgicalHistory(id)),
+		[getSurgicalHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (

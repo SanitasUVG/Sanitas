@@ -314,6 +314,13 @@ function NonPathologicalView({
 	// Function to handle saving the changes to the server.
 	// biome-ignore  lint/complexity/noExcessiveCognitiveComplexity: Save non pathological data
 	const handleSaveNonPathological = async () => {
+		if (!bloodTypeResult?.result?.bloodType) {
+			toast.error(
+				"Por favor, llena tu tipo de sangre en la sección de datos generales antes de enviar esta información.",
+			);
+			return;
+		}
+
 		if (!validateSmokingDetails()) return;
 		if (!validateAlcoholConsumption()) return;
 		if (!validateDrugUse()) return;
@@ -370,7 +377,7 @@ function NonPathologicalView({
 		toast.info("Guardando antecedente no patológico...");
 
 		const result = await updateStudentNonPathologicalHistory(id, updateDetails);
-		console.log(updateDetails);
+
 		if (!result.error) {
 			toast.success("Antecedentes no patológicos guardados con éxito.");
 			triggerReload();
@@ -552,56 +559,18 @@ function NonPathologicalView({
 									fontWeight: "bold",
 									fontFamily: fonts.textFont,
 									fontSize: fontSize.textSize,
+									paddingBottom: "2rem",
 								}}
 							>
 								Por favor ingrese sus datos, parece que es su primera vez aquí.
 							</div>
 						)}
-						<div
-							style={{
-								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
-								padding: "2rem 0 2rem 1rem",
-								display: "flex",
-								flexDirection: "row",
-								alignItems: "center",
-								justifyContent: "space-between",
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "start",
-									flexDirection: "column",
-								}}
-							>
-								<p
-									style={{
-										marginRight: "1rem",
-										paddingBottom: "0.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									Tipo de sangre:
-								</p>
-								<BaseInput
-									type="text"
-									value={bloodTypeResult?.result?.bloodType ?? ""}
-									readOnly
-									placeholder="Tipo de sangre:"
-									style={{
-										width: isMobile ? "13rem" : "20rem",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
-								/>
-							</div>
-						</div>
+
 						<div
 							style={{
 								paddingLeft: "1rem",
 								borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+								borderTop: `0.04rem solid ${colors.darkerGrey}`,
 							}}
 						>
 							<p
