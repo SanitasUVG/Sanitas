@@ -73,7 +73,7 @@ export default function UpdatePatientInfoView({
 }) {
 	const setIsWoman = useStore((s) => s.setIsWoman);
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	// const id = 1;
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
 	const [generalResource, collaboratorResource, studentResource] = useMemo(
@@ -340,6 +340,7 @@ function UpdateColaboratorInformationSection({
 						}
 						placeholder="Área"
 						style={inputStyles}
+						maxLength={100}
 					/>
 				</div>
 			</div>
@@ -980,6 +981,7 @@ function UpdateStudentInformationSection({
 						}
 						placeholder="Carrera"
 						style={inputStyles}
+						maxLength={100}
 					/>
 				</div>
 			</div>
