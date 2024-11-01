@@ -76,20 +76,21 @@ export default function UpdatePatientInfoView({
 
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
-	const [generalResource, collaboratorResource, studentResource] = useMemo(
-		() =>
-			[
-				getGeneralPatientInformation(id),
-				getCollaboratorInformation(id),
-				getStudentPatientInformation(id),
-			].map((s) => WrapPromise(s)),
-		[
-			getGeneralPatientInformation,
-			getCollaboratorInformation,
-			getStudentPatientInformation,
-			id,
-			refreshSignal,
-		],
+	const generalResource = useMemo(
+		() => WrapPromise(getGeneralPatientInformation(id)),
+		[getGeneralPatientInformation, id, refreshSignal],
+	);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const collaboratorResource = useMemo(
+		() => WrapPromise(getCollaboratorInformation(id)),
+		[getCollaboratorInformation, id, refreshSignal],
+	);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources
+	const studentResource = useMemo(
+		() => WrapPromise(getStudentPatientInformation(id)),
+		[getStudentPatientInformation, id, refreshSignal],
 	);
 
 	const { width } = useWindowSize();
