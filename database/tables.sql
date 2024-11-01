@@ -21,7 +21,7 @@ CREATE TABLE md_san.paciente (
 DROP INDEX IF EXISTS paciente_cui_idx;
 CREATE UNIQUE INDEX paciente_cui_idx ON md_san.paciente (cui);
 COMMENT ON TABLE md_san.paciente IS
-'This table is used to save general information about a patient.';
+'Esta tabla se utiliza para guardar información general sobre un paciente.';
 
 DROP TABLE IF EXISTS md_san.cuenta_paciente;
 CREATE TABLE md_san.cuenta_paciente (
@@ -29,14 +29,15 @@ CREATE TABLE md_san.cuenta_paciente (
     cui_paciente VARCHAR(24) NOT NULL UNIQUE REFERENCES md_san.paciente (cui)
 );
 COMMENT ON TABLE md_san.cuenta_paciente IS
-'Used to save the relation between a cognito account and a patient';
+'Se utiliza para guardar la relación entre una cuenta cognito y un paciente.';
 
 DROP TABLE IF EXISTS md_san.doctor;
 CREATE TABLE md_san.doctor (
     email VARCHAR(100) NOT NULL PRIMARY KEY
 );
 COMMENT ON TABLE md_san.doctor IS
-'Used for saving all user emails that have the role of a doctor.';
+'Se utiliza para guardar todos los correos electrónicos de los usuarios
+que tienen el rol de médico.';
 
 DROP TABLE IF EXISTS md_san.estudiante;
 CREATE TABLE md_san.estudiante (
@@ -45,6 +46,9 @@ CREATE TABLE md_san.estudiante (
     id_paciente INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.estudiante IS
+'Esta tabla almacena información sobre los estudiantes y su relación
+con los pacientes.';
 
 DROP TABLE IF EXISTS md_san.colaborador;
 CREATE TABLE md_san.colaborador (
@@ -53,6 +57,9 @@ CREATE TABLE md_san.colaborador (
     id_paciente INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.colaborador IS
+'Esta tabla almacena información sobre los colaboradores y su relación
+con los pacientes.';
 
 DROP TABLE IF EXISTS md_san.consulta;
 CREATE TABLE md_san.consulta (
@@ -74,6 +81,9 @@ CREATE TABLE md_san.consulta (
     notas TEXT,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.consulta IS
+'Esta tabla guarda información sobre las consultas realizadas
+a los pacientes.';
 
 DROP TABLE IF EXISTS md_san.diagnostico;
 CREATE TABLE md_san.diagnostico (
@@ -83,6 +93,8 @@ CREATE TABLE md_san.diagnostico (
     tratamiento TEXT,
     FOREIGN KEY (id_consulta) REFERENCES md_san.consulta (id)
 );
+COMMENT ON TABLE md_san.diagnostico IS
+'Esta tabla almacena los diagnósticos realizados durante las consultas.';
 
 DROP TABLE IF EXISTS md_san.medicamento;
 CREATE TABLE md_san.medicamento (
@@ -92,6 +104,9 @@ CREATE TABLE md_san.medicamento (
     id_consulta INTEGER NOT NULL,
     FOREIGN KEY (id_consulta) REFERENCES md_san.consulta (id)
 );
+COMMENT ON TABLE md_san.medicamento IS
+'Esta tabla guarda información sobre los medicamentos prescritos
+durante las consultas.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_familiares;
 CREATE TABLE md_san.antecedentes_familiares (
@@ -118,6 +133,8 @@ CREATE TABLE md_san.antecedentes_familiares (
     otros_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_familiares IS
+'Esta tabla almacena antecedentes familiares de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_personales;
 CREATE TABLE md_san.antecedentes_personales (
@@ -144,6 +161,8 @@ CREATE TABLE md_san.antecedentes_personales (
     otros_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_personales IS
+'Esta tabla guarda antecedentes personales de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_alergicos;
 CREATE TABLE md_san.antecedentes_alergicos (
@@ -164,6 +183,8 @@ CREATE TABLE md_san.antecedentes_alergicos (
     otros_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_alergicos IS
+'Esta tabla almacena información sobre alergias de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_quirurgicos;
 CREATE TABLE md_san.antecedentes_quirurgicos (
@@ -172,6 +193,9 @@ CREATE TABLE md_san.antecedentes_quirurgicos (
     antecedente_quirurgico_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_quirurgicos IS
+'Esta tabla guarda información sobre antecedentes quirúrgicos
+de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_traumatologicos;
 CREATE TABLE md_san.antecedentes_traumatologicos (
@@ -180,6 +204,8 @@ CREATE TABLE md_san.antecedentes_traumatologicos (
     antecedente_traumatologico_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_traumatologicos IS
+'Esta tabla almacena antecedentes traumatológicos de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_psiquiatricos;
 CREATE TABLE md_san.antecedentes_psiquiatricos (
@@ -198,6 +224,9 @@ CREATE TABLE md_san.antecedentes_psiquiatricos (
     otro_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_psiquiatricos IS
+'Esta tabla guarda información sobre antecedentes psiquiátricos
+de los pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_ginecoobstetricos;
 CREATE TABLE md_san.antecedentes_ginecoobstetricos (
@@ -230,6 +259,8 @@ CREATE TABLE md_san.antecedentes_ginecoobstetricos (
     cirugia_reseccion_masas_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_ginecoobstetricos IS
+'Esta tabla almacena antecedentes ginecoobstétricos de las pacientes.';
 
 DROP TABLE IF EXISTS md_san.antecedentes_no_patologicos;
 CREATE TABLE md_san.antecedentes_no_patologicos (
@@ -243,6 +274,9 @@ CREATE TABLE md_san.antecedentes_no_patologicos (
     drogas_data JSON,
     FOREIGN KEY (id_paciente) REFERENCES md_san.paciente (id)
 );
+COMMENT ON TABLE md_san.antecedentes_no_patologicos IS
+'Esta tabla guarda información sobre antecedentes no patológicos
+de los pacientes.';
 
 CREATE MATERIALIZED VIEW md_san.stats
 AS
