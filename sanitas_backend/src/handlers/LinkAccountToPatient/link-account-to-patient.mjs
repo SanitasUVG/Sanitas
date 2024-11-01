@@ -22,7 +22,10 @@ export const handler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -41,7 +44,7 @@ export const handler = async (event, context) => {
 
 	/** @type {import("src/commonTypes.mjs").LinkData} */
 	const { cui } = JSON.parse(event.body);
-	if (!email) {
+	if (!cui) {
 		logger.error("No cui found!");
 		return responseBuilder
 			.setStatusCode(400)

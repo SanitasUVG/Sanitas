@@ -29,7 +29,10 @@ export const updateFamilyHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -49,7 +52,7 @@ export const updateFamilyHistoryHandler = async (event, context) => {
 		const itsDoctor = await isDoctor(client, email);
 		if (itsDoctor.error) {
 			const msg = "An error occurred while trying to check if user is doctor!";
-			logger.error({ error: itsDoctor.error }, msg);
+			logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
 		}
 
@@ -118,7 +121,7 @@ export const updateFamilyHistoryHandler = async (event, context) => {
 			.setBody(mapToAPIFamilyHistory(updatedRecord))
 			.build();
 	} catch (error) {
-		logger.error({ error }, "An error occurred while updating family history!");
+		logger.error(error, "An error occurred while updating family history!");
 
 		if (error.code === "23503") {
 			return responseBuilder

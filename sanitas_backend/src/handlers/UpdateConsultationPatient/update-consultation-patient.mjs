@@ -26,7 +26,10 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -59,7 +62,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 
 				const response = responseBuilder
 					.setStatusCode(500)
@@ -194,7 +197,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error(
-			{ details: error.details, error },
+			{ err: error, details: error.message },
 			"An error occurred while updating medical consultation!",
 		);
 

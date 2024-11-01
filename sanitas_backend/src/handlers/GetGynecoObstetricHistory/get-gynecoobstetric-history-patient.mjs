@@ -30,7 +30,10 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -41,7 +44,10 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 
 	const patientId = Number.parseInt(event.pathParameters?.id, 10);
 	if (Number.isNaN(patientId)) {
-		logger.error("Invalid ID received!", { id: event.pathParameters?.id });
+		logger.error(
+			{ patientId: event.pathParameters?.id },
+			"Invalid ID received!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "Invalid request: No valid patientId supplied!" })
@@ -62,7 +68,7 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor, inputs: { email } }, msg);
 
 				const response = responseBuilder
 					.setStatusCode(500)
@@ -82,7 +88,10 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs, inputs: { email, patientId } },
+						msg,
+					);
 					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
@@ -114,6 +123,10 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -149,10 +162,10 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error("An error occurred while fetching gynecological history!", {
+		logger.error(
 			error,
-			stack: error.stack,
-		});
+			"An error occurred while fetching gynecological history!",
+		);
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

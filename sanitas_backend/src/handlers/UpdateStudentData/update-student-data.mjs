@@ -71,7 +71,7 @@ export const handler = async (event, context) => {
 			.setBody(mapToAPIStudentInfo(studentData))
 			.build();
 	} catch (error) {
-		logger.error({ error }, "Error querying database:");
+		logger.error(error, "Error querying database:");
 
 		if (error.code === "23503") {
 			logger.error("A patient with the given ID doesn't exists!");

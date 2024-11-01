@@ -37,7 +37,10 @@ export const getPersonalHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -48,7 +51,10 @@ export const getPersonalHistoryHandler = async (event, context) => {
 
 	const patientId = Number.parseInt(event.pathParameters?.id, 10);
 	if (Number.isNaN(patientId)) {
-		logger.error("Invalid ID received!", { id: event.pathParameters?.id });
+		logger.error(
+			{ patientId: event.pathParameters?.id },
+			"Invalid ID received!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "Invalid request: No valid patientId supplied!" })
@@ -69,7 +75,7 @@ export const getPersonalHistoryHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 				const response = responseBuilder
 					.setStatusCode(500)
 					.setBody(itsDoctor)
@@ -88,7 +94,10 @@ export const getPersonalHistoryHandler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs.err, inputs: { email, patientId } },
+						msg,
+					);
 					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
@@ -124,6 +133,10 @@ export const getPersonalHistoryHandler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -148,7 +161,7 @@ export const getPersonalHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIPersonalHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
-		logger.error("An error occurred while fetching personal history!", error);
+		logger.error(error, "An error occurred while fetching personal history!");
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

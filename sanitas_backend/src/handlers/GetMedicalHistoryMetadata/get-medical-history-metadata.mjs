@@ -86,7 +86,7 @@ export const handler = async (event, context) => {
 		logger.info("Checking if received all parameters...");
 		const id = event.pathParameters.id;
 		if (id !== 0 && !id) {
-			logger.error("No ID received!");
+			logger.error({ patientId: event.pathParameters?.id }, "No ID received!");
 			const response = responseBuilder
 				.setStatusCode(400)
 				.setBody({ error: "Invalid request: No patientId supplied!" })
@@ -206,7 +206,7 @@ where
 		logger.info(response, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error({ error }, "An error has ocurred!");
+		logger.error(error, "An error has ocurred!");
 
 		const response = responseBuilder
 			.setStatusCode(500)
