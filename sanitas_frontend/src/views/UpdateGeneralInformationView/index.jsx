@@ -626,7 +626,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 					</div>
 
 					<div style={inputContainerStyles}>
-						<label style={styles.label}>Seguro:</label>
+						<label style={styles.label}>Seguro Médico:</label>
 						<BaseInput
 							type="text"
 							value={patientData.insurance || ""}
