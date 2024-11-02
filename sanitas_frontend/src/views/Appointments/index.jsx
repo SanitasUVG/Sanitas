@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 import { IS_PRODUCTION } from "src/constants.mjs";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * Provides a view for managing student appointments. This component is responsible for displaying
@@ -439,7 +440,7 @@ function StudentAppointmentsView({
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(getErrorMessage(response, "cita"));
 			}
 		} catch (error) {
 			console.error("Error en la operación:", error);

@@ -14,6 +14,7 @@ import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
 import IconButton from "src/components/Button/Icon";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 export function ObGynHistory({
 	getBirthdayPatientInfo,
@@ -1193,9 +1194,7 @@ function ObGynView({
 			triggerReload();
 			setIsEditable(false);
 		} else {
-			toast.error(
-				`Error al actualizar los antecedentes ginecoobstétricos: ${result.error}`,
-			);
+			toast.error(getErrorMessage(result, "ginecoobstetricos"));
 		}
 	};
 

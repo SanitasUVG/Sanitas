@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
 import { cuiIsValid } from "src/utils/cui";
 import useWindowSize from "src/utils/useWindowSize"; // Importar el hook
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} LinkPatientViewProps
@@ -44,9 +45,7 @@ export function LinkPatientView({ linkAccount }) {
 		if (response.error) {
 			const message = response.error.error;
 			if (message !== "No patient with the given CUI found!") {
-				toast.error(
-					`¡Lo sentimos ha ocurrido un error!\n${response.error.error}`,
-				);
+				toast.error(getErrorMessage(response, "paciente"));
 				return;
 			}
 

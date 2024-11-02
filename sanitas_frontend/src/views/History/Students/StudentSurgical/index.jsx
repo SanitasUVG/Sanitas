@@ -11,6 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -276,7 +277,7 @@ function SurgicalView({
 						: "Antecedente quirúrgico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error.error}`);
+				toast.error(getErrorMessage(response, "quirurgicos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

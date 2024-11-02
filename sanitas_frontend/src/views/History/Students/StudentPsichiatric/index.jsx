@@ -8,6 +8,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PsichiatricHistoryProps
@@ -637,7 +638,7 @@ function PsichiatricView({
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				triggerReload();
 			} else {
-				toast.error(`Error al guardar los antecedentes: ${result.error}`);
+				toast.error(getErrorMessage(result, "psiquiatricos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

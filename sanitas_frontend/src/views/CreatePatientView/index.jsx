@@ -8,6 +8,7 @@ import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PatientData
@@ -136,9 +137,7 @@ export function CreatePatientView({
 		toast.info("Creando paciente...");
 		const response = await submitPatientData(patientData);
 		if (response.error) {
-			toast.error(
-				`Lo sentimos! Ha ocurrido un error al actualizar el paciente. ${response.error}`,
-			);
+			toast.error(getErrorMessage(response, "paciente"));
 			return;
 		}
 

@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentStudentFamiliarHistoryProps
@@ -447,7 +448,7 @@ function FamiliarView({
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				toast.error(getErrorMessage(response, "familiares"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);
