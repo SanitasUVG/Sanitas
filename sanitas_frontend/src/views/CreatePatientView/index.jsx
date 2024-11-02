@@ -8,7 +8,7 @@ import { BaseInput, DateInput, RadioInput } from "src/components/Input/index";
 import { NAV_PATHS } from "src/router";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import useWindowSize from "src/utils/useWindowSize";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PatientData

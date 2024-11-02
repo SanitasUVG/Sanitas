@@ -11,7 +11,7 @@ import { BaseInput, RadioInput } from "src/components/Input/index";
 import Throbber from "src/components/Throbber";
 import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PsichiatricHistoryProps

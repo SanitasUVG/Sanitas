@@ -14,7 +14,7 @@ import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
 import IconButton from "src/components/Button/Icon";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 export function ObGynHistory({
 	getBirthdayPatientInfo,

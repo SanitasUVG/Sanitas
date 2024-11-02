@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { NAV_PATHS } from "src/router";
 import { cuiIsValid } from "src/utils/cui";
 import useWindowSize from "src/utils/useWindowSize"; // Importar el hook
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} LinkPatientViewProps

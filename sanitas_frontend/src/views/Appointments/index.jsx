@@ -10,7 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 import { IS_PRODUCTION } from "src/constants.mjs";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * Provides a view for managing student appointments. This component is responsible for displaying
@@ -922,161 +922,161 @@ function StudentAppointmentsView({
 						<div>
 							{medications.length > 0
 								? medications.map((medication, index) => (
-										<div key={medication.index}>
-											<div
+									<div key={medication.index}>
+										<div
+											style={{
+												padding: "1rem 0 1rem 0",
+											}}
+										>
+											<p
 												style={{
-													padding: "1rem 0 1rem 0",
+													padding: "0 0 0.5rem 0",
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+													fontWeight: "bold",
 												}}
 											>
-												<p
+												Medicamento Administrado {index + 1}
+											</p>
+
+											<p
+												style={{
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+													padding: "0 0 0.5rem 0",
+												}}
+											>
+												Diagnóstico:
+											</p>
+											<ExpandingBaseInput
+												value={medication.diagnosis || ""}
+												onChange={(e) => {
+													const newMedications = [...medications];
+													newMedications[index].diagnosis = e.target.value;
+													setMedications(newMedications);
+													setCurrentAppointment({
+														...currentAppointment,
+														medications: newMedications,
+													});
+												}}
+												disabled={!isEditable}
+												style={{
+													width: "95%",
+													height: "3rem",
+													fontSize: "1rem",
+													fontFamily: fonts.textFont,
+												}}
+												placeholder="Ingrese el diagnóstico por el cuál receta el medicamento..."
+											/>
+
+											<p
+												style={{
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+													padding: "1rem 0 0.5rem 0",
+												}}
+											>
+												Medicamento:
+											</p>
+											<ExpandingBaseInput
+												value={medication.medication || ""}
+												onChange={(e) => {
+													const newMedications = [...medications];
+													newMedications[index].medication = e.target.value;
+													setMedications(newMedications);
+													setCurrentAppointment({
+														...currentAppointment,
+														medications: newMedications,
+													});
+												}}
+												disabled={!isEditable}
+												style={{
+													width: "95%",
+													height: "3rem",
+													fontSize: "1rem",
+													fontFamily: fonts.textFont,
+												}}
+												placeholder="Ingrese el medicamento administrado..."
+											/>
+
+											<p
+												style={{
+													fontFamily: fonts.textFont,
+													fontSize: fontSize.textSize,
+													padding: "1rem 0 0.5rem 0",
+												}}
+											>
+												Cantidad:
+											</p>
+											<ExpandingBaseInput
+												value={medication.quantity || ""}
+												onChange={(e) => {
+													const newMedications = [...medications];
+													newMedications[index].quantity = e.target.value;
+													setMedications(newMedications);
+													setCurrentAppointment({
+														...currentAppointment,
+														medications: newMedications,
+													});
+												}}
+												disabled={!isEditable}
+												style={{
+													width: "95%",
+													height: "3rem",
+													fontSize: "1rem",
+													fontFamily: fonts.textFont,
+												}}
+												placeholder="Ingrese la cantidad administrada..."
+											/>
+										</div>
+
+										{isEditable && (
+											<div>
+												<div
 													style={{
-														padding: "0 0 0.5rem 0",
-														fontFamily: fonts.textFont,
-														fontSize: fontSize.textSize,
-														fontWeight: "bold",
+														display: "flex",
+														justifyContent: "center",
+														alignItems: "center",
+														width: "100%",
+														paddingTop: "1rem",
 													}}
 												>
-													Medicamento Administrado {index + 1}
-												</p>
-
-												<p
-													style={{
-														fontFamily: fonts.textFont,
-														fontSize: fontSize.textSize,
-														padding: "0 0 0.5rem 0",
-													}}
-												>
-													Diagnóstico:
-												</p>
-												<ExpandingBaseInput
-													value={medication.diagnosis || ""}
-													onChange={(e) => {
-														const newMedications = [...medications];
-														newMedications[index].diagnosis = e.target.value;
-														setMedications(newMedications);
-														setCurrentAppointment({
-															...currentAppointment,
-															medications: newMedications,
-														});
-													}}
-													disabled={!isEditable}
-													style={{
-														width: "95%",
-														height: "3rem",
-														fontSize: "1rem",
-														fontFamily: fonts.textFont,
-													}}
-													placeholder="Ingrese el diagnóstico por el cuál receta el medicamento..."
-												/>
-
-												<p
-													style={{
-														fontFamily: fonts.textFont,
-														fontSize: fontSize.textSize,
-														padding: "1rem 0 0.5rem 0",
-													}}
-												>
-													Medicamento:
-												</p>
-												<ExpandingBaseInput
-													value={medication.medication || ""}
-													onChange={(e) => {
-														const newMedications = [...medications];
-														newMedications[index].medication = e.target.value;
-														setMedications(newMedications);
-														setCurrentAppointment({
-															...currentAppointment,
-															medications: newMedications,
-														});
-													}}
-													disabled={!isEditable}
-													style={{
-														width: "95%",
-														height: "3rem",
-														fontSize: "1rem",
-														fontFamily: fonts.textFont,
-													}}
-													placeholder="Ingrese el medicamento administrado..."
-												/>
-
-												<p
-													style={{
-														fontFamily: fonts.textFont,
-														fontSize: fontSize.textSize,
-														padding: "1rem 0 0.5rem 0",
-													}}
-												>
-													Cantidad:
-												</p>
-												<ExpandingBaseInput
-													value={medication.quantity || ""}
-													onChange={(e) => {
-														const newMedications = [...medications];
-														newMedications[index].quantity = e.target.value;
-														setMedications(newMedications);
-														setCurrentAppointment({
-															...currentAppointment,
-															medications: newMedications,
-														});
-													}}
-													disabled={!isEditable}
-													style={{
-														width: "95%",
-														height: "3rem",
-														fontSize: "1rem",
-														fontFamily: fonts.textFont,
-													}}
-													placeholder="Ingrese la cantidad administrada..."
-												/>
-											</div>
-
-											{isEditable && (
-												<div>
-													<div
+													<BaseButton
+														text="Cancelar nuevo medicamento"
+														onClick={() => removeMedication(index)}
 														style={{
-															display: "flex",
-															justifyContent: "center",
-															alignItems: "center",
-															width: "100%",
-															paddingTop: "1rem",
-														}}
-													>
-														<BaseButton
-															text="Cancelar nuevo medicamento"
-															onClick={() => removeMedication(index)}
-															style={{
-																width: "40%",
-																height: "3rem",
-																backgroundColor: "#fff",
-																color: colors.primaryBackground,
-																border: `1.5px solid ${colors.primaryBackground}`,
-															}}
-														/>
-													</div>
-
-													<div
-														style={{
-															paddingTop: "1rem",
-															borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+															width: "40%",
+															height: "3rem",
+															backgroundColor: "#fff",
+															color: colors.primaryBackground,
+															border: `1.5px solid ${colors.primaryBackground}`,
 														}}
 													/>
 												</div>
-											)}
-										</div>
-									))
+
+												<div
+													style={{
+														paddingTop: "1rem",
+														borderBottom: `0.04rem solid ${colors.darkerGrey}`,
+													}}
+												/>
+											</div>
+										)}
+									</div>
+								))
 								: !addingNew && (
-										<div
-											style={{
-												textAlign: "center",
-												paddingTop: "1rem",
-												fontFamily: fonts.textFont,
-												fontSize: fontSize.textSize,
-												fontWeight: "bold",
-											}}
-										>
-											No hay medicamentos registrados en esta cita.
-										</div>
-									)}
+									<div
+										style={{
+											textAlign: "center",
+											paddingTop: "1rem",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+											fontWeight: "bold",
+										}}
+									>
+										No hay medicamentos registrados en esta cita.
+									</div>
+								)}
 						</div>
 
 						{isEditable && (

@@ -10,7 +10,7 @@ import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentPersonalHistoryProps

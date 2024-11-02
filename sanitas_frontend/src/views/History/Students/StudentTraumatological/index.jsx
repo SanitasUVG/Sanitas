@@ -11,7 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
-import { getErrorMessage } from "scr/utils/errorhandlerstoasts";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentTraumatologicalHistoryProps
