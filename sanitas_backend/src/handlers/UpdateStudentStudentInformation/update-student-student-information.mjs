@@ -197,5 +197,7 @@ export const handler = async (event, context) => {
 			.setStatusCode(500)
 			.setBody({ error: "An internal error ocurred" })
 			.build();
+	} finally {
+		await client?.end();
 	}
 };
