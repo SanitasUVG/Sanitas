@@ -98,7 +98,7 @@ export const getErrorMessage = (response, context = "") => {
 
 		// Si no se encontró un mensaje específico, usar el mensaje de error original
 		if (errorMessage === "¡Lo sentimos ha ocurrido un error!") {
-			errorMessage = `${errorMessage}\n${errorCode}`;
+			errorMessage = `${errorMessage}`;
 		}
 	}
 
