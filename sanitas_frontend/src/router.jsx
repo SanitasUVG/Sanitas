@@ -318,6 +318,7 @@ const studentGeneralInformation = (
 			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
 			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
+			logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
 		/>
 	</RequireAuth>
 );
