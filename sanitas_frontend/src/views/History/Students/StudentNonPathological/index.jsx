@@ -71,19 +71,6 @@ export function StudentNonPathologicalHistory({
 		>
 			<div
 				style={{
-					width: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="no_patologicos"
-				/>
-			</div>
-
-			<div
-				style={{
 					backgroundColor: colors.secondaryBackground,
 					padding: "2rem",
 					borderRadius: "0.625rem",
@@ -137,6 +124,19 @@ export function StudentNonPathologicalHistory({
 						triggerReload={triggerReload}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="no_patologicos"
+				/>
 			</div>
 		</div>
 	);

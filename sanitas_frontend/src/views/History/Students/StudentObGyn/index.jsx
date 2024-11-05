@@ -67,21 +67,6 @@ export function StudentObGynHistory({
 				padding: "2rem",
 			}}
 		>
-			<div>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="ginecoobstetricos"
-					/>
-				</div>
-			</div>
-
 			<div
 				style={{
 					backgroundColor: colors.secondaryBackground,
@@ -148,6 +133,19 @@ export function StudentObGynHistory({
 						/>
 					</Suspense>
 				</div>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="ginecoobstetricos"
+				/>
 			</div>
 		</div>
 	);

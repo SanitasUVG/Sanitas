@@ -108,19 +108,6 @@ export function StudentPersonalHistory({
 					width: "100%",
 				}}
 			>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="personales"
-					/>
-				</div>
-
 				<div style={styles.innerContent}>
 					<div
 						style={{
@@ -156,6 +143,19 @@ export function StudentPersonalHistory({
 							/>
 						</Suspense>
 					</div>
+				</div>
+
+				<div
+					style={{
+						width: "100%",
+						padding: "1rem 0 0 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="personales"
+					/>
 				</div>
 			</div>
 		</div>
