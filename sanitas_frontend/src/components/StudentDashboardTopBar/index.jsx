@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { colors } from "src/theme.mjs";
 import arrowLeft from "@tabler/icons/outline/arrow-narrow-left.svg";
 import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
-import IconButton from "src/components/Button/Icon";
-import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 
 /**
  * @callback NavigationHandler
@@ -48,9 +46,7 @@ export default function StudentDashboardTopbar({
 	navigateToPsiquiatricStudent,
 	navigateToSurgicalStudent,
 	navigateToTraumatologicalStudent,
-	navigateToLogin,
 	useStore,
-	logoutUser,
 }) {
 	const navigate = useNavigate();
 	const [activeSection, setActiveSection] = useState(activeSectionProp);
@@ -207,19 +203,6 @@ export default function StudentDashboardTopbar({
 					}
 				}}
 				style={{ cursor: "pointer" }}
-			/>
-			<IconButton
-				icon={logoutIcon}
-				onClick={() => {
-					logoutUser();
-					navigateToLogin()(navigate);
-				}}
-				style={{
-					position: "absolute",
-					right: "0",
-					marginRight: "3rem",
-					marginTop: "12rem",
-				}}
 			/>
 		</div>
 	);

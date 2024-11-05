@@ -1100,3 +1100,38 @@ export function mapToAPIMedicalConsultation(dbData) {
 		},
 	};
 }
+
+/**
+ * @typedef {Object} SafeEvent
+ * @property {string} httpMethod - The HTTP method of the event.
+ * @property {string} path - The path of the event.
+ * @property {Object} headers - The headers of the event with the Authorization header redacted.
+ * @property {string} body - The body of the event as a JSON string or "No body" if not present.
+ */
+
+/**
+ * Converts an event to a safe event by redacting sensitive information.
+ *
+ * @param {Object} event - The original event object.
+ * @param {string} event.httpMethod - The HTTP method of the event.
+ * @param {string} event.path - The path of the event.
+ * @param {Object} event.headers - The headers of the event.
+ * @param {string|Object} [event.body] - The body of the event.
+ * @returns {SafeEvent} The safe event object with sensitive information redacted.
+ */
+
+/**
+ * @param {import('aws-lambda').APIGatewayProxyEvent} event
+ * @returns {SafeEvent} The event with sensitive data redacted.
+ */
+export function toSafeEvent(event) {
+	return {
+		httpMethod: event.httpMethod,
+		path: event.path,
+		headers: {
+			...event.headers,
+			Authorization: "[REDACTED]",
+		},
+		body: event.body ? JSON.stringify(event.body) : "No body",
+	};
+}

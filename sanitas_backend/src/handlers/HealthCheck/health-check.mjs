@@ -35,7 +35,7 @@ export const handler = async (event, context) => {
 			])
 			.build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		logger.error(error, "Error querying database");
 		return responseBuilder
 			.setStatusCode(200)
 			.setBody([{ name: "DB", status: "DOWN", error: error.message }])
