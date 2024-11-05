@@ -8,7 +8,11 @@ import {
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
-import { decodeJWT, mapToAPIAllergicHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIAllergicHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve allergic medical history for a specific patient by their ID.
@@ -37,7 +41,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -50,7 +57,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
 	try {
 		const patientId = Number.parseInt(event.pathParameters.id, 10);
 		if (!patientId) {
-			logger.error("Invalid ID received!");
+			logger.error(
+				{ patientId: event.pathParameters?.id },
+				"Invalid ID received!",
+			);
 			return responseBuilder
 				.setStatusCode(400)
 				.setBody({ error: "Invalid request: No valid patientId supplied!" })
@@ -69,7 +79,7 @@ export const getAllergicHistoryHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 
 				const response = responseBuilder
 					.setStatusCode(500)
@@ -89,7 +99,10 @@ export const getAllergicHistoryHandler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs.error, inputs: { email, patientId } },
+						msg,
+					);
 
 					const response = responseBuilder
 						.setStatusCode(500)
@@ -123,10 +136,16 @@ export const getAllergicHistoryHandler = async (event, context) => {
 			const dbResponse = await client.query(query, args);
 
 			logger.info("Query done!");
+
 			return dbResponse;
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
+
 			throw transactionResult.error;
 		}
 
@@ -151,8 +170,16 @@ export const getAllergicHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIAllergicHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching allergic history!",
 		);
 		return responseBuilder

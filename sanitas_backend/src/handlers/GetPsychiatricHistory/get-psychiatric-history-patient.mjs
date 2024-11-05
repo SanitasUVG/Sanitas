@@ -8,7 +8,11 @@ import {
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultPsychiatricHistory } from "utils/defaultValues.mjs";
-import { decodeJWT, mapToAPIPsychiatricHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIPsychiatricHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve psychiatric medical history for a specific patient by their ID.
@@ -37,7 +41,10 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -48,7 +55,10 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 
 	const patientId = Number.parseInt(event.pathParameters?.id, 10);
 	if (Number.isNaN(patientId)) {
-		logger.error("Invalid ID received!", { id: event.pathParameters?.id });
+		logger.error(
+			{ patientId: event.pathParameters?.id },
+			"Invalid ID received!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "Invalid request: No valid patientId supplied!" })
@@ -69,7 +79,7 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 				const response = responseBuilder
 					.setStatusCode(500)
 					.setBody(itsDoctor)
@@ -88,7 +98,10 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs.err, inputs: { email, patientId } },
+						msg,
+					);
 					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
@@ -124,6 +137,10 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -148,10 +165,19 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIPsychiatricHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching psychiatric history!",
-			error,
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

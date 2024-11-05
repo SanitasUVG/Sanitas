@@ -1,6 +1,6 @@
 import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils/index.mjs";
+import { createResponse, toSafeEvent } from "utils/index.mjs";
 
 export const handler = async (event, context) => {
 	withRequest(event, context);
@@ -33,7 +33,18 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).setBody({ exists }).build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while checking CUI history!",
+		);
 		await client?.end();
 
 		return responseBuilder

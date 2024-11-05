@@ -1,4 +1,5 @@
 import { Suspense, useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -12,6 +13,8 @@ import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { createRefreshSignal } from "src/utils/refreshHook";
 import useWindowSize from "src/utils/useWindowSize";
 import BaseButton from "src/components/Button/Base";
+import IconButton from "src/components/Button/Icon";
+import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -71,6 +74,8 @@ export default function UpdatePatientInfoView({
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
 }) {
+	const navigate = useNavigate();
+
 	const setIsWoman = useStore((s) => s.setIsWoman);
 	const id = useStore((s) => s.selectedPatientId);
 
@@ -130,6 +135,15 @@ export default function UpdatePatientInfoView({
 					flexGrow: 1,
 				}}
 			>
+				<div style={{ display: "flex", justifyContent: "flex-end" }}>
+					<IconButton
+						icon={logoutIcon}
+						onClick={() => {
+							sidebarConfig.logoutUser();
+							sidebarConfig.navigateToLogin()(navigate);
+						}}
+					/>
+				</div>
 				<Suspense
 					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
 				>
@@ -139,7 +153,8 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
 							textAlign: "center",
-							padding: "2rem 0 0.8rem 0",
+							padding: "0 0 0.8rem 0",
+							marginTop: isMobile ? "0rem" : "-3.15rem", //La scrum master me dijo que lo pusiera así
 						}}
 					>
 						Datos Generales

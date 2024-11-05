@@ -10,6 +10,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPICollaboratorInfo,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -31,7 +32,10 @@ export const getCollaboratorHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -43,7 +47,7 @@ export const getCollaboratorHandler = async (event, context) => {
 	logger.info("Checking if received all parameters...");
 	const patientId = event.pathParameters.id;
 	if (!patientId) {
-		logger.error("No id received!");
+		logger.error({ patientId: event.pathParameters?.id }, "No id received!");
 		const response = responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "Invalid request: No id supplied!" })
@@ -66,7 +70,7 @@ export const getCollaboratorHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 				const response = responseBuilder
 					.setStatusCode(500)
 					.setBody(itsDoctor)
@@ -85,7 +89,10 @@ export const getCollaboratorHandler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs.error, inputs: { email, patientId } },
+						msg,
+					);
 					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
@@ -118,6 +125,10 @@ export const getCollaboratorHandler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -145,7 +156,18 @@ export const getCollaboratorHandler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error has occurred!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching collaborator!",
+		);
 		return responseBuilder.setStatusCode(500).setBody(error).build();
 	} finally {
 		await client?.end();

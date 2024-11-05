@@ -1,7 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIMedicalConsultation,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create a medical consultation for a specific patient.
@@ -26,7 +30,10 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -59,7 +66,7 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 
 				const response = responseBuilder
 					.setStatusCode(500)
@@ -193,8 +200,16 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			})
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ details: error.details, error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating medical consultation!",
 		);
 
@@ -215,8 +230,6 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
