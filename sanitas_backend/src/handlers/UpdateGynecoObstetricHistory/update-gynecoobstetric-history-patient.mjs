@@ -4,6 +4,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIGynecologicalHistory,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 export const updateGynecologicalHistoryHandler = async (event, context) => {
@@ -177,10 +178,19 @@ export const updateGynecologicalHistoryHandler = async (event, context) => {
 			.setBody(formattedResponse)
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating gynecological history!",
 		);
+
 		if (error.code === "23503") {
 			return responseBuilder
 				.setStatusCode(404)

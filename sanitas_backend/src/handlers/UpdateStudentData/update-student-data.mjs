@@ -1,6 +1,10 @@
 import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, mapToAPIStudentInfo } from "utils/index.mjs";
+import {
+	createResponse,
+	mapToAPIStudentInfo,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * @param {import('aws-lambda').APIGatewayProxyEvent} event
@@ -71,7 +75,18 @@ export const handler = async (event, context) => {
 			.setBody(mapToAPIStudentInfo(studentData))
 			.build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating student data!",
+		);
 
 		if (error.code === "23503") {
 			logger.error("A patient with the given ID doesn't exists!");

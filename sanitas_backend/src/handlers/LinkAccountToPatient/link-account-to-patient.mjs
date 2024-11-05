@@ -1,6 +1,6 @@
 import { getPgClient, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @type {import("src/commonTypes.mjs").AWSHandler}
@@ -103,7 +103,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error occurred while linking account!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while linking account!",
+		);
 
 		let statusCode = 500;
 		let errorMessage =

@@ -103,8 +103,24 @@ export const updateTraumatologicalHistoryHandler = async (event, context) => {
 			.setBody(formattedResponse)
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = {
+			httpMethod: event.httpMethod,
+			path: event.path,
+			headers: {
+				...event.headers,
+				Authorization: "[REDACTED]",
+			},
+			body: event.body ? JSON.stringify(event.body) : "No body",
+		};
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating traumatologic history!",
 		);
 

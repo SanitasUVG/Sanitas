@@ -8,7 +8,11 @@ import {
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultPsychiatricHistory } from "utils/defaultValues.mjs";
-import { decodeJWT, mapToAPIPsychiatricHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIPsychiatricHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve psychiatric medical history for a specific patient by their ID.
@@ -161,10 +165,19 @@ export const getPsychiatricHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIPsychiatricHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching psychiatric history!",
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

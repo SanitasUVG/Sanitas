@@ -5,6 +5,7 @@ import {
 	decodeJWT,
 	mapToAPISurgicalHistory,
 	requestDataEditsDBData,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -154,7 +155,19 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		await client.query("rollback");
-		logger.error(error, "An error occurred while updating surgical history!");
+
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating surgical history!",
+		);
 
 		if (error.code === "23503") {
 			return responseBuilder
@@ -171,8 +184,6 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };

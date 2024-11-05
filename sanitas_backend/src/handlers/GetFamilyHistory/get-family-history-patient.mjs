@@ -9,7 +9,7 @@ import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPIFamilyHistory } from "utils";
 import { genDefaultFamiliarHistory } from "utils/defaultValues.mjs";
-import { decodeJWT } from "utils/index.mjs";
+import { decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve family medical history for a specific patient by their ID.
@@ -162,7 +162,19 @@ export const getFamilyHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIFamilyHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
-		logger.error(error, "An error occurred while fetching family history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching family history!",
+		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

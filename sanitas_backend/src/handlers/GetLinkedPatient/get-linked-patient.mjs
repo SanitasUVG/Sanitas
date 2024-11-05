@@ -1,7 +1,7 @@
 import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT } from "utils/index.mjs";
+import { decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @type {import("src/commonTypes.mjs").AWSHandler}
@@ -70,8 +70,16 @@ export const handler = async (event, context) => {
 			.setBody({ linkedPatientId })
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while checking if an account has a linked patient",
 		);
 

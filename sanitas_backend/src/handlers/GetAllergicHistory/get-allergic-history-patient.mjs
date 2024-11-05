@@ -8,7 +8,11 @@ import {
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultAllergicHistory } from "utils/defaultValues.mjs";
-import { decodeJWT, mapToAPIAllergicHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIAllergicHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve allergic medical history for a specific patient by their ID.
@@ -132,6 +136,7 @@ export const getAllergicHistoryHandler = async (event, context) => {
 			const dbResponse = await client.query(query, args);
 
 			logger.info("Query done!");
+
 			return dbResponse;
 		});
 
@@ -165,8 +170,16 @@ export const getAllergicHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIAllergicHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ err: error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching allergic history!",
 		);
 		return responseBuilder

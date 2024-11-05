@@ -4,6 +4,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIStudentInfo,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -163,7 +164,18 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).setBody(studentData).build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating student information!",
+		);
 
 		if (error.code === "23503") {
 			logger.error("A patient with the given ID doesn't exists!");
@@ -181,13 +193,9 @@ export const handler = async (event, context) => {
 				.build();
 		}
 
-		logger.error(error, "An error occurred!");
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({ error: "An internal error ocurred" })
 			.build();
-	} finally {
-		await client?.end();
-		logger.info("Database connection closed!");
 	}
 };

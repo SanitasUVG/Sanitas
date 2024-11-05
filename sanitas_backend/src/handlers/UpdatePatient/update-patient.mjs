@@ -1,6 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
+import {
+	createResponse,
+	decodeJWT,
+	mapToAPIPatient,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: The function isn't that complex, it's just really large.
 export const updatePatientHandler = async (event, context) => {
@@ -136,12 +141,20 @@ export const updatePatientHandler = async (event, context) => {
 		logger.info(response, "Respondiendo con:");
 		return response;
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
-			"¡Se produjo un error al actualizar los datos del paciente!",
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating patient data!",
 		);
 
-		return responseBuilder.setStatusCode(400).setBody({
+		return responseBuilder.setStatusCode(500).setBody({
 			error: "Se produjo un error al actualizar los datos del paciente.",
 		});
 	} finally {

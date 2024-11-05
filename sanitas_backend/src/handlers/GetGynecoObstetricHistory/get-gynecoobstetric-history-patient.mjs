@@ -10,6 +10,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIGynecologicalHistory,
+	toSafeEvent,
 } from "utils/index.mjs";
 import { genDefaultGynecologicalHistory } from "utils/defaultValues.mjs";
 
@@ -162,10 +163,19 @@ export const getGynecologicalHistoryHandler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching gynecological history!",
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

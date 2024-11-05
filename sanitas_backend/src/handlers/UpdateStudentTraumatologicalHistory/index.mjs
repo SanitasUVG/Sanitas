@@ -2,7 +2,11 @@ import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
-import { decodeJWT, requestDataEditsDBData } from "utils/index.mjs";
+import {
+	decodeJWT,
+	requestDataEditsDBData,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP POST request to update or create the traumatologic history for a specific patient.
@@ -158,8 +162,16 @@ export const handler = async (event, context) => {
 			.setBody(formattedResponse)
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating traumatologic history!",
 		);
 

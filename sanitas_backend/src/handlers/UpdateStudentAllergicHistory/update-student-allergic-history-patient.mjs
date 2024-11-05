@@ -6,6 +6,7 @@ import {
 	decodeJWT,
 	mapToAPIAllergicHistory,
 	requestIsSubset,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -192,7 +193,18 @@ export const updateStudentAllergicHistoryHandler = async (event, context) => {
 		logger.info({ response }, "Done! Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error occurred while updating allergic history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating allergic history!",
+		);
 
 		let statusCode = 500;
 		let errorMessage =

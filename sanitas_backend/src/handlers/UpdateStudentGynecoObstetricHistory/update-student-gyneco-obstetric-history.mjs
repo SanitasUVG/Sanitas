@@ -5,6 +5,7 @@ import {
 	decodeJWT,
 	mapToAPIGynecologicalHistory,
 	requestIsSubset,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -416,8 +417,16 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating gynecological history!",
 		);
 

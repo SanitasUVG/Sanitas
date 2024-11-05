@@ -1,7 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIMedicalConsultation,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create a medical consultation for a specific patient.
@@ -196,8 +200,16 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			})
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ err: error, details: error.message },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating medical consultation!",
 		);
 
@@ -218,8 +230,6 @@ export const updateMedicalConsultationHandler = async (event, context) => {
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };

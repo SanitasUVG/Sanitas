@@ -1,7 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT, mapToAPIMedicalConsultation } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIMedicalConsultation,
+	toSafeEvent,
+} from "utils/index.mjs";
 import { genDefaultMedicalConsultation } from "utils/defaultValues.mjs";
 
 /**
@@ -136,10 +140,19 @@ export const getMedicalConsultationHandler = async (event, context) => {
 			.setBody({ patientId: patientId, consultations: medicalConsultation })
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ err: error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while fetching medical consultation!",
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

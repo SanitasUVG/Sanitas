@@ -1,7 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT, mapToAPIPsychiatricHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIPsychiatricHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create psychiatric history for a specific patient.
@@ -128,8 +132,16 @@ export const updatePsychiatricHistoryHandler = async (event, context) => {
 			.setBody(mapToAPIPsychiatricHistory(updatedRecord))
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			error,
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating psychiatric history!",
 		);
 

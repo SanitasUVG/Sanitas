@@ -10,6 +10,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIStudentInfo,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -164,7 +165,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error has occurred!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching general student info!",
+		);
 		return responseBuilder.setStatusCode(500).setBody(error).build();
 	} finally {
 		await client?.end();

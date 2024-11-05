@@ -4,6 +4,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPICollaboratorInfo,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 export const updateCollaboratorHandler = async (event, context) => {
@@ -126,7 +127,18 @@ export const updateCollaboratorHandler = async (event, context) => {
 			.setBody(apiUpdatedCollaborator)
 			.build();
 	} catch (error) {
-		logger.error(error, "Error querying database:");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating collaborator!",
+		);
 
 		if (error.code === "23503") {
 			return responseBuilder

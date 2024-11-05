@@ -11,6 +11,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPISurgicalHistory,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -179,7 +180,18 @@ export const getSurgicalHistoryHandler = async (event, context) => {
 				.build();
 		}
 	} catch (error) {
-		logger.error(error, "An error occurred while fetching surgical history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching surgical history!",
+		);
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({

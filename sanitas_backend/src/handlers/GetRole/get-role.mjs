@@ -1,6 +1,6 @@
 import { getPgClient, isDoctor } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Handles patient search queries based on ID, employee code, or partial names and surnames.
@@ -57,7 +57,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with...");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error has occurred!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching role!",
+		);
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({ error: "Internal Server Error" })

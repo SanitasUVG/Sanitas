@@ -1,6 +1,6 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @typedef {Object} RequestParams
@@ -230,10 +230,19 @@ WHERE (
 
 		return responseBuilder.setStatusCode(200).setBody(response.rows).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ err: error, details: error.message },
-			"An error has occurred!",
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while searching patient!",
 		);
+
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({ error: "DB Error" })

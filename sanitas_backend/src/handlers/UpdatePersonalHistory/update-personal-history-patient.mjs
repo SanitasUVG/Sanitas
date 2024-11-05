@@ -1,7 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT, mapToAPIPersonalHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIPersonalHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create personal medical history for a specific patient.
@@ -118,7 +122,18 @@ export const updatePersonalHistoryHandler = async (event, context) => {
 			.setBody(mapToAPIPersonalHistory(updatedRecord))
 			.build();
 	} catch (error) {
-		logger.error(error, "An error occurred while updating personal history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating personal history!",
+		);
 
 		if (error.code === "23503") {
 			return responseBuilder

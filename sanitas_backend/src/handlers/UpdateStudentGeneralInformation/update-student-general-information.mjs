@@ -1,6 +1,11 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
+import {
+	createResponse,
+	decodeJWT,
+	mapToAPIPatient,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Checks if the given `requestData` modifies values from the `dbData`.
@@ -251,7 +256,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Done! Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error occurred while updating surgical history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating surgical history!",
+		);
 
 		return responseBuilder
 			.setStatusCode(500)

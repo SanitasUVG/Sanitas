@@ -1,6 +1,6 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Convert a 2D array into a CSV string
@@ -178,8 +178,16 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).setBody(csv).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ err: error, details: error.message },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while exporting data!",
 		);
 

@@ -8,7 +8,11 @@ import {
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { genDefaultPersonalHistory } from "utils/defaultValues.mjs";
-import { decodeJWT, mapToAPIPersonalHistory } from "utils/index.mjs";
+import {
+	decodeJWT,
+	mapToAPIPersonalHistory,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Handles the HTTP GET request to retrieve personal medical history for a specific patient by their ID.
@@ -161,7 +165,18 @@ export const getPersonalHistoryHandler = async (event, context) => {
 		const medicalHistory = mapToAPIPersonalHistory(dbResponse.rows[0]);
 		return responseBuilder.setStatusCode(200).setBody(medicalHistory).build();
 	} catch (error) {
-		logger.error(error, "An error occurred while fetching personal history!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching personal history!",
+		);
 		return responseBuilder
 			.setStatusCode(500)
 			.setBody({
