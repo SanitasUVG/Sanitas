@@ -6,6 +6,7 @@ import {
 	createResponse,
 	mapToAPIPersonalHistory,
 	requestIsSubset,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 /**
@@ -34,7 +35,10 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 	logger.info({ tokenPayload: tokenInfo }, "Decoded JWT payload");
 
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -93,7 +97,10 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 					"Comparing medicalHistory with existingData...",
 				);
 				if (requestModifiesSavedData(medicalHistory, existingData)) {
-					logger.error("Request modifies data!");
+					logger.error(
+						{ DB: existingData, request: medicalHistory },
+						"Request modifies data!",
+					);
 					const response = responseBuilder
 						.setStatusCode(403)
 						.setBody({ error: "Not authorized to update data!" })
@@ -184,8 +191,17 @@ export const updateStudentPersonalHistoryHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		await client.query("rollback");
+
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating personal history!",
 		);
 

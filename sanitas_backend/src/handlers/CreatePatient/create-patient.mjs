@@ -67,7 +67,7 @@ export const createPatientHandler = async (event, context) => {
 			]);
 
 			if (existingPatientResult.rows.length > 0) {
-				logger.error("CUI already exists.");
+				logger.error(patientData.cui, "CUI already exists.");
 
 				const response = responseBuilder
 					.setStatusCode(409)

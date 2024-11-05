@@ -1,7 +1,7 @@
 import { getPgClient, isDoctor, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse, decodeJWT } from "utils";
-import { mapToAPIAllergicHistory } from "utils/index.mjs";
+import { mapToAPIAllergicHistory, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Handles the HTTP PUT request to update or create allergic history for a specific patient.
@@ -26,7 +26,10 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -47,7 +50,7 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 		if (itsDoctor.error) {
 			const msg =
 				"An error occurred while trying to check if the user is a doctor!";
-			logger.error({ error: itsDoctor.error }, msg);
+			logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
 		}
 
@@ -129,6 +132,19 @@ export const updateAllergicHistoryHandler = async (event, context) => {
 			.build();
 	} catch (error) {
 		logger.error(error, "An error occurred while updating allergic history!");
+
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while updating allergic history!",
+		);
 
 		if (error.code === "23503") {
 			return responseBuilder

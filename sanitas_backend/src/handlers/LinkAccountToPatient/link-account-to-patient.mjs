@@ -1,6 +1,6 @@
 import { getPgClient, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @type {import("src/commonTypes.mjs").AWSHandler}
@@ -22,7 +22,10 @@ export const handler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -41,7 +44,7 @@ export const handler = async (event, context) => {
 
 	/** @type {import("src/commonTypes.mjs").LinkData} */
 	const { cui } = JSON.parse(event.body);
-	if (!email) {
+	if (!cui) {
 		logger.error("No cui found!");
 		return responseBuilder
 			.setStatusCode(400)
@@ -100,7 +103,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error(error, "An error occurred while linking account!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while linking account!",
+		);
 
 		let statusCode = 500;
 		let errorMessage =
