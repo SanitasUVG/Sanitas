@@ -24,8 +24,6 @@ import arrowRight from "@tabler/icons/outline/arrow-narrow-right.svg";
  * @property {NavigationHandler} navigateToSurgicalStudent - Function to navigate to the surgical student information section.
  * @property {NavigationHandler} navigateToTraumatologicalStudent - Function to navigate to the traumatological student information section.
  * @property {import("src/store.mjs").UseStoreHook} useStore
- * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
- * @property {NavigationHandler} navigateToLogin
  */
 
 /**

@@ -1,5 +1,4 @@
 import { Suspense, useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import DropdownMenu from "src/components/DropdownMenu";
@@ -15,6 +14,8 @@ import useWindowSize from "src/utils/useWindowSize";
 import BaseButton from "src/components/Button/Base";
 import IconButton from "src/components/Button/Icon";
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -67,6 +68,7 @@ const hasPropertyAndIsValid = (object, property) => {
  * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getStudentPatientInformation
  * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getCollaboratorInformation
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateCollaboratorInformation
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
@@ -81,11 +83,11 @@ export default function UpdatePatientInfoView({
 	updateStudentPatientInformation,
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
+	logoutUser,
 }) {
-	const navigate = useNavigate();
-
 	const setIsWoman = useStore((s) => s.setIsWoman);
 	const id = useStore((s) => s.selectedPatientId);
+	const navigate = useNavigate();
 
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
@@ -123,35 +125,27 @@ export default function UpdatePatientInfoView({
 		>
 			<div
 				style={{
-					width: "100%",
-					height: "fit-content",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="general"
-				/>
-			</div>
-
-			<div
-				style={{
 					overflowY: "scroll",
 					background: colors.secondaryBackground,
 					borderRadius: "0.625rem",
 					width: "100%",
 					padding: isMobile ? "1rem" : "1rem 6rem",
 					flexGrow: 1,
+					position: "relative",
 				}}
 			>
-				<div style={{ display: "flex", justifyContent: "flex-end" }}>
-					<IconButton
-						icon={logoutIcon}
-						onClick={() => {
-							sidebarConfig.logoutUser();
-							sidebarConfig.navigateToLogin()(navigate);
-						}}
-					/>
-				</div>
+				<IconButton
+					icon={logoutIcon}
+					onClick={() => {
+						logoutUser();
+						navigate(NAV_PATHS.LOGIN_USER);
+					}}
+					style={{
+						position: "absolute",
+						right: "0",
+						top: "0",
+					}}
+				/>
 				<Suspense
 					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
 				>
@@ -161,8 +155,7 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
 							textAlign: "center",
-							padding: "0 0 0.8rem 0",
-							marginTop: isMobile ? "0rem" : "-3.15rem", //La scrum master me dijo que lo pusiera así
+							padding: "2rem 0 0.8rem 0",
 						}}
 					>
 						Datos Generales
@@ -205,6 +198,18 @@ export default function UpdatePatientInfoView({
 						/>
 					</div>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					height: "fit-content",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="general"
+				/>
 			</div>
 		</div>
 	);

@@ -89,19 +89,6 @@ export function StudentFamiliarHistory({
 					width: "100%",
 				}}
 			>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="familiares"
-					/>
-				</div>
-
 				<div style={styles.innerContent}>
 					<div
 						style={{
@@ -136,6 +123,19 @@ export function StudentFamiliarHistory({
 							/>
 						</Suspense>
 					</div>
+				</div>
+
+				<div
+					style={{
+						width: "100%",
+						padding: "1rem 0 0 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="familiares"
+					/>
 				</div>
 			</div>
 		</div>

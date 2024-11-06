@@ -63,20 +63,6 @@ export function StudentSurgicalHistory({
 		>
 			<div
 				style={{
-					width: "100%",
-					height: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="quirurgicos"
-				/>
-			</div>
-
-			<div
-				style={{
 					backgroundColor: colors.secondaryBackground,
 					padding: "2rem",
 					borderRadius: "10px",
@@ -134,6 +120,20 @@ export function StudentSurgicalHistory({
 						updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					height: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="quirurgicos"
+				/>
 			</div>
 		</div>
 	);

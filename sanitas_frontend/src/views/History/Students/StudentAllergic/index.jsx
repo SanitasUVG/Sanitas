@@ -53,18 +53,6 @@ export function StudentAllergicHistory({
 		>
 			<div
 				style={{
-					width: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="alergicos"
-				/>
-			</div>
-			<div
-				style={{
 					backgroundColor: colors.secondaryBackground,
 					padding: "2rem",
 					borderRadius: "10px",
@@ -126,6 +114,19 @@ export function StudentAllergicHistory({
 						updateStudentAllergicHistory={updateStudentAllergicHistory}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="alergicos"
+				/>
 			</div>
 		</div>
 	);
