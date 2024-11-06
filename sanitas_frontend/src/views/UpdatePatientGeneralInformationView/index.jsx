@@ -28,7 +28,15 @@ const hasPropertyAndIsValid = (object, property) => {
 		return false;
 	}
 
-	return Object.hasOwn(object, property) && object[property] !== null;
+	// NOTE: Some browsers don't have Object.hasOwn! Mainly Safari users...
+	// Even thought it was released in 2021...
+	const hasOwn =
+		Object.hasOwn ||
+		((it, key) => {
+			// biome-ignore lint/suspicious/noPrototypeBuiltins: We need the polyfill for some browsers...
+			return it?.hasOwnProperty(key);
+		});
+	return hasOwn(object, property) && object[property] !== null;
 };
 
 /**
