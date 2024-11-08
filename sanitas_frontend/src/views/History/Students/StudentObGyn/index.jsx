@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentObGynHistoryProps
@@ -1263,9 +1264,7 @@ function ObGynView({
 			triggerReload();
 			setIsEditable(false);
 		} else {
-			toast.error(
-				`Error al actualizar los antecedentes ginecoobstétricos: ${result.error}`,
-			);
+			toast.error(getErrorMessage(result, "ginecoobstetricos"));
 		}
 	};
 

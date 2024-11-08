@@ -13,6 +13,7 @@ import IconButton from "src/components/Button/Icon";
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PersonalHistoryProps
@@ -443,7 +444,7 @@ function PersonalView({
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				toast.error(getErrorMessage(response, "personales"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

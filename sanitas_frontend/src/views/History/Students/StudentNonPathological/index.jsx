@@ -9,6 +9,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * Component responsible for managing and displaying non-pathological history information of a patient.
@@ -382,9 +383,7 @@ function NonPathologicalView({
 			toast.success("Antecedentes no patológicos guardados con éxito.");
 			triggerReload();
 		} else {
-			toast.error(
-				`Error al guardar los antecedentes no patológicos: ${result.error}`,
-			);
+			toast.error(getErrorMessage(result, "noPatologicos"));
 		}
 	};
 

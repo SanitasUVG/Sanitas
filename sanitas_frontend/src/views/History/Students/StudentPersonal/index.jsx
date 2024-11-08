@@ -10,6 +10,7 @@ import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentPersonalHistoryProps
@@ -407,7 +408,7 @@ function PersonalView({
 			);
 
 			if (response.error) {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				toast.error(getErrorMessage(response, "personales"));
 			} else {
 				toast.success("Antecedente personal guardado con éxito.");
 				setPersonalHistory(updatedPersonalHistory);

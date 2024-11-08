@@ -11,6 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentTraumatologicalHistoryProps
@@ -272,7 +273,7 @@ function StudentTraumatologicalView({
 						: "Antecedente traumatológico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(getErrorMessage(response, "traumatologicos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

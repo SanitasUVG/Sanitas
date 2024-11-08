@@ -10,6 +10,7 @@ import { BaseInput, RadioInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentAllergicHistoryProps
@@ -250,13 +251,9 @@ function AllergicView({
 				setIsEditable(false);
 				toast.success("Antecedente alérgico guardado con éxito.");
 			} else {
-				throw new Error(response.error); // Lanza un error si la respuesta incluye un error
+				toast.error(getErrorMessage(response, "alergias"));
 			}
-		} catch (error) {
-			toast.error(
-				`Error en la operación: ${error.message || "Error desconocido"}`,
-			);
-		}
+		} catch (_error) {}
 	};
 
 	const handleSelectAllergie = (allergy) => {
