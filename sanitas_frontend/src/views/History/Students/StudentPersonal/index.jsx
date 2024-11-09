@@ -102,7 +102,7 @@ export function StudentPersonalHistory({
 	const styles = getResponsiveStyles(width);
 
 	return (
-		<div style={styles.container}>
+		<div style={{ ...styles.container, overflow: "auto" }}>
 			<div
 				style={{
 					height: "100%",
