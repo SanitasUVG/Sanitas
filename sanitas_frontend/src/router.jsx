@@ -232,11 +232,7 @@ export const STUDENT_DASHBOARD_SIDEBAR_PROPS = {
 			`${NAV_PATHS.PATIENT_FORM}/${PATIENT_FORM_NAV_PATHS.STUDENT_OBGYN_HISTORY}`,
 		);
 	},
-	navigateToLogin: () => (navigate) => {
-		navigate(NAV_PATHS.LOGIN_USER, { replace: true });
-	},
 	useStore: useStore,
-	logoutUser: IS_PRODUCTION ? logoutUser : mockLogoutUser,
 };
 
 const exportDataView = (
@@ -318,6 +314,7 @@ const studentGeneralInformation = (
 			updateCollaboratorInformation={patientUpdateCollaboratorInformation}
 			sidebarConfig={STUDENT_DASHBOARD_SIDEBAR_PROPS}
 			useStore={useStore}
+			logoutUser={IS_PRODUCTION ? logoutUser : mockLogoutUser}
 		/>
 	</RequireAuth>
 );

@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -10,6 +10,7 @@ import { BaseInput } from "src/components/Input/index";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentPersonalHistoryProps
@@ -31,9 +32,15 @@ export function StudentPersonalHistory({
 }) {
 	const { width } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const personalHistoryResource = WrapPromise(getStudentPersonalHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+	const personalHistoryResource = useMemo(
+		() => WrapPromise(getStudentPersonalHistory(id)),
+		[getStudentPersonalHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
@@ -95,26 +102,13 @@ export function StudentPersonalHistory({
 	const styles = getResponsiveStyles(width);
 
 	return (
-		<div style={styles.container}>
+		<div style={{ ...styles.container, overflow: "auto" }}>
 			<div
 				style={{
 					height: "100%",
 					width: "100%",
 				}}
 			>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="personales"
-					/>
-				</div>
-
 				<div style={styles.innerContent}>
 					<div
 						style={{
@@ -150,6 +144,19 @@ export function StudentPersonalHistory({
 							/>
 						</Suspense>
 					</div>
+				</div>
+
+				<div
+					style={{
+						width: "100%",
+						padding: "1rem 0 0 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="personales"
+					/>
 				</div>
 			</div>
 		</div>
@@ -401,7 +408,7 @@ function PersonalView({
 			);
 
 			if (response.error) {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				toast.error(getErrorMessage(response, "personales"));
 			} else {
 				toast.success("Antecedente personal guardado con éxito.");
 				setPersonalHistory(updatedPersonalHistory);

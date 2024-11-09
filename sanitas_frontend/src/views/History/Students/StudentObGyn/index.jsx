@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentObGynHistoryProps
@@ -67,21 +68,6 @@ export function StudentObGynHistory({
 				padding: "2rem",
 			}}
 		>
-			<div>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="ginecoobstetricos"
-					/>
-				</div>
-			</div>
-
 			<div
 				style={{
 					backgroundColor: colors.secondaryBackground,
@@ -148,6 +134,19 @@ export function StudentObGynHistory({
 						/>
 					</Suspense>
 				</div>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="ginecoobstetricos"
+				/>
 			</div>
 		</div>
 	);
@@ -1265,9 +1264,7 @@ function ObGynView({
 			triggerReload();
 			setIsEditable(false);
 		} else {
-			toast.error(
-				`Error al actualizar los antecedentes ginecoobstétricos: ${result.error}`,
-			);
+			toast.error(getErrorMessage(result, "ginecoobstetricos"));
 		}
 	};
 

@@ -8,6 +8,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} PsichiatricHistoryProps
@@ -61,18 +62,6 @@ export function StudentPsichiatricHistory({
 		>
 			<div
 				style={{
-					width: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="psiquiatricos"
-				/>
-			</div>
-			<div
-				style={{
 					backgroundColor: colors.secondaryBackground,
 					padding: "2rem",
 					borderRadius: "0.625rem",
@@ -121,6 +110,19 @@ export function StudentPsichiatricHistory({
 						triggerReload={triggerReload}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="psiquiatricos"
+				/>
 			</div>
 		</div>
 	);
@@ -637,7 +639,7 @@ function PsichiatricView({
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				triggerReload();
 			} else {
-				toast.error(`Error al guardar los antecedentes: ${result.error}`);
+				toast.error(getErrorMessage(result, "psiquiatricos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

@@ -1,6 +1,6 @@
 import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT } from "utils/index.mjs";
+import { createResponse, decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Convert a 2D array into a CSV string
@@ -56,7 +56,10 @@ export const handler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -115,7 +118,7 @@ export const handler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if user is doctor!";
-				logger.error({ error: itsDoctor.error }, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 
 				const response = responseBuilder
 					.setStatusCode(500)
@@ -146,6 +149,10 @@ export const handler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -171,8 +178,16 @@ export const handler = async (event, context) => {
 
 		return responseBuilder.setStatusCode(200).setBody(csv).build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ details: error.message },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while exporting data!",
 		);
 

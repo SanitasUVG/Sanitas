@@ -12,6 +12,10 @@ import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { createRefreshSignal } from "src/utils/refreshHook";
 import useWindowSize from "src/utils/useWindowSize";
 import BaseButton from "src/components/Button/Base";
+import IconButton from "src/components/Button/Icon";
+import logoutIcon from "@tabler/icons/outline/door-exit.svg";
+import { useNavigate } from "react-router-dom";
+import { NAV_PATHS } from "src/router";
 
 /**
  * Checks if the given property exists and is not a null value inside the object.
@@ -24,7 +28,15 @@ const hasPropertyAndIsValid = (object, property) => {
 		return false;
 	}
 
-	return Object.hasOwn(object, property) && object[property] !== null;
+	// NOTE: Some browsers don't have Object.hasOwn! Mainly Safari users...
+	// Even thought it was released in 2021...
+	const hasOwn =
+		Object.hasOwn ||
+		((it, key) => {
+			// biome-ignore lint/suspicious/noPrototypeBuiltins: We need the polyfill for some browsers...
+			return it?.hasOwnProperty(key);
+		});
+	return hasOwn(object, property) && object[property] !== null;
 };
 
 /**
@@ -56,6 +68,7 @@ const hasPropertyAndIsValid = (object, property) => {
  * @property {import("src/dataLayer.mjs").GetStudentPatientInformationAPICall} getStudentPatientInformation
  * @property {import("src/dataLayer.mjs").GetCollaboratorPatientInformationAPICall} getCollaboratorInformation
  * @property {import("src/dataLayer.mjs").UpdateCollaboratorPatientInformationAPICall} updateCollaboratorInformation
+ * @property {import("src/cognito.mjs").CognitoLogoutUserCallback} logoutUser
  */
 
 /**
@@ -70,26 +83,29 @@ export default function UpdatePatientInfoView({
 	updateStudentPatientInformation,
 	getCollaboratorInformation,
 	updateCollaboratorInformation,
+	logoutUser,
 }) {
 	const setIsWoman = useStore((s) => s.setIsWoman);
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	const navigate = useNavigate();
+
 	const [refreshSignal, triggerRefresh] = createRefreshSignal();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
-	const [generalResource, collaboratorResource, studentResource] = useMemo(
-		() =>
-			[
-				getGeneralPatientInformation(id),
-				getCollaboratorInformation(id),
-				getStudentPatientInformation(id),
-			].map((s) => WrapPromise(s)),
-		[
-			getGeneralPatientInformation,
-			getCollaboratorInformation,
-			getStudentPatientInformation,
-			id,
-			refreshSignal,
-		],
+	const generalResource = useMemo(
+		() => WrapPromise(getGeneralPatientInformation(id)),
+		[getGeneralPatientInformation, id, refreshSignal],
+	);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources.
+	const collaboratorResource = useMemo(
+		() => WrapPromise(getCollaboratorInformation(id)),
+		[getCollaboratorInformation, id, refreshSignal],
+	);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We need the refresh signal to refresh the resources
+	const studentResource = useMemo(
+		() => WrapPromise(getStudentPatientInformation(id)),
+		[getStudentPatientInformation, id, refreshSignal],
 	);
 
 	const { width } = useWindowSize();
@@ -109,26 +125,27 @@ export default function UpdatePatientInfoView({
 		>
 			<div
 				style={{
-					width: "100%",
-					height: "fit-content",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="general"
-				/>
-			</div>
-
-			<div
-				style={{
 					overflowY: "scroll",
 					background: colors.secondaryBackground,
 					borderRadius: "0.625rem",
 					width: "100%",
 					padding: isMobile ? "1rem" : "1rem 6rem",
 					flexGrow: 1,
+					position: "relative",
 				}}
 			>
+				<IconButton
+					icon={logoutIcon}
+					onClick={() => {
+						logoutUser();
+						navigate(NAV_PATHS.LOGIN_USER);
+					}}
+					style={{
+						position: "absolute",
+						right: "0",
+						top: "0",
+					}}
+				/>
 				<Suspense
 					fallback={<Throbber loadingMessage="Cargando datos de paciente..." />}
 				>
@@ -182,6 +199,18 @@ export default function UpdatePatientInfoView({
 					</div>
 				</Suspense>
 			</div>
+
+			<div
+				style={{
+					width: "100%",
+					height: "fit-content",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="general"
+				/>
+			</div>
 		</div>
 	);
 }
@@ -229,6 +258,7 @@ function UpdateColaboratorInformationSection({
 		},
 		h1: {
 			gridColumn: "1 / span 2",
+			paddingBottom: "1rem",
 			fontSize: fontSize.subtitleSize,
 		},
 		h2: {
@@ -317,7 +347,7 @@ function UpdateColaboratorInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, code: e.target.value })
 						}
-						placeholder="Código"
+						placeholder="Ingrese su código de colaborador"
 						style={inputStyles}
 						disabled={hasPropertyAndIsValid(responseFromGET, "code")}
 					/>
@@ -331,20 +361,25 @@ function UpdateColaboratorInformationSection({
 						paddingLeft: isMobile ? "0" : "1rem",
 					}}
 				>
-					<label style={styles.label}>Área:</label>
+					<label style={styles.label}>Área de trabajo:</label>
 					<BaseInput
 						type="text"
 						value={patientData.area}
 						onChange={(e) =>
 							setPatientData({ ...patientData, area: e.target.value })
 						}
-						placeholder="Área"
+						placeholder="Ingrese el nombre del área donde labora"
 						style={inputStyles}
+						maxLength={100}
 					/>
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
 			>
 				<BaseButton
 					text="Guardar"
@@ -669,7 +704,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, phone: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Teléfono"
+							placeholder="Ingrese su número telefónico (Ej. 5667-7877)"
 						/>
 					</div>
 
@@ -682,12 +717,12 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, address: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Dirección"
+							placeholder="Ingrese su dirección completa"
 						/>
 					</div>
 
 					<div style={inputContainerStyles}>
-						<label style={styles.label}>Seguro:</label>
+						<label style={styles.label}>Seguro Médico:</label>
 						<BaseInput
 							type="text"
 							value={patientData.insurance || ""}
@@ -695,7 +730,7 @@ function UpdateGeneralInformationSection({
 								setPatientData({ ...patientData, insurance: e.target.value })
 							}
 							style={inputStyles}
-							placeholder="Seguro"
+							placeholder="Ingrese el nombre de seguro (Ej. El Roble)"
 						/>
 					</div>
 				</div>
@@ -830,7 +865,13 @@ function UpdateGeneralInformationSection({
 				</div>
 			</div>
 
-			<div style={{ display: "flex", justifyContent: "center" }}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
+			>
 				<BaseButton
 					text="Guardar"
 					onClick={handleUpdatePatient}
@@ -883,6 +924,7 @@ function UpdateStudentInformationSection({
 		},
 		h1: {
 			gridColumn: "1 / span 2",
+			paddingBottom: "1rem",
 			fontSize: fontSize.subtitleSize,
 		},
 		firstsectionform: {
@@ -957,7 +999,7 @@ function UpdateStudentInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, carnet: e.target.value })
 						}
-						placeholder="Carnet"
+						placeholder="Ingrese el número de su carnet"
 						style={inputStyles}
 						disabled={hasPropertyAndIsValid(responseFromGET, "carnet")}
 					/>
@@ -978,13 +1020,18 @@ function UpdateStudentInformationSection({
 						onChange={(e) =>
 							setPatientData({ ...patientData, career: e.target.value })
 						}
-						placeholder="Carrera"
+						placeholder="Ingrese el nombre completo de su carrera"
 						style={inputStyles}
+						maxLength={100}
 					/>
 				</div>
 			</div>
 			<div
-				style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					paddingTop: "2rem",
+				}}
 			>
 				<BaseButton
 					text="Guardar"

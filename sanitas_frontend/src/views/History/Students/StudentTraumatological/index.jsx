@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -11,6 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentTraumatologicalHistoryProps
@@ -33,9 +34,15 @@ export function StudentTraumatologicalHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	//   const id = 1;
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const traumatologicHistoryResource = WrapPromise(getTraumatologicHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+	const traumatologicHistoryResource = useMemo(
+		() => WrapPromise(getTraumatologicHistory(id)),
+		[getTraumatologicHistory, id],
+	);
 
 	const LoadingView = () => (
 		<Throbber loadingMessage="Cargando información de los antecedentes traumatológicos..." />
@@ -51,20 +58,6 @@ export function StudentTraumatologicalHistory({
 				padding: "2rem",
 			}}
 		>
-			<div
-				style={{
-					width: "100%",
-					height: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="traumatologicos"
-				/>
-			</div>
-
 			<div
 				style={{
 					backgroundColor: colors.secondaryBackground,
@@ -123,6 +116,19 @@ export function StudentTraumatologicalHistory({
 						updateTraumatologicalHistory={updateTraumatologicalHistory}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="traumatologicos"
+				/>
 			</div>
 		</div>
 	);
@@ -267,7 +273,7 @@ function StudentTraumatologicalView({
 						: "Antecedente traumatológico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(getErrorMessage(response, "traumatologicos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

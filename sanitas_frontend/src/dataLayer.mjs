@@ -262,13 +262,13 @@ export const submitPatientData = async (patientData) => {
  * @property {string|null} contactKinship1
  * @property {string|null} contactPhone1
  *
- * @property {string|null} contactName1
- * @property {string|null} contactKinship1
- * @property {string|null} contactPhone1
+ * @property {string|null} contactName2
+ * @property {string|null} contactKinship2
+ * @property {string|null} contactPhone2
  *
  * @property {string|null} bloodType
  * @property {string|null} address
- * @property {number | undefined} insuranceId
+ * @property {string | undefined} insurance
  * @property {string} birthdate
  * @property {string|null} phone
  */

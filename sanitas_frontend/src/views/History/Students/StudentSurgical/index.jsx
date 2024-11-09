@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -11,6 +11,7 @@ import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import { adjustHeight } from "src/utils/measureScaling";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentSurgicalHistoryProps
@@ -34,9 +35,16 @@ export function StudentSurgicalHistory({
 }) {
 	const { height } = useWindowSize();
 	const id = useStore((s) => s.selectedPatientId);
-	//   const id = 1;
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const surgicalHistoryResource = WrapPromise(getStudentSurgicalHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+
+	const surgicalHistoryResource = useMemo(
+		() => WrapPromise(getStudentSurgicalHistory(id)),
+		[getStudentSurgicalHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
@@ -54,20 +62,6 @@ export function StudentSurgicalHistory({
 				padding: "2rem",
 			}}
 		>
-			<div
-				style={{
-					width: "100%",
-					height: "100%",
-					padding: "0 0 1rem 0",
-					flex: "0 0 20%",
-				}}
-			>
-				<StudentDashboardTopbar
-					{...sidebarConfig}
-					activeSectionProp="quirurgicos"
-				/>
-			</div>
-
 			<div
 				style={{
 					backgroundColor: colors.secondaryBackground,
@@ -127,6 +121,20 @@ export function StudentSurgicalHistory({
 						updateStudentSurgicalHistory={updateStudentSurgicalHistory}
 					/>
 				</Suspense>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					height: "100%",
+					padding: "1rem 0 0 0",
+					flex: "0 0 20%",
+				}}
+			>
+				<StudentDashboardTopbar
+					{...sidebarConfig}
+					activeSectionProp="quirurgicos"
+				/>
 			</div>
 		</div>
 	);
@@ -269,7 +277,7 @@ function SurgicalView({
 						: "Antecedente quirúrgico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error.error}`);
+				toast.error(getErrorMessage(response, "quirurgicos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

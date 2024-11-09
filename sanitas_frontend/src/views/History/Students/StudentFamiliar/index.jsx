@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -10,6 +10,7 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import StudentDashboardTopbar from "src/components/StudentDashboardTopBar";
 import useWindowSize from "src/utils/useWindowSize";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} StudentStudentFamiliarHistoryProps
@@ -30,10 +31,11 @@ export function StudentFamiliarHistory({
 	sidebarConfig,
 	useStore,
 }) {
-	//const id = 1;
 	const id = useStore((s) => s.selectedPatientId);
-	const StudentFamiliarHistoryResource = WrapPromise(
-		getStudentFamilyHistory(id),
+
+	const StudentFamiliarHistoryResource = useMemo(
+		() => WrapPromise(getStudentFamilyHistory(id)),
+		[getStudentFamilyHistory, id],
 	);
 
 	const LoadingView = () => {
@@ -88,19 +90,6 @@ export function StudentFamiliarHistory({
 					width: "100%",
 				}}
 			>
-				<div
-					style={{
-						width: "100%",
-						padding: "0 0 1rem 0",
-						flex: "0 0 20%",
-					}}
-				>
-					<StudentDashboardTopbar
-						{...sidebarConfig}
-						activeSectionProp="familiares"
-					/>
-				</div>
-
 				<div style={styles.innerContent}>
 					<div
 						style={{
@@ -135,6 +124,19 @@ export function StudentFamiliarHistory({
 							/>
 						</Suspense>
 					</div>
+				</div>
+
+				<div
+					style={{
+						width: "100%",
+						padding: "1rem 0 0 0",
+						flex: "0 0 20%",
+					}}
+				>
+					<StudentDashboardTopbar
+						{...sidebarConfig}
+						activeSectionProp="familiares"
+					/>
 				</div>
 			</div>
 		</div>
@@ -446,7 +448,7 @@ function FamiliarView({
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(`Error al guardar la información: ${response.error}`);
+				toast.error(getErrorMessage(response, "familiares"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

@@ -1,6 +1,6 @@
 import logoutIcon from "@tabler/icons/outline/door-exit.svg";
 import exportIcon from "@tabler/icons/outline/database-export.svg";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import BorderDecoLower from "src/assets/images/BorderDecoLower.png";
 import BorderDecoUpper from "src/assets/images/BorderDecoUpper.png";
@@ -42,8 +42,11 @@ export default function SearchPatientView({
 	getRole,
 	getLinkedPatient,
 }) {
-	const resourceA = WrapPromise(getRole());
-	const resourceB = WrapPromise(getLinkedPatient());
+	const resourceA = useMemo(() => WrapPromise(getRole()), [getRole]);
+	const resourceB = useMemo(
+		() => WrapPromise(getLinkedPatient()),
+		[getLinkedPatient],
+	);
 
 	const Child = () => {
 		const navigate = useNavigate();

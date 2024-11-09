@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import BaseButton from "src/components/Button/Base/index";
@@ -13,6 +13,7 @@ import IconButton from "src/components/Button/Icon";
 import CheckIcon from "@tabler/icons/outline/check.svg";
 import EditIcon from "@tabler/icons/outline/edit.svg";
 import CancelIcon from "@tabler/icons/outline/x.svg";
+import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * @typedef {Object} SurgicalHistoryProps
@@ -35,8 +36,15 @@ export function SurgicalHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	const birthdayResource = WrapPromise(getBirthdayPatientInfo(id));
-	const surgicalHistoryResource = WrapPromise(getSurgicalHistory(id));
+
+	const birthdayResource = useMemo(
+		() => WrapPromise(getBirthdayPatientInfo(id)),
+		[getBirthdayPatientInfo, id],
+	);
+	const surgicalHistoryResource = useMemo(
+		() => WrapPromise(getSurgicalHistory(id)),
+		[getSurgicalHistory, id],
+	);
 
 	const LoadingView = () => {
 		return (
@@ -267,7 +275,7 @@ function SurgicalView({
 						: "Antecedente quirúrgico actualizado con éxito.",
 				);
 			} else {
-				toast.error(`Error al guardar: ${response.error}`);
+				toast.error(getErrorMessage(response, "quirurgicos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);

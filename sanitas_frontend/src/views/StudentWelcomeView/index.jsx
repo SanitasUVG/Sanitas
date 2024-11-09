@@ -132,6 +132,7 @@ export default function StudentWelcomeView() {
 									lineHeight: "30px",
 									textAlign: "center",
 									marginBottom: "1.5em",
+									paddingTop: "1rem",
 								}}
 							>
 								El siguiente formulario tiene como objetivo recolectar datos
@@ -160,7 +161,7 @@ export default function StudentWelcomeView() {
 									fontWeight: "400",
 									lineHeight: "30px",
 									textAlign: "center",
-									marginBottom: "5em",
+									paddingBottom: "2rem",
 								}}
 							>
 								Agradecemos su colaboración y confianza.
@@ -227,22 +228,26 @@ export default function StudentWelcomeView() {
 										fontWeight: "400",
 										lineHeight: "22.05px",
 										textAlign: "center",
-										marginBottom: "1em",
+										paddingBottom: "1rem",
 									}}
 								>
-									Para conocer más información de la clínica médica presiona
-									aquí:
+									Número de emergencias de la Clínica UVG:{" "}
+									<strong>5978-1736</strong> (Aplica unicamente dentro del
+									Campus Central y casas anexas)
 								</p>
+
 								<p
 									style={{
 										fontFamily: "Lora",
 										fontSize: "18px",
-										fontWeight: "700",
+										fontWeight: "400",
 										lineHeight: "22.05px",
 										textAlign: "center",
 									}}
 								>
-									https://noticias.uvg.edu.gt/en-uvg-contamos-con-estaciones-de-emergencia-para-atender-a-la-comunidad/
+									Nos encontramos en el Salón <strong>F-119</strong>. Nuestros
+									horarios son de Lunes a Viernes de 7:00 a 20:30 y Sábados de
+									8:00 a 14:00.
 								</p>
 							</div>
 						</div>
@@ -258,7 +263,7 @@ export default function StudentWelcomeView() {
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "space-between",
-						height: "100%", // Asegura que ocupe todo el alto
+						height: "100%",
 					}}
 				>
 					<img
@@ -293,7 +298,7 @@ export default function StudentWelcomeView() {
 							fontFamily: "Lora",
 							fontSize: "16px",
 							lineHeight: "24px",
-							fontWeight: "bold", // Poner en negrita
+							fontWeight: "bold",
 						}}
 					>
 						Es importante destacar que los datos proporcionados en este
@@ -318,7 +323,7 @@ export default function StudentWelcomeView() {
 							width: "80%",
 							minHeight: "43px",
 							borderRadius: "8px",
-							paddingTop: "auto", // Asegura que el botón esté al final
+							paddingTop: "auto",
 						}}
 						onClick={() => navigate(NAV_PATHS.PATIENT_LINK, { replace: true })}
 					/>

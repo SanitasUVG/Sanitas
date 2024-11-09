@@ -6,7 +6,12 @@ import {
 	transaction,
 } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse, decodeJWT, mapToAPIPatient } from "utils/index.mjs";
+import {
+	createResponse,
+	decodeJWT,
+	mapToAPIPatient,
+	toSafeEvent,
+} from "utils/index.mjs";
 
 /**
  * Get the general patient information endpoint handler.
@@ -28,7 +33,10 @@ export const handler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -40,7 +48,7 @@ export const handler = async (event, context) => {
 	logger.info("Checking if received all parameters...");
 	const patientId = event.pathParameters.id;
 	if (patientId !== 0 && !patientId) {
-		logger.error("No ID received!");
+		logger.error({ patientId: event.pathParameters?.id }, "No ID received!");
 		const response = responseBuilder
 			.setStatusCode(400)
 			.setBody({
@@ -65,7 +73,7 @@ export const handler = async (event, context) => {
 			if (itsDoctor.error) {
 				const msg =
 					"An error occurred while trying to check if the user is a doctor!";
-				logger.error(itsDoctor, msg);
+				logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 				const response = responseBuilder
 					.setStatusCode(500)
 					.setBody(itsDoctor)
@@ -84,7 +92,10 @@ export const handler = async (event, context) => {
 				if (emailBelongs.error) {
 					const msg =
 						"An error ocurred while trying to check if the email belongs to the patient!";
-					logger.error(emailBelongs, msg);
+					logger.error(
+						{ err: emailBelongs, inputs: { email, patientId } },
+						msg,
+					);
 					const response = responseBuilder
 						.setStatusCode(500)
 						.setBody(emailBelongs)
@@ -117,6 +128,10 @@ export const handler = async (event, context) => {
 		});
 
 		if (transactionResult.error) {
+			logger.error(
+				{ err: transactionResult.error },
+				"An error occurred during the database transaction!",
+			);
 			throw transactionResult.error;
 		}
 
@@ -147,7 +162,18 @@ export const handler = async (event, context) => {
 		logger.info({ response }, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error({ error }, "An error has ocurred!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching general patient info!",
+		);
 		const response = responseBuilder.setStatusCode(500).setBody(error).build();
 		return response;
 	} finally {

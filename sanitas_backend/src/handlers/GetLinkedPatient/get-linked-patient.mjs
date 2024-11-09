@@ -1,7 +1,7 @@
 import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
-import { decodeJWT } from "utils/index.mjs";
+import { decodeJWT, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @type {import("src/commonTypes.mjs").AWSHandler}
@@ -11,6 +11,8 @@ export const handler = async (event, context) => {
 	const responseBuilder = createResponse().addCORSHeaders("GET");
 
 	if (event.httpMethod !== "GET") {
+		const msg = `/account/patient only accepts GET method, you tried: ${event.httpMethod}`;
+		logger.error(msg);
 		return responseBuilder
 			.setStatusCode(405)
 			.setBody({ error: "Method Not Allowed" })
@@ -23,7 +25,10 @@ export const handler = async (event, context) => {
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -65,8 +70,16 @@ export const handler = async (event, context) => {
 			.setBody({ linkedPatientId })
 			.build();
 	} catch (error) {
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while checking if an account has a linked patient",
 		);
 

@@ -1,6 +1,6 @@
 import { getPgClient, SCHEMA_NAME } from "db-conn";
 import { logger, withRequest } from "logging";
-import { createResponse } from "utils/index.mjs";
+import { createResponse, toSafeEvent } from "utils/index.mjs";
 
 /**
  * @typedef {Object} DBMedicalHistoryMetadata
@@ -86,7 +86,7 @@ export const handler = async (event, context) => {
 		logger.info("Checking if received all parameters...");
 		const id = event.pathParameters.id;
 		if (id !== 0 && !id) {
-			logger.error("No ID received!");
+			logger.error({ patientId: event.pathParameters?.id }, "No ID received!");
 			const response = responseBuilder
 				.setStatusCode(400)
 				.setBody({ error: "Invalid request: No patientId supplied!" })
@@ -206,8 +206,18 @@ where
 		logger.info(response, "Responding with:");
 		return response;
 	} catch (error) {
-		logger.error({ error }, "An error has ocurred!");
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
 
+		const safeEvent = toSafeEvent(event);
+
+		logger.error(
+			{ err: errorDetails, event: safeEvent },
+			"An error occurred while fetching medical history metadata!",
+		);
 		const response = responseBuilder
 			.setStatusCode(500)
 			.setBody({ error: "An internal server error has ocurred!" })

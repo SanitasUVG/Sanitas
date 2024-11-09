@@ -6,6 +6,7 @@ import {
 	decodeJWT,
 	mapToAPIPsychiatricHistory,
 	checkForUnauthorizedChanges,
+	toSafeEvent,
 } from "utils/index.mjs";
 
 function extractOldData(dbData) {
@@ -56,7 +57,10 @@ export const updateStudentPsychiatricHistoryHandler = async (
 	logger.info({ jwt }, "Parsing JWT...");
 	const tokenInfo = decodeJWT(jwt);
 	if (tokenInfo.error) {
-		logger.error({ error: tokenInfo.error }, "JWT couldn't be parsed!");
+		logger.error(
+			{ err: tokenInfo.error, inputs: { jwt } },
+			"JWT couldn't be parsed!",
+		);
 		return responseBuilder
 			.setStatusCode(400)
 			.setBody({ error: "JWT couldn't be parsed" })
@@ -76,7 +80,7 @@ export const updateStudentPsychiatricHistoryHandler = async (
 		const itsDoctor = await isDoctor(client, email);
 		if (itsDoctor.error) {
 			const msg = "An error occurred while trying to check if user is doctor!";
-			logger.error({ error: itsDoctor.error }, msg);
+			logger.error({ err: itsDoctor.error, inputs: { email } }, msg);
 			return responseBuilder.setStatusCode(500).setBody({ error: msg }).build();
 		}
 
@@ -203,8 +207,17 @@ export const updateStudentPsychiatricHistoryHandler = async (
 			.build();
 	} catch (error) {
 		await client.query("rollback");
+
+		const errorDetails = {
+			message: error.message,
+			stack: error.stack,
+			type: error.constructor.name,
+		};
+
+		const safeEvent = toSafeEvent(event);
+
 		logger.error(
-			{ error },
+			{ err: errorDetails, event: safeEvent },
 			"An error occurred while updating psychiatric history!",
 		);
 
@@ -223,8 +236,6 @@ export const updateStudentPsychiatricHistoryHandler = async (
 			})
 			.build();
 	} finally {
-		if (client) {
-			await client.end();
-		}
+		await client?.end();
 	}
 };
