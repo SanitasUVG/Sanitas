@@ -30,7 +30,7 @@ export default function RegisterView({ registerUser }) {
 
 	const isMobile = width < 768;
 
-	const [showPopup, setShowPopup] = useState(false);
+	const [showPopup, setShowPopup] = useState(true);
 
 	const navigate = useNavigate();
 	const [username, setUsername] = useState("");
@@ -98,7 +98,7 @@ export default function RegisterView({ registerUser }) {
 							padding: adjustWidth(width, "1.25rem"),
 							borderRadius: adjustHeight(height, "0.625rem"),
 							textAlign: "center",
-							width: "30%",
+							width: isMobile ? "90%" : "30%",
 							height: adjustHeight(height, "25rem"),
 							fontFamily: fonts.textFont,
 							fontSize: fontSize.textSize,
@@ -123,7 +123,7 @@ export default function RegisterView({ registerUser }) {
 						<p
 							style={{
 								textAlign: "center",
-								fontSize: isMobile ? "0.75rem" : fontSize.textSize,
+								fontSize: isMobile ? "1rem" : fontSize.textSize,
 								paddingTop: adjustHeight(height, "1rem"),
 								paddingBottom: adjustHeight(height, "2rem"),
 							}}
@@ -131,7 +131,14 @@ export default function RegisterView({ registerUser }) {
 							Hemos enviado un correo para confirmar tu usuario, por favor
 							revisa tu bandeja de entrada o spam.
 						</p>
-						<p>
+						<p
+							style={{
+								textAlign: "center",
+								fontSize: isMobile ? "1rem" : fontSize.textSize,
+								paddingTop: adjustHeight(height, "1rem"),
+								paddingBottom: adjustHeight(height, "2rem"),
+							}}
+						>
 							En un momento serás redirigido a la página de inicio de sesión.
 						</p>
 					</div>
