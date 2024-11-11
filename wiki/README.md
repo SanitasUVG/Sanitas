@@ -9,6 +9,9 @@ como un [FAQ](FAQ.md):
 - [Manual de Uso](uso/README.md): Manual para usuarios del sistema, enseña cómo
   se utiliza y las features del sistema.
 
+- [Manual de Deploy](mantenimiento/Deploy.md): Manual para hacerle deploy a
+  toda la infraestructura de Sanitas en AWS.
+
 ## Business Case
 
 Nuestro tema de interés para el proyecto es un sistema de registro de fichas

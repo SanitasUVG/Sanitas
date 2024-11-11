@@ -1,3 +1,5 @@
 .devenv
 .pre-commit-config.yaml
+*.log
 out/
+.DS_Store

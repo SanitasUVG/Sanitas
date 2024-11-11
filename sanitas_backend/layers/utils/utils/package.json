@@ -1,8 +1,11 @@
 {
-  "name": "utils",
-  "version": "1.0.0",
-  "description": "Sanitas backend common utilities.",
-  "main": "index.mjs",
-  "author": "ElrohirGT",
-  "license": "MIT"
+	"name": "utils",
+	"version": "1.0.0",
+	"description": "Sanitas backend common utilities.",
+	"main": "index.mjs",
+	"author": "ElrohirGT",
+	"license": "MIT",
+	"dependencies": {
+		"jwt-decode": "^4.0.0"
+	}
 }

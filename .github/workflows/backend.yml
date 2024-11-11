@@ -6,24 +6,33 @@ on:  # yamllint disable-line rule:truthy
       - opened
       - edited
       - synchronize
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number
+    || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lintingAndTesting:
-    name: Lint
+  linting:
+    name: Backend checks
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: nix develop .#cicdBackend --command bash {0}
         working-directory: sanitas_backend
     steps:
-      - uses: actions/checkout@v3
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Installing dependencies
+        run: npm install
+      - name: Formatting
+        run: npm run format:check
       - name: Linting
-        run: npm install && npm run lint
-
-# TODO: Integration tests can't be run automatically
-# so they're commented out.
-#
-# - name: Testing
-#   run: |
-#       nix develop --impure . --command bash -c \
-#        "cd sanitas_backend/ && npm install && npm run test"
+        run: npm run lint
+      - name: Testing
+        run: cd .. && nix run .#integrationTests

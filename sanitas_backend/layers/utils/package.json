@@ -1,10 +1,10 @@
 {
-  "name": "utils",
-  "version": "1.0.0",
-  "description": "Utils wrapper to make an AWS Layer.",
-  "author": "ElrohirGT",
-  "license": "MIT",
-  "dependencies": {
-    "utils": "file:utils"
-  }
+	"name": "utils",
+	"version": "1.0.0",
+	"description": "Utils wrapper to make an AWS Layer.",
+	"author": "ElrohirGT",
+	"license": "MIT",
+	"dependencies": {
+		"utils": "file:utils"
+	}
 }

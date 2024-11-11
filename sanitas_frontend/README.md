@@ -3,7 +3,15 @@
 Para más información respecto al frontend y cómo está desarrollado puedes ver la
 [wiki](../wiki/mantenimiento/frontend/README.md).
 
-## Developing
+## Dependencias
+
+Siempre recomendamos utilizar Nix para instalar y configurar las dependencias,
+pero en caso no se desee utilizarlo:
+
+- [nodejs v20.16.0](https://nodejs.org/en)
+- [yarn v4.4.1](https://yarnpkg.com/)
+
+## Desarrollo
 
 Recuerda que para desarrollar debes primero haber entrado al entorno de desarrollo
 , para esto usa:
@@ -25,34 +33,30 @@ Para correr el storybook de forma local puedes ejecutar el siguiente comando:
 yarn run storybook
 ```
 
-Para probar las distintas funcionalidades del proyecto, que son:
+Para probar la aplicaciones de forma local en develop se necesita levantar todos
+los servicios:
 
 - Backend
-- frontend
-- postgres
+- Frontend
+- DB
+
+El siguiente comando de Nix levanta estos servicios de forma autónoma:
+
+```bash
+# /Sanitas - La carpeta root del repositorio
+nix run .#restartServices
+```
+
+El comando anterior borra la base de datos y la reinicia desde 0, si te gustaría
+mantener la data creada con anterioridad, entra a la consola de desarrollo con
+`nix develop --impure` y ejecuta:
+
+```bash
+devenv up
+```
 
 Revisar siempre cada una de las tabs, en especial las de backend y frontend
 para poder ver los logs de los distintos servicios.
-
-Para levantar estos servicios se utiliza en primera instancia
-(no es 100% requerido):
-
-```bash
-nix develop --impure
-```
-
-Una vez dentro del `devenv` ahora utiliza el comando:
-
-```bash
-nix run .#restarServices
-```
-
-Una vez dentro de la consola de servicios recuerda siempre reiniciar el
-servicio de `postgres` con `CTRL + R`.
-
-Luego puedes abrir otra instancia de tu consola para trabajar en el `devenv`.
-
-// TODO: Explicar cómo añadir compomentes/vistas
 
 ### Testeo de componentes
 
@@ -161,6 +165,16 @@ export default function ExampleComponent({ text, onClick, fetchData }) => {
   return <div style={styles}></div>
 }
 ```
+
+Algunas convenciones que se utilizan dentro del CSS son:
+
+1. Queda prohibido el uso de margin. Usa padding junto con `gap` en flexbox y grid.
+1. Intenta usar primero medidas dinámicas como lo son: `rem`, `%`, `vw`, `vh`
+   en lugar de medidas estáticas como lo son `px`, `pc`, `in`, etc.
+1. Minimiza el uso de `position: absolute` y `position: relative` a menos que
+   sea estrictamente necesario (es decir, no se puede lograr lo que se desea
+   usando grid o flexbox). Aún si se usan recuerda utilizar medidas dinámicas.
+1. Prueba siempre tu pantalla en varias dimensiones usando las herramientas de desarrollador.
 
 ### JSDoc
 

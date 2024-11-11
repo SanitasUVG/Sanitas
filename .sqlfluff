@@ -1,0 +1,3 @@
+[sqlfluff]
+templater = jinja
+sql_file_exts = .sql,.sql.j2,.dml,.ddl
