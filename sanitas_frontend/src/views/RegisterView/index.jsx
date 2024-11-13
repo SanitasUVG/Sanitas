@@ -30,7 +30,7 @@ export default function RegisterView({ registerUser }) {
 
 	const isMobile = width < 768;
 
-	const [showPopup, setShowPopup] = useState(true);
+	const [showPopup, setShowPopup] = useState(false);
 
 	const navigate = useNavigate();
 	const [username, setUsername] = useState("");
