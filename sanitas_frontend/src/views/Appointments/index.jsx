@@ -10,7 +10,6 @@ import { colors, fonts, fontSize } from "src/theme.mjs";
 import WrapPromise from "src/utils/promiseWrapper";
 import ExpandingBaseInput from "src/components/Input/ExpandingBaseInput";
 import { IS_PRODUCTION } from "src/constants.mjs";
-import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
  * Provides a view for managing student appointments. This component is responsible for displaying
@@ -337,17 +336,23 @@ function StudentAppointmentsView({
 		let hasErrors = false;
 
 		// Validación de los campos necesarios
-		if (!currentAppointment.diagnosis) {
+		if (
+			!currentAppointment.diagnosis ||
+			currentAppointment.diagnosis.trim() === ""
+		) {
 			toast.error("El diagnóstico es obligatorio.");
 			hasErrors = true;
 		}
 
-		if (!currentAppointment.physicalExam) {
+		if (
+			!currentAppointment.physicalExam ||
+			currentAppointment.physicalExam.trim() === ""
+		) {
 			toast.error("El examen físico es obligatorio.");
 			hasErrors = true;
 		}
 
-		if (!currentAppointment.reason) {
+		if (!currentAppointment.reason || currentAppointment.reason.trim() === "") {
 			toast.error("El motivo de la consulta es obligatorio.");
 			hasErrors = true;
 		}
@@ -440,7 +445,7 @@ function StudentAppointmentsView({
 				setAddingNew(false);
 				setIsEditable(false);
 			} else {
-				toast.error(getErrorMessage(response, "cita"));
+				toast.error(`Error al guardar: ${response.error}`);
 			}
 		} catch (error) {
 			console.error("Error en la operación:", error);
@@ -496,23 +501,30 @@ function StudentAppointmentsView({
 						arriba.
 					</p>
 				) : (
-					appointmentHistory.data.map((appointment) => {
-						return (
-							<InformationCard
-								key={`appointment-${appointment.patientConsultation.id}`}
-								type="appointment"
-								date={
-									getFormattedDateTime(
-										appointment.patientConsultation.data.date,
-									).formattedDate
-								}
-								reasonAppointment={
-									appointment.patientConsultation.data.reason || "Sin Motivo"
-								}
-								onClick={() => handleSelectAppointment(appointment)}
-							/>
-						);
-					})
+					appointmentHistory.data
+						.filter(
+							(appointment) =>
+								appointment.patientConsultation.data.reason?.trim() &&
+								appointment.patientConsultation.data.diagnosis?.trim() &&
+								appointment.patientConsultation.data.physicalExam?.trim(),
+						)
+						.map((appointment) => {
+							return (
+								<InformationCard
+									key={`appointment-${appointment.patientConsultation.id}`}
+									type="appointment"
+									date={
+										getFormattedDateTime(
+											appointment.patientConsultation.data.date,
+										).formattedDate
+									}
+									reasonAppointment={
+										appointment.patientConsultation.data.reason
+									}
+									onClick={() => handleSelectAppointment(appointment)}
+								/>
+							);
+						})
 				)}
 			</div>
 
