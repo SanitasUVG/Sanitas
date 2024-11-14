@@ -155,7 +155,7 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
 							textAlign: "center",
-							padding: "2rem 0 0.8rem 0",
+							padding: "2.5rem 0 0.8rem 0",
 						}}
 					>
 						Datos Generales
