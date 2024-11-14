@@ -137,16 +137,15 @@ export function AddPatientView({ submitPatientData, useStore }) {
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
-					height: "100vh",
-					padding: "1rem",
+					height: "100%",
+					padding: "2rem",
 				}}
 			>
 				<div
 					style={{
 						backgroundColor: colors.secondaryBackground,
-						padding: "4rem",
-						width: "95%",
-						height: "95%",
+						padding: "2rem",
+						width: "100%",
 						textAlign: "left",
 						borderRadius: "10px",
 					}}
@@ -173,7 +172,6 @@ export function AddPatientView({ submitPatientData, useStore }) {
 								color: colors.titleText,
 								fontSize: fontSize.titleSize,
 								paddingBottom: "0.5rem",
-								paddingTop: "1rem",
 							}}
 						>
 							Información del paciente
@@ -323,7 +321,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									justifyContent: "center",
 									alignItems: "center",
 									width: "100%",
-									paddingTop: "4.5rem",
+									paddingTop: "2rem",
 								}}
 							>
 								<BaseButton
