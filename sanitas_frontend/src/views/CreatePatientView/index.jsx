@@ -23,7 +23,7 @@ import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 /**
  * @typedef {Object} CreatePatientViewProps
  * @property {import("src/store.mjs").UseStoreHook} useStore
- * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} submitPatientData
+ * @property {import("src/dataLayer.mjs").PatientCreatePatientCallback} submitPatientData
  * @property {import("src/dataLayer.mjs").LinkAccountToPatientCallback} linkAccount
  */
 
@@ -51,7 +51,7 @@ export function PatientCreatePatientView({
 		isWoman: true,
 		birthDate: "",
 		phone: "",
-		insurance: ""
+		insurance: "",
 	});
 
 	/**
@@ -275,7 +275,7 @@ export function PatientCreatePatientView({
 							paddingTop: "1.5rem",
 							paddingBottom: "3rem",
 							rowGap: "1rem",
-							columnGap: "2%"
+							columnGap: "2%",
 						}}
 					>
 						<div style={inputContainerStyles}>
@@ -340,7 +340,6 @@ export function PatientCreatePatientView({
 								style={inputStyles}
 							/>
 						</div>
-
 
 						<div style={inputContainerStyles}>
 							<label style={labelStyles}>Sexo:</label>
