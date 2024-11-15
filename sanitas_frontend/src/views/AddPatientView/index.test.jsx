@@ -104,9 +104,9 @@ describe("AddPatientView tests", () => {
 				expect.objectContaining({
 					cui: "2987944380208",
 					names: "Test",
-					surnames: "User",
+					lastNames: "User",
 					sex: true,
-					birthDate: "2000-01-01",
+					birthdate: "2000-01-01",
 				}),
 			),
 		);

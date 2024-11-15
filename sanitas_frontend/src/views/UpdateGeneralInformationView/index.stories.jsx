@@ -3,6 +3,7 @@ import { createEmptyStore } from "src/store.mjs";
 import UpdateInfoView from "./index";
 
 export default {
+	title: "Views/Doctor/Antecedents/GeneralInformationView",
 	component: UpdateInfoView,
 	decorators: [
 		(Story) => {

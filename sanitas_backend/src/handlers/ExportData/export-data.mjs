@@ -76,12 +76,19 @@ export const handler = async (event, context) => {
 		);
 		const queryStartDate = event.queryStringParameters?.startDate;
 		const queryEndDate = event.queryStringParameters?.endDate;
+		const queryNowDate = event.queryStringParameters?.nowDate;
 
 		logger.info(
-			{ queryStartDate, queryEndDate },
+			{ queryStartDate, queryEndDate, queryNowDate },
 			"Checking if dates are valid...",
 		);
-		if (!(validDate(queryStartDate) && validDate(queryEndDate))) {
+		if (
+			!(
+				validDate(queryStartDate) &&
+				validDate(queryEndDate) &&
+				validDate(queryNowDate)
+			)
+		) {
 			logger.error({ queryStartDate, queryEndDate }, "Invalid dates!");
 			return responseBuilder
 				.setStatusCode(400)
@@ -91,7 +98,8 @@ export const handler = async (event, context) => {
 
 		const startDate = new Date(queryStartDate);
 		const endDate = new Date(queryEndDate);
-		logger.info({ startDate, endDate }, "Dates are valid!");
+		const nowDate = new Date(queryNowDate);
+		logger.info({ startDate, endDate, nowDate }, "Dates are valid!");
 
 		logger.info("Validating endDate >= startDate");
 		if (endDate.getTime() < startDate.getTime()) {
@@ -140,8 +148,16 @@ export const handler = async (event, context) => {
 			}
 			logger.info(`${email} is a doctor!`);
 
-			const query = `SELECT * FROM ${SCHEMA_NAME}.stats WHERE fecha_visita BETWEEN $1 AND $2`;
-			const values = [startDate.toISOString(), endDate.toISOString()];
+			const query = `
+			SELECT
+				*, EXTRACT(YEAR FROM AGE($3, st.fecha_nacimiento)) as años_edad
+			FROM ${SCHEMA_NAME}.stats st
+			WHERE fecha_visita BETWEEN $1 AND $2`;
+			const values = [
+				startDate.toISOString(),
+				endDate.toISOString(),
+				nowDate.toISOString(),
+			];
 			logger.info({ query, values }, "Querying for information: ");
 			const result = await client.query(query, values);
 			logger.info({ rowCount: result.rowCount }, "DB query done!");

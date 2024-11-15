@@ -141,6 +141,7 @@ export async function createTestPatient(
 	isWoman = false,
 	birthdate = new Date("1987-07-07"),
 ) {
+	const headers = createAuthorizationHeader(createDoctorJWT());
 	const patientData = {
 		cui,
 		names,
@@ -148,10 +149,15 @@ export async function createTestPatient(
 		isWoman,
 		birthdate,
 	};
-	const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData);
+	const response = await axios.post(`${LOCAL_API_URL}/patient`, patientData, {
+		headers,
+	});
+
+	const expectedResponse = expect.any(Number);
 
 	expect(response).toBeDefined();
 	expect(response.status).toBe(200);
+	expect(response.data).toEqual(expectedResponse);
 
 	return response.data;
 }

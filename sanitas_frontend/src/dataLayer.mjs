@@ -197,20 +197,20 @@ export const getRole = async () => {
 };
 
 /**
- * Submits patient data to the server using a POST request. This function is used to either register new patient data or update existing data.
+ * Submits patient data to the server using a POST request.
  *
- * @callback SubmitPatientDataCallback
+ * @callback DoctorCreatePatientCallback
  * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
  * @param {string} patientData.cui - The unique identifier for the patient.
  * @param {string} patientData.names - The first and middle names of the patient.
  * @param {string} patientData.surnames - The last names of the patient.
- * @param {string} patientData.sex - The sex of the patient, expected to be 'F' for female or 'M' for male based on a boolean condition.
+ * @param {string} patientData.isWoman - The sex of the patient.
  * @param {string} patientData.birthDate - The birth date of the patient.
  * @returns {Promise<Result<number, *>>} A promise that resolves to the response data from the server.
  */
 
 /**
- * @type {SubmitPatientDataCallback}
+ * @type {DoctorCreatePatientCallback}
  */
 export const submitPatientData = async (patientData) => {
 	const sessionResponse = IS_PRODUCTION
@@ -228,13 +228,56 @@ export const submitPatientData = async (patientData) => {
 	try {
 		const { data: result } = await axios.post(
 			`${PROTECTED_URL}/patient`,
+			patientData,
 			{
-				cui: patientData.cui,
-				names: patientData.names,
-				lastNames: patientData.surnames,
-				isWoman: patientData.sex,
-				birthdate: patientData.birthDate,
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: token,
+				},
 			},
+		);
+
+		return { result };
+	} catch (error) {
+		return { error };
+	}
+};
+
+/**
+ * Submits patient data to the server using a POST request.
+ *
+ * @callback PatientCreatePatientCallback
+ * @param {Object} patientData - The patient data to be submitted, which includes fields like CUI, names, surnames, gender, and birth date.
+ * @param {string} patientData.cui - The unique identifier for the patient.
+ * @param {string} patientData.names - The first and middle names of the patient.
+ * @param {string} patientData.surnames - The last names of the patient.
+ * @param {string} patientData.isWoman - The sex of the patient.
+ * @param {string} patientData.birthDate - The birth date of the patient.
+ * @param {string} patientData.insurance - The insurance of the patient.
+ * @param {string} patientData.phone - The phone number of the patient.
+ * @returns {Promise<Result<number, *>>} A promise that resolves to the response data from the server.
+ */
+
+/**
+ * @type {PatientCreatePatientCallback}
+ */
+export const patientCreatePatientAPI = async (patientData) => {
+	const sessionResponse = IS_PRODUCTION
+		? await getSession()
+		: await mockGetSession(false);
+	if (sessionResponse.error) {
+		return { error: sessionResponse.error };
+	}
+
+	if (!sessionResponse.result.isValid()) {
+		return { error: "Invalid session!" };
+	}
+
+	const token = sessionResponse?.result?.idToken?.jwtToken ?? "no-token";
+	try {
+		const { data: result } = await axios.post(
+			`${PROTECTED_URL}/patient/create`,
+			patientData,
 			{
 				headers: {
 					"Content-Type": "application/json",
@@ -1920,6 +1963,7 @@ export const exportData = async (startDate, endDate) => {
 	const params = {
 		startDate: formatDate(startDate),
 		endDate: formatDate(endDate),
+		nowDate: formatDate(new Date()),
 	};
 
 	try {

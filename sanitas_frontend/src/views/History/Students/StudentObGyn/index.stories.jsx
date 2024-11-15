@@ -174,7 +174,7 @@ const store = createEmptyStore({
 });
 
 export default {
-	title: "Views/Antecedents/Student/ObGynHistory",
+	title: "Views/Patient/Antecedents/ObGynHistory",
 	component: StudentObGynHistory,
 	decorators: [
 		(Story) => (

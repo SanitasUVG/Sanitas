@@ -321,6 +321,7 @@ CREATE MATERIALIZED VIEW md_san.stats
 AS
 SELECT
     p.id,
+    c.evaluador,
     p.fecha_nacimiento,
     c.fecha AS fecha_visita,
     c.diagnostico,

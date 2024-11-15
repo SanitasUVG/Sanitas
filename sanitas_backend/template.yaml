@@ -133,7 +133,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/CreatePatient/create-patient.createPatientHandler
-      Description: Function to create a new patient
+      Description: Function to create a new patient, only available
+        for doctors
       Tags:
         Project: Sanitas
       Events:
@@ -141,6 +142,27 @@ Resources:
           Type: Api
           Properties:
             Path: /patient
+            Method: POST
+            RestApiId: !Ref SanitasAPI
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code:
+  # create-patient.mjs
+  patientCreatePatientFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # yamllint disable-line rule:line-length
+      Handler: ./src/handlers/PatientCreatePatient/patient-create-patient.handler
+      Description: Function to create a new patient, only available
+        for patients
+      Tags:
+        Project: Sanitas
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /patient/create
             Method: POST
             RestApiId: !Ref SanitasAPI
   # Each Lambda function is defined by properties:

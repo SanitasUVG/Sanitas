@@ -14,16 +14,16 @@ import { getErrorMessage } from "src/utils/errorhandlerstoasts";
  * @typedef {Object} PatientData
  * @property {string} cui - Unique identifier for the patient.
  * @property {string} names - First and middle names of the patient.
- * @property {string} surnames - Last names of the patient.
+ * @property {string} lastNames - Last names of the patient.
  * @property {boolean} isWoman - Gender of the patient.
- * @property {string} birthDate - Birthdate of the patient.
+ * @property {string} birthdate - Birthdate of the patient.
  * @property {boolean} isNew - Indicates if the patient data is new or existing.
  */
 
 /**
  * @typedef {Object} CreatePatientViewProps
  * @property {import("src/store.mjs").UseStoreHook} useStore
- * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} submitPatientData
+ * @property {import("src/dataLayer.mjs").PatientCreatePatientCallback} submitPatientData
  * @property {import("src/dataLayer.mjs").LinkAccountToPatientCallback} linkAccount
  */
 
@@ -45,11 +45,13 @@ export function CreatePatientView({
 	const navigate = useNavigate();
 
 	const [patientData, setPatientData] = useState({
-		cui: location.state?.cui ?? "",
+		cui: location.state?.cui ?? "2987944380101",
 		names: "",
-		surnames: "",
-		sex: true,
-		birthDate: "",
+		lastNames: "",
+		isWoman: true,
+		birthdate: "",
+		phone: "",
+		insurance: "",
 	});
 
 	/**
@@ -59,7 +61,7 @@ export function CreatePatientView({
 	 * @param {string} value - The new value for the field.
 	 */
 	const handleChange = (field, value) => {
-		if (field === "names" || field === "surnames") {
+		if (field === "names" || field === "lastNames") {
 			const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
 			setPatientData({ ...patientData, [field]: filteredValue });
 		} else {
@@ -78,9 +80,9 @@ export function CreatePatientView({
 			currentDate.getMonth(),
 			currentDate.getDate(),
 		);
-		const birthDate = new Date(date);
+		const birthdate = new Date(date);
 
-		if (birthDate > currentDate || birthDate < minDate) {
+		if (birthdate > currentDate || birthdate < minDate) {
 			toast.error(
 				`La fecha de nacimiento es inválida. Debe estar entre ${minDate.toLocaleDateString()} y ${currentDate.toLocaleDateString()}.`,
 			);
@@ -95,8 +97,8 @@ export function CreatePatientView({
 
 	const fieldLabels = {
 		names: "nombres del paciente",
-		surnames: "apellidos del paciente",
-		birthDate: "fecha de nacimiento",
+		lastNames: "apellidos del paciente",
+		birthdate: "fecha de nacimiento",
 	};
 
 	/**
@@ -105,7 +107,7 @@ export function CreatePatientView({
 	 * @returns {boolean} True if the form is valid, false otherwise.
 	 */
 	const validateFormData = () => {
-		const fields = ["names", "surnames", "birthDate"];
+		const fields = ["names", "lastNames", "birthdate"];
 		if (patientData.cui.length !== 13) {
 			toast.error("El CUI debe contener exactamente 13 caracteres.");
 			return false;
@@ -118,12 +120,12 @@ export function CreatePatientView({
 				return false;
 			}
 		}
-		if (patientData.sex === null) {
+		if (patientData.isWoman === null) {
 			toast.error("El campo de género es obligatorio.");
 			return false;
 		}
 
-		if (!validateBirthDate(patientData.birthDate)) {
+		if (!validateBirthDate(patientData.birthdate)) {
 			return false;
 		}
 		return true;
@@ -269,118 +271,103 @@ export function CreatePatientView({
 					<div
 						style={{
 							display: "grid",
-							gridTemplateColumns: isMobile ? "100%" : "50% 50%", // Cambiar a una columna en móviles
+							gridTemplateColumns: isMobile ? "100%" : "49% 49%", // Cambiar a una columna en móviles
 							paddingTop: "1.5rem",
 							paddingBottom: "3rem",
+							rowGap: "1rem",
+							columnGap: "2%",
 						}}
 					>
-						{/* FIRST COLUMN */}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "1rem",
-								paddingRight: isMobile ? "0" : "1rem", // Ajustar padding
-							}}
-						>
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Nombres del paciente:</label>
-								<BaseInput
-									type="text"
-									value={patientData.names}
-									onChange={(e) => handleChange("names", e.target.value)}
-									placeholder="Ingresa tu nombre"
-									style={inputStyles}
-								/>
-							</div>
-
-							{/* Campo de Apellidos solo para móviles */}
-							{isMobile && (
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Apellidos del paciente:</label>
-									<BaseInput
-										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Ingresa tu apellido"
-										style={inputStyles}
-									/>
-								</div>
-							)}
-
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>CUI del Paciente:</label>
-								<BaseInput
-									type="text"
-									value={patientData.cui}
-									readOnly={true}
-									style={inputStyles}
-								/>
-							</div>
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Fecha de Nacimiento:</label>
-								<DateInput
-									value={patientData.birthDate}
-									onChange={(e) => handleChange("birthDate", e.target.value)}
-									placeholder="Fecha de nacimiento"
-									style={inputStyles}
-								/>
-							</div>
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Nombres del paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.names}
+								onChange={(e) => handleChange("names", e.target.value)}
+								placeholder="Ingresa tu nombre"
+								style={inputStyles}
+							/>
 						</div>
 
-						{/* SECOND COLUMN */}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "1rem",
-								paddingTop: isMobile ? "1.5rem" : "0",
-								paddingLeft: isMobile ? "0" : "1rem", // Ajustar padding
-							}}
-						>
-							{/* Campo de Apellidos solo para pantallas grandes */}
-							{!isMobile && (
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Apellidos del paciente:</label>
-									<BaseInput
-										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Ingresa tu apellido"
-										style={inputStyles}
-									/>
-								</div>
-							)}
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Apellidos del paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.lastNames}
+								onChange={(e) => handleChange("lastNames", e.target.value)}
+								placeholder="Ingresa tu apellido"
+								style={inputStyles}
+							/>
+						</div>
 
-							{/* Campo de Sexo, visible en ambas vistas */}
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Sexo:</label>
-								<div
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>CUI del Paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.cui}
+								readOnly={true}
+								style={inputStyles}
+								placeholder="Ingresa tu CUI"
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Fecha de Nacimiento:</label>
+							<DateInput
+								value={patientData.birthdate}
+								onChange={(e) => handleChange("birthdate", e.target.value)}
+								placeholder="Fecha de nacimiento"
+								style={inputStyles}
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Teléfono:</label>
+							<BaseInput
+								value={patientData.phone}
+								onChange={(e) => handleChange("phone", e.target.value)}
+								placeholder="Ejemplo: 23438767"
+								style={inputStyles}
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Seguro Médico:</label>
+							<BaseInput
+								value={patientData.insurance}
+								onChange={(e) => handleChange("insurance", e.target.value)}
+								placeholder="Ejemplo: El Roble o Ninguno"
+								style={inputStyles}
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Sexo:</label>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "2rem",
+								}}
+							>
+								<RadioInput
+									name="gender"
+									checked={!patientData.isWoman}
+									onChange={() => handleChange("isWoman", false)}
+									label="Masculino"
+									style={{ fontFamily: fonts.textFont }}
+								/>
+								<RadioInput
+									name="gender"
+									checked={patientData.isWoman}
+									onChange={() => handleChange("isWoman", true)}
+									label="Femenino"
 									style={{
+										fontFamily: fonts.textFont,
 										display: "flex",
 										alignItems: "center",
-										gap: "2rem",
 									}}
-								>
-									<RadioInput
-										name="gender"
-										checked={!patientData.sex}
-										onChange={() => handleChange("sex", false)}
-										label="Masculino"
-										style={{ fontFamily: fonts.textFont }}
-									/>
-									<RadioInput
-										name="gender"
-										checked={patientData.sex}
-										onChange={() => handleChange("sex", true)}
-										label="Femenino"
-										style={{
-											fontFamily: fonts.textFont,
-											display: "flex",
-											alignItems: "center",
-										}}
-									/>
-								</div>
+								/>
 							</div>
 						</div>
 					</div>
