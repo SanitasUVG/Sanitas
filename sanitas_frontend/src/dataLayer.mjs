@@ -1920,6 +1920,7 @@ export const exportData = async (startDate, endDate) => {
 	const params = {
 		startDate: formatDate(startDate),
 		endDate: formatDate(endDate),
+		nowDate: formatDate(new Date()),
 	};
 
 	try {
