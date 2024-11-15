@@ -14,7 +14,7 @@ export default {
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/Student/StudentNonPathologicalHistory",
+	title: "Views/Patient/Antecedents/StudentNonPathologicalHistory",
 };
 
 const mockGetBloodTypePatientInfo = async () => ({

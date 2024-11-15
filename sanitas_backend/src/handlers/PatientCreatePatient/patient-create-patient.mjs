@@ -20,11 +20,17 @@ function checkValidInput(patientData) {
 	if (!patientData.birthdate) {
 		return { isValid: false, error: "Birthdate is required." };
 	}
+	if (!patientData.phone) {
+		return { isValid: false, error: "Phone is required." };
+	}
+	if (!patientData.insurance) {
+		return { isValid: false, error: "Insurance is required." };
+	}
 
 	return { isValid: true };
 }
 
-export const createPatientHandler = async (event, context) => {
+export const handler = async (event, context) => {
 	withRequest(event, context);
 	const responseBuilder = createResponse().addCORSHeaders("POST");
 
@@ -91,15 +97,15 @@ export const createPatientHandler = async (event, context) => {
 				return { response };
 			}
 
-			if (!isDoctorResponse) {
-				logger.error("The user is not a doctor!");
+			if (isDoctorResponse) {
+				logger.error("The user is a doctor!");
 				const response = responseBuilder
 					.setStatusCode(401)
-					.setBody({ error: "Unauthorized, you're a patient!" })
+					.setBody({ error: "Unauthorized, you're a doctor!" })
 					.build();
 				return { response };
 			}
-			logger.info("The user is a doctor!");
+			logger.info("The user is not a doctor!");
 
 			const existingPatientQuery = `
 			SELECT 1 FROM ${SCHEMA_NAME}.paciente WHERE cui = $1
@@ -125,8 +131,8 @@ export const createPatientHandler = async (event, context) => {
 			);
 
 			const query = `
-			INSERT INTO ${SCHEMA_NAME}.paciente (cui, nombres, apellidos, es_mujer, fecha_nacimiento)
-			VALUES ($1, $2, $3, $4, $5)
+			INSERT INTO ${SCHEMA_NAME}.paciente (cui, nombres, apellidos, es_mujer, fecha_nacimiento, telefono, seguro)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			returning *
 		`;
 			const values = [
@@ -135,6 +141,8 @@ export const createPatientHandler = async (event, context) => {
 				patientData.lastNames,
 				patientData.isWoman,
 				new Date(patientData.birthdate),
+				patientData.phone,
+				patientData.insurance,
 			];
 			return await client.query(query, values);
 		});

@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { ToastContainer } from "react-toastify";
 
 export default {
-	title: "Views/SearchPatientView",
+	title: "Views/Doctor/SearchPatientView",
 	component: SearchPatientView,
 	decorators: [
 		(Story) => (

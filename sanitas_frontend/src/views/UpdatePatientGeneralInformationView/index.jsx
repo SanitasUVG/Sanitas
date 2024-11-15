@@ -155,7 +155,7 @@ export default function UpdatePatientInfoView({
 							fontFamily: fonts.titleFont,
 							fontSize: fontSize.titleSize,
 							textAlign: "center",
-							padding: "2rem 0 0.8rem 0",
+							padding: "2.5rem 0 0.8rem 0",
 						}}
 					>
 						Datos Generales
@@ -760,10 +760,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactName1",
-								)}
 								placeholder="Nombre de contacto"
 							/>
 
@@ -778,10 +774,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactKinship1",
-								)}
 								placeholder="Parentesco de contacto"
 							/>
 
@@ -796,10 +788,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactPhone1",
-								)}
 								placeholder="Teléfono de contacto"
 							/>
 						</div>
@@ -818,10 +806,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactName2",
-								)}
 								placeholder="Nombre de contacto"
 							/>
 
@@ -836,10 +820,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactKinship2",
-								)}
 								placeholder="Parentesco de contacto"
 							/>
 
@@ -854,10 +834,6 @@ function UpdateGeneralInformationSection({
 									})
 								}
 								style={inputStyles}
-								disabled={hasPropertyAndIsValid(
-									responseFromGET,
-									"contactPhone2",
-								)}
 								placeholder="Teléfono de contacto"
 							/>
 						</div>

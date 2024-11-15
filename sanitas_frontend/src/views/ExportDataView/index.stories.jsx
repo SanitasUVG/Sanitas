@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { delay } from "src/utils";
 
 export default {
-	title: "Views/ExportDataView",
+	title: "Views/Doctor/ExportDataView",
 	component: ExportDataView,
 	decorators: [
 		(Story) => (

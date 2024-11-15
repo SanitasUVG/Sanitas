@@ -62,7 +62,7 @@ export function StudentPersonalHistory({
 				fontWeight: "normal",
 				fontSize: fontSize.subtitleSize,
 				paddingTop: "0.5rem",
-				paddingBottom: "1.5rem",
+				paddingBottom: "0.5rem",
 				textAlign: isMobile ? "center" : "left",
 			},
 
@@ -120,8 +120,19 @@ export function StudentPersonalHistory({
 					>
 						<h1 style={styles.title}>Antecedentes Personales</h1>
 						<h3 style={styles.subtitle}>
-							¿Usted ha sido diagnosticado por un médico con una de las
-							siguientes enfermedades?
+							¿Ha sido diagnosticado con alguna de las siguientes enfermedades?
+						</h3>
+						<h3
+							style={{
+								fontFamily: fonts.textFont,
+								fontWeight: "normal",
+								fontSize: fontSize.subtitleSize,
+								paddingBottom: "1.5rem",
+								textAlign: "center",
+							}}
+						>
+							Si no recibe medicación para su condición, por favor indíquelo en
+							el campo de medicamentos y frecuencia como "No me medico"
 						</h3>
 					</div>
 

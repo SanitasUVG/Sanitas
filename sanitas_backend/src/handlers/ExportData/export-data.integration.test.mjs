@@ -17,6 +17,7 @@ describe("Get consultations data endpoint tests", () => {
 	const validDateParams = {
 		startDate: new Date(),
 		endDate: new Date(Date.now() + 10_000 * 10_000),
+		nowDate: new Date(Date.now() + 11_000 * 10_000),
 	};
 	let patientId;
 
@@ -95,6 +96,7 @@ describe("Get consultations data endpoint tests", () => {
 			params: {
 				startDate: new Date(Date.now()),
 				endDate: new Date(Date.now() - 1000 * 1000),
+				nowDate: new Date(Date.now() - 2000 * 1000),
 			},
 		});
 

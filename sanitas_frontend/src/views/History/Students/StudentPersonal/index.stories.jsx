@@ -14,7 +14,7 @@ export default {
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/Student/StudentPersonalHistory",
+	title: "Views/Patient/Antecedents/StudentPersonalHistory",
 };
 
 //mocks
