@@ -14,7 +14,7 @@ export default {
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/Student/StudentFamilyHistory",
+	title: "Views/Patient/Antecedents/StudentFamilyHistory",
 };
 //mocks
 const mockGetStudentFamilyHistoryWithData = async () => ({

@@ -16,7 +16,7 @@ export default {
 			);
 		},
 	],
-	title: "Views/Antecedents/Student/GeneralStudent",
+	title: "Views/Patient/Antecedents/GeneralStudent",
 };
 
 const examplePatientData = {

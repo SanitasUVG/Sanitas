@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { NAV_PATHS } from "src/router";
 
 export default {
-	title: "Views/LinkPatientView",
+	title: "Views/Patient/LinkPatientView",
 	component: LinkPatientView,
 	decorators: [
 		(Story) => (

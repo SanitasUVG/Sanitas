@@ -84,6 +84,7 @@ import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInf
 import { StudentObGynHistory } from "./views/History/Students/StudentObGyn";
 import { ExportDataView } from "./views/ExportDataView";
 import { StudentAppointments } from "./views/Appointments";
+import { PatientCreatePatientView } from "./views/PatientCreatePatientView";
 
 const useStore = createEmptyStore();
 
@@ -97,6 +98,7 @@ export const NAV_PATHS = {
 	PATIENT_FORM: "/form",
 	PATIENT_LINK: "/link",
 	CREATE_PATIENT: "/create",
+	PATIENT_CREATE_PATIENT: "/patient-create",
 	EXPORT_DATA: "/export",
 };
 
@@ -607,6 +609,16 @@ export const ROUTES = [
 		path: NAV_PATHS.CREATE_PATIENT,
 		element: (
 			<CreatePatientView
+				useStore={useStore}
+				submitPatientData={submitPatientData}
+				linkAccount={linkAccountToPatient}
+			/>
+		),
+	},
+	{
+		path: NAV_PATHS.PATIENT_CREATE_PATIENT,
+		element: (
+			<PatientCreatePatientView
 				useStore={useStore}
 				submitPatientData={submitPatientData}
 				linkAccount={linkAccountToPatient}

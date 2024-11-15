@@ -4,7 +4,7 @@ import { createEmptyStore } from "src/store.mjs";
 import { CreatePatientView } from ".";
 
 export default {
-	title: "Views/CreatePatientView",
+	title: "Views/Doctor/CreatePatientView",
 	component: CreatePatientView,
 	decorators: [
 		(Story) => (

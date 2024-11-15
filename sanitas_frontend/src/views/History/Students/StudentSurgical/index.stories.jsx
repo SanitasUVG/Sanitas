@@ -14,7 +14,7 @@ export default {
 			</MemoryRouter>
 		),
 	],
-	title: "Views/Antecedents/Student/StudentSurgicalHistory",
+	title: "Views/Patient/Antecedents/StudentSurgicalHistory",
 };
 
 const dummyPatientId = 12345;
