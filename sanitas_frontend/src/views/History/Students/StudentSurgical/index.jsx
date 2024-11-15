@@ -322,8 +322,7 @@ function SurgicalView({
 					border: `1px solid ${colors.primaryBackground}`,
 					borderRadius: "10px",
 					padding: "1rem",
-					height: "65vh",
-					flex: 1,
+					height: "60vh",
 					overflowY: "auto",
 				}}
 			>
