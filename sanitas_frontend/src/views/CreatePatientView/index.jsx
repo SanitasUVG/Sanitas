@@ -33,7 +33,7 @@ import { getErrorMessage } from "src/utils/errorhandlerstoasts";
  *
  * @param {CreatePatientViewProps} props - Component properties.
  */
-export function CreatePatientView({
+export function PatientCreatePatientView({
 	submitPatientData,
 	useStore,
 	linkAccount,
@@ -50,6 +50,8 @@ export function CreatePatientView({
 		surnames: "",
 		isWoman: true,
 		birthDate: "",
+		phone: "",
+		insurance: ""
 	});
 
 	/**
@@ -269,118 +271,104 @@ export function CreatePatientView({
 					<div
 						style={{
 							display: "grid",
-							gridTemplateColumns: isMobile ? "100%" : "50% 50%", // Cambiar a una columna en móviles
+							gridTemplateColumns: isMobile ? "100%" : "49% 49%", // Cambiar a una columna en móviles
 							paddingTop: "1.5rem",
 							paddingBottom: "3rem",
+							rowGap: "1rem",
+							columnGap: "2%"
 						}}
 					>
-						{/* FIRST COLUMN */}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "1rem",
-								paddingRight: isMobile ? "0" : "1rem", // Ajustar padding
-							}}
-						>
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Nombres del paciente:</label>
-								<BaseInput
-									type="text"
-									value={patientData.names}
-									onChange={(e) => handleChange("names", e.target.value)}
-									placeholder="Ingresa tu nombre"
-									style={inputStyles}
-								/>
-							</div>
-
-							{/* Campo de Apellidos solo para móviles */}
-							{isMobile && (
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Apellidos del paciente:</label>
-									<BaseInput
-										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Ingresa tu apellido"
-										style={inputStyles}
-									/>
-								</div>
-							)}
-
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>CUI del Paciente:</label>
-								<BaseInput
-									type="text"
-									value={patientData.cui}
-									readOnly={true}
-									style={inputStyles}
-								/>
-							</div>
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Fecha de Nacimiento:</label>
-								<DateInput
-									value={patientData.birthDate}
-									onChange={(e) => handleChange("birthDate", e.target.value)}
-									placeholder="Fecha de nacimiento"
-									style={inputStyles}
-								/>
-							</div>
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Nombres del paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.names}
+								onChange={(e) => handleChange("names", e.target.value)}
+								placeholder="Ingresa tu nombre"
+								style={inputStyles}
+							/>
 						</div>
 
-						{/* SECOND COLUMN */}
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "1rem",
-								paddingTop: isMobile ? "1.5rem" : "0",
-								paddingLeft: isMobile ? "0" : "1rem", // Ajustar padding
-							}}
-						>
-							{/* Campo de Apellidos solo para pantallas grandes */}
-							{!isMobile && (
-								<div style={inputContainerStyles}>
-									<label style={labelStyles}>Apellidos del paciente:</label>
-									<BaseInput
-										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
-										placeholder="Ingresa tu apellido"
-										style={inputStyles}
-									/>
-								</div>
-							)}
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Apellidos del paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.surnames}
+								onChange={(e) => handleChange("surnames", e.target.value)}
+								placeholder="Ingresa tu apellido"
+								style={inputStyles}
+							/>
+						</div>
 
-							{/* Campo de Sexo, visible en ambas vistas */}
-							<div style={inputContainerStyles}>
-								<label style={labelStyles}>Sexo:</label>
-								<div
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>CUI del Paciente:</label>
+							<BaseInput
+								type="text"
+								value={patientData.cui}
+								readOnly={true}
+								style={inputStyles}
+								placeholder="Ingresa tu CUI"
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Fecha de Nacimiento:</label>
+							<DateInput
+								value={patientData.birthDate}
+								onChange={(e) => handleChange("birthDate", e.target.value)}
+								placeholder="Fecha de nacimiento"
+								style={inputStyles}
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Teléfono:</label>
+							<BaseInput
+								value={patientData.birthDate}
+								onChange={(e) => handleChange("phone", e.target.value)}
+								placeholder="Ejemplo: 23438767"
+								style={inputStyles}
+							/>
+						</div>
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Seguro Médico:</label>
+							<BaseInput
+								value={patientData.birthDate}
+								onChange={(e) => handleChange("insurance", e.target.value)}
+								placeholder="Ejemplo: El Roble o Ninguno"
+								style={inputStyles}
+							/>
+						</div>
+
+
+						<div style={inputContainerStyles}>
+							<label style={labelStyles}>Sexo:</label>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "2rem",
+								}}
+							>
+								<RadioInput
+									name="gender"
+									checked={!patientData.isWoman}
+									onChange={() => handleChange("isWoman", false)}
+									label="Masculino"
+									style={{ fontFamily: fonts.textFont }}
+								/>
+								<RadioInput
+									name="gender"
+									checked={patientData.isWoman}
+									onChange={() => handleChange("isWoman", true)}
+									label="Femenino"
 									style={{
+										fontFamily: fonts.textFont,
 										display: "flex",
 										alignItems: "center",
-										gap: "2rem",
 									}}
-								>
-									<RadioInput
-										name="gender"
-										checked={!patientData.isWoman}
-										onChange={() => handleChange("isWoman", false)}
-										label="Masculino"
-										style={{ fontFamily: fonts.textFont }}
-									/>
-									<RadioInput
-										name="gender"
-										checked={patientData.isWoman}
-										onChange={() => handleChange("isWoman", true)}
-										label="Femenino"
-										style={{
-											fontFamily: fonts.textFont,
-											display: "flex",
-											alignItems: "center",
-										}}
-									/>
-								</div>
+								/>
 							</div>
 						</div>
 					</div>
