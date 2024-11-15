@@ -33,7 +33,7 @@ import { getErrorMessage } from "src/utils/errorhandlerstoasts";
  *
  * @param {CreatePatientViewProps} props - Component properties.
  */
-export function PatientCreatePatientView({
+export function CreatePatientView({
 	submitPatientData,
 	useStore,
 	linkAccount,

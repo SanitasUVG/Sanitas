@@ -1,11 +1,11 @@
 import { action } from "@storybook/addon-actions";
 import { MemoryRouter } from "react-router-dom";
 import { createEmptyStore } from "src/store.mjs";
-import { PatientCreatePatientView } from ".";
+import { CreatePatientView } from ".";
 
 export default {
 	title: "Views/Patient/CreatePatientView",
-	component: PatientCreatePatientView,
+	component: CreatePatientView,
 	decorators: [
 		(Story) => (
 			<MemoryRouter>
