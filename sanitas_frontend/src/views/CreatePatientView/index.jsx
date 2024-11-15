@@ -48,7 +48,7 @@ export function CreatePatientView({
 		cui: location.state?.cui ?? "",
 		names: "",
 		surnames: "",
-		sex: true,
+		isWoman: true,
 		birthDate: "",
 	});
 
@@ -118,7 +118,7 @@ export function CreatePatientView({
 				return false;
 			}
 		}
-		if (patientData.sex === null) {
+		if (patientData.isWoman === null) {
 			toast.error("El campo de género es obligatorio.");
 			return false;
 		}
@@ -364,15 +364,15 @@ export function CreatePatientView({
 								>
 									<RadioInput
 										name="gender"
-										checked={!patientData.sex}
-										onChange={() => handleChange("sex", false)}
+										checked={!patientData.isWoman}
+										onChange={() => handleChange("isWoman", false)}
 										label="Masculino"
 										style={{ fontFamily: fonts.textFont }}
 									/>
 									<RadioInput
 										name="gender"
-										checked={patientData.sex}
-										onChange={() => handleChange("sex", true)}
+										checked={patientData.isWoman}
+										onChange={() => handleChange("isWoman", true)}
 										label="Femenino"
 										style={{
 											fontFamily: fonts.textFont,
