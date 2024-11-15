@@ -14,16 +14,16 @@ import { toast } from "react-toastify";
  * @typedef {Object} PatientData
  * @property {string} cui - Unique identifier for the patient.
  * @property {string} names - First and middle names of the patient.
- * @property {string} surnames - Last names of the patient.
+ * @property {string} lastNames - Last names of the patient.
  * @property {boolean} isWoman - Gender of the patient.
- * @property {string} birthDate - Birthdate of the patient.
+ * @property {string} birthdate - Birthdate of the patient.
  * @property {boolean} isNew - Indicates if the patient data is new or existing.
  */
 
 /**
  * @typedef {Object} AddPatientViewProps
  * @property {import("src/store.mjs").UseStoreHook} props.useStore
- * @property {import("src/dataLayer.mjs").SubmitPatientDataCallback} props.submitPatientData - Function to submit patient data.
+ * @property {import("src/dataLayer.mjs").DoctorCreatePatientCallback} props.submitPatientData - Function to submit patient data.
  */
 
 /**
@@ -40,9 +40,9 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		const [patientData, setPatientData] = useState({
 			cui: location.state?.cui ?? "",
 			names: "",
-			surnames: "",
+			lastNames: "",
 			sex: null,
-			birthDate: "",
+			birthdate: "",
 		});
 
 		const navigate = useNavigate();
@@ -56,7 +56,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		 * @param {string} value - The new value for the field.
 		 */
 		const handleChange = (field, value) => {
-			if (field === "names" || field === "surnames") {
+			if (field === "names" || field === "lastNames") {
 				const filteredValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
 				setPatientData({ ...patientData, [field]: filteredValue });
 			} else {
@@ -70,7 +70,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		 * @returns {boolean} True if the form is valid, false otherwise.
 		 */
 		const validateFormData = () => {
-			const fields = ["names", "surnames", "birthDate"];
+			const fields = ["names", "lastNames", "birthdate"];
 			const isValidCUI = cuiIsValid(patientData.cui);
 			if (isValidCUI.error) {
 				toast.error("Por favor ingresar un CUI válido...");
@@ -251,8 +251,8 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									/>
 									<BaseInput
 										type="text"
-										value={patientData.surnames}
-										onChange={(e) => handleChange("surnames", e.target.value)}
+										value={patientData.lastNames}
+										onChange={(e) => handleChange("lastNames", e.target.value)}
 										placeholder="Apellidos"
 										style={{ flex: 1, height: "2.5rem" }}
 									/>
@@ -308,8 +308,8 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									Ingrese la fecha de nacimiento del paciente:
 								</p>
 								<DateInput
-									value={patientData.birthDate}
-									onChange={(e) => handleChange("birthDate", e.target.value)}
+									value={patientData.birthdate}
+									onChange={(e) => handleChange("birthdate", e.target.value)}
 									placeholder="Fecha de nacimiento"
 									style={{
 										height: "2.5rem",
