@@ -590,6 +590,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 						<label style={styles.label}>Email:</label>
 						<BaseInput
 							type="email"
+							placeholder="Ingresa el email del estudiante"
 							value={patientData.email || ""}
 							onChange={(e) =>
 								setPatientData({ ...patientData, email: e.target.value })
@@ -603,6 +604,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 						<label style={styles.label}>Teléfono:</label>
 						<BaseInput
 							type="text"
+							placeholder="Ingresa el número de teléfono del estudiante"
 							value={patientData.phone || ""}
 							onChange={(e) =>
 								setPatientData({ ...patientData, phone: e.target.value })
@@ -616,6 +618,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 						<label style={styles.label}>Dirección:</label>
 						<BaseInput
 							type="text"
+							placeholder="Ingresa la dirección del estudiante"
 							value={patientData.address || ""}
 							onChange={(e) =>
 								setPatientData({ ...patientData, address: e.target.value })
@@ -629,6 +632,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 						<label style={styles.label}>Seguro Médico:</label>
 						<BaseInput
 							type="text"
+							placeholder="Ingresa el nombre del seguro médico del estudiante"
 							value={patientData.insurance || ""}
 							onChange={(e) =>
 								setPatientData({ ...patientData, insurance: e.target.value })
@@ -659,6 +663,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el nombre del contacto"
 								value={patientData.contactName1 || ""}
 								onChange={(e) =>
 									setPatientData({
@@ -673,6 +678,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Parentesco de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el parentesco del contacto"
 								value={patientData.contactKinship1 || ""}
 								onChange={(e) =>
 									setPatientData({
@@ -687,6 +693,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Teléfono de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el número de teléfono del contacto"
 								value={patientData.contactPhone1 || ""}
 								onChange={(e) =>
 									setPatientData({
@@ -707,6 +714,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Nombre de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el nombre del contacto"
 								value={patientData.contactName2 || ""}
 								onChange={(e) =>
 									setPatientData({
@@ -721,6 +729,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Parentesco de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el parentesco del contacto"
 								value={patientData.contactKinship2 || ""}
 								onChange={(e) =>
 									setPatientData({
@@ -735,6 +744,7 @@ function UpdateGeneralInformationSection({ getData, updateData, setIsWoman }) {
 							<label style={styles.label}>Teléfono de contacto:</label>
 							<BaseInput
 								type="text"
+								placeholder="Ingrese el número de teléfono del contacto"
 								value={patientData.contactPhone2 || ""}
 								onChange={(e) =>
 									setPatientData({

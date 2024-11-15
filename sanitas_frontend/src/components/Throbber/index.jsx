@@ -23,6 +23,7 @@ export default ({ loadingMessage }) => {
 				alignItems: "center",
 				justifyContent: "center",
 				flexDirection: "column",
+				backgroundColor: colors.secondaryBackground,
 			}}
 		>
 			<div
