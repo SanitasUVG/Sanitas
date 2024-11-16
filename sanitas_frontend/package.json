@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "yarn install && vite",
     "build": "yarn install && vite build",
-    "lint": "biome lint --error-on-warnings ./src/",
-    "format": "biome format --write ./src/",
-    "format:check": "biome format ./src/",
+    "lint": "biome lint --error-on-warnings ./src/ ./cypress/",
+    "format": "biome format --write ./src/ ./cypress/",
+    "format:check": "biome format ./src/ ./cypress/",
     "test": "yarn install && vitest",
     "storybook": "yarn install && storybook dev -p 6006 --no-open",
     "build-storybook": "yarn install && storybook build"

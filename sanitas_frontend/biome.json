@@ -1,5 +1,8 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"javascript": {
+    "globals": ["cy", "describe", "beforeEach", "it", "Cypress"]
+  },
 	"organizeImports": {
 		"enabled": true
 	},
