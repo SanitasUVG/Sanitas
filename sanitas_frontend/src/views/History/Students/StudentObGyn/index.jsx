@@ -32,7 +32,7 @@ export function StudentObGynHistory({
 	useStore,
 }) {
 	const id = useStore((s) => s.selectedPatientId);
-	// const id = 1;
+	//   const id = 1;
 	const [reload, setReload] = useState(false); // Controls reload toggling for refetching data
 
 	const LoadingView = () => {
@@ -1192,22 +1192,30 @@ function ObGynView({
 
 	const formattedDiagnosedIllnesses = {
 		version: diagnosedIllnesses?.version || 1,
-		data: diagnoses.reduce((acc, diagnosis) => {
-			if (fixedDiagnosesKeys.includes(diagnosis.key)) {
-				acc[diagnosis.key] = {
-					medication: { ...diagnosis.details },
-				};
-			} else {
-				acc.otherCondition = acc.otherCondition || [];
-				acc.otherCondition.push({
-					medication: {
-						illness: diagnosis.key,
-						...diagnosis.details,
-					},
-				});
-			}
-			return acc;
-		}, {}),
+		data: diagnoses.reduce(
+			(acc, diagnosis) => {
+				if (fixedDiagnosesKeys.includes(diagnosis.key)) {
+					acc[diagnosis.key] = {
+						medication: { ...diagnosis.details },
+					};
+				} else {
+					if (!acc.otherCondition) {
+						acc.otherCondition = [];
+					}
+					acc.otherCondition.push({
+						medication: {
+							illness: diagnosis.key,
+							...diagnosis.details,
+						},
+					});
+				}
+				return acc;
+			},
+			{
+				// Inicializar otherCondition como arreglo vacío si no existe
+				otherCondition: [],
+			},
+		),
 	};
 
 	const handleSaveGynecologicalHistory = async () => {
@@ -1250,7 +1258,7 @@ function ObGynView({
 				data: {
 					hysterectomy: structuredOperations.hysterectomy || {},
 					sterilizationSurgery: structuredOperations.sterilization || {},
-					ovarianCystsSurgery: structuredOperations.ovarianCysts || null,
+					ovarianCystsSurgery: structuredOperations.ovarianCysts || [],
 					breastMassResection: structuredOperations.breastMassResection || [],
 				},
 			},
@@ -1443,181 +1451,203 @@ function ObGynView({
 						<div
 							style={{
 								display: "flex",
-								flexDirection: "row",
+								flexDirection: "column",
 								alignItems: "center",
 								justifyContent: "center",
-								flexWrap: isMobile ? "wrap" : "initial",
-								gap: isMobile ? "1rem" : "2rem",
-								padding: "1rem 2rem",
 							}}
 						>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-									height: "100%",
-								}}
-							>
-								<p
-									style={{
-										paddingBottom: "0.5rem",
-										// paddingTop: "2rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
-									}}
-								>
-									# Embarazos:
-								</p>
-								<BaseInput
-									value={G}
-									readOnly={true}
-									placeholder="Total de partos"
-									style={{
-										width: "100%",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
-								/>
-							</div>
 							<p
 								style={{
-									fontWeight: "bold",
-									fontSize: fonts.titleFont,
-									// paddingTop: isMobile ? 0 : "3.5rem",
-									paddingRight: "1rem",
+									paddingBottom: "0.5rem",
+									color: colors.darkerGrey,
+									fontFamily: fonts.textFont,
+									fontSize: fontSize.textSize,
+									paddingTop: "1rem",
 								}}
 							>
-								{" "}
-								={" "}
+								Para aumentar y disminuir el número de partos, cesáreas y
+								abortos, puedes utilizar las flechas arriba y abajo de tu
+								teclado
 							</p>
 							<div
 								style={{
 									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-									height: "100%",
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "center",
+									flexWrap: isMobile ? "wrap" : "initial",
+									gap: isMobile ? "1rem" : "2rem",
+									padding: "1rem 2rem",
 								}}
 							>
-								<p
+								<div
 									style={{
-										paddingBottom: "0.5rem",
-										// paddingTop: isMobile ? 0 : "3.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
+										display: "flex",
+										flexDirection: "column",
+										width: "100%",
+										height: "100%",
 									}}
 								>
-									# Partos vaginales
-								</p>
-								<BaseInput
-									type="number"
-									value={P}
-									onChange={(e) => {
-										const n = Number(e.target.value) || 0;
-										setP(n < initialP ? initialP : n);
-									}}
-									readOnly={!isEditable}
-									placeholder="# vía vaginal"
-									style={{
-										width: "100%",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
-									}}
-								/>
-							</div>
-							<p
-								style={{
-									fontWeight: "bold",
-									fontSize: fonts.titleFont,
-									paddingTop: isMobile ? 0 : "1.5rem",
-									paddingRight: "1rem",
-								}}
-							>
-								{" "}
-								+{" "}
-							</p>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-									height: "100%",
-								}}
-							>
+									<p
+										style={{
+											paddingBottom: "0.5rem",
+											// paddingTop: "2rem",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+										}}
+									>
+										# Embarazos:
+									</p>
+									<BaseInput
+										value={G}
+										readOnly={true}
+										placeholder="Total de partos"
+										style={{
+											width: "100%",
+											height: "2.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: "1rem",
+										}}
+									/>
+								</div>
 								<p
 									style={{
-										paddingBottom: "0.5rem",
+										fontWeight: "bold",
+										fontSize: fonts.titleFont,
 										// paddingTop: isMobile ? 0 : "3.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
+										paddingRight: "1rem",
 									}}
 								>
-									# Cesáreas
+									{" "}
+									={" "}
 								</p>
-								<BaseInput
-									type="number"
-									value={C}
-									onChange={(e) => {
-										const n = Number(e.target.value) || 0;
-										setC(n < initialC ? initialC : n);
-									}}
-									readOnly={!isEditable}
-									placeholder="# cesáreas"
+								<div
 									style={{
+										display: "flex",
+										flexDirection: "column",
 										width: "100%",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
+										height: "100%",
 									}}
-								/>
-							</div>
-							<p
-								style={{
-									fontWeight: "bold",
-									fontSize: fonts.titleFont,
-									paddingTop: isMobile ? 0 : "1.5rem",
-									paddingRight: "1rem",
-								}}
-							>
-								{" "}
-								+{" "}
-							</p>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									width: "100%",
-									height: "100%",
-								}}
-							>
+								>
+									<p
+										style={{
+											paddingBottom: "0.5rem",
+											// paddingTop: isMobile ? 0 : "3.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+										}}
+									>
+										# Partos vaginales
+									</p>
+									<BaseInput
+										type="number"
+										value={P}
+										onChange={(e) => {
+											const n = Number(e.target.value) || 0;
+											setP(n < initialP ? initialP : n);
+										}}
+										readOnly={!isEditable}
+										placeholder="# vía vaginal"
+										style={{
+											width: "100%",
+											height: "2.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: "1rem",
+										}}
+									/>
+								</div>
 								<p
 									style={{
-										paddingBottom: "0.5rem",
-										// paddingTop: isMobile ? 0 : "3.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: fontSize.textSize,
+										fontWeight: "bold",
+										fontSize: fonts.titleFont,
+										paddingTop: isMobile ? 0 : "1.5rem",
+										paddingRight: "1rem",
 									}}
 								>
-									# Abortos:
+									{" "}
+									+{" "}
 								</p>
-								<BaseInput
-									type="number"
-									value={A}
-									onChange={(e) => {
-										const n = Number(e.target.value);
-										setA(n < initialA ? initialA : n);
-									}}
-									readOnly={!isEditable}
-									placeholder="# abortos"
+								<div
 									style={{
+										display: "flex",
+										flexDirection: "column",
 										width: "100%",
-										height: "2.5rem",
-										fontFamily: fonts.textFont,
-										fontSize: "1rem",
+										height: "100%",
 									}}
-								/>
+								>
+									<p
+										style={{
+											paddingBottom: "0.5rem",
+											// paddingTop: isMobile ? 0 : "3.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+										}}
+									>
+										# Cesáreas
+									</p>
+									<BaseInput
+										type="number"
+										value={C}
+										onChange={(e) => {
+											const n = Number(e.target.value) || 0;
+											setC(n < initialC ? initialC : n);
+										}}
+										readOnly={!isEditable}
+										placeholder="# cesáreas"
+										style={{
+											width: "100%",
+											height: "2.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: "1rem",
+										}}
+									/>
+								</div>
+								<p
+									style={{
+										fontWeight: "bold",
+										fontSize: fonts.titleFont,
+										paddingTop: isMobile ? 0 : "1.5rem",
+										paddingRight: "1rem",
+									}}
+								>
+									{" "}
+									+{" "}
+								</p>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										width: "100%",
+										height: "100%",
+									}}
+								>
+									<p
+										style={{
+											paddingBottom: "0.5rem",
+											// paddingTop: isMobile ? 0 : "3.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: fontSize.textSize,
+										}}
+									>
+										# Abortos:
+									</p>
+									<BaseInput
+										type="number"
+										value={A}
+										onChange={(e) => {
+											const n = Number(e.target.value);
+											setA(n < initialA ? initialA : n);
+										}}
+										readOnly={!isEditable}
+										placeholder="# abortos"
+										style={{
+											width: "100%",
+											height: "2.5rem",
+											fontFamily: fonts.textFont,
+											fontSize: "1rem",
+										}}
+									/>
+								</div>
 							</div>
 						</div>
 
