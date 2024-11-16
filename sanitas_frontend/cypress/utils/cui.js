@@ -1,15 +1,30 @@
+export function randomPhone() {
+	return randomIntBetween(10_000_000, 1_000_000_000);
+}
+
 /**
  * @param {number} minInclusive - The minimum integer (inclusive)
  * @param {number} maxExclusive - The maximum integer (exclusive)
  * @returns {number} - A random number between the range.
  */
-export const randomIntBetween = (minInclusive, maxExclusive) => {
+export function randomIntBetween(minInclusive, maxExclusive) {
 	return Math.floor(
 		Math.random() * (maxExclusive - minInclusive) + minInclusive,
 	);
-};
+}
 
-export const generateUniqueCUI = () => {
+/**
+ * Selects a random item from a list of options.
+ *
+ * @template T
+ * @param {T[]} options - The options to select from
+ * @returns {T}
+ */
+export function randomFrom(options) {
+	return options[randomIntBetween(0, options.length)];
+}
+
+export function generateUniqueCUI() {
 	// Este listado contiene la cantidad de municipios
 	// existentes en cada departamento para poder
 	// determinar el código máximo aceptado por cada
@@ -60,4 +75,4 @@ export const generateUniqueCUI = () => {
 		maximumFractionDigits: 0,
 	}).format;
 	return `${numbers}${verificador}${formatter(depto)}${formatter(muni)}`;
-};
+}

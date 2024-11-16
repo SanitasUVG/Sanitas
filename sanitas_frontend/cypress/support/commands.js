@@ -49,7 +49,26 @@ function loginAsPatient() {
 	login("gal22386@uvg.edu.gt", "galand0nis");
 }
 
+/**
+ * Search for a patient in the application. Requirements:
+ * - We need to be logged in as a doctor.
+ *
+ * It ends when the HTTP call to search for the patient ends.
+ * So you still need to make the action of clicking the "Ver" button.
+ * @param {string} query - The string to input on the search box.
+ * @param {"CUI" | "Nombres y Apellidos" | "Carnet Estudiante" | "Código Colaborador"} typeOfSearch
+ */
+function searchPatient(typeOfSearch, query) {
+	cy.get("select", { timeout: 6000 }).select(typeOfSearch);
+	cy.get("input[type=text]").type(query);
+
+	cy.intercept("POST", "**/patient/search").as("searchPatient");
+	cy.contains("Buscar Paciente").click("left");
+	cy.get("@searchPatient").its("response.statusCode").should("be.oneOf", [200]);
+}
+
 Cypress.Commands.addAll({
 	loginAsDoctor,
 	loginAsPatient,
+	searchPatient,
 });
