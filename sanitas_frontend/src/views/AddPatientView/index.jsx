@@ -41,7 +41,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 			cui: location.state?.cui ?? "",
 			names: "",
 			lastNames: "",
-			sex: null,
+			isWoman: null,
 			birthdate: "",
 		});
 
@@ -85,7 +85,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 					return false;
 				}
 			}
-			if (patientData.sex === null) {
+			if (patientData.isWoman === null) {
 				toast.error("El campo de género es obligatorio.");
 				return false;
 			}
@@ -98,7 +98,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 		 * @param {boolean} isFemale - The selected gender.
 		 */
 		const handleGenderChange = (isFemale) => {
-			setPatientData({ ...patientData, sex: isFemale });
+			setPatientData({ ...patientData, isWoman: isFemale });
 		};
 
 		const errorPStyles = {
@@ -277,7 +277,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									<div style={{ paddingRight: "1.25rem" }}>
 										<RadioInput
 											name="gender"
-											checked={patientData.sex === true}
+											checked={patientData.isWoman === true}
 											onChange={() => handleGenderChange(true)}
 											label="Femenino"
 											style={{
@@ -288,7 +288,7 @@ export function AddPatientView({ submitPatientData, useStore }) {
 									<div>
 										<RadioInput
 											name="gender"
-											checked={patientData.sex === false}
+											checked={patientData.isWoman === false}
 											onChange={() => handleGenderChange(false)}
 											label="Masculino"
 										/>
