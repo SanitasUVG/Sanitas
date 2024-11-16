@@ -4,7 +4,6 @@ import {
 	decodeJWT,
 	createResponse,
 	mapToAPINonPathologicalHistory,
-	checkForUnauthorizedChangesPathological,
 	toSafeEvent,
 } from "utils/index.mjs";
 
@@ -73,22 +72,11 @@ export const handler = async (event, context) => {
 			const patientResult = await client.query(getPatientQuery, [patientId]);
 			if (patientResult.rowCount > 0) {
 				const dbData = patientResult.rows[0];
-				const oldData = {
+				const _oldData = {
 					smoker: dbData.fuma_data,
 					drink: dbData.bebidas_alcoholicas_data,
 					drugs: dbData.drogas_data,
 				};
-
-				if (checkForUnauthorizedChangesPathological(medicalHistory, oldData)) {
-					logger.error("Request modifies data!");
-					const response = responseBuilder
-						.setStatusCode(403)
-						.setBody({ error: "Not authorized to update data!" })
-						.build();
-
-					logger.info({ response }, "Responding with:");
-					return { response };
-				}
 			}
 
 			const upsertQuery = `
