@@ -962,26 +962,6 @@ export function checkForUnauthorizedChanges(newData, oldData) {
 }
 
 /**
- * Checks if the student is trying to update fields that are already filled.
- * @param {Object} newData - New data from the request.
- * @param {Object} oldData - Existing data from the database.
- * @returns {boolean} True if the new data tries to overwrite non-empty fields.
- */
-export function checkForUnauthorizedChangesPathological(newData, oldData) {
-	return Object.keys(newData).some((key) => {
-		const newInfo = newData[key].data;
-		const oldInfo = oldData[key]?.data;
-		if (!oldInfo) return false; // If there was no old data, no unauthorized update is possible.
-
-		return Object.keys(newInfo).some((field) => {
-			const newValue = newInfo[field];
-			const oldValue = oldInfo[field];
-			return oldValue && newValue !== oldValue;
-		});
-	});
-}
-
-/**
  * Determines if a medical record is empty.
  * @param {MedicalRecord} item - The medical record to evaluate.
  * @returns {boolean} True if the record is empty.

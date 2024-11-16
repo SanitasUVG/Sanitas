@@ -100,6 +100,10 @@ function requestModifiesDBData(dbData, requestData) {
 			const dbValue = dbData.diagnosedIllnesses.data[key].medication[subKey];
 			const requestValue =
 				requestData.diagnosedIllnesses?.data[key]?.medication[subKey];
+			if (dbValue == null || dbValue === "") {
+				// The existing database value is empty, so adding data is allowed
+				return false;
+			}
 			const comparison = dbValue !== requestValue;
 
 			logger.debug(`Comparing ${dbValue} !== ${requestValue} => ${comparison}`);
