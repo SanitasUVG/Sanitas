@@ -110,7 +110,7 @@ export default function () {
 		"is status 200": (r) => r.status === 200,
 	});
 
-	getUrls.forEach(([getUrl, genValidUpdate]) => {
+	for (const [getUrl, genValidUpdate] of getUrls) {
 		const getResponse = http.get(getUrl, { headers });
 		check(getResponse, {
 			"is status 200": (r) => r.status === 200,
@@ -124,7 +124,7 @@ export default function () {
 			"is status 200": (r) => r.status === 200,
 		});
 		sleep(1);
-	});
+	}
 
 	sleep(1);
 }
