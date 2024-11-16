@@ -49,12 +49,32 @@ export default function BaseInput({
 
 	// Bloquear caracteres no numéricos para inputs de tipo 'number'
 	const handleKeyPress = (event) => {
-		if (
-			type === "number" &&
-			!/^[0-9.]+$/.test(event.key) &&
-			event.key !== "Backspace"
-		) {
-			event.preventDefault();
+		if (type === "number") {
+			// Permitir teclas de control como flechas, suprimir, etc.
+			const allowedKeys = [
+				"ArrowUp",
+				"ArrowDown",
+				"ArrowLeft",
+				"ArrowRight",
+				"Backspace",
+				"Delete",
+				"Tab",
+				"Home",
+				"End",
+			];
+
+			if (
+				!(
+					(
+						/^[0-9.]$/.test(event.key) ||
+						allowedKeys.includes(event.key) ||
+						event.ctrlKey || // Permitir combinaciones de control como Ctrl+C, Ctrl+V
+						(!event.ctrlKey && event.metaKey)
+					) // Para teclas de comando en Mac
+				)
+			) {
+				event.preventDefault();
+			}
 		}
 	};
 
