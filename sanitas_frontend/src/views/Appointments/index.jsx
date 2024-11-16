@@ -337,17 +337,23 @@ function StudentAppointmentsView({
 		let hasErrors = false;
 
 		// Validación de los campos necesarios
-		if (!currentAppointment.diagnosis) {
+		if (
+			!currentAppointment.diagnosis ||
+			currentAppointment.diagnosis.trim() === ""
+		) {
 			toast.error("El diagnóstico es obligatorio.");
 			hasErrors = true;
 		}
 
-		if (!currentAppointment.physicalExam) {
+		if (
+			!currentAppointment.physicalExam ||
+			currentAppointment.physicalExam.trim() === ""
+		) {
 			toast.error("El examen físico es obligatorio.");
 			hasErrors = true;
 		}
 
-		if (!currentAppointment.reason) {
+		if (!currentAppointment.reason || currentAppointment.reason.trim() === "") {
 			toast.error("El motivo de la consulta es obligatorio.");
 			hasErrors = true;
 		}
@@ -496,23 +502,30 @@ function StudentAppointmentsView({
 						arriba.
 					</p>
 				) : (
-					appointmentHistory.data.map((appointment) => {
-						return (
-							<InformationCard
-								key={`appointment-${appointment.patientConsultation.id}`}
-								type="appointment"
-								date={
-									getFormattedDateTime(
-										appointment.patientConsultation.data.date,
-									).formattedDate
-								}
-								reasonAppointment={
-									appointment.patientConsultation.data.reason || "Sin Motivo"
-								}
-								onClick={() => handleSelectAppointment(appointment)}
-							/>
-						);
-					})
+					appointmentHistory.data
+						.filter(
+							(appointment) =>
+								appointment.patientConsultation.data.reason?.trim() &&
+								appointment.patientConsultation.data.diagnosis?.trim() &&
+								appointment.patientConsultation.data.physicalExam?.trim(),
+						)
+						.map((appointment) => {
+							return (
+								<InformationCard
+									key={`appointment-${appointment.patientConsultation.id}`}
+									type="appointment"
+									date={
+										getFormattedDateTime(
+											appointment.patientConsultation.data.date,
+										).formattedDate
+									}
+									reasonAppointment={
+										appointment.patientConsultation.data.reason
+									}
+									onClick={() => handleSelectAppointment(appointment)}
+								/>
+							);
+						})
 				)}
 			</div>
 

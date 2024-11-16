@@ -2,7 +2,7 @@ import { MemoryRouter } from "react-router-dom";
 import StudentWelcomeView from ".";
 
 export default {
-	title: "Views/StudentWelcomeView",
+	title: "Views/Patient/StudentWelcomeView",
 	component: StudentWelcomeView,
 	decorators: [
 		(Story) => (

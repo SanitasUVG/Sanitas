@@ -55,6 +55,7 @@ import {
 	patientUpdateCollaboratorInformation,
 	updateStudentGynecologialHistory,
 	exportData,
+	patientCreatePatientAPI,
 } from "./dataLayer.mjs";
 import { createEmptyStore } from "./store.mjs";
 import { AddPatientView } from "./views/AddPatientView";
@@ -78,12 +79,12 @@ import { PsichiatricHistory } from "./views/History/Psichiatric";
 import { StudentPsichiatricHistory } from "./views/History/Students/StudentPsichiatric";
 import StudentWelcomeView from "./views/StudentWelcomeView";
 import { LinkPatientView } from "./views/LinkPatientView";
-import { CreatePatientView } from "./views/CreatePatientView";
 import { StudentNonPathologicalHistory } from "./views/History/Students/StudentNonPathological";
 import UpdatePatientGeneralInformationView from "./views/UpdatePatientGeneralInformationView";
 import { StudentObGynHistory } from "./views/History/Students/StudentObGyn";
 import { ExportDataView } from "./views/ExportDataView";
 import { StudentAppointments } from "./views/Appointments";
+import { CreatePatientView } from "./views/CreatePatientView";
 
 const useStore = createEmptyStore();
 
@@ -608,7 +609,7 @@ export const ROUTES = [
 		element: (
 			<CreatePatientView
 				useStore={useStore}
-				submitPatientData={submitPatientData}
+				submitPatientData={patientCreatePatientAPI}
 				linkAccount={linkAccountToPatient}
 			/>
 		),
