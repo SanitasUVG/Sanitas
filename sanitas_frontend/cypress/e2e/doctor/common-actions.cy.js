@@ -6,19 +6,24 @@ describe("Common doctor actions", () => {
 	});
 
 	it("Create a patient", () => {
-		cy.searchPatient("CUI", generateUniqueCUI());
+		cy.doctorCreatePatient(generateUniqueCUI(), {
+			names: "Juana Marcos",
+			lastnames: "de la Vega",
+			isWoman: true,
+			birthdate: "2003-08-07",
+		});
+	});
 
-		cy.contains("Ingresar la información del paciente.").click();
-		cy.get("input[placeholder=Nombres]").type("Juana Marcos");
-		cy.get("input[placeholder=Apellidos]").type("de la Vega");
-		cy.get("input[type=radio]").first().check();
-		cy.get("input[type=date]").type("2003-08-07");
-
-		cy.intercept("POST", "**/patient").as("submitPatient");
-		cy.get("button").click();
-		cy.get("@submitPatient")
+	it("Export data", () => {
+		cy.intercept("GET", "**/account/patient").as("linkedAccount");
+		cy.get("@linkedAccount")
 			.its("response.statusCode")
 			.should("be.oneOf", [200]);
+		cy.get("div>button").eq(1).click();
+
+		cy.intercept("GET", "**/consultations/export**").as("exportData");
+		cy.contains("Descargar").click();
+		cy.get("@exportData").its("response.statusCode").should("be.oneOf", [200]);
 	});
 
 	it("Can edit general data", () => {

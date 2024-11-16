@@ -50,7 +50,8 @@ function loginAsPatient() {
 }
 
 /**
- * Search for a patient in the application. Requirements:
+ * Search for a patient in the application.
+ * Requirements:
  * - We need to be logged in as a doctor.
  *
  * It ends when the HTTP call to search for the patient ends.
@@ -67,8 +68,38 @@ function searchPatient(typeOfSearch, query) {
 	cy.get("@searchPatient").its("response.statusCode").should("be.oneOf", [200]);
 }
 
+/**
+ * Creates a patient as a doctor.
+ * Requirements:
+ * - Login as a doctor.
+ *
+ * It ends when a the HTTP request to create a patient is successful!
+ * @param {string} cui - Can be generated using the `generateUniqueCUI` function.
+ * @param {{names: string, lastnames: string, isWoman: boolean, birthdate: string}} patientInfo - The date must be in the format of "YYYY-MM-DD"
+ */
+function doctorCreatePatient(cui, patientInfo) {
+	cy.searchPatient("CUI", cui);
+
+	cy.contains("Ingresar la información del paciente.").click();
+	cy.get("input[placeholder=Nombres]").type(patientInfo.names);
+	cy.get("input[placeholder=Apellidos]").type(patientInfo.lastnames);
+
+	if (patientInfo.isWoman) {
+		cy.get("input[type=radio]").first().check();
+	} else {
+		cy.get("input[type=radio]").last().check();
+	}
+
+	cy.get("input[type=date]").type(patientInfo.birthdate);
+
+	cy.intercept("POST", "**/patient").as("submitPatient");
+	cy.get("button").click();
+	cy.get("@submitPatient").its("response.statusCode").should("be.oneOf", [200]);
+}
+
 Cypress.Commands.addAll({
 	loginAsDoctor,
 	loginAsPatient,
 	searchPatient,
+	doctorCreatePatient,
 });

@@ -3,15 +3,19 @@ describe("Search Patient", () => {
 		cy.loginAsDoctor();
 	});
 
-	it("Searchs for a single patient", () => {
-		cy.get("input[type=text]", { timeout: 6000 }).type("juan");
+	it("Searchs by name", () => {
+		cy.searchPatient("Nombres y Apellidos", "juan");
+	});
 
-		cy.intercept("POST", "**/patient/search").as("searchPatient");
-		cy.contains("Buscar Paciente").click("left");
-		cy.get("@searchPatient")
-			.its("response.statusCode")
-			.should("be.oneOf", [200]);
+	it("Searchs by CUI", () => {
+		cy.searchPatient("CUI", "1234567890123");
+	});
 
-		cy.contains("Ver").click();
+	it("Searchs by Carnet", () => {
+		cy.searchPatient("Carnet Estudiante", "A01234567");
+	});
+
+	it("Searchs by Colaborator code", () => {
+		cy.searchPatient("Código Colaborador", "C001");
 	});
 });
