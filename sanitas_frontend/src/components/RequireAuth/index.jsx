@@ -49,6 +49,7 @@ export default function RequireAuth({ children, getSession, path, useStore }) {
 					display: "grid",
 					alignItems: "center",
 					justifyContent: "center",
+					backgroundColor: colors.secondaryBackground,
 				}}
 			>
 				<div

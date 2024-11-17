@@ -42,13 +42,11 @@ export default function () {
 		genSearchQuery("Ma", "Nombres"),
 	];
 
-	payloads
-		.map((p) => JSON.stringify(p))
-		.forEach((p) => {
-			const res = http.post(`${BASE_URL}/patient/search`, p, { headers });
-			check(res, {
-				"is status 200": (r) => r.status === 200,
-			});
-			sleep(1);
+	for (const p of payloads.map((p) => JSON.stringify(p))) {
+		const res = http.post(`${BASE_URL}/patient/search`, p, { headers });
+		check(res, {
+			"is status 200": (r) => r.status === 200,
 		});
+		sleep(1);
+	}
 }

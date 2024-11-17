@@ -1,5 +1,11 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"javascript": {
+		"globals": ["__ENV"]
+	},
+	"files": {
+		"ignore": ["node_modules/**", ".aws-sam/**"]
+	},
 	"organizeImports": {
 		"enabled": true
 	},

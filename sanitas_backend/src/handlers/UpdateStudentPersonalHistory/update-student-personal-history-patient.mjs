@@ -5,7 +5,7 @@ import {
 	decodeJWT,
 	createResponse,
 	mapToAPIPersonalHistory,
-	requestIsSubset,
+	requestIsSuperset,
 	toSafeEvent,
 } from "utils/index.mjs";
 
@@ -245,7 +245,11 @@ function requestModifiesSavedData(requestData, savedData) {
 			{ savedData: savedData[key], requestData: requestData[key] },
 			"Comparing savedData with requestData",
 		);
-		return requestIsSubset(savedData[key].data, requestData[key].data, logger);
+		return requestIsSuperset(
+			savedData[key].data,
+			requestData[key].data,
+			logger,
+		);
 	});
 
 	if (!doesntModifyData) {
