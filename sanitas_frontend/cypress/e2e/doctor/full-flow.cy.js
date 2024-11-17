@@ -19,6 +19,7 @@ const possibleSurgeries = [
 	"Operación 3",
 	"Operación 4",
 ];
+const possibleBloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const allergies = [
 	"Medicamentos",
@@ -496,6 +497,50 @@ function fillGinecoAntecedents() {
 	closeToastifies();
 }
 
+function fillNonPatologicAntecedents() {
+	cy.intercept("GET", "**/patient/nonpatological-history/**").as(
+		"GETNonpatological",
+	);
+	cy.contains("No patológicos").click();
+	cy.get("@GETNonpatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	cy.get("p:contains(¿Fuma?)+div").find("label:contains(Sí)>input").check();
+	cy.get("input[placeholder='Ingrese cuántos cigarrillos al día']").type(
+		randomIntBetween(3, 11),
+	);
+	cy.get("input[placeholder='Ingrese desde hace cuántos años']").type(
+		randomIntBetween(3, 11),
+	);
+
+	cy.get("p:contains(¿Consumes bebidas alcohólicas?)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("input[placeholder='Ingrese cuántas bebidas al mes']").type(
+		randomIntBetween(10, 20),
+	);
+
+	cy.get("p:contains(¿Consumes alguna droga?)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("input[placeholder='Ingrese el tipo de droga']").type(
+		randomFrom(["LSD", "Marihuana", "Cocaína"]),
+	);
+	cy.get("input[placeholder='Ingrese la frecuencia del consumo']").type(
+		randomFrom(possibleFrequencies),
+	);
+
+	cy.intercept("PUT", "**/patient/nonpatological-history").as(
+		"UPDATENonpatological",
+	);
+	cy.contains("Guardar").click();
+	cy.get("@UPDATENonpatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+}
+
 describe("Common doctor actions", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
@@ -517,6 +562,18 @@ describe("Common doctor actions", () => {
 			.its("response.statusCode")
 			.should("be.oneOf", [200]);
 
+		// NOTE: We need to fill the blood type because of non pathological antecedents...
+		cy.get("h1:contains(Datos Generales:)+button").click();
+		cy.get("label:contains(Tipo de sangre:)+div")
+			.find("select")
+			.select(randomFrom(possibleBloodTypes));
+
+		cy.intercept("PUT", "**/patient/general").as("UPDATEDetails");
+		cy.get("h1:contains(Datos Generales:)+div>button").first().click();
+		cy.get("@UPDATEDetails")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+
 		fillFamiliarAntecedents();
 		fillPersonalAntecedents();
 		fillAllergicAntecedents();
@@ -524,5 +581,6 @@ describe("Common doctor actions", () => {
 		fillTraumatologicAntecedents();
 		fillPsychiatricAntecedents();
 		fillGinecoAntecedents();
+		fillNonPatologicAntecedents();
 	});
 });
