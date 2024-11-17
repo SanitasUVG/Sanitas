@@ -149,7 +149,7 @@ export function PsichiatricHistory({
  * @param {boolean} isFirstTime Flag indicating whether the patient's data is being loaded for the first time.
  * @returns {Object} Object containing various state and functions to manage the psychiatric condition.
  */
-function useCondition(initialData = [], initialUBE = false) {
+function useCondition(initialData, initialUBE, isEditable) {
 	const [status, setStatus] = useState(
 		initialData.length > 0 &&
 			initialData.some((item) => item.medication || item.illness),
@@ -173,41 +173,42 @@ function useCondition(initialData = [], initialUBE = false) {
 	const originalData = useRef(null);
 
 	useEffect(() => {
-		const newStatus =
-			initialData.length > 0 &&
-			initialData.some((item) => item.medication || item.illness);
-		const newMedications =
-			initialData.length > 0 &&
-			initialData.some((item) => item.medication || item.illness)
-				? initialData.map((item) => ({
-						medication: item.medication || "",
-						dose: item.dose || "",
-						frequency: item.frequency || "",
-						illness: item.illness || "",
-						isNew: false,
-					}))
-				: [
-						{
-							medication: "",
-							dose: "",
-							frequency: "",
-							illness: "",
-							isNew: true,
-						},
-					];
+		if (!isEditable) {
+			const newStatus =
+				initialData.length > 0 &&
+				initialData.some((item) => item.medication || item.illness);
+			const newMedications =
+				initialData.length > 0 &&
+				initialData.some((item) => item.medication || item.illness)
+					? initialData.map((item) => ({
+							medication: item.medication || "",
+							dose: item.dose || "",
+							frequency: item.frequency || "",
+							illness: item.illness || "",
+							isNew: false,
+						}))
+					: [
+							{
+								medication: "",
+								dose: "",
+								frequency: "",
+								illness: "",
+								isNew: true,
+							},
+						];
 
-		setStatus(newStatus);
-		setMedications(newMedications);
-		setUBE(initialUBE);
+			setStatus(newStatus);
+			setMedications(newMedications);
+			setUBE(initialUBE);
 
-		if (originalData.current === null) {
+			// Actualizar originalData.current solo cuando no se está editando
 			originalData.current = {
 				status: newStatus,
 				medications: newMedications,
 				UBE: initialUBE,
 			};
 		}
-	}, [initialData, initialUBE]);
+	}, [initialData, initialUBE, isEditable]);
 
 	const addMedication = () => {
 		setMedications([
@@ -248,6 +249,14 @@ function useCondition(initialData = [], initialUBE = false) {
 		}
 	};
 
+	const updateOriginalData = () => {
+		originalData.current = {
+			status,
+			medications,
+			UBE,
+		};
+	};
+
 	return {
 		status,
 		setStatus,
@@ -259,6 +268,7 @@ function useCondition(initialData = [], initialUBE = false) {
 		setUBE: handleUBEChange,
 		handleStatusChange,
 		resetToOriginal,
+		updateOriginalData,
 	};
 }
 
@@ -325,42 +335,36 @@ function PsichiatricView({
 	const depressionCondition = useCondition(
 		medicalHistory.depression.data,
 		medicalHistory.depression.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
 	const anxietyCondition = useCondition(
 		medicalHistory.anxiety.data,
 		medicalHistory.anxiety.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
 	const ocdCondition = useCondition(
 		medicalHistory.ocd.data,
 		medicalHistory.ocd.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
 	const adhdCondition = useCondition(
 		medicalHistory.adhd.data,
 		medicalHistory.adhd.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
 	const bipolarCondition = useCondition(
 		medicalHistory.bipolar.data,
 		medicalHistory.bipolar.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
 	const otherCondition = useCondition(
 		medicalHistory.other.data,
 		medicalHistory.other.data[0]?.ube,
-		isFirstTime,
 		isEditable,
 	);
 
@@ -467,6 +471,10 @@ function PsichiatricView({
 						? "Antecedentes psiquiátricos actualizados con éxito."
 						: "Antecedentes psiquiátricos guardados con éxito.",
 				);
+				for (const section of Object.values(sections)) {
+					section.condition.updateOriginalData();
+				}
+
 				setIsEditable(false);
 				triggerReload();
 			} else {
@@ -886,7 +894,7 @@ function PsichiatricView({
 					</>
 				)}
 
-				{isFirstTime && (
+				{isFirstTime && !errorMessage && (
 					<div
 						style={{
 							display: "flex",

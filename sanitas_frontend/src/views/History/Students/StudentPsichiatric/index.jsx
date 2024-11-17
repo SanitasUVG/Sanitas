@@ -250,6 +250,7 @@ function useCondition(
  * @param {PsichiatricViewProps} props Specific props for the PsichiatricView component.
  * @returns {JSX.Element} A detailed view for managing psychiatric history with interactivity to add or edit records.
  */
+
 function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
