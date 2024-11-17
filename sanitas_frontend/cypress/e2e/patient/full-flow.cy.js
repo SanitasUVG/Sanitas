@@ -415,9 +415,180 @@ function fillPsychiatricAntecedents() {
 	closeToastifies();
 }
 
+function fillGinecoAntecedents() {
+	cy.intercept("GET", "**/patient/gyneco-history/**").as("GETGyneco");
+	cy.contains("Ginecoobstétricos").click();
+	cy.get("@GETGyneco").its("response.statusCode").should("be.oneOf", [200]);
+
+	cy.get("input[placeholder='Ingrese la edad (Ej. 15, 16...)']").type(
+		`${randomIntBetween(12, 16)}`,
+	);
+	cy.get("p:contains(Sus ciclos son regulares)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("p:contains(Normalmente tiene menstruación dolorosa)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get(
+		"input[placeholder='Ingrese el medicamento tomado para regular los dolores de menstruación.']",
+	).type(randomFrom(POSSIBLE_MEDS));
+
+	cy.get("p:contains(Partos vaginales)+input").type(randomIntBetween(0, 5));
+	cy.get("p:contains(Cesáreas)+input").type(randomIntBetween(0, 5));
+	cy.get("p:contains(Abortos)+input").type(randomIntBetween(0, 5));
+
+	// NOTE: Diagnóstico por Enfermedades...
+	for (const parentText of [
+		"Diagnóstico por Quistes Ováricos:",
+		"Diagnóstico por Miomatosis Uterina:",
+		"Diagnóstico por Endometriosis:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Medicamento)+input")
+			.type(randomFrom(POSSIBLE_MEDS));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Dosis)+input")
+			.type(randomFrom(POSSIBLE_DOSES));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Frecuencia)+input")
+			.type(randomFrom(POSSIBLE_FREQUENCIES));
+	}
+
+	const COUNT = 3;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar otro diagnóstico").click();
+
+		const parentText = `Nuevo Diagnóstico ${i + 4}`;
+		const parent = `p:contains(${parentText})`;
+
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Nombre del diagnóstico)+input")
+			.type(randomFrom(POSSIBLE_DIESEASSES));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Medicamento)+input")
+			.type(randomFrom(POSSIBLE_MEDS));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Dosis)+input")
+			.type(randomFrom(POSSIBLE_DOSES));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Frecuencia)+input")
+			.type(randomFrom(POSSIBLE_FREQUENCIES));
+	}
+
+	// NOTE: Operaciones del Paciente...
+	for (const parentText of [
+		"Operación por Histerectomía:",
+		"Cirugía para no tener más hijos:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.find("label:contains(Sí)>input")
+			.check();
+	}
+
+	for (const parentText of [
+		"Operación por Quistes Ováricos:",
+		"Operación por Resección de masas en mamas:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.find("label:contains(Sí)>input")
+			.check();
+
+		cy.get(parent).parent().contains("Agregar otra operación").parent().click();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.last()
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.last()
+			.find("label:contains(Sí)>input")
+			.check();
+	}
+
+	cy.intercept("POST", " **/patient/student-gyneco-history").as("UPDATEGyneco");
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEGyneco").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+}
+
+function fillNonPatologicAntecedents() {
+	cy.intercept("GET", "**/patient/nonpatological-history/**").as(
+		"GETNonpatological",
+	);
+	cy.contains("No Patológicos").click();
+	cy.get("@GETNonpatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	cy.get("p:contains(¿Fuma?)+div").find("label:contains(Sí)>input").check();
+	cy.get("input[placeholder='Ingrese cuántos cigarrillos al día']").type(
+		randomIntBetween(3, 11),
+	);
+	cy.get("input[placeholder='Ingrese desde hace cuántos años']").type(
+		randomIntBetween(3, 11),
+	);
+
+	cy.get("p:contains(¿Consumes bebidas alcohólicas?)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("input[placeholder='Ingrese cuántas bebidas al mes']").type(
+		randomIntBetween(10, 20),
+	);
+
+	cy.get("p:contains(¿Consumes alguna droga?)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("input[placeholder='Ingrese el tipo de droga']").type(
+		randomFrom(["LSD", "Marihuana", "Cocaína"]),
+	);
+	cy.get("input[placeholder='Ingrese la frecuencia del consumo']").type(
+		randomFrom(POSSIBLE_FREQUENCIES),
+	);
+
+	cy.intercept("POST", "**/patient/student-nonpatological-history").as(
+		"UPDATENonpatological",
+	);
+	cy.contains("Guardar").click();
+	cy.get("@UPDATENonpatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+}
+
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "yonajer644@edectus.com";
+		const email = "nikomob915@anypng.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -470,5 +641,7 @@ describe("Patient full flows", () => {
 		fillSurgicalAntecedents();
 		fillTraumatologicAntecedents();
 		fillPsychiatricAntecedents();
+		fillGinecoAntecedents();
+		fillNonPatologicAntecedents();
 	});
 });
