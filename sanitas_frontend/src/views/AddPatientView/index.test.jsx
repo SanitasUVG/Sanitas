@@ -105,7 +105,7 @@ describe("AddPatientView tests", () => {
 					cui: "2987944380208",
 					names: "Test",
 					lastNames: "User",
-					sex: true,
+					isWoman: true,
 					birthdate: "2000-01-01",
 				}),
 			),

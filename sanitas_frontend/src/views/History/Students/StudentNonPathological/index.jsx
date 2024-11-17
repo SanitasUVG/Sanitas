@@ -34,7 +34,7 @@ export function StudentNonPathologicalHistory({
 
 	// Fetching patient ID from global state
 	const id = useStore((s) => s.selectedPatientId);
-	//const id = 1;
+	// const id = 1;
 
 	// Memoizing resources for blood type and history to avoid refetching unless ID changes or a reload is triggered
 	// biome-ignore  lint/correctness/useExhaustiveDependencies: Reload the page
@@ -454,7 +454,7 @@ function NonPathologicalView({
 		}
 	};
 
-	const areAllFieldsPreFilled = () => {
+	const _areAllFieldsPreFilled = () => {
 		const smokerData =
 			nonPathologicalHistoryResult.result?.medicalHistory.smoker.data;
 		const drinkData =
@@ -595,14 +595,12 @@ function NonPathologicalView({
 									checked={smokingStatus}
 									onChange={() => handleSmokingChange(true)}
 									label="Sí"
-									disabled={!isSmokingEditable}
 								/>
 								<RadioInput
 									name="smoking"
 									checked={!smokingStatus}
 									onChange={() => handleSmokingChange(false)}
 									label="No"
-									disabled={!isSmokingEditable}
 								/>
 							</div>
 							{smokingStatus && (
@@ -624,7 +622,6 @@ function NonPathologicalView({
 												onChange={(e) => setCigarettesPerDay(e.target.value)}
 												placeholder="Ingrese cuántos cigarrillos al día"
 												min="1"
-												readOnly={!isSmokingEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -638,7 +635,6 @@ function NonPathologicalView({
 												onChange={(e) => setSmokingYears(e.target.value)}
 												placeholder="Ingrese desde hace cuántos años"
 												min="1"
-												readOnly={!isSmokingEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -676,14 +672,12 @@ function NonPathologicalView({
 									checked={alcoholConsumption}
 									onChange={() => handleAlcoholChange(true)}
 									label="Sí"
-									disabled={!isAlcoholEditable}
 								/>
 								<RadioInput
 									name="alcoholConsumption"
 									checked={!alcoholConsumption}
 									onChange={() => handleAlcoholChange(false)}
 									label="No"
-									disabled={!isAlcoholEditable}
 								/>
 							</div>
 							{alcoholConsumption && (
@@ -711,7 +705,6 @@ function NonPathologicalView({
 												onChange={(e) => setDrinksPerMonth(e.target.value)}
 												placeholder="Ingrese cuántas bebidas al mes"
 												min="1"
-												readOnly={!isAlcoholEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -748,14 +741,12 @@ function NonPathologicalView({
 									checked={drugUse}
 									onChange={() => handleDrugUseChange(true)}
 									label="Sí"
-									disabled={!isDrugUseEditable}
 								/>
 								<RadioInput
 									name="drugUse"
 									checked={!drugUse}
 									onChange={() => handleDrugUseChange(false)}
 									label="No"
-									disabled={!isDrugUseEditable}
 								/>
 							</div>
 							{drugUse && (
@@ -777,7 +768,6 @@ function NonPathologicalView({
 												onChange={(e) => setDrugType(e.target.value)}
 												placeholder="Ingrese el tipo de droga"
 												min="1"
-												readOnly={!isDrugUseEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -788,7 +778,6 @@ function NonPathologicalView({
 												value={drugFrequency}
 												onChange={(e) => setDrugFrequency(e.target.value)}
 												placeholder="Ingrese la frecuencia del consumo"
-												readOnly={!isDrugUseEditable}
 												style={{ ...baseInput }}
 											/>
 										</div>
@@ -797,29 +786,25 @@ function NonPathologicalView({
 							)}
 						</div>
 
-						{!areAllFieldsPreFilled() && (
-							<>
-								<div
-									style={{
-										borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
-									}}
-								/>
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										padding: "2rem 0 1rem 0",
-									}}
-								>
-									<BaseButton
-										text="Guardar"
-										onClick={handleSaveNonPathological}
-										style={{ width: "30%", height: "3rem" }}
-									/>
-								</div>
-							</>
-						)}
+						<div
+							style={{
+								borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+							}}
+						/>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								padding: "2rem 0 1rem 0",
+							}}
+						>
+							<BaseButton
+								text="Guardar"
+								onClick={handleSaveNonPathological}
+								style={{ width: "30%", height: "3rem" }}
+							/>
+						</div>
 					</>
 				)}
 			</div>
