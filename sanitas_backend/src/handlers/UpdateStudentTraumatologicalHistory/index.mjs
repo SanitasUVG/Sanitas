@@ -2,11 +2,7 @@ import { getPgClient, isDoctor, SCHEMA_NAME, transaction } from "db-conn";
 import { logger, withRequest } from "logging";
 import { createResponse } from "utils";
 import { mapToAPITraumatologicHistory } from "utils";
-import {
-	decodeJWT,
-	requestDataEditsDBData,
-	toSafeEvent,
-} from "utils/index.mjs";
+import { decodeJWT, requestIsSuperset, toSafeEvent } from "utils/index.mjs";
 
 /**
  * Handles the HTTP POST request to update or create the traumatologic history for a specific patient.
@@ -103,8 +99,8 @@ export const handler = async (event, context) => {
 				logger.info({ oldData }, "Data of the patient in DB currently...");
 				logger.info({ newData }, "Data coming in...");
 
-				const repeatingData = requestDataEditsDBData(newData, oldData);
-				if (repeatingData) {
+				const onlyAddsData = requestIsSuperset(oldData, newData, logger);
+				if (!onlyAddsData) {
 					logger.error("Student trying to update info already saved!");
 					const response = responseBuilder
 						.setStatusCode(403)

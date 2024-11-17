@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -33,7 +33,7 @@ describe("Update Traumatologic History integration tests", () => {
 	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		patientId = await createTestPatient();
 	});
 
@@ -51,6 +51,34 @@ describe("Update Traumatologic History integration tests", () => {
 		expect(id).toBe(patientId);
 		expect(medicalHistory.traumas.data.length).toBe(1);
 		expect(medicalHistory.traumas.data[0].whichBone).toBe("Femur");
+	});
+
+	test("Can have 3+ antecedents", async () => {
+		const traumatologicHistoryData = generateValidUpdate(patientId);
+		let response = await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(200);
+
+		traumatologicHistoryData.medicalHistory.traumas.data.push({
+			whichBone: "Femur",
+			year: "2020",
+			treatment: "Cali",
+		});
+		response = await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(200);
+
+		traumatologicHistoryData.medicalHistory.traumas.data.unshift({
+			whichBone: "Femur",
+			year: "2013",
+			treatment: "Oral",
+		});
+		response = await axios.post(API_URL, traumatologicHistoryData, {
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(200);
 	});
 
 	test("Can't modify existing data", async () => {
