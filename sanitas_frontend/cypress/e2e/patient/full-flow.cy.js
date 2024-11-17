@@ -1,6 +1,10 @@
 import {
 	POSSIBLE_BLOODTYPE,
 	POSSIBLE_CANCERS,
+	POSSIBLE_DIESEASSES,
+	POSSIBLE_DOSES,
+	POSSIBLE_FREQUENCIES,
+	POSSIBLE_MEDS,
 	POSSIBLE_NAMES,
 	POSSIBLE_RELATIONS,
 } from "../../utils/constants";
@@ -159,9 +163,84 @@ function fillFamiliarAntecedents() {
 	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
 	closeToastifies();
 }
+
+function fillPersonalAntecedents() {
+	cy.intercept("GET", "**/patient/personal-history/**").as("GETPersonal");
+	cy.contains("Personales").click();
+	cy.get("@GETPersonal").its("response.statusCode").should("be.oneOf", [200]);
+
+	let personalOptions = [
+		"Hipertensión arterial",
+		"Diabetes Mellitus",
+		"Hipotiroidismo",
+		"Asma",
+		"Convulsiones",
+	];
+	cy.intercept("POST", "**/patient/student-personal-history").as(
+		"UPDATEPersonal",
+	);
+	for (const option of personalOptions) {
+		cy.contains("Agregar antecedente personal").click();
+		cy.get("select").select(option, { timeout: 6000 });
+		cy.get("p:contains(Medicamento)+input").type(randomFrom(POSSIBLE_MEDS));
+		cy.get("p:contains(Dosis)+input").type(randomFrom(POSSIBLE_DOSES));
+		cy.get("p:contains(Frecuencia)+input").type(
+			randomFrom(POSSIBLE_FREQUENCIES),
+		);
+		cy.contains("Guardar").click();
+		cy.get("@UPDATEPersonal")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+
+	// Add acute myocardial infarction
+	cy.contains("Agregar antecedente personal").click();
+	cy.get("select").select("Infarto Agudo de Miocardio", { timeout: 6000 });
+	cy.get("select").last().select("2006");
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEPersonal")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+
+	// Add cancer
+	cy.contains("Agregar antecedente personal").click();
+	cy.get("select").select("Cáncer", { timeout: 6000 });
+	cy.get("p:contains(Tipo)+input").type(randomFrom(POSSIBLE_CANCERS));
+	cy.get("p:contains(Tratamiento)+input").type(randomFrom(POSSIBLE_MEDS));
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEPersonal")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+
+	// Add last 3 types
+	personalOptions = ["Enfermedades cardiacas", "Enfermedades renales", "Otros"];
+	for (const option of personalOptions) {
+		cy.contains("Agregar antecedente personal").click();
+		cy.get("select").select(option, { timeout: 6000 });
+		cy.get("p:contains(¿Qué enfermedad?)+input").type(
+			randomFrom(POSSIBLE_DIESEASSES),
+		);
+		cy.get("p:contains(Medicamento)+input").type(
+			randomFrom(POSSIBLE_DIESEASSES),
+		);
+		cy.get("p:contains(Dosis)+input").type(randomFrom(POSSIBLE_DOSES));
+		cy.get("p:contains(Frecuencia)+input").type(
+			randomFrom(POSSIBLE_FREQUENCIES),
+		);
+		cy.contains("Guardar").click();
+		cy.get("@UPDATEPersonal")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "pimec28214@cironex.com";
+		const email = "pohewer833@edectus.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -209,5 +288,6 @@ describe("Patient full flows", () => {
 
 		fillGeneralData();
 		fillFamiliarAntecedents();
+		fillPersonalAntecedents();
 	});
 });
