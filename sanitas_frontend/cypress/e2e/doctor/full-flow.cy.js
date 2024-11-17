@@ -257,6 +257,46 @@ function fillSurgicalAntecedents() {
 	}
 }
 
+function fillTraumatologicAntecedents() {
+	cy.intercept("GET", "**/patient/traumatological-history/**").as(
+		"GETTraumatological",
+	);
+	cy.contains("Traumatológicos").click();
+	cy.get("@GETTraumatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	cy.intercept("PUT", "**/patient/traumatological-history").as(
+		"UPDATETraumatological",
+	);
+	const COUNT = 5;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar antecedente traumatológico").click();
+		cy.get("input[placeholder='Ingrese el hueso fracturado']").type(
+			randomFrom(possibleSurgeries),
+		);
+		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
+
+		if (Math.random() < 0.5) {
+			cy.get("p:contains(¿Qué tipo de tratamiento tuvo?)+div")
+				.contains("Cirugía")
+				.find("input")
+				.check();
+		} else {
+			cy.get("p:contains(¿Qué tipo de tratamiento tuvo?)+div")
+				.contains("Conservador")
+				.find("input")
+				.check();
+		}
+
+		cy.contains("Guardar").click();
+		cy.get("@UPDATETraumatological")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
 describe("Common doctor actions", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
@@ -282,5 +322,6 @@ describe("Common doctor actions", () => {
 		fillPersonalAntecedents();
 		fillAllergicAntecedents();
 		fillSurgicalAntecedents();
+		fillTraumatologicAntecedents();
 	});
 });
