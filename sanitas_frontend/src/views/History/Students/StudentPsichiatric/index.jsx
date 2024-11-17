@@ -289,7 +289,6 @@ function PsichiatricView({
 		errorMessage =
 			"Ha ocurrido un error en la búsqueda, ¡Por favor vuelve a intentarlo!";
 	}
-	console.log(psichiatricHistoryResult);
 
 	const isFirstTime = Object.values(medicalHistory).some(
 		(condition) =>
