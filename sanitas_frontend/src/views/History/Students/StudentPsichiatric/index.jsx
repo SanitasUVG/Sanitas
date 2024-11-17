@@ -11,16 +11,17 @@ import useWindowSize from "src/utils/useWindowSize";
 import { getErrorMessage } from "src/utils/errorhandlerstoasts";
 
 /**
+ * Component that manages and displays psychiatric history for a student.
+ * Allows adding, editing, and viewing psychiatric conditions and associated medications.
+ *
  * @typedef {Object} PsichiatricHistoryProps
- * @property {Function} getPsichiatricHistory - Function to fetch the allergic history of a patient.
- * @property {Function} updateStudentPsychiatricHistory - Function to update or add new allergic records for a patient.
- * @property {Object} sidebarConfig - Configuration for the sidebar component, detailing any necessary props.
- * @property {Function} useStore - Custom React hook to access state management, specifically to retrieve the patient's ID.
+ * @property {Function} getPsichiatricHistory Function to fetch the psychiatric history of a patient.
+ * @property {Function} updateStudentPsychiatricHistory Function to update or add new psychiatric records for a patient.
+ * @property {Object} sidebarConfig Configuration for the sidebar component, detailing any necessary props.
+ * @property {Function} useStore Custom React hook to access state management, specifically to retrieve the patient's ID.
  *
- * Component to manage and display a patient's allergic history, allowing users to add and view records.
- *
- * @param {PsichiatricHistoryProps} props - The props passed to the PsichiatricHistory component.
- * @returns {JSX.Element} - The rendered component with dynamic content based on the fetched data and user interactions.
+ * @param {PsichiatricHistoryProps} props The props passed to the PsichiatricHistory component.
+ * @returns {JSX.Element} The rendered component with dynamic content based on the fetched data and user interactions.
  */
 
 export function StudentPsichiatricHistory({
@@ -128,6 +129,15 @@ export function StudentPsichiatricHistory({
 	);
 }
 
+/**
+ * Custom hook for managing the state of a specific psychiatric condition,
+ * including medications and UBE follow-up status.
+ *
+ * @param {Array} initialData Initial array of medication objects.
+ * @param {boolean} initialUBE Initial follow-up status under UBE.
+ * @param {boolean} isFirstTime Flag indicating whether the patient's data is being loaded for the first time.
+ * @returns {Object} Object containing various state and functions to manage the psychiatric condition.
+ */
 function useCondition(
 	initialData = [],
 	initialUBE = false,
@@ -228,16 +238,17 @@ function useCondition(
 }
 
 /**
+ * Displays and manages interactions with the psychiatric view of a specific patient,
+ * including display of current psychiatric conditions and management of their details.
+ *
  * @typedef {Object} PsichiatricViewProps
- * @property {number} id - The patient's ID.
- * @property {Object} psichiatricHistoryResource - Wrapped resource for fetching psichiatric history data.
- * @property {Function} updateStudentPsychiatricHistory - Function to update the Allergic history.
- * @property {Function} triggerReload - Function to trigger reloading of data.
- * Internal view component for managing the display and modification of a patient's psichiatric history, with options to add or edit records.
+ * @property {number} id The patient's ID.
+ * @property {Object} psichiatricHistoryResource Wrapped resource for fetching psychiatric history data.
+ * @property {Function} updateStudentPsychiatricHistory Function to update the psychiatric history.
+ * @property {Function} triggerReload Function to trigger reloading of data.
  *
- *
- * @param {PsichiatricViewProps} props - Specific props for the PsichiatricViewiew component.
- * @returns {JSX.Element} - A detailed view for managing Psichiatric history with interactivity to add or edit records.
+ * @param {PsichiatricViewProps} props Specific props for the PsichiatricView component.
+ * @returns {JSX.Element} A detailed view for managing psychiatric history with interactivity to add or edit records.
  */
 function PsichiatricView({
 	id,
