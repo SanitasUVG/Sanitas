@@ -357,9 +357,9 @@ describe("Patient full flows", () => {
 			.should("be.oneOf", [200]);
 
 		fillGeneralData();
-		// fillFamiliarAntecedents();
-		// fillPersonalAntecedents();
-		// fillAllergicAntecedents();
+		fillFamiliarAntecedents();
+		fillPersonalAntecedents();
+		fillAllergicAntecedents();
 		fillSurgicalAntecedents();
 	});
 });
