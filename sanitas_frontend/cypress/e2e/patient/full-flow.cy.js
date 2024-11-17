@@ -308,9 +308,116 @@ function fillSurgicalAntecedents() {
 	}
 }
 
+function fillTraumatologicAntecedents() {
+	cy.intercept("GET", "**/patient/traumatological-history/**").as(
+		"GETTraumatological",
+	);
+	cy.contains("Traumatológicos").click();
+	cy.get("@GETTraumatological")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	cy.intercept("POST", "**/patient/student-traumatological-history").as(
+		"UPDATETraumatological",
+	);
+	const COUNT = 5;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar antecedente traumatológico").click();
+		cy.get("p:contains(¿Qué hueso se ha fracturado?)+input").type(
+			randomFrom(POSSIBLE_SURGERIES),
+		);
+		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
+
+		if (Math.random() < 0.5) {
+			cy.get("p:contains(¿Qué tipo de tratamiento tuvo?)+div")
+				.contains("Cirugía")
+				.find("input")
+				.check();
+		} else {
+			cy.get("p:contains(¿Qué tipo de tratamiento tuvo?)+div")
+				.contains("Conservador")
+				.find("input")
+				.check();
+		}
+
+		cy.contains("Guardar").click();
+		cy.get("@UPDATETraumatological")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
+function fillPsychiatricAntecedents() {
+	cy.intercept("GET", "**/patient/psychiatric-history/**").as("GETPsychiatric");
+	cy.contains("Psiquiátricos").click();
+	cy.get("@GETPsychiatric")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	const COUNT = 3;
+	for (const option of [
+		"¿Tiene depresión?",
+		"¿Tiene ansiedad?",
+		"¿Tiene TOC",
+		"¿Tiene TDAH",
+		"¿Tiene Trastorno Bipolar?",
+	]) {
+		const selectedP = `p:contains(${option})`;
+		cy.get(`${selectedP}+div`).contains("Sí").find("input").check();
+
+		for (let i = 0; i < COUNT; i++) {
+			cy.get(selectedP)
+				.parents()
+				.eq(3)
+				.find(`p:contains(Medicamento ${i + 1})+input`)
+				.type(randomFrom(POSSIBLE_MEDS));
+			if (Math.random() < 0.5) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find(`p:contains(Dosis ${i + 1})+input`)
+					.type(randomFrom(POSSIBLE_DOSES));
+			}
+			cy.get(selectedP)
+				.parents()
+				.eq(3)
+				.find(`p:contains(Frecuencia ${i + 1})+input`)
+				.type(randomFrom(POSSIBLE_FREQUENCIES));
+			if (Math.random() < 0.5) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find("p:contains(¿Tiene seguimiento en UBE?)+div")
+					.contains("Sí")
+					.find("input")
+					.check();
+			}
+
+			const isLastRun = i !== COUNT - 1;
+			if (isLastRun) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find("button>span:contains(Agregar otro medicamento)")
+					.click();
+			}
+		}
+	}
+
+	cy.intercept("POST", "**/patient/student-psychiatric-history").as(
+		"UPDATEPsychiatric",
+	);
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEPsychiatric")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+}
+
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "cikok87453@edectus.com";
+		const email = "yonajer644@edectus.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -361,5 +468,7 @@ describe("Patient full flows", () => {
 		fillPersonalAntecedents();
 		fillAllergicAntecedents();
 		fillSurgicalAntecedents();
+		fillTraumatologicAntecedents();
+		fillPsychiatricAntecedents();
 	});
 });
