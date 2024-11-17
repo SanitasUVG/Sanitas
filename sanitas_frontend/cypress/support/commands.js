@@ -45,10 +45,6 @@ function loginAsDoctor() {
 	login("elrohirgt@gmail.com", "galand0nis");
 }
 
-function loginAsPatient() {
-	login("gal22386@uvg.edu.gt", "galand0nis");
-}
-
 /**
  * Search for a patient in the application.
  * Requirements:
@@ -99,7 +95,6 @@ function doctorCreatePatient(cui, patientInfo) {
 
 Cypress.Commands.addAll({
 	loginAsDoctor,
-	loginAsPatient,
 	searchPatient,
 	doctorCreatePatient,
 	login,
