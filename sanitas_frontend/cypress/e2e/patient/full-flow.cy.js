@@ -1,4 +1,5 @@
 import {
+	ALLERGIES,
 	POSSIBLE_BLOODTYPE,
 	POSSIBLE_CANCERS,
 	POSSIBLE_DIESEASSES,
@@ -238,9 +239,52 @@ function fillPersonalAntecedents() {
 	}
 }
 
+function fillAllergicAntecedents() {
+	cy.intercept("GET", "**/patient/allergic-history/**").as("GETAllergic");
+	cy.contains("Alérgicos").click();
+	cy.get("@GETAllergic").its("response.statusCode").should("be.oneOf", [200]);
+
+	cy.intercept("POST", "**/patient/student-allergic-history").as(
+		"UPDATEAllergic",
+	);
+	for (const option of ALLERGIES) {
+		cy.contains("Agregar antecedente alérgico").click();
+		cy.get("select").select(option, { timeout: 6000 });
+		cy.get("p:contains(¿A cuál?)+input").type(randomFrom(ALLERGIES));
+
+		// cy.contains("Tipo de reacción").parent().contains("Cutánea").find("input").check();
+		const rng = Math.random();
+		if (rng < 0.33) {
+			cy.contains("Tipo de reacción")
+				.parent()
+				.contains("Cutánea")
+				.find("input")
+				.check();
+		} else if (rng < 0.66) {
+			cy.contains("Tipo de reacción")
+				.parent()
+				.contains("Respiratoria")
+				.find("input")
+				.check();
+		} else {
+			cy.contains("Tipo de reacción")
+				.parent()
+				.contains("Ambos")
+				.find("input")
+				.check();
+		}
+
+		cy.contains("Guardar").click();
+		cy.get("@UPDATEAllergic")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "pohewer833@edectus.com";
+		const email = "rexalo6296@cironex.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -289,5 +333,6 @@ describe("Patient full flows", () => {
 		fillGeneralData();
 		fillFamiliarAntecedents();
 		fillPersonalAntecedents();
+		fillAllergicAntecedents();
 	});
 });

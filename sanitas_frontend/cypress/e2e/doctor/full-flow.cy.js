@@ -12,17 +12,8 @@ import {
 	POSSIBLE_SURGERIES,
 	POSSIBLE_BLOODTYPE,
 	POSSIBLE_DIESEASSES,
+	ALLERGIES,
 } from "../../utils/constants";
-
-const allergies = [
-	"Medicamentos",
-	"Comida",
-	"Polvo",
-	"Polen",
-	"Cambio de Clima",
-	"Animales",
-	"Otros",
-];
 
 function closeToastifies() {
 	cy.get("button[class='Toastify__close-button Toastify__close-button--light']")
@@ -39,10 +30,10 @@ function fillAllergicAntecedents() {
 	cy.get("@GETAllergic").its("response.statusCode").should("be.oneOf", [200]);
 
 	cy.intercept("PUT", "**/patient/allergic-history").as("UPDATEAllergic");
-	for (const option of allergies) {
+	for (const option of ALLERGIES) {
 		cy.contains("Agregar antecedente alérgico").click();
 		cy.get("select").select(option, { timeout: 6000 });
-		cy.get("p:contains(¿A cuál?)+input").type(randomFrom(allergies));
+		cy.get("p:contains(¿A cuál?)+input").type(randomFrom(ALLERGIES));
 
 		// cy.contains("Tipo de reacción").parent().contains("Cutánea").find("input").check();
 		const rng = Math.random();
@@ -241,7 +232,7 @@ function fillSurgicalAntecedents() {
 		).type(randomFrom(POSSIBLE_SURGERIES));
 		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
 		cy.get("p:contains(¿Tuvo alguna complicación?)+input").type(
-			randomFrom(allergies),
+			randomFrom(ALLERGIES),
 		);
 
 		cy.contains("Guardar").click();

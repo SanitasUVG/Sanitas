@@ -44,3 +44,13 @@ export const POSSIBLE_NAMES = [
 	"Rainbowdash",
 	"Fluttershy",
 ];
+
+export const ALLERGIES = [
+	"Medicamentos",
+	"Comida",
+	"Polvo",
+	"Polen",
+	"Cambio de Clima",
+	"Animales",
+	"Otros",
+];
