@@ -1,5 +1,6 @@
 import {
 	POSSIBLE_BLOODTYPE,
+	POSSIBLE_CANCERS,
 	POSSIBLE_NAMES,
 	POSSIBLE_RELATIONS,
 } from "../../utils/constants";
@@ -78,9 +79,89 @@ function fillGeneralData() {
 	cy.get("@GETStudent").its("response.statusCode").should("be.oneOf", [200]);
 }
 
+function fillFamiliarAntecedents() {
+	cy.intercept("GET", "**/patient/family-history/**").as("GETFamily");
+	cy.contains("Familiares").click();
+	cy.get("@GETFamily").its("response.statusCode").should("be.oneOf", [200]);
+
+	const familyOptions = [
+		"Hipertensión arterial",
+		"Diabetes Mellitus",
+		"Hipotiroidismo",
+		"Asma",
+		"Convulsiones",
+		"Infarto Agudo de Miocardio",
+	];
+
+	cy.intercept("POST", "**/patient/student-family-history").as("UPDATEFamily");
+	for (const option of familyOptions) {
+		cy.contains("Agregar antecedente familiar").click();
+		cy.get("select").select(option, { timeout: 6000 });
+		cy.get(
+			"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
+		).type(randomFrom(POSSIBLE_RELATIONS));
+		cy.contains("Guardar").click();
+		cy.get("@UPDATEFamily")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+
+	// Add cancer
+	cy.contains("Agregar antecedente familiar").click();
+	cy.get("select").select("Cáncer", { timeout: 6000 });
+	cy.get(
+		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
+	).type(randomFrom(POSSIBLE_RELATIONS));
+	cy.get("input[placeholder='Especifique un único tipo de cáncer']").type(
+		randomFrom(POSSIBLE_CANCERS),
+	);
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+
+	// Add heart disease
+	cy.contains("Agregar antecedente familiar").click();
+	cy.get("select").select("Enfermedades cardiacas", { timeout: 6000 });
+	cy.get(
+		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
+	).type(randomFrom(POSSIBLE_RELATIONS));
+	cy.get(
+		"input[placeholder='Especifique el tipo de enfermedad (no obligatorio)']",
+	).type(randomFrom(["Enfermedad 1", "arritmia"]));
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+
+	// Add renal disease
+	cy.contains("Agregar antecedente familiar").click();
+	cy.get("select").select("Enfermedades renales", { timeout: 6000 });
+	cy.get(
+		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
+	).type(randomFrom(POSSIBLE_RELATIONS));
+	cy.get(
+		"input[placeholder='Especifique el tipo de enfermedad (no obligatorio)']",
+	).type(randomFrom(["quistes", "Enfermedad 2"]));
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+
+	// Other
+	cy.contains("Agregar antecedente familiar").click();
+	cy.get("select").select("Otros", { timeout: 6000 });
+	cy.get(
+		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
+	).type(randomFrom(POSSIBLE_RELATIONS));
+	cy.get("input[placeholder='Escriba la enfermedad']").type(
+		randomFrom(["Enfermedad 1", "Enfermedad 2", "Enfermedad 3"]),
+	);
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+}
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "yolej65661@gianes.com";
+		const email = "pimec28214@cironex.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -127,5 +208,6 @@ describe("Patient full flows", () => {
 			.should("be.oneOf", [200]);
 
 		fillGeneralData();
+		fillFamiliarAntecedents();
 	});
 });
