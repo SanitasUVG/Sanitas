@@ -546,6 +546,92 @@ describe("Common doctor actions", () => {
 		cy.loginAsDoctor();
 	});
 
+	it("Create a patient and add visits", () => {
+		const cui = generateUniqueCUI();
+		cy.doctorCreatePatient(cui, {
+			names: "Pera",
+			lastnames: "Marmota",
+			isWoman: true,
+			birthdate: "2004-07-12",
+		});
+
+		// NOTE: The app redirects to UpdateGeneralInformation
+		// So we need to wait for the HTTP requests to be done.
+		cy.intercept("GET", "**/patient/general/**").as("patientDetails");
+		cy.get("@patientDetails")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+
+		cy.intercept("GET", "**/patient/consultation/**").as("GETConsultations");
+		cy.contains("Citas").click();
+		cy.get("@GETConsultations")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+
+		cy.intercept("PUT", "**/patient/consultation").as("UPDATEConsultations");
+		const count = 5;
+		for (let i = 0; i < count; i++) {
+			cy.contains("Agregar cita").click();
+
+			cy.get("p:contains(Motivo de consulta:)+textarea").type(
+				`Este es un motivo para la consulta ${i}`,
+			);
+			cy.get("p:contains(Diagnóstico)+textarea").type(
+				`Este es un diagnóstico para la consulta ${i}`,
+			);
+			cy.get("p:contains(Examen físico)+textarea").type(
+				`Este es un examen físico para la consulta ${i}`,
+			);
+
+			cy.get("input[placeholder='°C']").type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='N']")
+				.first()
+				.type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='N']")
+				.last()
+				.type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='%']").type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='rpm']")
+				.last()
+				.type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='lpm']")
+				.last()
+				.type(`${randomIntBetween(20, 30)}`);
+			cy.get("input[placeholder='mg/dL']")
+				.last()
+				.type(`${randomIntBetween(20, 30)}`);
+
+			for (let j = 0; j < count; j++) {
+				cy.contains("Agregar medicamento administrado").click();
+				const parentText = `Medicamento Administrado ${j + 1}`;
+				cy.get(`p:contains(${parentText})`)
+					.parent()
+					.find("p:contains(Diagnóstico)+textarea")
+					.type(randomFrom(possibleDisseases));
+				cy.get(`p:contains(${parentText})`)
+					.parent()
+					.find("p:contains(Medicamento)+textarea")
+					.type(randomFrom(possibleMeds));
+				cy.get(`p:contains(${parentText})`)
+					.parent()
+					.find("p:contains(Cantidad)+textarea")
+					.type(
+						`${randomFrom(possibleDoses)} ${randomFrom(possibleFrequencies)}`,
+					);
+			}
+
+			cy.get("p:contains(Notas)+textarea").type(
+				"Estas son notas random para de la cita...",
+			);
+
+			cy.contains("Guardar").click();
+			cy.get("@UPDATEConsultations")
+				.its("response.statusCode")
+				.should("be.oneOf", [200]);
+			closeToastifies();
+		}
+	});
+
 	it("Create a patient and edit its antecedents", () => {
 		const cui = generateUniqueCUI();
 		cy.doctorCreatePatient(cui, {
