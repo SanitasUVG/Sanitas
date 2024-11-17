@@ -3,23 +3,16 @@ import {
 	randomFrom,
 	randomIntBetween,
 } from "../../utils/cui";
-
-const possibleRelations = ["Abuelo", "Abuela", "Mamá", "Papá", "Hermano"];
-const possibleCancers = ["mama", "hueso", "piel"];
-const possibleMeds = ["Medicamento 1", "Medicamento 2", "Medicamento 3"];
-const possibleDoses = ["12mg", "2 tabletas", "1ml", "1 cucharada"];
-const possibleFrequencies = [
-	"2 veces al día",
-	"3 veces a la semana",
-	"cada 8 horas",
-];
-const possibleSurgeries = [
-	"Operación 1",
-	"Operación 2",
-	"Operación 3",
-	"Operación 4",
-];
-const possibleBloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+import {
+	POSSIBLE_RELATIONS,
+	POSSIBLE_CANCERS,
+	POSSIBLE_MEDS,
+	POSSIBLE_DOSES,
+	POSSIBLE_FREQUENCIES,
+	POSSIBLE_SURGERIES,
+	POSSIBLE_BLOODTYPE,
+	POSSIBLE_DIESEASSES,
+} from "../../utils/constants";
 
 const allergies = [
 	"Medicamentos",
@@ -30,7 +23,6 @@ const allergies = [
 	"Animales",
 	"Otros",
 ];
-const possibleDisseases = ["Enfermedad 1", "Enfermedad 2", "Enfermedad 3"];
 
 function closeToastifies() {
 	cy.get("button[class='Toastify__close-button Toastify__close-button--light']")
@@ -102,7 +94,7 @@ function fillFamiliarAntecedents() {
 		cy.get("select").select(option, { timeout: 6000 });
 		cy.get(
 			"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
-		).type(randomFrom(possibleRelations));
+		).type(randomFrom(POSSIBLE_RELATIONS));
 		cy.contains("Guardar").click();
 		cy.get("@UPDATEFamily")
 			.its("response.statusCode")
@@ -115,9 +107,9 @@ function fillFamiliarAntecedents() {
 	cy.get("select").select("Cáncer", { timeout: 6000 });
 	cy.get(
 		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
-	).type(randomFrom(possibleRelations));
+	).type(randomFrom(POSSIBLE_RELATIONS));
 	cy.get("input[placeholder='Especifique el tipo de cáncer']").type(
-		randomFrom(possibleCancers),
+		randomFrom(POSSIBLE_CANCERS),
 	);
 	cy.contains("Guardar").click();
 	cy.get("@UPDATEFamily").its("response.statusCode").should("be.oneOf", [200]);
@@ -128,7 +120,7 @@ function fillFamiliarAntecedents() {
 	cy.get("select").select("Enfermedades cardiacas", { timeout: 6000 });
 	cy.get(
 		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
-	).type(randomFrom(possibleRelations));
+	).type(randomFrom(POSSIBLE_RELATIONS));
 	cy.get(
 		"input[placeholder='Especifique el tipo de enfermedad (no obligatorio)']",
 	).type(randomFrom(["Enfermedad 1", "arritmia"]));
@@ -141,7 +133,7 @@ function fillFamiliarAntecedents() {
 	cy.get("select").select("Enfermedades renales", { timeout: 6000 });
 	cy.get(
 		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
-	).type(randomFrom(possibleRelations));
+	).type(randomFrom(POSSIBLE_RELATIONS));
 	cy.get(
 		"input[placeholder='Especifique el tipo de enfermedad (no obligatorio)']",
 	).type(randomFrom(["quistes", "Enfermedad 2"]));
@@ -154,7 +146,7 @@ function fillFamiliarAntecedents() {
 	cy.get("select").select("Otros", { timeout: 6000 });
 	cy.get(
 		"input[placeholder='Ingrese el parentesco del familiar afectado. (Ej. Madre, Padre, Hermano...)']",
-	).type(randomFrom(possibleRelations));
+	).type(randomFrom(POSSIBLE_RELATIONS));
 	cy.get("input[placeholder='Escriba la enfermedad']").type(
 		randomFrom(["Enfermedad 1", "Enfermedad 2", "Enfermedad 3"]),
 	);
@@ -179,10 +171,10 @@ function fillPersonalAntecedents() {
 	for (const option of personalOptions) {
 		cy.contains("Agregar antecedente personal").click();
 		cy.get("select").select(option, { timeout: 6000 });
-		cy.get("p:contains(Medicamento)+input").type(randomFrom(possibleMeds));
-		cy.get("p:contains(Dosis)+input").type(randomFrom(possibleDoses));
+		cy.get("p:contains(Medicamento)+input").type(randomFrom(POSSIBLE_MEDS));
+		cy.get("p:contains(Dosis)+input").type(randomFrom(POSSIBLE_DOSES));
 		cy.get("p:contains(Frecuencia)+input").type(
-			randomFrom(possibleFrequencies),
+			randomFrom(POSSIBLE_FREQUENCIES),
 		);
 		cy.contains("Guardar").click();
 		cy.get("@UPDATEPersonal")
@@ -204,8 +196,8 @@ function fillPersonalAntecedents() {
 	// Add cancer
 	cy.contains("Agregar antecedente personal").click();
 	cy.get("select").select("Cáncer", { timeout: 6000 });
-	cy.get("p:contains(Tipo)+input").type(randomFrom(possibleCancers));
-	cy.get("p:contains(Tratamiento)+input").type(randomFrom(possibleMeds));
+	cy.get("p:contains(Tipo)+input").type(randomFrom(POSSIBLE_CANCERS));
+	cy.get("p:contains(Tratamiento)+input").type(randomFrom(POSSIBLE_MEDS));
 	cy.contains("Guardar").click();
 	cy.get("@UPDATEPersonal")
 		.its("response.statusCode")
@@ -218,12 +210,14 @@ function fillPersonalAntecedents() {
 		cy.contains("Agregar antecedente personal").click();
 		cy.get("select").select(option, { timeout: 6000 });
 		cy.get("p:contains(¿Qué enfermedad?)+input").type(
-			randomFrom(possibleDisseases),
+			randomFrom(POSSIBLE_DIESEASSES),
 		);
-		cy.get("p:contains(Medicamento)+input").type(randomFrom(possibleDisseases));
-		cy.get("p:contains(Dosis)+input").type(randomFrom(possibleDoses));
+		cy.get("p:contains(Medicamento)+input").type(
+			randomFrom(POSSIBLE_DIESEASSES),
+		);
+		cy.get("p:contains(Dosis)+input").type(randomFrom(POSSIBLE_DOSES));
 		cy.get("p:contains(Frecuencia)+input").type(
-			randomFrom(possibleFrequencies),
+			randomFrom(POSSIBLE_FREQUENCIES),
 		);
 		cy.contains("Guardar").click();
 		cy.get("@UPDATEPersonal")
@@ -244,7 +238,7 @@ function fillSurgicalAntecedents() {
 		cy.contains("Agregar antecedente quirúrgico").click();
 		cy.get(
 			"input[placeholder='Ingrese acá el motivo o tipo de cirugía.']",
-		).type(randomFrom(possibleSurgeries));
+		).type(randomFrom(POSSIBLE_SURGERIES));
 		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
 		cy.get("p:contains(¿Tuvo alguna complicación?)+input").type(
 			randomFrom(allergies),
@@ -274,7 +268,7 @@ function fillTraumatologicAntecedents() {
 	for (let i = 0; i < COUNT; i++) {
 		cy.contains("Agregar antecedente traumatológico").click();
 		cy.get("input[placeholder='Ingrese el hueso fracturado']").type(
-			randomFrom(possibleSurgeries),
+			randomFrom(POSSIBLE_SURGERIES),
 		);
 		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
 
@@ -321,7 +315,7 @@ function fillPsychiatricAntecedents() {
 				.parents()
 				.eq(3)
 				.find(`p:contains(Medicamento ${i + 1})+input`)
-				.type(randomFrom(possibleMeds));
+				.type(randomFrom(POSSIBLE_MEDS));
 			// cy.get(selectedP).parents().eq(3).find(`p:contains(Dosis ${i + 1})+input`).type(
 			// 	randomFrom(possibleDoses),
 			// );
@@ -330,13 +324,13 @@ function fillPsychiatricAntecedents() {
 					.parents()
 					.eq(3)
 					.find(`p:contains(Dosis ${i + 1})+input`)
-					.type(randomFrom(possibleDoses));
+					.type(randomFrom(POSSIBLE_DOSES));
 			}
 			cy.get(selectedP)
 				.parents()
 				.eq(3)
 				.find(`p:contains(Frecuencia ${i + 1})+input`)
-				.type(randomFrom(possibleFrequencies));
+				.type(randomFrom(POSSIBLE_FREQUENCIES));
 			// cy.get(selectedP).parents().eq(3).find("p:contains(¿Tiene seguimiento en UBE?)+div")
 			// 	.contains("Si")
 			// 	.find("input")
@@ -386,7 +380,7 @@ function fillGinecoAntecedents() {
 		.check();
 	cy.get(
 		"input[placeholder='Ingrese el medicamento tomado para regular los dolores de menstruación.']",
-	).type(randomFrom(possibleMeds));
+	).type(randomFrom(POSSIBLE_MEDS));
 
 	cy.get("p:contains(P:)+input").type(randomIntBetween(0, 5));
 	cy.get("p:contains(C:)+input").type(randomIntBetween(0, 5));
@@ -404,15 +398,15 @@ function fillGinecoAntecedents() {
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Medicamento)+input")
-			.type(randomFrom(possibleMeds));
+			.type(randomFrom(POSSIBLE_MEDS));
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Dosis)+input")
-			.type(randomFrom(possibleDoses));
+			.type(randomFrom(POSSIBLE_DOSES));
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Frecuencia)+input")
-			.type(randomFrom(possibleFrequencies));
+			.type(randomFrom(POSSIBLE_FREQUENCIES));
 	}
 
 	const COUNT = 3;
@@ -425,19 +419,19 @@ function fillGinecoAntecedents() {
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Nombre del diagnóstico)+input")
-			.type(randomFrom(possibleDisseases));
+			.type(randomFrom(POSSIBLE_DIESEASSES));
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Medicamento)+input")
-			.type(randomFrom(possibleMeds));
+			.type(randomFrom(POSSIBLE_MEDS));
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Dosis)+input")
-			.type(randomFrom(possibleDoses));
+			.type(randomFrom(POSSIBLE_DOSES));
 		cy.get(parent)
 			.parent()
 			.find("p:contains(Frecuencia)+input")
-			.type(randomFrom(possibleFrequencies));
+			.type(randomFrom(POSSIBLE_FREQUENCIES));
 	}
 
 	// NOTE: Operaciones del Paciente...
@@ -528,7 +522,7 @@ function fillNonPatologicAntecedents() {
 		randomFrom(["LSD", "Marihuana", "Cocaína"]),
 	);
 	cy.get("input[placeholder='Ingrese la frecuencia del consumo']").type(
-		randomFrom(possibleFrequencies),
+		randomFrom(POSSIBLE_FREQUENCIES),
 	);
 
 	cy.intercept("PUT", "**/patient/nonpatological-history").as(
@@ -541,7 +535,7 @@ function fillNonPatologicAntecedents() {
 	closeToastifies();
 }
 
-describe("Common doctor actions", () => {
+describe("Doctor full flows", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
 	});
@@ -607,16 +601,16 @@ describe("Common doctor actions", () => {
 				cy.get(`p:contains(${parentText})`)
 					.parent()
 					.find("p:contains(Diagnóstico)+textarea")
-					.type(randomFrom(possibleDisseases));
+					.type(randomFrom(POSSIBLE_DIESEASSES));
 				cy.get(`p:contains(${parentText})`)
 					.parent()
 					.find("p:contains(Medicamento)+textarea")
-					.type(randomFrom(possibleMeds));
+					.type(randomFrom(POSSIBLE_MEDS));
 				cy.get(`p:contains(${parentText})`)
 					.parent()
 					.find("p:contains(Cantidad)+textarea")
 					.type(
-						`${randomFrom(possibleDoses)} ${randomFrom(possibleFrequencies)}`,
+						`${randomFrom(POSSIBLE_DOSES)} ${randomFrom(POSSIBLE_FREQUENCIES)}`,
 					);
 			}
 
@@ -652,7 +646,7 @@ describe("Common doctor actions", () => {
 		cy.get("h1:contains(Datos Generales:)+button").click();
 		cy.get("label:contains(Tipo de sangre:)+div")
 			.find("select")
-			.select(randomFrom(possibleBloodTypes));
+			.select(randomFrom(POSSIBLE_BLOODTYPE));
 
 		cy.intercept("PUT", "**/patient/general").as("UPDATEDetails");
 		cy.get("h1:contains(Datos Generales:)+div>button").first().click();
