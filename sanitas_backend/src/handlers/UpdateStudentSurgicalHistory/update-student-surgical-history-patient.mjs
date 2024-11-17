@@ -4,7 +4,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPISurgicalHistory,
-	requestDataEditsDBData,
+	requestIsSuperset,
 	toSafeEvent,
 } from "utils/index.mjs";
 
@@ -104,11 +104,11 @@ export const updateStudentSurgicalHistoryHandler = async (event, context) => {
 			const newData = medicalHistory.surgeries.data;
 
 			logger.info({ oldData }, "Data of the patient in DB currently...");
-			logger.info({ medicalHistory }, "Data coming in...");
+			logger.info({ newData }, "Data coming in...");
 
-			const repeatingData = requestDataEditsDBData(newData, oldData);
+			const onlyAddsData = requestIsSuperset(oldData, newData, logger);
 
-			if (repeatingData) {
+			if (!onlyAddsData) {
 				logger.error("Student trying to update info already saved!");
 				return responseBuilder
 					.setStatusCode(400)

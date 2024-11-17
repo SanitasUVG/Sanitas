@@ -4,7 +4,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIGynecologicalHistory,
-	requestIsSubset,
+	requestIsSuperset,
 	toSafeEvent,
 } from "utils/index.mjs";
 
@@ -143,7 +143,7 @@ function requestModifiesDBData(dbData, requestData) {
 					{ dbValue, requestValue },
 					`dbData.hasSurgeries.data[${key}] is an array! Checking if is subset...`,
 				);
-				return !requestIsSubset(dbValue, requestValue, logger);
+				return !requestIsSuperset(dbValue, requestValue, logger);
 			}
 
 			logger.debug(

@@ -5,7 +5,7 @@ import {
 	createResponse,
 	decodeJWT,
 	mapToAPIAllergicHistory,
-	requestIsSubset,
+	requestIsSuperset,
 	toSafeEvent,
 } from "utils/index.mjs";
 
@@ -246,7 +246,7 @@ function requestModifiesSavedData(requestData, savedData) {
 		const requestArray = requestData[key].data;
 
 		logger.info({ savedArray, requestArray }, "Comparing arrays...");
-		return requestIsSubset(savedArray, requestArray, logger);
+		return requestIsSuperset(savedArray, requestArray, logger);
 	});
 
 	if (doesntModifyData) {
