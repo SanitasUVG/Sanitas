@@ -297,6 +297,78 @@ function fillTraumatologicAntecedents() {
 	}
 }
 
+function fillPsychiatricAntecedents() {
+	cy.intercept("GET", "**/patient/psychiatric-history/**").as("GETPsychiatric");
+	cy.contains("Psiquiátricos").click();
+	cy.get("@GETPsychiatric")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+
+	const COUNT = 3;
+	for (const option of [
+		"¿Tiene depresión?",
+		"¿Tiene ansiedad?",
+		"¿Tiene TOC",
+		"¿Tiene TDAH",
+		"¿Tiene Trastorno Bipolar?",
+	]) {
+		const selectedP = `p:contains(${option})`;
+		cy.get(`${selectedP}+div`).contains("Sí").find("input").check();
+
+		for (let i = 0; i < COUNT; i++) {
+			cy.get(selectedP)
+				.parents()
+				.eq(3)
+				.find(`p:contains(Medicamento ${i + 1})+input`)
+				.type(randomFrom(possibleMeds));
+			// cy.get(selectedP).parents().eq(3).find(`p:contains(Dosis ${i + 1})+input`).type(
+			// 	randomFrom(possibleDoses),
+			// );
+			if (Math.random() < 0.5) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find(`p:contains(Dosis ${i + 1})+input`)
+					.type(randomFrom(possibleDoses));
+			}
+			cy.get(selectedP)
+				.parents()
+				.eq(3)
+				.find(`p:contains(Frecuencia ${i + 1})+input`)
+				.type(randomFrom(possibleFrequencies));
+			// cy.get(selectedP).parents().eq(3).find("p:contains(¿Tiene seguimiento en UBE?)+div")
+			// 	.contains("Si")
+			// 	.find("input")
+			// 	.check();
+			if (Math.random() < 0.5) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find("p:contains(¿Tiene seguimiento en UBE?)+div")
+					.contains("Si")
+					.find("input")
+					.check();
+			}
+
+			const isLastRun = i !== COUNT - 1;
+			if (isLastRun) {
+				cy.get(selectedP)
+					.parents()
+					.eq(3)
+					.find("button>span:contains(Agregar otro medicamento)")
+					.click();
+			}
+		}
+	}
+
+	cy.intercept("PUT", "**/patient/psychiatric-history").as("UPDATEPsychiatric");
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEPsychiatric")
+		.its("response.statusCode")
+		.should("be.oneOf", [200]);
+	closeToastifies();
+}
+
 describe("Common doctor actions", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
@@ -323,5 +395,6 @@ describe("Common doctor actions", () => {
 		fillAllergicAntecedents();
 		fillSurgicalAntecedents();
 		fillTraumatologicAntecedents();
+		fillPsychiatricAntecedents();
 	});
 });
