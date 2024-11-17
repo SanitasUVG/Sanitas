@@ -151,7 +151,7 @@ function useCondition(
 			: [{ medication: "", dose: "", frequency: "", illness: "", isNew: true }],
 	);
 
-	const [UBE, setUBE] = useState(initialUBE || false);
+	const [UBE, setUBE] = useState(initialUBE);
 
 	useEffect(() => {
 		if (!isFirstTime) {
@@ -179,7 +179,7 @@ function useCondition(
 							},
 						],
 			);
-			setUBE(initialUBE || false);
+			setUBE(initialUBE);
 		}
 	}, [initialData, isFirstTime, initialUBE]);
 
@@ -239,7 +239,6 @@ function useCondition(
  * @param {PsichiatricViewProps} props - Specific props for the PsichiatricViewiew component.
  * @returns {JSX.Element} - A detailed view for managing Psichiatric history with interactivity to add or edit records.
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Ignoring complexity for this function
 function PsichiatricView({
 	id,
 	psichiatricHistoryResource,
@@ -281,13 +280,12 @@ function PsichiatricView({
 	}
 	console.log(psichiatricHistoryResult);
 
-	const isFirstTime = !(
-		medicalHistory.depression.data.length ||
-		medicalHistory.anxiety.data.length ||
-		medicalHistory.ocd.data.length ||
-		medicalHistory.adhd.data.length ||
-		medicalHistory.bipolar.data.length ||
-		medicalHistory.other.data.length
+	const isFirstTime = Object.values(medicalHistory).some(
+		(condition) =>
+			typeof condition.data === "object" &&
+			!Array.isArray(condition.data) &&
+			condition.data !== null &&
+			Object.keys(condition.data).length !== 0,
 	);
 
 	const depressionCondition = useCondition(
@@ -377,6 +375,7 @@ function PsichiatricView({
 				fontSize: "1rem",
 			};
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Validate user inputs
 	const validateInputs = () => {
 		for (const [key, section] of Object.entries(sections)) {
 			const { status, medications } = section.condition;
@@ -443,7 +442,7 @@ function PsichiatricView({
 				toast.success("Antecedentes psiquiátricos guardados con éxito.");
 				triggerReload();
 			} else {
-				toast.error("Error al guardar los datos.");
+				toast.error(getErrorMessage(result, "psiquiatricos"));
 			}
 		} catch (error) {
 			toast.error(`Error en la operación: ${error.message}`);
@@ -596,6 +595,7 @@ function PsichiatricView({
 										<div style={{ paddingLeft: "0.5rem" }}>
 											{medications.map((medication, index) => (
 												<div
+													// biome-ignore lint/suspicious/noArrayIndexKey: Affects in user adding meds
 													key={`${key}-medication-${index}`}
 													style={{ marginBottom: "1rem" }}
 												>
@@ -657,7 +657,7 @@ function PsichiatricView({
 																e.target.value,
 															)
 														}
-														placeholder="Ingrese el medicamento administrado"
+														placeholder="Ingrese el medicamento administrado (terapia cuenta como medicamento)"
 														style={{ ...inputStyles }}
 													/>
 
@@ -710,7 +710,12 @@ function PsichiatricView({
 											))}
 											<div
 												style={{
-													borderTop: `0.04rem solid ${colors.darkerGrey}`,
+													padding: "1rem",
+													borderBottom: `0.04rem  solid ${colors.darkerGrey}`,
+												}}
+											/>
+											<div
+												style={{
 													paddingTop: "2rem",
 													paddingBottom: "1.5rem",
 													display: "flex",
