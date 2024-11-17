@@ -8,6 +8,7 @@ import {
 	POSSIBLE_MEDS,
 	POSSIBLE_NAMES,
 	POSSIBLE_RELATIONS,
+	POSSIBLE_SURGERIES,
 } from "../../utils/constants";
 import {
 	generateUniqueCUI,
@@ -282,9 +283,34 @@ function fillAllergicAntecedents() {
 	}
 }
 
+function fillSurgicalAntecedents() {
+	cy.intercept("GET", "**/patient/surgical-history/**").as("GETSurgical");
+	cy.contains("Quirúrgicos").click();
+	cy.get("@GETSurgical").its("response.statusCode").should("be.oneOf", [200]);
+
+	cy.intercept("POST", "**/patient/student-surgical-history").as(
+		"UPDATESurgical",
+	);
+	const COUNT = 5;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar antecedente quirúrgico").click();
+		cy.get("p:contains(¿De qué?)+input").type(randomFrom(POSSIBLE_SURGERIES));
+		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
+		cy.get("p:contains(¿Tuvo alguna complicación?)+input").type(
+			randomFrom(ALLERGIES),
+		);
+
+		cy.contains("Guardar").click();
+		cy.get("@UPDATESurgical")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "rexalo6296@cironex.com";
+		const email = "cikok87453@edectus.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
@@ -331,8 +357,9 @@ describe("Patient full flows", () => {
 			.should("be.oneOf", [200]);
 
 		fillGeneralData();
-		fillFamiliarAntecedents();
-		fillPersonalAntecedents();
-		fillAllergicAntecedents();
+		// fillFamiliarAntecedents();
+		// fillPersonalAntecedents();
+		// fillAllergicAntecedents();
+		fillSurgicalAntecedents();
 	});
 });
