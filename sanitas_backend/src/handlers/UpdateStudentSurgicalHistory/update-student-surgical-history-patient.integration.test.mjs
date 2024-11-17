@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeEach, describe, expect, test } from "@jest/globals";
 import axios from "axios";
 import {
 	createAuthorizationHeader,
@@ -38,7 +38,7 @@ describe("Update Surgical History integration tests", () => {
 	const validHeaders = createAuthorizationHeader(createPatientJWT());
 	let patientId;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		patientId = await createTestPatient(); // Create a patient and get the ID
 	});
 
@@ -58,6 +58,30 @@ describe("Update Surgical History integration tests", () => {
 		expect(medicalHistory.surgeries.data[0].surgeryType).toBe(
 			surgicalHistoryData.medicalHistory.surgeries.data[0].surgeryType,
 		);
+	});
+
+	test("Can add 3 or more surgeries in any order", async () => {
+		const payload = generateValidUpdate(patientId);
+		let response = await axios.post(API_URL, payload, {
+			headers: validHeaders,
+		});
+		expect(response.status).toBe(200);
+
+		payload.medicalHistory.surgeries.data.push({
+			surgeryType: "Motivo 3",
+			surgeryYear: "2008",
+			complications: "Compli 3",
+		});
+		response = await axios.post(API_URL, payload, { headers: validHeaders });
+		expect(response.status).toBe(200);
+
+		payload.medicalHistory.surgeries.data.unshift({
+			surgeryType: "Motivo 6",
+			surgeryYear: "2008",
+			complications: "Compli 3",
+		});
+		response = await axios.post(API_URL, payload, { headers: validHeaders });
+		expect(response.status).toBe(200);
 	});
 
 	test("Fail to update surgical history with invalid ID", async () => {
