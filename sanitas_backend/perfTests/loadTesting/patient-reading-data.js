@@ -50,13 +50,13 @@ export default function () {
 		urls.push(`${BASE_URL}/patient/gyneco-history/${PATIENT_ID}`);
 	}
 
-	urls.forEach((url) => {
+	for (const url of urls) {
 		const res = http.get(url, { headers });
 		check(res, {
 			"is status 200": (r) => r.status === 200,
 		});
 		sleep(1);
-	});
+	}
 
 	sleep(1);
 }

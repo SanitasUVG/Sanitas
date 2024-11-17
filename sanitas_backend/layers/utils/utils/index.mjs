@@ -900,7 +900,7 @@ export function requestDataEditsDBData(requestData, dbData) {
  * @param {(savedValue: *, requestValue: *) => boolean} [comparator=(a,b)=>a===b] - The array saved in the DB.
  * @returns {boolean} True if the requestArray contains at minimum the same elements as the savedArray, false otherwise.
  */
-export function requestIsSubset(
+export function requestIsSuperset(
 	savedArray,
 	requestArray,
 	logger,
