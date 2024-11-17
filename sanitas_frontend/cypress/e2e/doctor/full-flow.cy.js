@@ -369,6 +369,133 @@ function fillPsychiatricAntecedents() {
 	closeToastifies();
 }
 
+function fillGinecoAntecedents() {
+	cy.intercept("GET", "**/patient/gyneco-history/**").as("GETGyneco");
+	cy.contains("Ginecoobstétricos").click();
+	cy.get("@GETGyneco").its("response.statusCode").should("be.oneOf", [200]);
+
+	cy.get("input[placeholder='Ingrese la edad (Ej. 15, 16...)']").type(
+		`${randomIntBetween(12, 16)}`,
+	);
+	cy.get("p:contains(Sus ciclos son regulares)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get("p:contains(Normalmente tiene menstruación dolorosa)+div")
+		.find("label:contains(Sí)>input")
+		.check();
+	cy.get(
+		"input[placeholder='Ingrese el medicamento tomado para regular los dolores de menstruación.']",
+	).type(randomFrom(possibleMeds));
+
+	cy.get("p:contains(P:)+input").type(randomIntBetween(0, 5));
+	cy.get("p:contains(C:)+input").type(randomIntBetween(0, 5));
+	cy.get("p:contains(A:)+input").type(randomIntBetween(0, 5));
+
+	// NOTE: Diagnóstico por Enfermedades...
+	for (const parentText of [
+		"Diagnóstico por Quistes Ováricos:",
+		"Diagnóstico por Miomatosis Uterina:",
+		"Diagnóstico por Endometriosis:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Medicamento)+input")
+			.type(randomFrom(possibleMeds));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Dosis)+input")
+			.type(randomFrom(possibleDoses));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Frecuencia)+input")
+			.type(randomFrom(possibleFrequencies));
+	}
+
+	const COUNT = 3;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar otro diagnóstico").click();
+
+		const parentText = `Nuevo Diagnóstico ${i + 4}`;
+		const parent = `p:contains(${parentText})`;
+
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Nombre del diagnóstico)+input")
+			.type(randomFrom(possibleDisseases));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Medicamento)+input")
+			.type(randomFrom(possibleMeds));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Dosis)+input")
+			.type(randomFrom(possibleDoses));
+		cy.get(parent)
+			.parent()
+			.find("p:contains(Frecuencia)+input")
+			.type(randomFrom(possibleFrequencies));
+	}
+
+	// NOTE: Operaciones del Paciente...
+	for (const parentText of [
+		"Operación por Histerectomía:",
+		"Cirugía para no tener más hijos:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.find("label:contains(Sí)>input")
+			.check();
+	}
+
+	for (const parentText of [
+		"Operación por Quistes Ováricos:",
+		"Operación por Resección de masas en mamas:",
+	]) {
+		const parent = `p:contains(${parentText})`;
+		cy.get(`${parent}+div`).find("label:contains(Sí)>input").check();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.find("label:contains(Sí)>input")
+			.check();
+
+		cy.get(parent).parent().contains("Agregar otra operación").parent().click();
+
+		cy.get(parent)
+			.parent()
+			.find("select")
+			.last()
+			.select(`${randomIntBetween(2010, 2020)}`);
+		cy.get(parent)
+			.parent()
+			.find("p:contains(¿Tuvo alguna complicación?)+div")
+			.last()
+			.find("label:contains(Sí)>input")
+			.check();
+	}
+
+	cy.intercept("PUT", "**/patient/gyneco-history").as("UPDATEGyneco");
+	cy.contains("Guardar").click();
+	cy.get("@UPDATEGyneco").its("response.statusCode").should("be.oneOf", [200]);
+	closeToastifies();
+}
+
 describe("Common doctor actions", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
@@ -396,5 +523,6 @@ describe("Common doctor actions", () => {
 		fillSurgicalAntecedents();
 		fillTraumatologicAntecedents();
 		fillPsychiatricAntecedents();
+		fillGinecoAntecedents();
 	});
 });
