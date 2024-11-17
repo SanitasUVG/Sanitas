@@ -1,4 +1,8 @@
-import { generateUniqueCUI, randomFrom } from "../../utils/cui";
+import {
+	generateUniqueCUI,
+	randomFrom,
+	randomIntBetween,
+} from "../../utils/cui";
 
 const possibleRelations = ["Abuelo", "Abuela", "Mamá", "Papá", "Hermano"];
 const possibleCancers = ["mama", "hueso", "piel"];
@@ -8,6 +12,12 @@ const possibleFrequencies = [
 	"2 veces al día",
 	"3 veces a la semana",
 	"cada 8 horas",
+];
+const possibleSurgeries = [
+	"Operación 1",
+	"Operación 2",
+	"Operación 3",
+	"Operación 4",
 ];
 
 const allergies = [
@@ -153,7 +163,6 @@ function fillFamiliarAntecedents() {
 }
 
 function fillPersonalAntecedents() {
-	// NOTE: Navigate to Personal antecedents...
 	cy.intercept("GET", "**/patient/personal-history/**").as("GETPersonal");
 	cy.contains("Personales").click();
 	cy.get("@GETPersonal").its("response.statusCode").should("be.oneOf", [200]);
@@ -223,6 +232,31 @@ function fillPersonalAntecedents() {
 	}
 }
 
+function fillSurgicalAntecedents() {
+	cy.intercept("GET", "**/patient/surgical-history/**").as("GETSurgical");
+	cy.contains("Quirúrgicos").click();
+	cy.get("@GETSurgical").its("response.statusCode").should("be.oneOf", [200]);
+
+	cy.intercept("PUT", "**/patient/surgical-history").as("UPDATESurgical");
+	const COUNT = 5;
+	for (let i = 0; i < COUNT; i++) {
+		cy.contains("Agregar antecedente quirúrgico").click();
+		cy.get(
+			"input[placeholder='Ingrese acá el motivo o tipo de cirugía.']",
+		).type(randomFrom(possibleSurgeries));
+		cy.get("select").select(`${randomIntBetween(2005, 2015)}`);
+		cy.get("p:contains(¿Tuvo alguna complicación?)+input").type(
+			randomFrom(allergies),
+		);
+
+		cy.contains("Guardar").click();
+		cy.get("@UPDATESurgical")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		closeToastifies();
+	}
+}
+
 describe("Common doctor actions", () => {
 	beforeEach(() => {
 		cy.loginAsDoctor();
@@ -245,9 +279,8 @@ describe("Common doctor actions", () => {
 			.should("be.oneOf", [200]);
 
 		fillFamiliarAntecedents();
-
 		fillPersonalAntecedents();
-
 		fillAllergicAntecedents();
+		fillSurgicalAntecedents();
 	});
 });
