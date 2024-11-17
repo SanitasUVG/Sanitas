@@ -102,4 +102,5 @@ Cypress.Commands.addAll({
 	loginAsPatient,
 	searchPatient,
 	doctorCreatePatient,
+	login,
 });
