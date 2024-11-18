@@ -588,7 +588,7 @@ function fillNonPatologicAntecedents() {
 
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "nikomob915@anypng.com";
+		const email = "bitiso1167@edectus.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");

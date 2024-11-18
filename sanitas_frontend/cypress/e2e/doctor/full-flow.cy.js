@@ -322,16 +322,12 @@ function fillPsychiatricAntecedents() {
 				.eq(3)
 				.find(`p:contains(Frecuencia ${i + 1})+input`)
 				.type(randomFrom(POSSIBLE_FREQUENCIES));
-			// cy.get(selectedP).parents().eq(3).find("p:contains(¿Tiene seguimiento en UBE?)+div")
-			// 	.contains("Si")
-			// 	.find("input")
-			// 	.check();
 			if (Math.random() < 0.5) {
 				cy.get(selectedP)
 					.parents()
 					.eq(3)
 					.find("p:contains(¿Tiene seguimiento en UBE?)+div")
-					.contains("Si")
+					.contains("Sí")
 					.find("input")
 					.check();
 			}
