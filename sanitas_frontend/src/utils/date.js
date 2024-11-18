@@ -17,17 +17,16 @@ export const formatDate = (dateString) => {
  * @returns {number} The number of full years between the given date and today's date.
  */
 export const calculateYearsBetween = (dateString) => {
-	const formattedDate = formatDate(dateString);
-	const startDate = new Date(formattedDate);
+	const [year, month, day] = dateString.split("-").map(Number);
+
 	const today = new Date();
-	const differenceInYears = today.getFullYear() - startDate.getFullYear();
-	const monthDifference = today.getMonth() - startDate.getMonth();
+	let age = today.getFullYear() - year;
 
 	if (
-		monthDifference < 0 ||
-		(monthDifference === 0 && today.getDate() < startDate.getDate())
+		today.getMonth() + 1 < month ||
+		(today.getMonth() + 1 === month && today.getDate() < day)
 	) {
-		return differenceInYears - 1;
+		age--;
 	}
-	return differenceInYears;
+	return age;
 };
