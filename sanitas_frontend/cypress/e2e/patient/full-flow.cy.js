@@ -588,7 +588,66 @@ function fillNonPatologicAntecedents() {
 
 describe("Patient full flows", () => {
 	it("Create an account, patient and fill form", () => {
-		const email = "nowova2555@cashbn.com";
+		const email = "rasiwe3265@cpaurl.com";
+		const password = "hello123...";
+
+		cy.visit("https://sanitasuvg.github.io/Sanitas");
+
+		// NOTE: Register user...
+		cy.contains("Crea una aquí", { timeout: 10_000 }).click();
+		cy.get("input[placeholder='Ingrese su correo']").type(email);
+		cy.get("input[placeholder='Ingrese su contraseña']").type(password);
+		cy.contains("Ingresar").click();
+
+		// NOTE: Login with new user...
+		cy.wait(40 * 1000); // Giving time for the email to appear so we can confirm it...
+		cy.login(email, password);
+
+		// NOTE: Enter CUI...
+		const cui = generateUniqueCUI();
+		cy.contains("Continuar", { timeout: 10_000 }).click();
+		cy.get("label:contains(Ingrese su CUI)+div").find("input").type(cui);
+
+		// The patient with the CUI should not exist...
+		cy.intercept("POST", "**/account/link").as("LINK_ACCOUNT");
+		cy.contains("Buscar").click();
+		cy.get("@LINK_ACCOUNT")
+			.its("response.statusCode")
+			.should("be.oneOf", [404]);
+
+		// NOTE: Creating patient...
+		cy.get("label:contains(Nombres del paciente)+input").type("Twilight");
+		cy.get("label:contains(Apellidos del paciente)+input").type("Sparkle");
+		cy.get("label:contains(Fecha de Nacimiento)+input").type("2000-05-01");
+		cy.get("label:contains(Teléfono)+input").type(randomPhone());
+		cy.get("label:contains(Seguro Médico)+input").type(
+			Math.random() < 0.5 ? "El Roble" : "Ninguno",
+		);
+		cy.get("label:contains(Femenino)>input").check();
+
+		cy.intercept("POST", "**/patient/create").as("CREATE_PATIENT");
+		cy.contains("Continuar con el formulario").click();
+		cy.get("@CREATE_PATIENT")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+		cy.get("@LINK_ACCOUNT")
+			.its("response.statusCode")
+			.should("be.oneOf", [200]);
+
+		fillGeneralData();
+		fillFamiliarAntecedents();
+		fillPersonalAntecedents();
+		fillAllergicAntecedents();
+		fillSurgicalAntecedents();
+		fillTraumatologicAntecedents();
+		fillPsychiatricAntecedents();
+		fillGinecoAntecedents();
+		fillNonPatologicAntecedents();
+	});
+
+	it("Create an account, patient and fill form (Mobile)", () => {
+		cy.viewport("samsung-note9");
+		const email = "rasiwe3265@cpaurl.com";
 		const password = "hello123...";
 
 		cy.visit("https://sanitasuvg.github.io/Sanitas");
