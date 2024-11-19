@@ -53,6 +53,15 @@ const updateInfoView = (
 );
 ```
 
+## Testing
+
+Hay dos tipos de pruebas en el frontend. Para correr ambas debes estar en el
+ambiente generado por `nix develop --impure`.
+
+- Unitarias: Se corren con `yarn test`.
+- E2E: Se corren con `yarn e2e`. (Corren con el ambiente de staging en mente,
+  así que asgúrate de actualizar la URL acorde a donde se haga deploy)
+
 ## Estructua del Frontend
 
 ```text
