@@ -99,6 +99,8 @@ export function CreatePatientView({
 		names: "nombres del paciente",
 		lastNames: "apellidos del paciente",
 		birthdate: "fecha de nacimiento",
+		phone: "teléfono",
+		insurance: "seguro médico",
 	};
 
 	/**
