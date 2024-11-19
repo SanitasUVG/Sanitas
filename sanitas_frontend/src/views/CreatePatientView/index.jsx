@@ -107,7 +107,7 @@ export function CreatePatientView({
 	 * @returns {boolean} True if the form is valid, false otherwise.
 	 */
 	const validateFormData = () => {
-		const fields = ["names", "lastNames", "birthdate"];
+		const fields = ["names", "lastNames", "birthdate", "phone", "insurance"];
 		if (patientData.cui.length !== 13) {
 			toast.error("El CUI debe contener exactamente 13 caracteres.");
 			return false;
