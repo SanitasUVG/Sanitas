@@ -343,3 +343,7 @@ LEFT JOIN md_san.estudiante AS es
         c.id_paciente = es.id_paciente
 LEFT JOIN md_san.colaborador AS co ON
     c.id_paciente = co.id_paciente;
+
+INSERT INTO md_san.doctor (email) VALUES
+('mlgalvan@uvg.edu.gt'),
+('jmbustamante@uvg.edu.gt');
