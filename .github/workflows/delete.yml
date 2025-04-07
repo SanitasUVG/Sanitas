@@ -29,4 +29,4 @@ jobs:
           role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
       - name: Delete Backend
         # yamllint disable rule:line-length
-        run: sam delete
+        run: sam delete --no-prompts
