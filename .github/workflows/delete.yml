@@ -1,0 +1,32 @@
+---
+name: Delete Sanitas
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  backend-deploy:
+    environment:
+      name: build
+    name: Backend Deployment
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop .#cicdBackend --command bash {0}
+        working-directory: sanitas_backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Configure AWS Credentials Action for GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          audience: sts.amazonaws.com
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.BACKEND_DEPLOY_AWS_ROLE }}
+      - name: Delete Backend
+        # yamllint disable rule:line-length
+        run: sam delete
