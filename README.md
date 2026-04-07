@@ -28,3 +28,4 @@ El documento en "wiki/mantenimiento/Guía_de_contribución.md". Pero en resumen:
    c. Corre `nix run .#integrationTests`. No hace falta que se corra dentro de la
    shell de `nix develop --impure`. Te levanta todos los servicios para
    ejecutar/desarrollar Sanitas y además te corre las tests de integración.
+a
